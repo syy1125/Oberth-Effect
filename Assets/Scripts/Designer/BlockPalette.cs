@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(GridLayoutGroup))]
@@ -9,7 +8,7 @@ public class BlockPalette : MonoBehaviour
 	public GameObject[] Blocks;
 
 	public int SelectedIndex { get; private set; }
-
+	
 	private void Start()
 	{
 		SelectedIndex = -1;
@@ -33,5 +32,11 @@ public class BlockPalette : MonoBehaviour
 		}
 
 		SelectedIndex = index;
+	}
+
+	public GameObject GetSelectedBlock()
+	{
+		if (SelectedIndex < 0) return null;
+		return Blocks[SelectedIndex];
 	}
 }
