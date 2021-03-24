@@ -254,6 +254,33 @@
             ]
         },
         {
+            "name": "Designer",
+            "id": "1097402c-c5f8-4c99-b98d-2791a7fce1a6",
+            "actions": [
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "cb660c07-1c16-40ad-9dee-275599a48cac",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8434d857-744e-4018-8999-8a166a8014c3",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "UI",
             "id": "9cb34e69-d57c-49c9-bb05-656fec8cd861",
             "actions": [
