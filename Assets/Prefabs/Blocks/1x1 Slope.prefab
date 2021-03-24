@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1811630963265557087}
   - component: {fileID: 7553949386308198073}
+  - component: {fileID: -2486461410739294344}
   m_Layer: 0
   m_Name: 1x1 Slope
   m_TagString: Untagged
@@ -82,3 +83,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-2486461410739294344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839406c5d8fc49ac8f69378005499fc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowInDesigner: 1
+  ShortName: 1x1 Slope
+  FullName: 1x1 Slope

@@ -1,21 +1,26 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(GridLayoutGroup))]
 public class BlockPalette : MonoBehaviour
 {
 	public GameObject BlockButtonPrefab;
-	public GameObject[] Blocks;
+	private GameObject[] _blocks;
 
 	public int SelectedIndex { get; private set; }
-	
+
 	private void Start()
 	{
 		SelectedIndex = -1;
 
 		Transform t = transform;
 
-		foreach (GameObject block in Blocks)
+		_blocks = BlockRegistry.Instance.Blocks
+			.Where(block => block.GetComponent<BlockInfo>().ShowInDesigner)
+			.ToArray();
+
+		foreach (GameObject block in _blocks)
 		{
 			GameObject button = Instantiate(BlockButtonPrefab, t);
 			button.GetComponent<BlockButton>().DisplayBlock(block);
@@ -36,7 +41,6 @@ public class BlockPalette : MonoBehaviour
 
 	public GameObject GetSelectedBlock()
 	{
-		if (SelectedIndex < 0) return null;
-		return Blocks[SelectedIndex];
+		return SelectedIndex < 0 ? null : _blocks[SelectedIndex];
 	}
 }
