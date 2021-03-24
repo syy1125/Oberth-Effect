@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class VehicleDesigner : MonoBehaviour
 {
 	public BlockPalette Palette;
+	public DesignerAreaMask AreaMask;
 	public InputActionReference Rotate;
 
 	private Camera _mainCamera;
@@ -16,6 +17,7 @@ public class VehicleDesigner : MonoBehaviour
 	private int _rotation;
 
 	private GameObject _preview;
+	private bool _prevHover;
 	private int _prevIndex;
 	private Vector3Int? _prevLocation;
 
@@ -42,7 +44,7 @@ public class VehicleDesigner : MonoBehaviour
 			gridLocation = _grid.WorldToCell(mouseRay.GetPoint(enter));
 		}
 
-		if (Palette.SelectedIndex != _prevIndex || gridLocation != _prevLocation)
+		if (Palette.SelectedIndex != _prevIndex || gridLocation != _prevLocation || AreaMask.Hover != _prevHover)
 		{
 			if (Palette.SelectedIndex < 0 || gridLocation == null)
 			{
@@ -62,13 +64,27 @@ public class VehicleDesigner : MonoBehaviour
 
 					_preview = Instantiate(Palette.GetSelectedBlock(), transform);
 					_preview.transform.rotation = Quaternion.AngleAxis(_rotation * 90f, Vector3.forward);
+					_preview.SetActive(AreaMask.Hover);
+
+					foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())
+					{
+						Color c = sprite.color;
+						c.a *= 0.5f;
+						sprite.color = c;
+					}
 				}
 
 				_preview.transform.position = _grid.GetCellCenterWorld(gridLocation.Value);
+
+				if (AreaMask.Hover != _prevHover)
+				{
+					_preview.SetActive(AreaMask.Hover);
+				}
 			}
 
 			_prevIndex = Palette.SelectedIndex;
 			_prevLocation = gridLocation;
+			_prevHover = AreaMask.Hover;
 		}
 	}
 

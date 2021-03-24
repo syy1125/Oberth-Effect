@@ -29,6 +29,7 @@ Shader "Unlit/Vehicle"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                fixed4 color : COLOR;
             };
 
             struct v2f
@@ -36,6 +37,7 @@ Shader "Unlit/Vehicle"
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+                fixed4 color : COLOR;
             };
 
             sampler2D _MainTex;
@@ -50,6 +52,7 @@ Shader "Unlit/Vehicle"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o, o.vertex);
+                o.color = v.color;
                 return o;
             }
 
@@ -57,10 +60,13 @@ Shader "Unlit/Vehicle"
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col = col.r * _PrimaryColor + col.g * _SecondaryColor + col.b * _TertiaryColor;
+                col *= i.color;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
             ENDCG
+            
+            Blend SrcAlpha OneMinusSrcAlpha
         }
     }
 }
