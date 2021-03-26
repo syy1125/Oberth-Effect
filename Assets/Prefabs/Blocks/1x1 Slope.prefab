@@ -96,5 +96,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
+  BlockID: 1x1 Slope
   ShortName: 1x1 Slope
   FullName: 1x1 Slope

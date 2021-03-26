@@ -5,6 +5,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(GridLayoutGroup))]
 public class BlockPalette : MonoBehaviour
 {
+	public const int DESELECT_INDEX = -1;
+	public const int ERASE_INDEX = -2;
+
 	public GameObject BlockButtonPrefab;
 	private GameObject[] _blocks;
 
@@ -12,7 +15,7 @@ public class BlockPalette : MonoBehaviour
 
 	private void Start()
 	{
-		SelectedIndex = -1;
+		SelectedIndex = DESELECT_INDEX;
 
 		Transform t = transform;
 

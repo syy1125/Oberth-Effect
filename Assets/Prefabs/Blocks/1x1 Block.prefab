@@ -96,5 +96,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
+  BlockID: 1x1 Block
   ShortName: 1x1 Block
   FullName: 1x1 Block
+  Bounds:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 1, y: 1, z: 1}
+  Mass: 1
+  MomentOfInertia: 0.16666667
