@@ -328,7 +328,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 475169512}
   m_HandleRect: {fileID: 475169511}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -611,9 +611,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockButtonPrefab: {fileID: 533385805182799309, guid: 613b3b57f909a6b4192acdcf480d8851, type: 3}
-  Blocks:
-  - {fileID: 7025115410308415482, guid: 1add6b5cb1f234a419550b44fe53ace3, type: 3}
-  - {fileID: 7025115410308415482, guid: 14ea52d86dd7940479b34ae6409e9bcd, type: 3}
 --- !u!1 &874948194
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,7 +884,7 @@ Camera:
   m_GameObject: {fileID: 1102476953}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1115,7 +1112,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Palette: {fileID: 860709245}
   AreaMask: {fileID: 140859144}
-  Rotate: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  RotateAction: {fileID: 0}
+  ClickAction: {fileID: 0}
 --- !u!61 &1599521576
 BoxCollider2D:
   m_ObjectHideFlags: 0
