@@ -16,7 +16,7 @@ public class CelestialBody : MonoBehaviour
 
 	private void Start()
 	{
-		float radiusLimit = Mathf.Sqrt(Mass / 0.01f);
+		float radiusLimit = Mathf.Sqrt(Mass / 0.001f);
 		GetComponent<CircleCollider2D>().radius = radiusLimit;
 	}
 
