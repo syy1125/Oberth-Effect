@@ -63,6 +63,7 @@ public class NebulaBackdrop : MonoBehaviour
 	private void Update()
 	{
 		Vector3 offset = -Parallax * _parent.position;
+		offset.z = transform.localPosition.z;
 		transform.localPosition = offset;
 
 		if (_mainCamera != null)
