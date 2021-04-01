@@ -249,6 +249,11 @@ public class VehicleDesigner : MonoBehaviour
 		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(rootLocation.x, rootLocation.y, 0));
 		go.transform.localRotation = GetPhysicalLocalRotation();
 
+		foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
+		{
+			behaviour.InDesigner = true;
+		}
+
 		_blockToObject.Add(instance, go);
 	}
 
@@ -273,5 +278,10 @@ public class VehicleDesigner : MonoBehaviour
 		GameObject go = _blockToObject[instance];
 		Destroy(go);
 		_blockToObject.Remove(instance);
+	}
+
+	public string SaveVehicle()
+	{
+		return JsonUtility.ToJson(_blueprint);
 	}
 }

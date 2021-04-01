@@ -379,10 +379,11 @@ GameObject:
   - component: {fileID: 482182843}
   - component: {fileID: 482182844}
   - component: {fileID: 482182845}
+  - component: {fileID: 482182846}
   - component: {fileID: 482182848}
   m_Layer: 0
   m_Name: Vehicle
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -439,6 +440,18 @@ MonoBehaviour:
   Acceleration: 1
   FuelRecovery: 0.1
   FuelGauge: {fileID: 1542909796}
+--- !u!114 &482182846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482182842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b65a9970128a2042bf659f657f0fb5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &482182848
 MonoBehaviour:
   m_ObjectHideFlags: 0
