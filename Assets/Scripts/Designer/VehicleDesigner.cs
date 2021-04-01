@@ -36,6 +36,7 @@ public class VehicleDesigner : MonoBehaviour
 	private int _prevIndex;
 	private Vector3Int? _prevLocation;
 
+	private Vector2Int? _selectedLocation;
 	private VehicleBlueprint _blueprint;
 	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posToBlock;
 	private Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]> _blockToPos;
@@ -57,6 +58,8 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnEnable()
 	{
+		Palette.OnIndexChanged += HandleIndexChange;
+
 		RotateAction.action.performed += HandleRotate;
 		ClickAction.action.performed += HandleClick;
 	}
@@ -130,8 +133,18 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnDisable()
 	{
+		Palette.OnIndexChanged -= HandleIndexChange;
+
 		RotateAction.action.performed -= HandleRotate;
 		ClickAction.action.performed -= HandleClick;
+	}
+
+	private void HandleIndexChange()
+	{
+		if (Palette.SelectedIndex != BlockPalette.CURSOR_INDEX)
+		{
+			_selectedLocation = null;
+		}
 	}
 
 	private void HandleRotate(InputAction.CallbackContext context)
@@ -187,10 +200,12 @@ public class VehicleDesigner : MonoBehaviour
 			{
 				switch (Palette.SelectedIndex)
 				{
-					case BlockPalette.DESELECT_INDEX: return;
+					case BlockPalette.CURSOR_INDEX:
+						_selectedLocation = rootLocation;
+						break;
 					case BlockPalette.ERASE_INDEX:
-						// TODO
-						return;
+						RemoveBlock(rootLocation);
+						break;
 				}
 			}
 		}

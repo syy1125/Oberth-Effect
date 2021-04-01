@@ -5,17 +5,20 @@ using UnityEngine.UI;
 [RequireComponent(typeof(GridLayoutGroup))]
 public class BlockPalette : MonoBehaviour
 {
-	public const int DESELECT_INDEX = -1;
+	public const int CURSOR_INDEX = -1;
 	public const int ERASE_INDEX = -2;
 
 	public GameObject BlockButtonPrefab;
 	private GameObject[] _blocks;
 
 	public int SelectedIndex { get; private set; }
+	public delegate void IndexChangeEvent();
+
+	public IndexChangeEvent OnIndexChanged;
 
 	private void Start()
 	{
-		SelectedIndex = DESELECT_INDEX;
+		SelectedIndex = CURSOR_INDEX;
 
 		Transform t = transform;
 
@@ -40,6 +43,8 @@ public class BlockPalette : MonoBehaviour
 		}
 
 		SelectedIndex = index;
+		
+		OnIndexChanged?.Invoke();
 	}
 
 	public GameObject GetSelectedBlock()
