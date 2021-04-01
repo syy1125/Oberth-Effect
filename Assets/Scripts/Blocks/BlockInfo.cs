@@ -11,9 +11,15 @@ public class BlockInfo : MonoBehaviour
 	public string ShortName;
 	public string FullName;
 
+	[Header("Simulation")]
+	public float MaxHealth;
+
+	public float IntegrityScore;
+
 	[Header("Physics")]
 	public BoundsInt Bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
 
+	public Vector2 CenterOfMass;
 	public float Mass;
 	public float MomentOfInertia;
 
@@ -21,5 +27,8 @@ public class BlockInfo : MonoBehaviour
 	{
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireCube(Bounds.center - new Vector3(0.5f, 0.5f, 0.5f), Bounds.size);
+
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(CenterOfMass, MomentOfInertia * 6);
 	}
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1811630963265557087}
   - component: {fileID: 7553949386308198073}
+  - component: {fileID: 2470967752226356742}
   - component: {fileID: -2486461410739294344}
   m_Layer: 0
   m_Name: 1x1 Slope
@@ -83,6 +84,34 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!60 &2470967752226356742
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.5, y: -0.5}
+      - {x: -0.5, y: 0.5}
+      - {x: 0.5, y: -0.5}
 --- !u!114 &-2486461410739294344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,3 +128,11 @@ MonoBehaviour:
   BlockID: 1x1 Slope
   ShortName: 1x1 Slope
   FullName: 1x1 Slope
+  MaxHealth: 50
+  IntegrityScore: 0.5
+  Bounds:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 1, y: 1, z: 1}
+  CenterOfMass: {x: -0.16666667, y: -0.16666667}
+  Mass: 0.5
+  MomentOfInertia: 0.055555556
