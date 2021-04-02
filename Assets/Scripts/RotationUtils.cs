@@ -31,4 +31,28 @@ public class RotationUtils
 			_ => throw new ArgumentException()
 		};
 	}
+
+	public static Vector2 RotatePoint(Vector3 position, int rotation)
+	{
+		return rotation switch
+		{
+			0 => new Vector2(position.x, position.y),
+			1 => new Vector2(-position.y, position.x),
+			2 => new Vector2(-position.x, -position.y),
+			3 => new Vector2(position.y, -position.x),
+			_ => throw new ArgumentException()
+		};
+	}
+
+	public static Vector2 RotatePoint(Vector2 position, int rotation)
+	{
+		return rotation switch
+		{
+			0 => new Vector2(position.x, position.y),
+			1 => new Vector2(-position.y, position.x),
+			2 => new Vector2(-position.x, -position.y),
+			3 => new Vector2(position.y, -position.x),
+			_ => throw new ArgumentException()
+		};
+	}
 }
