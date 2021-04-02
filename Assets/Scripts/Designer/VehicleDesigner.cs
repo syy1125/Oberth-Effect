@@ -232,11 +232,6 @@ public class VehicleDesigner : MonoBehaviour
 		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(rootLocation.x, rootLocation.y, 0));
 		go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
 
-		foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
-		{
-			behaviour.InDesigner = true;
-		}
-
 		_blockToObject.Add(instance, go);
 	}
 

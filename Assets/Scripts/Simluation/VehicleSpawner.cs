@@ -27,6 +27,11 @@ public class VehicleSpawner : MonoBehaviour
 			go.transform.localPosition = rootLocation;
 			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
 
+			foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
+			{
+				behaviour.HasPhysics = true;
+			}
+
 			var info = blockPrefab.GetComponent<BlockInfo>();
 
 			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);

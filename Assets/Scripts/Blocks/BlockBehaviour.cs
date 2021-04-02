@@ -7,8 +7,8 @@ public class BlockBehaviour : MonoBehaviour
 {
 	/// <summary>
 	/// Anything that spawns a block should be responsible for setting this variable.
-	/// Classes that inheric <code>BlockBehaviour</code> should check this variable to see if they should apply physics.
+	/// Classes that inherit <code>BlockBehaviour</code> should check this variable to see if they should apply physics.
 	/// </summary>
 	[HideInInspector]
-	public bool InDesigner;
+	public bool HasPhysics;
 }

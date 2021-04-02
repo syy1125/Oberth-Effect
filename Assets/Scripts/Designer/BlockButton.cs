@@ -32,11 +32,6 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	{
 		GameObject instance = Instantiate(block, transform);
 		instance.transform.localScale = new Vector3(40, 40, 1);
-
-		foreach (BlockBehaviour behaviour in instance.GetComponents<BlockBehaviour>())
-		{
-			behaviour.InDesigner = true;
-		}
 	}
 
 	private void SelectBlock()
