@@ -44,7 +44,7 @@ public class CelestialBody : MonoBehaviour
 
 		foreach (Rigidbody2D body in _affected)
 		{
-			Vector2 r = body.position - center;
+			Vector2 r = body.worldCenterOfMass - center;
 			// Avoid potential division by zero issue. Note that a black hole has event horizon radius 2M so this bound should line up.
 			float strength = Mass / Mathf.Max(r.sqrMagnitude, 0.5f);
 			body.AddForce(-r.normalized * strength);

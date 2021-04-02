@@ -40,7 +40,7 @@ public class VehicleSpawner : MonoBehaviour
 			centerOfMass /= totalMass;
 		}
 
-		float momentOfInertia = 0f;
+		var momentOfInertia = 0f;
 		foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
 		{
 			(Vector2 position, float mass, float blockMoment) = blockData;
@@ -51,5 +51,7 @@ public class VehicleSpawner : MonoBehaviour
 		body.mass = totalMass;
 		body.centerOfMass = centerOfMass;
 		body.inertia = momentOfInertia;
+
+		transform.position -= (Vector3) centerOfMass;
 	}
 }
