@@ -222,6 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Target: {fileID: 482182843}
+  FollowCenterOfMass: 1
   Response: 10
   DerivativeTime: 0.8
   IntegralTime: 2

@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
 	public Transform Target;
+	public bool FollowCenterOfMass;
 
 	public float Response;
 	public float DerivativeTime;
@@ -23,8 +24,12 @@ public class CameraFollow : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		var body = Target.GetComponent<Rigidbody2D>();
+
 		var currentPosition = new Vector2(transform.position.x, transform.position.y);
-		var targetPosition = new Vector2(Target.position.x, Target.position.y);
+		Vector2 targetPosition = FollowCenterOfMass && body != null
+			? body.worldCenterOfMass
+			: new Vector2(Target.position.x, Target.position.y);
 		Vector2 offset = targetPosition - currentPosition;
 
 		Vector2 derivative = _offsetHistory.Count > 0
