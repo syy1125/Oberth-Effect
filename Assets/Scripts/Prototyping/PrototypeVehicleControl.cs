@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleControl : MonoBehaviour
+public class PrototypeVehicleControl : MonoBehaviour
 {
 	public InputActionReference Move;
 	public float Acceleration;

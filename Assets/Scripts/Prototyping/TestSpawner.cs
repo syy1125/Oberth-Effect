@@ -34,7 +34,7 @@ public class TestSpawner : MonoBehaviour
 
 		var vehicle = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
 
-		var vehicleObject = GameObject.Find("Vehicle");
+		GameObject vehicleObject = GameObject.Find("Vehicle");
 		vehicleObject.GetComponent<VehicleSpawner>().SpawnVehicle(vehicle);
 
 		Destroy(gameObject);
