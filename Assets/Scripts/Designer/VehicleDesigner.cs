@@ -79,11 +79,6 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private Quaternion GetPhysicalLocalRotation()
-	{
-		return Quaternion.AngleAxis(_rotation * 90f, Vector3.forward);
-	}
-
 	private void Update()
 	{
 		Vector3Int? hoverLocation = GetHoverLocation();
@@ -106,7 +101,7 @@ public class VehicleDesigner : MonoBehaviour
 					}
 
 					_preview = Instantiate(Palette.GetSelectedBlock(), transform);
-					_preview.transform.rotation = transform.rotation * GetPhysicalLocalRotation();
+					_preview.transform.rotation = transform.rotation * RotationUtils.GetPhysicalRotation(_rotation);
 					_preview.SetActive(AreaMask.Hover);
 
 					foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())
@@ -164,18 +159,6 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private Vector2Int RotatePoint(Vector3Int position)
-	{
-		return _rotation switch
-		{
-			0 => new Vector2Int(position.x, position.y),
-			1 => new Vector2Int(-position.y, position.x),
-			2 => new Vector2Int(-position.x, -position.y),
-			3 => new Vector2Int(position.y, -position.x),
-			_ => throw new ArgumentException()
-		};
-	}
-
 	private void HandleClick(InputAction.CallbackContext context)
 	{
 		Vector3Int? hoverLocation = GetHoverLocation();
@@ -219,7 +202,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
 		{
-			Vector2Int globalPosition = rootLocation + RotatePoint(localPosition);
+			Vector2Int globalPosition = rootLocation + RotationUtils.RotatePoint(localPosition, _rotation);
 
 			if (_posToBlock.ContainsKey(globalPosition))
 			{
@@ -247,7 +230,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		GameObject go = Instantiate(block, transform);
 		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(rootLocation.x, rootLocation.y, 0));
-		go.transform.localRotation = GetPhysicalLocalRotation();
+		go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
 
 		foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
 		{
