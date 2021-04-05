@@ -16,6 +16,8 @@ public class BlockPalette : MonoBehaviour
 	public InputActionReference CursorAction;
 	public InputActionReference EraserAction;
 
+	public Texture2D EraserTexture;
+
 	private GameObject[] _blocks;
 
 	public int SelectedIndex { get; private set; }
@@ -63,6 +65,19 @@ public class BlockPalette : MonoBehaviour
 		}
 
 		SelectedIndex = index;
+
+		switch (SelectedIndex)
+		{
+			case ERASE_INDEX:
+				Cursor.SetCursor(EraserTexture, new Vector2(10, 10), CursorMode.Auto);
+				break;
+			case CURSOR_INDEX:
+				Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+				break;
+			default:
+				Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+				break;
+		}
 
 		OnIndexChanged?.Invoke();
 	}

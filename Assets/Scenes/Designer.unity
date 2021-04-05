@@ -158,8 +158,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -122, y: 0}
+  m_SizeDelta: {x: -244, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &140859144
 MonoBehaviour:
@@ -658,6 +658,7 @@ MonoBehaviour:
   BlockButtonPrefab: {fileID: 533385805182799309, guid: 613b3b57f909a6b4192acdcf480d8851, type: 3}
   CursorAction: {fileID: 2632173336168338102, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   EraserAction: {fileID: 1947422442943052003, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  EraserTexture: {fileID: 2800000, guid: 16413e80f5f850d4ca365cd4c3569c9e, type: 3}
 --- !u!1 &874948194
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,6 +1163,9 @@ MonoBehaviour:
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 8032123329186460011, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ScrollAction: {fileID: 8085426335645191916, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  MouseMoveAction: {fileID: 2544889378416833418, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  GrabTexture: {fileID: 2800000, guid: 8532c824d7d256c49b06634cd2c23dbc, type: 3}
 --- !u!61 &1599521576
 BoxCollider2D:
   m_ObjectHideFlags: 0

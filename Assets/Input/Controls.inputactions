@@ -255,6 +255,22 @@
             "id": "1097402c-c5f8-4c99-b98d-2791a7fce1a6",
             "actions": [
                 {
+                    "name": "Drag Designer",
+                    "type": "Button",
+                    "id": "10791a16-29b6-4960-8af8-b567b7485eff",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Mouse Move",
+                    "type": "Value",
+                    "id": "f37ea966-5bde-48df-9eda-dfd87864b709",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Rotate",
                     "type": "Button",
                     "id": "cb660c07-1c16-40ad-9dee-275599a48cac",
@@ -310,6 +326,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Cursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fdfc6b15-a1af-4041-8cea-7818f9ad4b52",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Drag Designer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b592a347-682e-49c3-afe5-9d81fd130b48",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Mouse Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
