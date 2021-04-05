@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(GridLayoutGroup))]
@@ -9,12 +12,29 @@ public class BlockPalette : MonoBehaviour
 	public const int ERASE_INDEX = -2;
 
 	public GameObject BlockButtonPrefab;
+
+	public InputActionReference CursorAction;
+	public InputActionReference EraserAction;
+
 	private GameObject[] _blocks;
 
 	public int SelectedIndex { get; private set; }
+
 	public delegate void IndexChangeEvent();
 
 	public IndexChangeEvent OnIndexChanged;
+
+	private void OnEnable()
+	{
+		CursorAction.action.performed += SelectCursor;
+		EraserAction.action.performed += SelectEraser;
+	}
+
+	private void OnDisable()
+	{
+		CursorAction.action.performed -= SelectCursor;
+		CursorAction.action.performed -= SelectEraser;
+	}
 
 	private void Start()
 	{
@@ -43,8 +63,18 @@ public class BlockPalette : MonoBehaviour
 		}
 
 		SelectedIndex = index;
-		
+
 		OnIndexChanged?.Invoke();
+	}
+
+	private void SelectCursor(InputAction.CallbackContext context)
+	{
+		SelectBlockIndex(CURSOR_INDEX);
+	}
+
+	private void SelectEraser(InputAction.CallbackContext context)
+	{
+		SelectBlockIndex(ERASE_INDEX);
 	}
 
 	public GameObject GetSelectedBlock()

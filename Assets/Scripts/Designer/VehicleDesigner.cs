@@ -16,10 +16,16 @@ public class VehicleDesigner : MonoBehaviour
 {
 	#region Public Fields
 
+	[Header("References")]
 	public BlockPalette Palette;
+
 	public DesignerAreaMask AreaMask;
+
+	[Header("Input Actions")]
 	public InputActionReference RotateAction;
+
 	public InputActionReference ClickAction;
+	public InputActionReference ScrollAction;
 
 	#endregion
 
@@ -64,6 +70,14 @@ public class VehicleDesigner : MonoBehaviour
 		ClickAction.action.performed += HandleClick;
 	}
 
+	private void OnDisable()
+	{
+		Palette.OnIndexChanged -= HandleIndexChange;
+
+		RotateAction.action.performed -= HandleRotate;
+		ClickAction.action.performed -= HandleClick;
+	}
+
 	private Vector3Int? GetHoverLocation()
 	{
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -81,6 +95,13 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Update()
 	{
+		var scroll = ScrollAction.action.ReadValue<Vector2>();
+		if (AreaMask.Hover && Mathf.Abs(scroll.y) > Mathf.Epsilon)
+		{
+			float zoom = Mathf.Sign(scroll.y);
+			transform.localScale *= Mathf.Exp(zoom / 10f);
+		}
+
 		Vector3Int? hoverLocation = GetHoverLocation();
 		if (Palette.SelectedIndex != _prevIndex || hoverLocation != _prevLocation || AreaMask.Hover != _prevHover)
 		{
@@ -126,14 +147,6 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void OnDisable()
-	{
-		Palette.OnIndexChanged -= HandleIndexChange;
-
-		RotateAction.action.performed -= HandleRotate;
-		ClickAction.action.performed -= HandleClick;
-	}
-
 	private void HandleIndexChange()
 	{
 		if (Palette.SelectedIndex != BlockPalette.CURSOR_INDEX)
@@ -141,6 +154,8 @@ public class VehicleDesigner : MonoBehaviour
 			_selectedLocation = null;
 		}
 	}
+
+	#region Block Placement
 
 	private void HandleRotate(InputAction.CallbackContext context)
 	{
@@ -174,7 +189,7 @@ public class VehicleDesigner : MonoBehaviour
 				{
 					AddBlock(block, rootLocation);
 				}
-				catch (DuplicateBlockError e)
+				catch (DuplicateBlockError error)
 				{
 					// TODO
 				}
@@ -187,7 +202,14 @@ public class VehicleDesigner : MonoBehaviour
 						_selectedLocation = rootLocation;
 						break;
 					case BlockPalette.ERASE_INDEX:
-						RemoveBlock(rootLocation);
+						try
+						{
+							RemoveBlock(rootLocation);
+						}
+						catch (EmptyBlockError)
+						{
+							// TODO
+						}
 						break;
 				}
 			}
@@ -257,6 +279,8 @@ public class VehicleDesigner : MonoBehaviour
 		Destroy(go);
 		_blockToObject.Remove(instance);
 	}
+
+	#endregion
 
 	public string SaveVehicle()
 	{

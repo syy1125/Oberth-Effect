@@ -656,6 +656,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockButtonPrefab: {fileID: 533385805182799309, guid: 613b3b57f909a6b4192acdcf480d8851, type: 3}
+  CursorAction: {fileID: 2632173336168338102, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  EraserAction: {fileID: 1947422442943052003, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!1 &874948194
 GameObject:
   m_ObjectHideFlags: 0
@@ -1159,6 +1161,7 @@ MonoBehaviour:
   AreaMask: {fileID: 140859144}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 8032123329186460011, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ScrollAction: {fileID: 8085426335645191916, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!61 &1599521576
 BoxCollider2D:
   m_ObjectHideFlags: 0
