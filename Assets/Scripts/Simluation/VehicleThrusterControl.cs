@@ -62,13 +62,10 @@ public class VehicleThrusterControl : MonoBehaviour
 
 		RotateCommand = RotateResponse * (
 			angle + derivative * RotateDerivativeTime
-			+ (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
-				? 0f
-				: timeScaledIntegral / RotateIntegralTime)
+			      + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
+				      ? 0f
+				      : timeScaledIntegral / RotateIntegralTime)
 		) * Mathf.Deg2Rad;
 		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
-		
-		Debug.Log($"{angle} {derivative} {timeScaledIntegral}");
-		Debug.Log(RotateCommand);
 	}
 }
