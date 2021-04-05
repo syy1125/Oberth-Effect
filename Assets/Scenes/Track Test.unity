@@ -327,6 +327,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Move: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   Strafe: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  RotateResponse: 0.5
+  RotateDerivativeTime: 10
+  RotateIntegralTime: 10
 --- !u!114 &482182846
 MonoBehaviour:
   m_ObjectHideFlags: 0

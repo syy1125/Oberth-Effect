@@ -26,14 +26,21 @@ public class Thruster : BlockBehaviour
 
 	private void Start()
 	{
-		Vector3 localUp = transform.localRotation * Vector3.up;
-		_forwardBackResponse = localUp.y;
-		_strafeResponse = localUp.x;
-
-		if (HasPhysics && _particles != null)
+		if (HasPhysics)
 		{
-			_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-			_particles.Play();
+			Vector3 localUp = transform.localRotation * Vector3.up;
+			Vector3 localPosition = transform.localPosition - (Vector3) _body.centerOfMass;
+
+			_forwardBackResponse = localUp.y;
+			_strafeResponse = localUp.x;
+			_rotateResponse = localUp.x * localPosition.y - localUp.y * localPosition.x;
+			_rotateResponse = Mathf.Abs(_rotateResponse) > Mathf.Epsilon ? Mathf.Sign(_rotateResponse) : 0f;
+
+			if (_particles != null)
+			{
+				_maxParticleSpeed = _particles.main.startSpeedMultiplier;
+				_particles.Play();
+			}
 		}
 	}
 
