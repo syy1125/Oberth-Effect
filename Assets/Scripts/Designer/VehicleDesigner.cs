@@ -4,12 +4,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 class DuplicateBlockError : Exception
-{
-}
+{ }
 
 class EmptyBlockError : Exception
-{
-}
+{ }
 
 [RequireComponent(typeof(Grid))]
 public class VehicleDesigner : MonoBehaviour

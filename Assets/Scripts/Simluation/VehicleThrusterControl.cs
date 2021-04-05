@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -60,12 +59,15 @@ public class VehicleThrusterControl : MonoBehaviour
 
 		float timeScaledIntegral = _integral * Time.fixedDeltaTime;
 
-		RotateCommand = RotateResponse * (
-			angle + derivative * RotateDerivativeTime
-			      + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
-				      ? 0f
-				      : timeScaledIntegral / RotateIntegralTime)
-		) * Mathf.Deg2Rad;
+		RotateCommand = RotateResponse
+		                * (
+			                angle
+			                + derivative * RotateDerivativeTime
+			                + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
+				                ? 0f
+				                : timeScaledIntegral / RotateIntegralTime)
+		                )
+		                * Mathf.Deg2Rad;
 		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
 	}
 }

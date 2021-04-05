@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Thruster : BlockBehaviour
 {
@@ -48,9 +44,9 @@ public class Thruster : BlockBehaviour
 	{
 		if (HasPhysics)
 		{
-			float rawResponse = _forwardBackResponse * _control.ForwardBackCommand +
-			                    _strafeResponse * _control.StrafeCommand +
-			                    _rotateResponse * _control.RotateCommand;
+			float rawResponse = _forwardBackResponse * _control.ForwardBackCommand
+			                    + _strafeResponse * _control.StrafeCommand
+			                    + _rotateResponse * _control.RotateCommand;
 			float response = Mathf.Clamp01(rawResponse);
 
 			_body.AddForceAtPosition(response * MaxForce * transform.up, transform.position);

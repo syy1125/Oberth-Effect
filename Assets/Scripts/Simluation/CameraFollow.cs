@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -46,12 +45,15 @@ public class CameraFollow : MonoBehaviour
 
 		Vector2 timeScaledIntegral = _integral * Time.fixedDeltaTime;
 
-		_velocity += Response * Time.fixedDeltaTime * (
-			offset + derivative * DerivativeTime
-			       + (Mathf.Abs(IntegralTime) < Mathf.Epsilon
-				       ? Vector2.zero
-				       : timeScaledIntegral / IntegralTime)
-		);
+		_velocity += Response
+		             * Time.fixedDeltaTime
+		             * (
+			             offset
+			             + derivative * DerivativeTime
+			             + (Mathf.Abs(IntegralTime) < Mathf.Epsilon
+				             ? Vector2.zero
+				             : timeScaledIntegral / IntegralTime)
+		             );
 
 		transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
 	}
