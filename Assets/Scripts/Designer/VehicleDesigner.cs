@@ -49,7 +49,7 @@ public class VehicleDesigner : MonoBehaviour
 	private GameObject _preview;
 	private bool _prevHover;
 	private int _prevIndex;
-	private Vector3Int? _prevLocation;
+	private Vector2Int? _prevLocation;
 
 	private bool _dragging;
 	private Vector2Int? _selectedLocation;
@@ -96,19 +96,12 @@ public class VehicleDesigner : MonoBehaviour
 		InitVehicle();
 	}
 
-	private Vector3Int? GetHoverLocation()
+	private Vector2Int GetHoverLocation()
 	{
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
-		Ray mouseRay = _mainCamera.ScreenPointToRay(mousePosition);
-
-		if (_plane.Raycast(mouseRay, out float enter))
-		{
-			return _grid.WorldToCell(mouseRay.GetPoint(enter));
-		}
-		else
-		{
-			return null;
-		}
+		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
+		Vector3Int gridPosition = _grid.WorldToCell(worldPosition);
+		return new Vector2Int(gridPosition.x, gridPosition.y);
 	}
 
 	#region Update
@@ -124,16 +117,25 @@ public class VehicleDesigner : MonoBehaviour
 	private void UpdateScroll()
 	{
 		var scroll = ScrollAction.action.ReadValue<Vector2>();
+		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
 		if (AreaMask.Hover && Mathf.Abs(scroll.y) > Mathf.Epsilon)
 		{
+			Vector3 oldLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
+
 			float zoom = Mathf.Sign(scroll.y);
 			transform.localScale *= Mathf.Exp(zoom / 10f);
+
+			Vector3 newLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
+			Vector3 worldDiff = transform.TransformVector(newLocalPosition - oldLocalPosition);
+
+			transform.Translate(worldDiff, Space.World);
 		}
 	}
 
 	private void UpdateHover(bool dragging)
 	{
-		Vector3Int? hoverLocation = GetHoverLocation();
+		Vector2Int hoverLocation = GetHoverLocation();
 		if (
 			Palette.SelectedIndex != _prevIndex
 			|| hoverLocation != _prevLocation
@@ -141,7 +143,7 @@ public class VehicleDesigner : MonoBehaviour
 			|| dragging != _dragging
 		)
 		{
-			if (Palette.SelectedIndex < 0 || hoverLocation == null)
+			if (Palette.SelectedIndex < 0)
 			{
 				if (_preview != null)
 				{
@@ -169,7 +171,8 @@ public class VehicleDesigner : MonoBehaviour
 					}
 				}
 
-				_preview.transform.position = _grid.GetCellCenterWorld(hoverLocation.Value);
+				_preview.transform.position =
+					_grid.GetCellCenterWorld(new Vector3Int(hoverLocation.x, hoverLocation.y, 0));
 
 				if (AreaMask.Hover != _prevHover || dragging != _dragging)
 				{
@@ -242,10 +245,10 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void HandleClick(InputAction.CallbackContext context)
 	{
-		Vector3Int? hoverLocation = GetHoverLocation();
-		if (hoverLocation != null && AreaMask.Hover)
+		Vector2Int hoverLocation = GetHoverLocation();
+		if (AreaMask.Hover)
 		{
-			var rootLocation = new Vector2Int(hoverLocation.Value.x, hoverLocation.Value.y);
+			var rootLocation = new Vector2Int(hoverLocation.x, hoverLocation.y);
 
 			if (Palette.SelectedIndex >= 0)
 			{
