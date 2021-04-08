@@ -328,7 +328,7 @@ MonoBehaviour:
   Move: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   Strafe: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   RotateResponse: 0.5
-  RotateDerivativeTime: 10
+  RotateDerivativeTime: 1
   RotateIntegralTime: 10
 --- !u!114 &482182846
 MonoBehaviour:
@@ -427,6 +427,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: fa276a11-cecb-4ea9-a1b3-c82019b79492
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 10791a16-29b6-4960-8af8-b567b7485eff
+    m_ActionName: Designer/Drag Designer[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f37ea966-5bde-48df-9eda-dfd87864b709
+    m_ActionName: Designer/Mouse Move[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 30c22ebb-c9a4-4b07-ad68-88ff23941632
+    m_ActionName: Designer/Eraser[/Keyboard/e]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ab9de840-7c7f-4baa-9251-771b00b48d33
+    m_ActionName: Designer/Cursor[/Keyboard/q]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
