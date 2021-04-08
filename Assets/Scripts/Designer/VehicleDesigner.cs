@@ -127,9 +127,9 @@ public class VehicleDesigner : MonoBehaviour
 			transform.localScale *= Mathf.Exp(zoom / 10f);
 
 			Vector3 newLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
-			Vector3 worldDiff = transform.TransformVector(newLocalPosition - oldLocalPosition);
+			Vector3 worldDelta = transform.TransformVector(newLocalPosition - oldLocalPosition);
 
-			transform.Translate(worldDiff, Space.World);
+			transform.position += worldDelta;
 		}
 	}
 
