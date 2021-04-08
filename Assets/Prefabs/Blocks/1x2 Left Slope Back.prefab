@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2470967752226356742}
   - component: {fileID: -2486461410739294344}
   m_Layer: 0
-  m_Name: 1x1 Slope
+  m_Name: 1x2 Left Slope Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 8acb5e5ff7aac8342961078946380934, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ac5c0b58bc56de3479294da27e1c1b85, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -110,7 +110,8 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: -0.5, y: -0.5}
-      - {x: -0.5, y: 0.5}
+      - {x: 0, y: 0.5}
+      - {x: 0.5, y: 0.5}
       - {x: 0.5, y: -0.5}
 --- !u!114 &-2486461410739294344
 MonoBehaviour:
@@ -125,14 +126,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
-  BlockID: 1x1 Slope
-  ShortName: Slope
-  FullName: 1x1 Slope
-  MaxHealth: 50
-  IntegrityScore: 0.5
+  BlockID: 1x2 Left Slope Back
+  ShortName: L Slope Back
+  FullName: 1x2 Left Slope Back
+  MaxHealth: 75
+  IntegrityScore: 0.75
   Bounds:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 1, y: 1, z: 1}
-  CenterOfMass: {x: -0.16666667, y: -0.16666667}
-  Mass: 0.5
-  MomentOfInertia: 0.055555556
+  CenterOfMass: {x: 0.11111111, y: -0.055555556}
+  Mass: 0.75
+  MomentOfInertia: 0.103009
