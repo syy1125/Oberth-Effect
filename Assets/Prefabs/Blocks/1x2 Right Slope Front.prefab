@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
+  AllowErase: 1
   BlockID: 1x2 Right Slope Front
   ShortName: R Slope Front
   FullName: 1x2 Right Slope Front

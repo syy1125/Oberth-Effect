@@ -1160,6 +1160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Palette: {fileID: 860709245}
   AreaMask: {fileID: 140859144}
+  ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 8032123329186460011, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ScrollAction: {fileID: 8085426335645191916, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}

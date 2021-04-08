@@ -123,6 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
+  AllowErase: 1
   BlockID: 1x1 Block
   ShortName: Block
   FullName: 1x1 Block

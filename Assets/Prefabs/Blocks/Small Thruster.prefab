@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
+  AllowErase: 1
   BlockID: Small Thruster
   ShortName: Small Thruster
   FullName: Small Thruster

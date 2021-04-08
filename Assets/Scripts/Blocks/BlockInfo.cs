@@ -5,6 +5,8 @@ public class BlockInfo : MonoBehaviour
 	[Header("Core Data")]
 	public bool ShowInDesigner;
 
+	public bool AllowErase;
+
 	public string BlockID;
 
 	public string ShortName;

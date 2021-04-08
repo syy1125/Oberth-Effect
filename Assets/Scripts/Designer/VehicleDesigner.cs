@@ -9,6 +9,9 @@ class DuplicateBlockError : Exception
 class EmptyBlockError : Exception
 { }
 
+class BlockNotErasable : Exception
+{ }
+
 [RequireComponent(typeof(Grid))]
 public class VehicleDesigner : MonoBehaviour
 {
@@ -18,6 +21,8 @@ public class VehicleDesigner : MonoBehaviour
 	public BlockPalette Palette;
 
 	public DesignerAreaMask AreaMask;
+
+	public GameObject ControlCoreBlock;
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
@@ -87,6 +92,8 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
+
+		InitVehicle();
 	}
 
 	private Vector3Int? GetHoverLocation()
@@ -269,6 +276,10 @@ public class VehicleDesigner : MonoBehaviour
 						{
 							// TODO
 						}
+						catch (BlockNotErasable)
+						{
+							// TODO
+						}
 
 						break;
 				}
@@ -324,6 +335,12 @@ public class VehicleDesigner : MonoBehaviour
 			throw new EmptyBlockError();
 		}
 
+		var blockTemplate = BlockRegistry.Instance.GetBlock(instance.BlockID);
+		if (!blockTemplate.GetComponent<BlockInfo>().AllowErase)
+		{
+			throw new BlockNotErasable();
+		}
+
 		Vector2Int[] positions = _blockToPos[instance];
 
 		foreach (Vector2Int position in positions)
@@ -342,8 +359,31 @@ public class VehicleDesigner : MonoBehaviour
 
 	#endregion
 
+	#region Vehicle Management
+
+	private void ClearAll()
+	{
+		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
+		{
+			GameObject block = _blockToObject[instance];
+			Destroy(block);
+		}
+
+		_blueprint = new VehicleBlueprint();
+		_posToBlock.Clear();
+		_blockToPos.Clear();
+		_blockToObject.Clear();
+	}
+
+	private void InitVehicle()
+	{
+		AddBlock(ControlCoreBlock, Vector2Int.zero);
+	}
+
 	public string SaveVehicle()
 	{
 		return JsonUtility.ToJson(_blueprint);
 	}
+
+	#endregion
 }
