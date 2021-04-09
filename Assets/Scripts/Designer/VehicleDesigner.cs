@@ -36,6 +36,8 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("Grabbing")]
 	public Texture2D GrabTexture;
 
+	public Texture2D EraserTexture;
+
 	#endregion
 
 	#region Private Fields
@@ -50,8 +52,10 @@ public class VehicleDesigner : MonoBehaviour
 	private bool _prevHover;
 	private int _prevIndex;
 	private Vector2Int? _prevLocation;
+	private bool _prevDragging;
 
 	private bool _dragging;
+	private Vector2Int _hoverLocation;
 	private Vector2Int? _selectedLocation;
 	private VehicleBlueprint _blueprint;
 	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posToBlock;
@@ -86,6 +90,8 @@ public class VehicleDesigner : MonoBehaviour
 
 		RotateAction.action.performed -= HandleRotate;
 		ClickAction.action.performed -= HandleClick;
+
+		Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 	}
 
 	private void Start()
@@ -108,10 +114,15 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Update()
 	{
+		UpdateDragging();
 		UpdateScroll();
-		bool dragging = AreaMask.Hover && DragAction.action.ReadValue<float>() > 0.5f;
-		UpdateHover(dragging);
-		UpdateDrag(dragging);
+		UpdateHover();
+		UpdateCursor();
+	}
+
+	private void UpdateDragging()
+	{
+		_dragging = AreaMask.Hover && DragAction.action.ReadValue<float>() > 0.5f;
 	}
 
 	private void UpdateScroll()
@@ -133,14 +144,14 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void UpdateHover(bool dragging)
+	private void UpdateHover()
 	{
-		Vector2Int hoverLocation = GetHoverLocation();
+		_hoverLocation = GetHoverLocation();
 		if (
 			Palette.SelectedIndex != _prevIndex
-			|| hoverLocation != _prevLocation
+			|| _hoverLocation != _prevLocation
 			|| AreaMask.Hover != _prevHover
-			|| dragging != _dragging
+			|| _dragging != _prevDragging
 		)
 		{
 			if (Palette.SelectedIndex < 0)
@@ -172,29 +183,27 @@ public class VehicleDesigner : MonoBehaviour
 				}
 
 				_preview.transform.position =
-					_grid.GetCellCenterWorld(new Vector3Int(hoverLocation.x, hoverLocation.y, 0));
+					_grid.GetCellCenterWorld(new Vector3Int(_hoverLocation.x, _hoverLocation.y, 0));
 
-				if (AreaMask.Hover != _prevHover || dragging != _dragging)
+				if (AreaMask.Hover != _prevHover || _dragging != _prevDragging)
 				{
-					_preview.SetActive(AreaMask.Hover && !dragging);
+					_preview.SetActive(AreaMask.Hover && !_dragging);
 				}
 			}
-
-			_prevIndex = Palette.SelectedIndex;
-			_prevLocation = hoverLocation;
-			_prevHover = AreaMask.Hover;
 		}
 	}
 
-	private void UpdateDrag(bool dragging)
+	private void UpdateCursor()
 	{
-		if (dragging != _dragging)
+		if (_dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
 		{
-			_dragging = dragging;
-
 			if (_dragging)
 			{
 				Cursor.SetCursor(GrabTexture, new Vector2(50f, 50f), CursorMode.Auto);
+			}
+			else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
+			{
+				Cursor.SetCursor(EraserTexture, new Vector2(10, 10), CursorMode.Auto);
 			}
 			else
 			{
@@ -205,6 +214,11 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		_prevDragging = _dragging;
+		_prevHover = AreaMask.Hover;
+		_prevIndex = Palette.SelectedIndex;
+		_prevLocation = _hoverLocation;
+
 		if (_dragging)
 		{
 			var mouseMove = MouseMoveAction.action.ReadValue<Vector2>();
