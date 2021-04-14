@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 public class VehicleThrusterControl : MonoBehaviour
 {
 	[Header("Input")]
-	public InputActionReference Move;
+	public InputActionReference MoveAction;
 
-	public InputActionReference Strafe;
+	public InputActionReference StrafeAction;
 
 	[Header("PID")]
 	public float RotateResponse;
@@ -36,8 +36,8 @@ public class VehicleThrusterControl : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		var move = Move.action.ReadValue<Vector2>();
-		var strafe = Strafe.action.ReadValue<float>();
+		var move = MoveAction.action.ReadValue<Vector2>();
+		var strafe = StrafeAction.action.ReadValue<float>();
 
 		ForwardBackCommand = move.y;
 		StrafeCommand = Mathf.Clamp(move.x + strafe, -1f, 1f);
