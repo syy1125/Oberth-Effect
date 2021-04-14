@@ -43,7 +43,6 @@ public class VehicleDesigner : MonoBehaviour
 	#region Private Fields
 
 	private Camera _mainCamera;
-	private Plane _plane;
 	private Grid _grid;
 
 	private int _rotation;
@@ -67,7 +66,6 @@ public class VehicleDesigner : MonoBehaviour
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
-		_plane = new Plane(Vector3.back, Vector3.zero);
 		_grid = GetComponent<Grid>();
 
 		_blueprint = new VehicleBlueprint();
@@ -400,6 +398,37 @@ public class VehicleDesigner : MonoBehaviour
 	public string SaveVehicle()
 	{
 		return JsonUtility.ToJson(_blueprint);
+	}
+
+	public void LoadVehicle(string vehicle)
+	{
+		ClearAll();
+		_blueprint = JsonUtility.FromJson<VehicleBlueprint>(vehicle);
+
+		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
+		{
+			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(instance.BlockID);
+
+			var info = blockPrefab.GetComponent<BlockInfo>();
+
+			var positions = new List<Vector2Int>();
+
+			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+			{
+				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
+				                            + RotationUtils.RotatePoint(localPosition, _rotation);
+				positions.Add(globalPosition);
+				_posToBlock.Add(globalPosition, instance);
+			}
+
+			_blockToPos.Add(instance, positions.ToArray());
+
+			GameObject go = Instantiate(blockPrefab, transform);
+			go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
+			go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
+
+			_blockToObject.Add(instance, go);
+		}
 	}
 
 	#endregion
