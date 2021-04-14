@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,18 @@ public class VehicleThrusterControl : MonoBehaviour
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_angleHistory = new LinkedList<float>();
+	}
+
+	private void OnEnable()
+	{
+		MoveAction.action.Enable();
+		StrafeAction.action.Enable();
+	}
+
+	private void OnDisable()
+	{
+		MoveAction.action.Disable();
+		StrafeAction.action.Disable();
 	}
 
 	private void FixedUpdate()

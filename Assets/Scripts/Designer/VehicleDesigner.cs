@@ -74,12 +74,24 @@ public class VehicleDesigner : MonoBehaviour
 		_blockToObject = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
 	}
 
+	#region Enable and Disable
+
 	private void OnEnable()
 	{
 		Palette.OnIndexChanged += HandleIndexChange;
 
+		EnableActions();
 		RotateAction.action.performed += HandleRotate;
 		ClickAction.action.performed += HandleClick;
+	}
+
+	private void EnableActions()
+	{
+		RotateAction.action.Enable();
+		ClickAction.action.Enable();
+		ScrollAction.action.Enable();
+		DragAction.action.Enable();
+		MouseMoveAction.action.Enable();
 	}
 
 	private void OnDisable()
@@ -88,9 +100,21 @@ public class VehicleDesigner : MonoBehaviour
 
 		RotateAction.action.performed -= HandleRotate;
 		ClickAction.action.performed -= HandleClick;
+		DisableActions();
 
 		Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 	}
+
+	private void DisableActions()
+	{
+		RotateAction.action.Disable();
+		ClickAction.action.Disable();
+		ScrollAction.action.Disable();
+		DragAction.action.Disable();
+		MouseMoveAction.action.Disable();
+	}
+
+	#endregion
 
 	private void Start()
 	{

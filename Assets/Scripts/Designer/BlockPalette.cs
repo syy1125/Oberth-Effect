@@ -24,6 +24,8 @@ public class BlockPalette : MonoBehaviour
 
 	private void OnEnable()
 	{
+		CursorAction.action.Enable();
+		EraserAction.action.Enable();
 		CursorAction.action.performed += SelectCursor;
 		EraserAction.action.performed += SelectEraser;
 	}
@@ -31,7 +33,9 @@ public class BlockPalette : MonoBehaviour
 	private void OnDisable()
 	{
 		CursorAction.action.performed -= SelectCursor;
-		CursorAction.action.performed -= SelectEraser;
+		EraserAction.action.performed -= SelectEraser;
+		CursorAction.action.Disable();
+		EraserAction.action.Disable();
 	}
 
 	private void Start()
