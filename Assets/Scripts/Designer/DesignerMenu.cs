@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class DesignerMenu : MonoBehaviour
@@ -8,15 +9,17 @@ public class DesignerMenu : MonoBehaviour
 	public InputActionReference MenuAction;
 
 	[Header("References")]
-	public GameObject[] InitialMenuItems;
+	public GameObject Backdrop;
+
+	public GameObject BaseMenu;
 
 	private bool _enabled;
-	private Stack<IModal> _modals;
+	private Stack<GameObject> _modals;
 
 	private void Awake()
 	{
 		_enabled = false;
-		_modals = new Stack<IModal>();
+		_modals = new Stack<GameObject>();
 	}
 
 	private void OnEnable()
@@ -35,10 +38,8 @@ public class DesignerMenu : MonoBehaviour
 	{
 		if (!_enabled)
 		{
-			foreach (GameObject item in InitialMenuItems)
-			{
-				item.SetActive(true);
-			}
+			Backdrop.SetActive(true);
+			BaseMenu.SetActive(true);
 
 			_enabled = true;
 		}
@@ -48,23 +49,37 @@ public class DesignerMenu : MonoBehaviour
 		}
 		else
 		{
-			foreach (GameObject item in InitialMenuItems)
-			{
-				item.SetActive(false);
-			}
+			Backdrop.SetActive(false);
+			BaseMenu.SetActive(false);
 
 			_enabled = false;
 		}
 	}
 
-	public void OpenModal(IModal modal)
+	public void OpenModal(GameObject modal)
 	{
-		modal.OpenModal();
+		foreach (MonoBehaviour behaviour in modal.GetComponents<MonoBehaviour>())
+		{
+			(behaviour as IModal)?.OpenModal();
+		}
+
 		_modals.Push(modal);
+
+		BaseMenu.SetActive(false);
 	}
 
 	public void CloseTopModal()
 	{
-		_modals.Pop().CloseModal();
+		GameObject modal = _modals.Pop();
+
+		foreach (MonoBehaviour behaviour in modal.GetComponents<MonoBehaviour>())
+		{
+			(behaviour as IModal)?.CloseModal();
+		}
+
+		if (_modals.Count == 0)
+		{
+			BaseMenu.SetActive(true);
+		}
 	}
 }
