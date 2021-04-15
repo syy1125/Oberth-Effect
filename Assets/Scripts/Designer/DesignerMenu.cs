@@ -33,8 +33,6 @@ public class DesignerMenu : MonoBehaviour
 
 	private void ToggleMenu(InputAction.CallbackContext context)
 	{
-		Debug.Log("Toggling menu");
-		
 		if (!_enabled)
 		{
 			foreach (GameObject item in InitialMenuItems)

@@ -30,6 +30,7 @@ public class VehicleDesigner : MonoBehaviour
 	public InputActionReference ClickAction;
 	public InputActionReference ScrollAction;
 
+	public InputActionReference PanAction;
 	public InputActionReference DragAction;
 	public InputActionReference MouseMoveAction;
 
@@ -90,6 +91,7 @@ public class VehicleDesigner : MonoBehaviour
 		RotateAction.action.Enable();
 		ClickAction.action.Enable();
 		ScrollAction.action.Enable();
+		PanAction.action.Enable();
 		DragAction.action.Enable();
 		MouseMoveAction.action.Enable();
 	}
@@ -110,6 +112,7 @@ public class VehicleDesigner : MonoBehaviour
 		RotateAction.action.Disable();
 		ClickAction.action.Disable();
 		ScrollAction.action.Disable();
+		PanAction.action.Disable();
 		DragAction.action.Disable();
 		MouseMoveAction.action.Disable();
 	}
@@ -247,6 +250,10 @@ public class VehicleDesigner : MonoBehaviour
 			Vector3 worldDelta = _mainCamera.ScreenToWorldPoint(mouseMove)
 			                     - _mainCamera.ScreenToWorldPoint(Vector3.zero);
 			transform.position += worldDelta;
+		}
+		else
+		{
+			transform.position -= Time.deltaTime * 2.5f * (Vector3) PanAction.action.ReadValue<Vector2>();
 		}
 	}
 

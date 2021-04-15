@@ -255,6 +255,14 @@
             "id": "1097402c-c5f8-4c99-b98d-2791a7fce1a6",
             "actions": [
                 {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "3d58a2d9-2e1e-4f58-9c0f-aff97a115f75",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Drag Designer",
                     "type": "Button",
                     "id": "10791a16-29b6-4960-8af8-b567b7485eff",
@@ -267,7 +275,7 @@
                     "type": "Value",
                     "id": "f37ea966-5bde-48df-9eda-dfd87864b709",
                     "expectedControlType": "Vector2",
-                    "processors": "ScaleVector2(x=0.9,y=0.9)",
+                    "processors": "",
                     "interactions": ""
                 },
                 {
@@ -350,6 +358,61 @@
                     "action": "Mouse Move",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "WASD",
+                    "id": "96b72a3e-6e57-49a1-9c1a-a561a6e90aa4",
+                    "path": "Dpad(mode=1)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "d5349203-4a95-4fa9-958c-d9642f8b8cdf",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "366554c2-4db1-4f3e-908c-f3ea6d4c3ea6",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "993e3807-2f8f-4983-89f2-f3f2b913a558",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "97bb2945-2b15-4b30-8106-90e12f844fad",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
