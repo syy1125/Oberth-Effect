@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class DesignerMenu : MonoBehaviour
 {
@@ -81,5 +82,10 @@ public class DesignerMenu : MonoBehaviour
 		{
 			BaseMenu.SetActive(true);
 		}
+	}
+
+	public void ToMainMenu()
+	{
+		SceneManager.LoadScene("Scenes/Main Menu");
 	}
 }
