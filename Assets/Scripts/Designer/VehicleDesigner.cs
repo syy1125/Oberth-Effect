@@ -447,7 +447,7 @@ public class VehicleDesigner : MonoBehaviour
 			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
 			{
 				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
-				                            + RotationUtils.RotatePoint(localPosition, _rotation);
+				                            + RotationUtils.RotatePoint(localPosition, instance.Rotation);
 				positions.Add(globalPosition);
 				_posToBlock.Add(globalPosition, instance);
 			}
@@ -456,7 +456,7 @@ public class VehicleDesigner : MonoBehaviour
 
 			GameObject go = Instantiate(blockPrefab, transform);
 			go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
-			go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
+			go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
 
 			_blockToObject.Add(instance, go);
 		}
