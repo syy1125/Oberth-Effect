@@ -18,6 +18,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 	public Button BackButton;
 	public Button SaveLoadButton;
+	public InputField FileNameInput;
 
 	private string _saveDir;
 	private List<string> _vehiclePaths;
@@ -79,17 +80,24 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 	{
 		if (_selectedIndex >= 0)
 		{
-			ListParent.GetChild(_selectedIndex).GetComponent<VehicleRowButton>().Deselect();
+			ListParent.GetChild(_selectedIndex).GetComponent<VehicleRowButton>().SetSelected(false);
 		}
 
 		_selectedIndex = index;
 
 		if (_selectedIndex >= 0)
 		{
-			ListParent.GetChild(_selectedIndex).GetComponent<VehicleRowButton>().OnSelected();
+			ListParent.GetChild(_selectedIndex).GetComponent<VehicleRowButton>().SetSelected(true);
 		}
 
-		SaveLoadButton.interactable = _selectedIndex >= 0;
+		if (SaveMode)
+		{
+			FileNameInput.text = Path.GetFileNameWithoutExtension(_vehiclePaths[_selectedIndex]);
+		}
+		else
+		{
+			SaveLoadButton.interactable = _selectedIndex >= 0;
+		}
 	}
 
 	public void OpenModal()

@@ -34,15 +34,17 @@ public class VehicleRowButton : MonoBehaviour
 		_loadSave.SelectIndex(transform.GetSiblingIndex());
 	}
 
-	public void Deselect()
+	public void SetSelected(bool selected)
 	{
-		_text.fontStyle = FontStyle.Normal;
-		_text.color = Color.white;
-	}
-
-	public void OnSelected()
-	{
-		_text.fontStyle = FontStyle.BoldAndItalic;
-		_text.color = Color.cyan;
+		if (selected)
+		{
+			_text.fontStyle = FontStyle.BoldAndItalic;
+			_text.color = Color.cyan;
+		}
+		else
+		{
+			_text.fontStyle = FontStyle.Normal;
+			_text.color = Color.white;
+		}
 	}
 }
