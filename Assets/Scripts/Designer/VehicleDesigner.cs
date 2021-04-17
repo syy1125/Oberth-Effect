@@ -432,6 +432,11 @@ public class VehicleDesigner : MonoBehaviour
 		AddBlock(ControlCoreBlock, Vector2Int.zero);
 	}
 
+	public void RenameVehicle(string vehicleName)
+	{
+		_blueprint.Name = vehicleName;
+	}
+
 	public VehicleBlueprint SaveVehicle()
 	{
 		return _blueprint;

@@ -10,15 +10,19 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 	[Header("Config")]
 	public bool SaveMode;
 
-	[Header("References")]
+	[Header("External References")]
+	public VehicleDesigner Designer;
+
+	public DesignerMenu Menu;
+
+	[Header("Internal References")]
 	public Transform ListParent;
 
 	public GameObject VehicleRowPrefab;
 	public GameObject EmptyDirectoryIndicator;
 
-	public Button BackButton;
 	public Button SaveLoadButton;
-	public InputField FileNameInput;
+	public InputField FilenameInput;
 
 	private string _saveDir;
 	private List<string> _vehiclePaths;
@@ -55,11 +59,21 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		if (_vehiclePaths.Count > 0)
 		{
 			EmptyDirectoryIndicator.SetActive(false);
+			EmptyDirectoryIndicator.transform.SetAsLastSibling();
 		}
 		else
 		{
 			EmptyDirectoryIndicator.SetActive(true);
-			EmptyDirectoryIndicator.transform.SetAsLastSibling();
+		}
+
+		if (SaveMode)
+		{
+			FilenameInput.onEndEdit.AddListener(HandleFilenameChange);
+			SaveLoadButton.onClick.AddListener(SaveVehicle);
+		}
+		else
+		{
+			SaveLoadButton.onClick.AddListener(LoadVehicle);
 		}
 	}
 
@@ -74,6 +88,21 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		}
 
 		_vehiclePaths.Clear();
+
+		if (SaveMode)
+		{
+			FilenameInput.onEndEdit.RemoveListener(HandleFilenameChange);
+			SaveLoadButton.onClick.RemoveListener(SaveVehicle);
+		}
+		else
+		{
+			SaveLoadButton.onClick.RemoveListener(LoadVehicle);
+		}
+	}
+
+	private void HandleFilenameChange(string filename)
+	{
+		SaveLoadButton.interactable = !string.IsNullOrWhiteSpace(filename);
 	}
 
 	public void SelectIndex(int index)
@@ -92,12 +121,43 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 		if (SaveMode)
 		{
-			FileNameInput.text = Path.GetFileNameWithoutExtension(_vehiclePaths[_selectedIndex]);
+			FilenameInput.text = Path.GetFileNameWithoutExtension(_vehiclePaths[_selectedIndex]);
 		}
 		else
 		{
 			SaveLoadButton.interactable = _selectedIndex >= 0;
 		}
+	}
+
+	private void SaveVehicle()
+	{
+		if (string.IsNullOrWhiteSpace(FilenameInput.text))
+		{
+			Debug.LogError("VehicleLoadSave.SaveVehicle called when filename is empty!");
+			return;
+		}
+
+		Designer.RenameVehicle(FilenameInput.text);
+		VehicleBlueprint blueprint = Designer.SaveVehicle();
+		string content = JsonUtility.ToJson(blueprint);
+		string filePath = Path.Combine(_saveDir, FilenameInput.text + VEHICLE_EXTENSION);
+		File.WriteAllText(filePath, content);
+	}
+
+	private void LoadVehicle()
+	{
+		if (_selectedIndex < 0 || _selectedIndex >= _vehiclePaths.Count)
+		{
+			Debug.LogError(
+				$"VehicleLoadSave.LoadVehicle called when selected index is out of bounds {_selectedIndex}/{_vehiclePaths.Count}"
+			);
+		}
+
+		string content = File.ReadAllText(_vehiclePaths[_selectedIndex]);
+		var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
+		Designer.LoadVehicle(blueprint);
+
+		Menu.CloseAllModals();
 	}
 
 	public void OpenModal()

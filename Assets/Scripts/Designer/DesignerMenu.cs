@@ -84,6 +84,19 @@ public class DesignerMenu : MonoBehaviour
 		}
 	}
 
+	public void CloseAllModals()
+	{
+		while (_modals.Count > 0)
+		{
+			CloseTopModal();
+		}
+		
+		Backdrop.SetActive(false);
+		BaseMenu.SetActive(false);
+
+		_enabled = false;
+	}
+
 	public void ToMainMenu()
 	{
 		SceneManager.LoadScene("Scenes/Main Menu");
