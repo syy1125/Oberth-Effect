@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Thruster : BlockBehaviour
+public class LinearThruster : BlockBehaviour
 {
 	public float MaxForce;
 
@@ -30,7 +30,8 @@ public class Thruster : BlockBehaviour
 			_forwardBackResponse = localUp.y;
 			_strafeResponse = localUp.x;
 			_rotateResponse = localUp.x * localPosition.y - localUp.y * localPosition.x;
-			_rotateResponse = Mathf.Abs(_rotateResponse) > Mathf.Epsilon ? Mathf.Sign(_rotateResponse) : 0f;
+
+			_rotateResponse = Mathf.Abs(_rotateResponse) > 1e-5 ? Mathf.Sign(_rotateResponse) : 0f;
 
 			if (_particles != null)
 			{
