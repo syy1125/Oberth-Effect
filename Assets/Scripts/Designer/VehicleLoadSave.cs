@@ -52,7 +52,10 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 			{
 				_vehiclePaths.Add(vehiclePath);
 				Instantiate(VehicleRowPrefab, ListParent);
-				VehicleRowPrefab.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(vehiclePath);
+
+				string content = File.ReadAllText(vehiclePath);
+				var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
+				VehicleRowPrefab.GetComponent<VehicleRowButton>().DisplayVehicle(blueprint);
 			}
 		}
 

@@ -5,15 +5,16 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class VehicleRowButton : MonoBehaviour
 {
+	[Header("References")]
+	public Text NameText;
+
 	private VehicleLoadSave _loadSave;
 	private Button _button;
-	private Text _text;
 
 	private void Awake()
 	{
 		_loadSave = GetComponentInParent<VehicleLoadSave>();
 		_button = GetComponent<Button>();
-		_text = GetComponentInChildren<Text>();
 	}
 
 	private void OnEnable()
@@ -29,6 +30,11 @@ public class VehicleRowButton : MonoBehaviour
 		}
 	}
 
+	public void DisplayVehicle(VehicleBlueprint blueprint)
+	{
+		NameText.text = blueprint.Name;
+	}
+
 	private void HandleClick()
 	{
 		_loadSave.SelectIndex(transform.GetSiblingIndex());
@@ -38,13 +44,13 @@ public class VehicleRowButton : MonoBehaviour
 	{
 		if (selected)
 		{
-			_text.fontStyle = FontStyle.BoldAndItalic;
-			_text.color = Color.cyan;
+			NameText.fontStyle = FontStyle.BoldAndItalic;
+			NameText.color = Color.cyan;
 		}
 		else
 		{
-			_text.fontStyle = FontStyle.Normal;
-			_text.color = Color.white;
+			NameText.fontStyle = FontStyle.Normal;
+			NameText.color = Color.white;
 		}
 	}
 }
