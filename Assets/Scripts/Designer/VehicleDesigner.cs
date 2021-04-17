@@ -426,15 +426,15 @@ public class VehicleDesigner : MonoBehaviour
 		AddBlock(ControlCoreBlock, Vector2Int.zero);
 	}
 
-	public string SaveVehicle()
+	public VehicleBlueprint SaveVehicle()
 	{
-		return JsonUtility.ToJson(_blueprint);
+		return _blueprint;
 	}
 
-	public void LoadVehicle(string vehicle)
+	public void LoadVehicle(VehicleBlueprint blueprint)
 	{
 		ClearAll();
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>(vehicle);
+		_blueprint = blueprint;
 
 		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
 		{

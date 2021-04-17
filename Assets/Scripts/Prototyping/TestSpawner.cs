@@ -27,15 +27,13 @@ public class TestSpawner : MonoBehaviour
 	{
 		DontDestroyOnLoad(gameObject);
 
-		string blueprint = Designer.SaveVehicle();
-		var op = SceneManager.LoadSceneAsync("Track Test");
+		VehicleBlueprint blueprint = Designer.SaveVehicle();
+		AsyncOperation op = SceneManager.LoadSceneAsync("Track Test");
 
 		yield return new WaitUntil(() => op.isDone);
 
-		var vehicle = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
-
 		GameObject vehicleObject = GameObject.Find("Vehicle");
-		vehicleObject.GetComponent<VehicleSpawner>().SpawnVehicle(vehicle);
+		vehicleObject.GetComponent<VehicleSpawner>().SpawnVehicle(blueprint);
 
 		Destroy(gameObject);
 	}
