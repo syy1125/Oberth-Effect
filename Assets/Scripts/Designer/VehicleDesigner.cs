@@ -333,9 +333,9 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void AddBlock(GameObject block, Vector2Int rootLocation)
+	private void AddBlock(GameObject blockPrefab, Vector2Int rootLocation)
 	{
-		var info = block.GetComponent<BlockInfo>();
+		var info = blockPrefab.GetComponent<BlockInfo>();
 
 		var positions = new List<Vector2Int>();
 
@@ -367,9 +367,15 @@ public class VehicleDesigner : MonoBehaviour
 
 		_blockToPos.Add(instance, positions.ToArray());
 
-		GameObject go = Instantiate(block, transform);
-		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(rootLocation.x, rootLocation.y, 0));
+		SpawnBlockGameObject(instance, blockPrefab);
+	}
+
+	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
+	{
+		GameObject go = Instantiate(blockPrefab, transform);
+		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
 		go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
+		go.layer = gameObject.layer;
 
 		_blockToObject.Add(instance, go);
 	}
@@ -454,11 +460,7 @@ public class VehicleDesigner : MonoBehaviour
 
 			_blockToPos.Add(instance, positions.ToArray());
 
-			GameObject go = Instantiate(blockPrefab, transform);
-			go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
-			go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
-
-			_blockToObject.Add(instance, go);
+			SpawnBlockGameObject(instance, blockPrefab);
 		}
 	}
 

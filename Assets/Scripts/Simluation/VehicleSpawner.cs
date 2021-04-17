@@ -26,6 +26,7 @@ public class VehicleSpawner : MonoBehaviour
 			GameObject go = Instantiate(blockPrefab, transform);
 			go.transform.localPosition = rootLocation;
 			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
+			go.layer = gameObject.layer;
 
 			foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
 			{
