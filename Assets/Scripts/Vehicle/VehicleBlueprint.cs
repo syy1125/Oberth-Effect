@@ -15,11 +15,13 @@ public class VehicleBlueprint
 	}
 
 	public string Name;
+	public string Description;
 	public List<BlockInstance> Blocks;
 
 	public VehicleBlueprint()
 	{
 		Name = "New Vehicle";
+		Description = "";
 		Blocks = new List<BlockInstance>();
 	}
 }
