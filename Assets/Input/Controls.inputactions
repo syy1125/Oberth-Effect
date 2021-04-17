@@ -263,10 +263,26 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Drag Designer",
+                    "name": "Click",
+                    "type": "PassThrough",
+                    "id": "ae0c2b32-1a17-4c55-92e2-8a816c6d32f7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Drag",
                     "type": "Button",
                     "id": "10791a16-29b6-4960-8af8-b567b7485eff",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Zoom",
+                    "type": "PassThrough",
+                    "id": "4fdc603a-ab79-4038-bf36-2c3e78e72295",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
                 },
@@ -344,7 +360,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Drag Designer",
+                    "action": "Drag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -413,6 +429,39 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "580c78d3-9357-4b82-be96-05db702b55dd",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "65968b94-236f-415e-9b76-ea68abdbe2c3",
+                    "path": "<Pen>/tip",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cb563e06-e63e-43ab-9c4d-53abb9e9969b",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
