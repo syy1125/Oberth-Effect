@@ -370,16 +370,6 @@ public class VehicleDesigner : MonoBehaviour
 		SpawnBlockGameObject(instance, blockPrefab);
 	}
 
-	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
-	{
-		GameObject go = Instantiate(blockPrefab, transform);
-		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
-		go.transform.localRotation = RotationUtils.GetPhysicalRotation(_rotation);
-		go.layer = gameObject.layer;
-
-		_blockToObject.Add(instance, go);
-	}
-
 	private void RemoveBlock(Vector2Int location)
 	{
 		if (!_posToBlock.TryGetValue(location, out VehicleBlueprint.BlockInstance instance))
@@ -410,6 +400,16 @@ public class VehicleDesigner : MonoBehaviour
 	}
 
 	#endregion
+
+	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
+	{
+		GameObject go = Instantiate(blockPrefab, transform);
+		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
+		go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
+		go.layer = gameObject.layer;
+
+		_blockToObject.Add(instance, go);
+	}
 
 	#region Vehicle Management
 
