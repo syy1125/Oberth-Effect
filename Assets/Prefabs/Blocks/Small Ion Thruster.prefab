@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5188369339111014238}
   - component: {fileID: 4463412459619210807}
   m_Layer: 0
-  m_Name: Small Thruster
+  m_Name: Small Ion Thruster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,9 +127,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
   AllowErase: 1
-  BlockID: Small Thruster
-  ShortName: Small Thruster
-  FullName: Small Thruster
+  BlockID: Small Ion Thruster
+  ShortName: Small Ion Thruster
+  FullName: Small Ion Thruster
   MaxHealth: 50
   IntegrityScore: 0.75
   Bounds:
