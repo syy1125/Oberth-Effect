@@ -84,6 +84,8 @@ public class VehicleDesigner : MonoBehaviour
 		EnableActions();
 		RotateAction.action.performed += HandleRotate;
 		ClickAction.action.performed += HandleClick;
+
+		UpdateCursor();
 	}
 
 	private void EnableActions()
@@ -139,10 +141,25 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Update()
 	{
+		_hoverLocation = GetHoverLocation();
+
 		UpdateDragging();
 		UpdateScroll();
-		UpdateHover();
-		UpdateCursor();
+
+		if (
+			Palette.SelectedIndex != _prevIndex
+			|| _hoverLocation != _prevLocation
+			|| AreaMask.Hover != _prevHover
+			|| _dragging != _prevDragging
+		)
+		{
+			UpdateHover();
+		}
+
+		if (_dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
+		{
+			UpdateCursor();
+		}
 	}
 
 	private void UpdateDragging()
@@ -171,69 +188,57 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateHover()
 	{
-		_hoverLocation = GetHoverLocation();
-		if (
-			Palette.SelectedIndex != _prevIndex
-			|| _hoverLocation != _prevLocation
-			|| AreaMask.Hover != _prevHover
-			|| _dragging != _prevDragging
-		)
+		if (Palette.SelectedIndex < 0)
 		{
-			if (Palette.SelectedIndex < 0)
+			if (_preview != null)
+			{
+				Destroy(_preview);
+			}
+		}
+		else
+		{
+			if (Palette.SelectedIndex != _prevIndex)
 			{
 				if (_preview != null)
 				{
 					Destroy(_preview);
 				}
+
+				_preview = Instantiate(Palette.GetSelectedBlock(), transform);
+				_preview.transform.rotation = transform.rotation * RotationUtils.GetPhysicalRotation(_rotation);
+				_preview.SetActive(AreaMask.Hover);
+
+				foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())
+				{
+					Color c = sprite.color;
+					c.a *= 0.5f;
+					sprite.color = c;
+				}
 			}
-			else
+
+			_preview.transform.position =
+				_grid.GetCellCenterWorld(new Vector3Int(_hoverLocation.x, _hoverLocation.y, 0));
+
+			if (AreaMask.Hover != _prevHover || _dragging != _prevDragging)
 			{
-				if (Palette.SelectedIndex != _prevIndex)
-				{
-					if (_preview != null)
-					{
-						Destroy(_preview);
-					}
-
-					_preview = Instantiate(Palette.GetSelectedBlock(), transform);
-					_preview.transform.rotation = transform.rotation * RotationUtils.GetPhysicalRotation(_rotation);
-					_preview.SetActive(AreaMask.Hover);
-
-					foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())
-					{
-						Color c = sprite.color;
-						c.a *= 0.5f;
-						sprite.color = c;
-					}
-				}
-
-				_preview.transform.position =
-					_grid.GetCellCenterWorld(new Vector3Int(_hoverLocation.x, _hoverLocation.y, 0));
-
-				if (AreaMask.Hover != _prevHover || _dragging != _prevDragging)
-				{
-					_preview.SetActive(AreaMask.Hover && !_dragging);
-				}
+				_preview.SetActive(AreaMask.Hover && !_dragging);
 			}
 		}
 	}
 
 	private void UpdateCursor()
 	{
-		if (_dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
+		if (_dragging)
 		{
-			if (_dragging)
-			{
-				Cursor.SetCursor(GrabTexture, new Vector2(50f, 50f), CursorMode.Auto);
-			}
-			else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
-			{
-				Cursor.SetCursor(EraserTexture, new Vector2(10, 10), CursorMode.Auto);
-			}
-			else
-			{
-				Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-			}
+			Cursor.SetCursor(GrabTexture, new Vector2(50f, 50f), CursorMode.Auto);
+		}
+		else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
+		{
+			Cursor.SetCursor(EraserTexture, new Vector2(10, 10), CursorMode.Auto);
+		}
+		else
+		{
+			Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 		}
 	}
 

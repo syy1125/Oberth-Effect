@@ -656,6 +656,36 @@ MonoBehaviour:
   MenuAction: {fileID: -5594253008046837943, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   Backdrop: {fileID: 431343212}
   BaseMenu: {fileID: 1680178968}
+  OnMenuOpen:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1599521575}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnMenuClosed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1599521575}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &271662792
 GameObject:
   m_ObjectHideFlags: 0

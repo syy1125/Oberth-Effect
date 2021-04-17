@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,8 @@ public class DesignerMenu : MonoBehaviour
 	public GameObject Backdrop;
 
 	public GameObject BaseMenu;
+	public UnityEvent OnMenuOpen;
+	public UnityEvent OnMenuClosed;
 
 	private bool _enabled;
 	private Stack<GameObject> _modals;
@@ -39,10 +42,7 @@ public class DesignerMenu : MonoBehaviour
 	{
 		if (!_enabled)
 		{
-			Backdrop.SetActive(true);
-			BaseMenu.SetActive(true);
-
-			_enabled = true;
+			OpenMenu();
 		}
 		else if (_modals.Count > 0)
 		{
@@ -50,11 +50,26 @@ public class DesignerMenu : MonoBehaviour
 		}
 		else
 		{
-			Backdrop.SetActive(false);
-			BaseMenu.SetActive(false);
-
-			_enabled = false;
+			CloseMenu();
 		}
+	}
+
+	private void OpenMenu()
+	{
+		Backdrop.SetActive(true);
+		BaseMenu.SetActive(true);
+
+		_enabled = true;
+		OnMenuOpen.Invoke();
+	}
+
+	private void CloseMenu()
+	{
+		Backdrop.SetActive(false);
+		BaseMenu.SetActive(false);
+
+		_enabled = false;
+		OnMenuClosed.Invoke();
 	}
 
 	public void OpenModal(GameObject modal)
@@ -90,11 +105,8 @@ public class DesignerMenu : MonoBehaviour
 		{
 			CloseTopModal();
 		}
-		
-		Backdrop.SetActive(false);
-		BaseMenu.SetActive(false);
 
-		_enabled = false;
+		CloseMenu();
 	}
 
 	public void ToMainMenu()
