@@ -6,63 +6,63 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simluation
 {
-	[RequireComponent(typeof(Rigidbody2D))]
-	public class VehicleSpawner : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D))]
+public class VehicleSpawner : MonoBehaviour
+{
+	public void SpawnVehicle(VehicleBlueprint blueprint)
 	{
-		public void SpawnVehicle(VehicleBlueprint blueprint)
+		float totalMass = 0f;
+		Vector2 centerOfMass = Vector2.zero;
+		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
+
+		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
 		{
-			float totalMass = 0f;
-			Vector2 centerOfMass = Vector2.zero;
-			var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
+			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(block.BlockID);
 
-			foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
+			if (blockPrefab == null)
 			{
-				GameObject blockPrefab = BlockRegistry.Instance.GetBlock(block.BlockID);
-
-				if (blockPrefab == null)
-				{
-					Debug.LogError($"Failed to load block by ID: {block.BlockID}");
-					continue;
-				}
-
-				var rootLocation = new Vector2(block.X, block.Y);
-
-				GameObject go = Instantiate(blockPrefab, transform);
-				go.transform.localPosition = rootLocation;
-				go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
-				go.layer = gameObject.layer;
-
-				foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
-				{
-					behaviour.HasPhysics = true;
-				}
-
-				var info = blockPrefab.GetComponent<BlockInfo>();
-
-				Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);
-				totalMass += info.Mass;
-				centerOfMass += info.Mass * blockCenter;
-				momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
+				Debug.LogError($"Failed to load block by ID: {block.BlockID}");
+				continue;
 			}
 
-			if (totalMass > Mathf.Epsilon)
+			var rootLocation = new Vector2(block.X, block.Y);
+
+			GameObject go = Instantiate(blockPrefab, transform);
+			go.transform.localPosition = rootLocation;
+			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
+			go.layer = gameObject.layer;
+
+			foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
 			{
-				centerOfMass /= totalMass;
+				behaviour.HasPhysics = true;
 			}
 
-			var momentOfInertia = 0f;
-			foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
-			{
-				(Vector2 position, float mass, float blockMoment) = blockData;
-				momentOfInertia += blockMoment + mass * (position - centerOfMass).sqrMagnitude;
-			}
+			var info = blockPrefab.GetComponent<BlockInfo>();
 
-			var body = GetComponent<Rigidbody2D>();
-			body.mass = totalMass;
-			body.centerOfMass = centerOfMass;
-			body.inertia = momentOfInertia;
-
-			transform.position -= (Vector3) centerOfMass;
+			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+			totalMass += info.Mass;
+			centerOfMass += info.Mass * blockCenter;
+			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
 		}
+
+		if (totalMass > Mathf.Epsilon)
+		{
+			centerOfMass /= totalMass;
+		}
+
+		var momentOfInertia = 0f;
+		foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
+		{
+			(Vector2 position, float mass, float blockMoment) = blockData;
+			momentOfInertia += blockMoment + mass * (position - centerOfMass).sqrMagnitude;
+		}
+
+		var body = GetComponent<Rigidbody2D>();
+		body.mass = totalMass;
+		body.centerOfMass = centerOfMass;
+		body.inertia = momentOfInertia;
+
+		transform.position -= (Vector3) centerOfMass;
 	}
+}
 }
