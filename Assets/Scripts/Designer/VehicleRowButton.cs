@@ -1,56 +1,59 @@
-using System;
+using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class VehicleRowButton : MonoBehaviour
+namespace Syy1125.OberthEffect.Designer
 {
-	[Header("References")]
-	public Text NameText;
-
-	private VehicleLoadSave _loadSave;
-	private Button _button;
-
-	private void Awake()
+	[RequireComponent(typeof(Button))]
+	public class VehicleRowButton : MonoBehaviour
 	{
-		_loadSave = GetComponentInParent<VehicleLoadSave>();
-		_button = GetComponent<Button>();
-	}
+		[Header("References")]
+		public Text NameText;
 
-	private void OnEnable()
-	{
-		_button.onClick.AddListener(HandleClick);
-	}
+		private VehicleLoadSave _loadSave;
+		private Button _button;
 
-	private void OnDisable()
-	{
-		if (_button != null)
+		private void Awake()
 		{
-			_button.onClick.RemoveListener(HandleClick);
+			_loadSave = GetComponentInParent<VehicleLoadSave>();
+			_button = GetComponent<Button>();
 		}
-	}
 
-	public void DisplayVehicle(VehicleBlueprint blueprint)
-	{
-		NameText.text = blueprint.Name;
-	}
-
-	private void HandleClick()
-	{
-		_loadSave.SelectIndex(transform.GetSiblingIndex());
-	}
-
-	public void SetSelected(bool selected)
-	{
-		if (selected)
+		private void OnEnable()
 		{
-			NameText.fontStyle = FontStyle.BoldAndItalic;
-			NameText.color = Color.cyan;
+			_button.onClick.AddListener(HandleClick);
 		}
-		else
+
+		private void OnDisable()
 		{
-			NameText.fontStyle = FontStyle.Normal;
-			NameText.color = Color.white;
+			if (_button != null)
+			{
+				_button.onClick.RemoveListener(HandleClick);
+			}
+		}
+
+		public void DisplayVehicle(VehicleBlueprint blueprint)
+		{
+			NameText.text = blueprint.Name;
+		}
+
+		private void HandleClick()
+		{
+			_loadSave.SelectIndex(transform.GetSiblingIndex());
+		}
+
+		public void SetSelected(bool selected)
+		{
+			if (selected)
+			{
+				NameText.fontStyle = FontStyle.BoldAndItalic;
+				NameText.color = Color.cyan;
+			}
+			else
+			{
+				NameText.fontStyle = FontStyle.Normal;
+				NameText.color = Color.white;
+			}
 		}
 	}
 }

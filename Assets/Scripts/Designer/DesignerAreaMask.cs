@@ -1,20 +1,23 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DesignerAreaMask : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace Syy1125.OberthEffect.Designer
 {
-	public VehicleDesigner Designer;
-
-	[HideInInspector]
-	public bool Hover;
-
-	public void OnPointerEnter(PointerEventData eventData)
+	public class DesignerAreaMask : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 	{
-		Hover = true;
-	}
+		public VehicleDesigner Designer;
 
-	public void OnPointerExit(PointerEventData eventData)
-	{
-		Hover = false;
+		[HideInInspector]
+		public bool Hover;
+
+		public void OnPointerEnter(PointerEventData eventData)
+		{
+			Hover = true;
+		}
+
+		public void OnPointerExit(PointerEventData eventData)
+		{
+			Hover = false;
+		}
 	}
 }

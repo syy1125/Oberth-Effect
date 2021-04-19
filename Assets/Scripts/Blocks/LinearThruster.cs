@@ -1,62 +1,66 @@
+using Syy1125.OberthEffect.Simluation;
 using UnityEngine;
 
-public class LinearThruster : BlockBehaviour
+namespace Syy1125.OberthEffect.Blocks
 {
-	public float MaxForce;
-
-	private Rigidbody2D _body;
-	private VehicleThrusterControl _control;
-	private ParticleSystem _particles;
-
-	private float _forwardBackResponse;
-	private float _strafeResponse;
-	private float _rotateResponse;
-	private float _maxParticleSpeed;
-
-	private void Awake()
+	public class LinearThruster : BlockBehaviour
 	{
-		_body = GetComponentInParent<Rigidbody2D>();
-		_control = GetComponentInParent<VehicleThrusterControl>();
-		_particles = GetComponent<ParticleSystem>();
-	}
+		public float MaxForce;
 
-	private void Start()
-	{
-		if (HasPhysics)
+		private Rigidbody2D _body;
+		private VehicleThrusterControl _control;
+		private ParticleSystem _particles;
+
+		private float _forwardBackResponse;
+		private float _strafeResponse;
+		private float _rotateResponse;
+		private float _maxParticleSpeed;
+
+		private void Awake()
 		{
-			Vector3 localUp = transform.localRotation * Vector3.up;
-			Vector3 localPosition = transform.localPosition - (Vector3) _body.centerOfMass;
+			_body = GetComponentInParent<Rigidbody2D>();
+			_control = GetComponentInParent<VehicleThrusterControl>();
+			_particles = GetComponent<ParticleSystem>();
+		}
 
-			_forwardBackResponse = localUp.y;
-			_strafeResponse = localUp.x;
-			_rotateResponse = localUp.x * localPosition.y - localUp.y * localPosition.x;
-
-			_rotateResponse = Mathf.Abs(_rotateResponse) > 1e-5 ? Mathf.Sign(_rotateResponse) : 0f;
-
-			if (_particles != null)
+		private void Start()
+		{
+			if (HasPhysics)
 			{
-				_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-				_particles.Play();
+				Vector3 localUp = transform.localRotation * Vector3.up;
+				Vector3 localPosition = transform.localPosition - (Vector3) _body.centerOfMass;
+
+				_forwardBackResponse = localUp.y;
+				_strafeResponse = localUp.x;
+				_rotateResponse = localUp.x * localPosition.y - localUp.y * localPosition.x;
+
+				_rotateResponse = Mathf.Abs(_rotateResponse) > 1e-5 ? Mathf.Sign(_rotateResponse) : 0f;
+
+				if (_particles != null)
+				{
+					_maxParticleSpeed = _particles.main.startSpeedMultiplier;
+					_particles.Play();
+				}
 			}
 		}
-	}
 
-	private void FixedUpdate()
-	{
-		if (HasPhysics)
+		private void FixedUpdate()
 		{
-			float rawResponse = _forwardBackResponse * _control.ForwardBackCommand
-			                    + _strafeResponse * _control.StrafeCommand
-			                    + _rotateResponse * _control.RotateCommand;
-			float response = Mathf.Clamp01(rawResponse);
-
-			_body.AddForceAtPosition(response * MaxForce * transform.up, transform.position);
-
-			if (_particles != null)
+			if (HasPhysics)
 			{
-				ParticleSystem.MainModule main = _particles.main;
-				main.startSpeedMultiplier = response * _maxParticleSpeed;
-				main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, response));
+				float rawResponse = _forwardBackResponse * _control.ForwardBackCommand
+				                    + _strafeResponse * _control.StrafeCommand
+				                    + _rotateResponse * _control.RotateCommand;
+				float response = Mathf.Clamp01(rawResponse);
+
+				_body.AddForceAtPosition(response * MaxForce * transform.up, transform.position);
+
+				if (_particles != null)
+				{
+					ParticleSystem.MainModule main = _particles.main;
+					main.startSpeedMultiplier = response * _maxParticleSpeed;
+					main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, response));
+				}
 			}
 		}
 	}

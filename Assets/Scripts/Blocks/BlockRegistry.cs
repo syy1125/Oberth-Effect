@@ -1,37 +1,40 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockRegistry : MonoBehaviour
+namespace Syy1125.OberthEffect.Blocks
 {
-	public static BlockRegistry Instance { get; private set; }
-
-	public GameObject[] Blocks;
-
-	private Dictionary<string, GameObject> _blockById;
-
-	private void Awake()
+	public class BlockRegistry : MonoBehaviour
 	{
-		if (Instance == null)
+		public static BlockRegistry Instance { get; private set; }
+
+		public GameObject[] Blocks;
+
+		private Dictionary<string, GameObject> _blockById;
+
+		private void Awake()
 		{
-			Instance = this;
-			DontDestroyOnLoad(gameObject);
-		}
-		else if (Instance != this)
-		{
-			Destroy(gameObject);
-			return;
+			if (Instance == null)
+			{
+				Instance = this;
+				DontDestroyOnLoad(gameObject);
+			}
+			else if (Instance != this)
+			{
+				Destroy(gameObject);
+				return;
+			}
+
+			_blockById = new Dictionary<string, GameObject>();
+			foreach (GameObject block in Blocks)
+			{
+				var info = block.GetComponent<BlockInfo>();
+				_blockById.Add(info.BlockID, block);
+			}
 		}
 
-		_blockById = new Dictionary<string, GameObject>();
-		foreach (GameObject block in Blocks)
+		public GameObject GetBlock(string blockId)
 		{
-			var info = block.GetComponent<BlockInfo>();
-			_blockById.Add(info.BlockID, block);
+			return _blockById.TryGetValue(blockId, out GameObject block) ? block : null;
 		}
-	}
-
-	public GameObject GetBlock(string blockId)
-	{
-		return _blockById.TryGetValue(blockId, out GameObject block) ? block : null;
 	}
 }

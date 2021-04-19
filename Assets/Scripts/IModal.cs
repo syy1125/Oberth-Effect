@@ -1,5 +1,8 @@
-﻿public interface IModal
+﻿namespace Syy1125.OberthEffect
 {
-	void OpenModal();
-	void CloseModal();
+	public interface IModal
+	{
+		void OpenModal();
+		void CloseModal();
+	}
 }

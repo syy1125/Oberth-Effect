@@ -1,86 +1,90 @@
 ﻿using System.Linq;
+using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(GridLayoutGroup))]
-public class BlockPalette : MonoBehaviour
+namespace Syy1125.OberthEffect.Designer
 {
-	public const int CURSOR_INDEX = -1;
-	public const int ERASE_INDEX = -2;
-
-	public GameObject BlockButtonPrefab;
-
-	public InputActionReference CursorAction;
-	public InputActionReference EraserAction;
-
-	private GameObject[] _blocks;
-
-	public int SelectedIndex { get; private set; }
-
-	public delegate void IndexChangeEvent();
-
-	public IndexChangeEvent OnIndexChanged;
-
-	private void OnEnable()
+	[RequireComponent(typeof(GridLayoutGroup))]
+	public class BlockPalette : MonoBehaviour
 	{
-		CursorAction.action.Enable();
-		EraserAction.action.Enable();
-		CursorAction.action.performed += SelectCursor;
-		EraserAction.action.performed += SelectEraser;
-	}
+		public const int CURSOR_INDEX = -1;
+		public const int ERASE_INDEX = -2;
 
-	private void OnDisable()
-	{
-		CursorAction.action.performed -= SelectCursor;
-		EraserAction.action.performed -= SelectEraser;
-		CursorAction.action.Disable();
-		EraserAction.action.Disable();
-	}
+		public GameObject BlockButtonPrefab;
 
-	private void Start()
-	{
-		SelectedIndex = CURSOR_INDEX;
+		public InputActionReference CursorAction;
+		public InputActionReference EraserAction;
 
-		Transform t = transform;
+		private GameObject[] _blocks;
 
-		_blocks = BlockRegistry.Instance.Blocks
-			.Where(block => block.GetComponent<BlockInfo>().ShowInDesigner)
-			.ToArray();
+		public int SelectedIndex { get; private set; }
 
-		foreach (GameObject block in _blocks)
+		public delegate void IndexChangeEvent();
+
+		public IndexChangeEvent OnIndexChanged;
+
+		private void OnEnable()
 		{
-			GameObject button = Instantiate(BlockButtonPrefab, t);
-			button.GetComponent<BlockButton>().DisplayBlock(block);
-		}
-	}
-
-	public void SelectBlockIndex(int index)
-	{
-		if (index == SelectedIndex) return;
-
-		if (SelectedIndex >= 0)
-		{
-			transform.GetChild(SelectedIndex).GetComponent<BlockButton>().OnDeselect();
+			CursorAction.action.Enable();
+			EraserAction.action.Enable();
+			CursorAction.action.performed += SelectCursor;
+			EraserAction.action.performed += SelectEraser;
 		}
 
-		SelectedIndex = index;
+		private void OnDisable()
+		{
+			CursorAction.action.performed -= SelectCursor;
+			EraserAction.action.performed -= SelectEraser;
+			CursorAction.action.Disable();
+			EraserAction.action.Disable();
+		}
 
-		OnIndexChanged?.Invoke();
-	}
+		private void Start()
+		{
+			SelectedIndex = CURSOR_INDEX;
 
-	private void SelectCursor(InputAction.CallbackContext context)
-	{
-		SelectBlockIndex(CURSOR_INDEX);
-	}
+			Transform t = transform;
 
-	private void SelectEraser(InputAction.CallbackContext context)
-	{
-		SelectBlockIndex(ERASE_INDEX);
-	}
+			_blocks = BlockRegistry.Instance.Blocks
+				.Where(block => block.GetComponent<BlockInfo>().ShowInDesigner)
+				.ToArray();
 
-	public GameObject GetSelectedBlock()
-	{
-		return SelectedIndex < 0 ? null : _blocks[SelectedIndex];
+			foreach (GameObject block in _blocks)
+			{
+				GameObject button = Instantiate(BlockButtonPrefab, t);
+				button.GetComponent<BlockButton>().DisplayBlock(block);
+			}
+		}
+
+		public void SelectBlockIndex(int index)
+		{
+			if (index == SelectedIndex) return;
+
+			if (SelectedIndex >= 0)
+			{
+				transform.GetChild(SelectedIndex).GetComponent<BlockButton>().OnDeselect();
+			}
+
+			SelectedIndex = index;
+
+			OnIndexChanged?.Invoke();
+		}
+
+		private void SelectCursor(InputAction.CallbackContext context)
+		{
+			SelectBlockIndex(CURSOR_INDEX);
+		}
+
+		private void SelectEraser(InputAction.CallbackContext context)
+		{
+			SelectBlockIndex(ERASE_INDEX);
+		}
+
+		public GameObject GetSelectedBlock()
+		{
+			return SelectedIndex < 0 ? null : _blocks[SelectedIndex];
+		}
 	}
 }
