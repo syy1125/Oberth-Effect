@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simluation
+namespace Syy1125.OberthEffect.Simulation
 {
 public class CameraFollow : MonoBehaviour
 {

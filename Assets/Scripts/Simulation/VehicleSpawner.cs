@@ -4,7 +4,7 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simluation
+namespace Syy1125.OberthEffect.Simulation
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleSpawner : MonoBehaviour

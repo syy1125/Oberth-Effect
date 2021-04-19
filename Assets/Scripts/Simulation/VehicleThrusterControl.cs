@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Syy1125.OberthEffect.Simluation
+namespace Syy1125.OberthEffect.Simulation
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviour

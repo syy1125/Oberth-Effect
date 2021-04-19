@@ -1,4 +1,4 @@
-using Syy1125.OberthEffect.Simluation;
+using Syy1125.OberthEffect.Simulation;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
