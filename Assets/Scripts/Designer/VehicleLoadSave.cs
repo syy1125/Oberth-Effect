@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
@@ -59,6 +60,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 				string content = File.ReadAllText(vehiclePath);
 				var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
 				VehicleRowPrefab.GetComponent<VehicleRowButton>().DisplayVehicle(blueprint);
+				VehicleRowPrefab.GetComponent<VehicleRowButton>().SetIndex(_vehiclePaths.Count - 1);
 			}
 		}
 
@@ -74,7 +76,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 		if (SaveMode)
 		{
-			FilenameInput.onEndEdit.AddListener(HandleFilenameChange);
+			FilenameInput.onValueChanged.AddListener(HandleFilenameChange);
 			SaveLoadButton.onClick.AddListener(SaveVehicle);
 		}
 		else
@@ -143,6 +145,8 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 			return;
 		}
 
+		Debug.Log($"Saving {FilenameInput.text}");
+
 		Designer.RenameVehicle(FilenameInput.text);
 		VehicleBlueprint blueprint = Designer.SaveVehicle();
 		string content = JsonUtility.ToJson(blueprint);
@@ -158,6 +162,8 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 				$"VehicleLoadSave.LoadVehicle called when selected index is out of bounds {_selectedIndex}/{_vehiclePaths.Count}"
 			);
 		}
+
+		Debug.Log($"Loading vehicle from {_vehiclePaths[_selectedIndex]}");
 
 		string content = File.ReadAllText(_vehiclePaths[_selectedIndex]);
 		var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);

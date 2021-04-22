@@ -12,6 +12,7 @@ public class VehicleRowButton : MonoBehaviour
 
 	private VehicleLoadSave _loadSave;
 	private Button _button;
+	private int _index;
 
 	private void Awake()
 	{
@@ -37,9 +38,14 @@ public class VehicleRowButton : MonoBehaviour
 		NameText.text = blueprint.Name;
 	}
 
+	public void SetIndex(int index)
+	{
+		_index = index;
+	}
+
 	private void HandleClick()
 	{
-		_loadSave.SelectIndex(transform.GetSiblingIndex());
+		_loadSave.SelectIndex(_index);
 	}
 
 	public void SetSelected(bool selected)
