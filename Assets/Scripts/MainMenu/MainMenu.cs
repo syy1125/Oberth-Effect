@@ -10,6 +10,11 @@ public class MainMenu : MonoBehaviour
 		SceneManager.LoadScene("Scenes/Designer");
 	}
 
+	public void ToLobby()
+	{
+		SceneManager.LoadScene("Scenes/Multiplayer Lobby");
+	}
+
 	public void Quit()
 	{
 		Application.Quit();

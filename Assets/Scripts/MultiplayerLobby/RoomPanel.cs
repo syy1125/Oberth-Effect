@@ -28,6 +28,11 @@ public class RoomPanel : MonoBehaviour
 		_image = GetComponent<Image>();
 	}
 
+	private void Start()
+	{
+		_image.CrossFadeColor(Colors.normalColor, 0f, true, true);
+	}
+
 	public void SetRoom(RoomInfo room)
 	{
 		_roomName = room.Name;

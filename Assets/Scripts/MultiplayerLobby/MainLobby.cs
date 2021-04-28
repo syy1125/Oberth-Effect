@@ -195,6 +195,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	private void SetName(string playerName)
 	{
 		PhotonNetwork.NickName = playerName;
+		PlayerPrefs.SetString(PLAYER_NAME_KEY, playerName);
 		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
 		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(playerName);
 	}
