@@ -1,19 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExitGames.Client.Photon;
 using JetBrains.Annotations;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.MultiplayerLobby
 {
 public class MainLobby : MonoBehaviourPunCallbacks
 {
+	private const string PLAYER_NAME_KEY = "NickName";
+
 	[Header("Room List")]
 	public Transform RoomListParent;
 
 	public GameObject RoomPanelPrefab;
+	public Text StatusIndicator;
+
+	[Header("Player Controls")]
+	public InputField PlayerNameInput;
+
+	public Button JoinRoomButton;
+	public Button CreateRoomButton;
+
+	[Header("Room Screen")]
+	public GameObject RoomScreen;
 
 	private Dictionary<string, RoomInfo> _rooms;
 	private Dictionary<string, GameObject> _roomPanels;
@@ -24,6 +38,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		if (!PhotonNetwork.IsConnected)
 		{
 			PhotonNetwork.ConnectUsingSettings();
+			StatusIndicator.text = "Connecting...";
 		}
 
 		PhotonNetwork.AutomaticallySyncScene = true;
@@ -31,6 +46,16 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		_rooms = new Dictionary<string, RoomInfo>();
 		_roomPanels = new Dictionary<string, GameObject>();
 		_selectedRoom = null;
+
+		string playerName = PlayerPrefs.GetString(PLAYER_NAME_KEY, "");
+		PhotonNetwork.NickName = playerName;
+		PlayerNameInput.text = playerName;
+		PlayerNameInput.onValueChanged.AddListener(SetName);
+
+		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
+		CreateRoomButton.onClick.AddListener(CreateRoom);
+		JoinRoomButton.interactable = false;
+		JoinRoomButton.onClick.AddListener(JoinSelectedRoom);
 	}
 
 	public override void OnConnectedToMaster()
@@ -111,6 +136,12 @@ public class MainLobby : MonoBehaviourPunCallbacks
 				Destroy(panels[j].Value);
 				_roomPanels.Remove(panels[j].Key);
 
+				if (string.Equals(_selectedRoom, panels[i].Key))
+				{
+					_selectedRoom = null;
+					JoinRoomButton.interactable = false;
+				}
+
 				j++;
 			}
 		}
@@ -127,6 +158,16 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			Destroy(panels[j].Value);
 			_roomPanels.Remove(panels[j].Key);
 		}
+
+		if (_roomPanels.Count == 0)
+		{
+			StatusIndicator.gameObject.SetActive(true);
+			StatusIndicator.text = "Nobody's here yet. Go start a game!";
+		}
+		else
+		{
+			StatusIndicator.gameObject.SetActive(false);
+		}
 	}
 
 	public override void OnLeftLobby()
@@ -142,6 +183,43 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		}
 
 		_selectedRoom = roomName;
+
+		if (_selectedRoom != null)
+		{
+			_roomPanels[_selectedRoom]?.GetComponent<RoomPanel>().SetSelected(true);
+		}
+
+		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(PhotonNetwork.NickName);
+	}
+
+	private void SetName(string playerName)
+	{
+		PhotonNetwork.NickName = playerName;
+		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
+		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(playerName);
+	}
+
+	private void CreateRoom()
+	{
+		PhotonNetwork.CreateRoom(
+			Guid.NewGuid().ToString(),
+			new RoomOptions
+			{
+				CustomRoomProperties = new Hashtable { { "DisplayName", $"{PhotonNetwork.NickName}'s game" } },
+				CustomRoomPropertiesForLobby = new[] { "DisplayName" }
+			}
+		);
+	}
+
+	private void JoinSelectedRoom()
+	{
+		PhotonNetwork.JoinRoom(_selectedRoom);
+	}
+
+	public override void OnJoinedRoom()
+	{
+		gameObject.SetActive(false);
+		RoomScreen.SetActive(true);
 	}
 }
 }
