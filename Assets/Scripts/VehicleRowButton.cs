@@ -10,13 +10,13 @@ public class VehicleRowButton : MonoBehaviour
 	[Header("References")]
 	public Text NameText;
 
-	private VehicleLoadSave _loadSave;
+	private VehicleList _vehicleList;
 	private Button _button;
 	private int _index;
 
 	private void Awake()
 	{
-		_loadSave = GetComponentInParent<VehicleLoadSave>();
+		_vehicleList = GetComponentInParent<VehicleList>();
 		_button = GetComponent<Button>();
 	}
 
@@ -45,7 +45,7 @@ public class VehicleRowButton : MonoBehaviour
 
 	private void HandleClick()
 	{
-		_loadSave.SelectIndex(_index);
+		_vehicleList.SelectIndex(_index);
 	}
 
 	public void SetSelected(bool selected)
