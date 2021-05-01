@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExitGames.Client.Photon;
-using JetBrains.Annotations;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.MultiplayerLobby
@@ -35,12 +35,6 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	private void Awake()
 	{
-		if (!PhotonNetwork.IsConnected)
-		{
-			PhotonNetwork.ConnectUsingSettings();
-			StatusIndicator.text = "Connecting...";
-		}
-
 		PhotonNetwork.AutomaticallySyncScene = true;
 
 		_rooms = new Dictionary<string, RoomInfo>();
@@ -58,12 +52,35 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		JoinRoomButton.onClick.AddListener(JoinSelectedRoom);
 	}
 
+	public override void OnEnable()
+	{
+		base.OnEnable();
+
+		if (!PhotonNetwork.IsConnected)
+		{
+			PhotonNetwork.ConnectUsingSettings();
+			StatusIndicator.text = "Connecting...";
+		}
+		else if (!PhotonNetwork.InLobby)
+		{
+			PhotonNetwork.JoinLobby();
+			StatusIndicator.text = "Connecting...";
+		}
+	}
+
 	public override void OnConnectedToMaster()
 	{
 		if (!PhotonNetwork.InLobby)
 		{
 			PhotonNetwork.JoinLobby();
+			StatusIndicator.text = "Connecting...";
 		}
+	}
+
+	public override void OnDisable()
+	{
+		base.OnDisable();
+		PhotonNetwork.LeaveLobby();
 	}
 
 	public override void OnJoinedLobby()
@@ -221,6 +238,11 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		gameObject.SetActive(false);
 		RoomScreen.SetActive(true);
+	}
+
+	public void ToMainMenu()
+	{
+		SceneManager.LoadScene("Scenes/Main Menu");
 	}
 }
 }
