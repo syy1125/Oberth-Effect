@@ -223,8 +223,9 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			Guid.NewGuid().ToString(),
 			new RoomOptions
 			{
-				CustomRoomProperties = new Hashtable { { "DisplayName", $"{PhotonNetwork.NickName}'s game" } },
-				CustomRoomPropertiesForLobby = new[] { "DisplayName" }
+				CustomRoomProperties = new Hashtable
+					{ { PhotonPropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" } },
+				CustomRoomPropertiesForLobby = new[] { PhotonPropertyKeys.ROOM_NAME }
 			}
 		);
 	}
