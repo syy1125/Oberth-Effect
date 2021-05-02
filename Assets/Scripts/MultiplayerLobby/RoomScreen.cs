@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.MultiplayerLobby
 {
+[RequireComponent(typeof(PhotonView))]
 public class RoomScreen : MonoBehaviourPunCallbacks
 {
 	[Header("Player List")]
@@ -23,6 +26,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public Button StartGameButton;
 	public GameObject VehicleSelectionScreen;
+	public VehicleList VehicleList;
 	public Button LoadVehicleButton;
 
 	[Header("Lobby Screen")]
@@ -30,6 +34,13 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private SortedDictionary<int, GameObject> _playerPanels;
 	private string _selectedVehicle;
+
+	private static Dictionary<string, VehicleBlueprint> _syncVehicles =
+		new Dictionary<string, VehicleBlueprint>(); // Vehicles from other players
+
+	public delegate void VehicleSynchronizedEvent(string id);
+
+	public static VehicleSynchronizedEvent OnVehicleSynchronized;
 
 	private void Awake()
 	{
@@ -45,6 +56,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
 
 		_selectedVehicle = null;
+		VehicleList.OnSelectVehicle.AddListener(SelectVehicle);
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
@@ -60,7 +72,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		foreach (KeyValuePair<int, Player> pair in PhotonNetwork.CurrentRoom.Players)
 		{
 			GameObject go = Instantiate(PlayerPanelPrefab, PlayerListParent);
-			go.GetComponent<PlayerPanel>().DisplayPlayer(pair.Value);
+			go.GetComponent<PlayerPanel>().AssignPlayer(pair.Value);
 			_playerPanels.Add(pair.Key, go);
 		}
 	}
@@ -71,6 +83,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		RoomNameInput.onEndEdit.RemoveListener(SetRoomName);
 
+		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
 		foreach (GameObject go in _playerPanels.Values)
@@ -99,7 +112,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public override void OnPlayerEnteredRoom(Player player)
 	{
 		GameObject go = Instantiate(PlayerPanelPrefab, PlayerListParent);
-		go.GetComponent<PlayerPanel>().DisplayPlayer(player);
+		go.GetComponent<PlayerPanel>().AssignPlayer(player);
 		_playerPanels.Add(player.ActorNumber, go);
 	}
 
@@ -137,11 +150,17 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public void OpenVehicleSelection()
 	{
-		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } });
+		PhotonNetwork.LocalPlayer.SetCustomProperties(
+			new Hashtable
+			{
+				{ PhotonPropertyKeys.VEHICLE_ID, null },
+				{ PhotonPropertyKeys.VEHICLE_NAME, null }
+			}
+		);
 		VehicleSelectionScreen.SetActive(true);
 	}
 
-	public void SelectVehicle(string vehicleName)
+	private void SelectVehicle(string vehicleName)
 	{
 		_selectedVehicle = vehicleName;
 		if (vehicleName != null)
@@ -152,10 +171,31 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void LoadVehicleSelection()
 	{
+		var id = Guid.NewGuid().ToString();
+		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicle));
+
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicle } }
+			new Hashtable
+			{
+				{ PhotonPropertyKeys.VEHICLE_ID, id },
+				{ PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicle }
+			}
 		);
+		photonView.RPC("StoreVehicle", RpcTarget.OthersBuffered, id, serializedVehicle);
+
 		VehicleSelectionScreen.SetActive(false);
+	}
+
+	[PunRPC]
+	private void StoreVehicle(string id, string data)
+	{
+		_syncVehicles.Add(id, JsonUtility.FromJson<VehicleBlueprint>(data));
+		OnVehicleSynchronized?.Invoke(id);
+	}
+
+	public static bool VehicleReady(string id)
+	{
+		return _syncVehicles.ContainsKey(id);
 	}
 
 	public void LeaveRoom()
@@ -165,7 +205,15 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnLeftRoom()
 	{
-		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } });
+		PhotonNetwork.LocalPlayer.SetCustomProperties(
+			new Hashtable
+			{
+				{ PhotonPropertyKeys.VEHICLE_ID, null },
+				{ PhotonPropertyKeys.VEHICLE_NAME, null }
+			}
+		);
+
+		_syncVehicles.Clear();
 
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);

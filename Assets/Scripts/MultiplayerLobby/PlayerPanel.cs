@@ -10,19 +10,62 @@ public class PlayerPanel : MonoBehaviour
 	public Text PlayerName;
 	public Text PlayerStatus;
 
-	public void DisplayPlayer(Player player)
+	private Player _player;
+	private string _vehicleId;
+
+	private void OnEnable()
 	{
+		RoomScreen.OnVehicleSynchronized += HandleVehicleSynchronized;
+	}
+
+	private void OnDisable()
+	{
+		RoomScreen.OnVehicleSynchronized -= HandleVehicleSynchronized;
+	}
+
+	public void AssignPlayer(Player player)
+	{
+		_player = player;
+
 		PlayerName.text = player.NickName;
-		object vehicleName = player.CustomProperties[PhotonPropertyKeys.VEHICLE_NAME];
-		PlayerStatus.text = vehicleName == null ? "Pondering what to use" : (string) vehicleName;
+
+		UpdateVehicleDisplay();
 	}
 
 	public void UpdateProps(Hashtable props)
 	{
-		if (props.ContainsKey(PhotonPropertyKeys.VEHICLE_NAME))
+		if (props.ContainsKey(PhotonPropertyKeys.VEHICLE_NAME) || props.ContainsKey(PhotonPropertyKeys.VEHICLE_ID))
 		{
-			object vehicleName = props[PhotonPropertyKeys.VEHICLE_NAME];
-			PlayerStatus.text = vehicleName == null ? "Pondering what to use" : (string) vehicleName;
+			UpdateVehicleDisplay();
+		}
+	}
+
+	private void UpdateVehicleDisplay()
+	{
+		object vehicleName = _player.CustomProperties[PhotonPropertyKeys.VEHICLE_NAME];
+
+		if (vehicleName == null)
+		{
+			PlayerStatus.text = "Pondering what to use";
+			_vehicleId = null;
+		}
+		else
+		{
+			PlayerStatus.text = (string) vehicleName;
+			_vehicleId = (string) _player.CustomProperties[PhotonPropertyKeys.VEHICLE_ID];
+
+			if (!RoomScreen.VehicleReady(_vehicleId))
+			{
+				PlayerStatus.text += " (Synchronizing)";
+			}
+		}
+	}
+
+	private void HandleVehicleSynchronized(string id)
+	{
+		if (string.Equals(id, _vehicleId))
+		{
+			UpdateVehicleDisplay();
 		}
 	}
 }

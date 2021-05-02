@@ -11,6 +11,7 @@ public static class PhotonPropertyKeys
 	public const string ROOM_NAME = "n";
 
 	// Player custom properties
+	public const string VEHICLE_ID = "vid";
 	public const string VEHICLE_NAME = "vn";
 }
 }
