@@ -36,7 +36,7 @@ public class TestSpawner : MonoBehaviour
 		yield return new WaitUntil(() => op.isDone);
 
 		GameObject vehicleObject = GameObject.Find("Vehicle");
-		vehicleObject.GetComponent<VehicleSpawner>().SpawnVehicle(blueprint);
+		vehicleObject.GetComponent<VehicleLoader>().SpawnVehicle(blueprint);
 
 		Destroy(gameObject);
 	}

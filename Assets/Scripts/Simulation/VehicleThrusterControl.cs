@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,6 +19,7 @@ public class VehicleThrusterControl : MonoBehaviour
 	public float RotateDerivativeTime;
 	public float RotateIntegralTime;
 
+	private bool _isMine;
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -34,6 +36,10 @@ public class VehicleThrusterControl : MonoBehaviour
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_angleHistory = new LinkedList<float>();
+
+		var photonView = GetComponent<PhotonView>();
+		// Vehicle is mine if we're in singleplayer or if the photon view is mine.
+		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	private void OnEnable()
@@ -50,6 +56,8 @@ public class VehicleThrusterControl : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		if (!_isMine) return;
+
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 

@@ -22,12 +22,13 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public GameObject PlayerPanelPrefab;
 
 	[Header("Controls")]
-	public Button ReadyButton;
+	public Button LoadVehicleButton;
 
-	public Button StartGameButton;
 	public GameObject VehicleSelectionScreen;
 	public VehicleList VehicleList;
-	public Button LoadVehicleButton;
+
+	public Button ReadyButton;
+	public Button StartGameButton;
 
 	[Header("Lobby Screen")]
 	public GameObject LobbyScreen;
@@ -60,6 +61,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
+		// TODO ready/unready
+		StartGameButton.onClick.AddListener(StartGame);
+
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UseMasterControls();
@@ -85,6 +89,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
+
+		StartGameButton.onClick.RemoveListener(StartGame);
 
 		foreach (GameObject go in _playerPanels.Values)
 		{
@@ -140,12 +146,18 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		RoomName.gameObject.SetActive(false);
 		RoomNameInput.gameObject.SetActive(true);
+
+		ReadyButton.gameObject.SetActive(false);
+		StartGameButton.gameObject.SetActive(true);
 	}
 
 	private void UseClientControls()
 	{
 		RoomName.gameObject.SetActive(true);
 		RoomNameInput.gameObject.SetActive(false);
+
+		ReadyButton.gameObject.SetActive(true);
+		StartGameButton.gameObject.SetActive(false);
 	}
 
 	public void OpenVehicleSelection()
@@ -181,7 +193,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 				{ PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicle }
 			}
 		);
-		photonView.RPC("StoreVehicle", RpcTarget.OthersBuffered, id, serializedVehicle);
+		photonView.RPC("StoreVehicle", RpcTarget.AllBuffered, id, serializedVehicle);
 
 		VehicleSelectionScreen.SetActive(false);
 	}
@@ -191,6 +203,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		_syncVehicles.Add(id, JsonUtility.FromJson<VehicleBlueprint>(data));
 		OnVehicleSynchronized?.Invoke(id);
+	}
+
+	public static VehicleBlueprint GetVehicle(string id)
+	{
+		return _syncVehicles[id];
 	}
 
 	public static bool VehicleReady(string id)
@@ -217,6 +234,13 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);
+	}
+
+	private void StartGame()
+	{
+		PhotonNetwork.AutomaticallySyncScene = true;
+		PhotonNetwork.CurrentRoom.IsOpen = false;
+		PhotonNetwork.LoadLevel("Scenes/MP Test");
 	}
 }
 }

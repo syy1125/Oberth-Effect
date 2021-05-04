@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleSpawner : MonoBehaviour
+public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 {
 	public void SpawnVehicle(VehicleBlueprint blueprint)
 	{
@@ -63,6 +64,13 @@ public class VehicleSpawner : MonoBehaviour
 		body.inertia = momentOfInertia;
 
 		transform.position -= (Vector3) centerOfMass;
+	}
+
+	public void OnPhotonInstantiate(PhotonMessageInfo info)
+	{
+		object[] instantiationData = info.photonView.InstantiationData;
+		var blueprint = JsonUtility.FromJson<VehicleBlueprint>((string) instantiationData[0]);
+		SpawnVehicle(blueprint);
 	}
 }
 }
