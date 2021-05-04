@@ -34,14 +34,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public GameObject LobbyScreen;
 
 	private SortedDictionary<int, GameObject> _playerPanels;
-	private string _selectedVehicle;
+	private string _selectedVehicleName;
 
-	private static Dictionary<string, VehicleBlueprint> _syncVehicles =
-		new Dictionary<string, VehicleBlueprint>(); // Vehicles from other players
-
-	public delegate void VehicleSynchronizedEvent(string id);
-
-	public static VehicleSynchronizedEvent OnVehicleSynchronized;
+	public static string SelectedVehicle { get; private set; }
 
 	private void Awake()
 	{
@@ -56,7 +51,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 			(string) PhotonNetwork.CurrentRoom.CustomProperties[PhotonPropertyKeys.ROOM_NAME];
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
 
-		_selectedVehicle = null;
+		_selectedVehicleName = null;
+		SelectedVehicle = null;
 		VehicleList.OnSelectVehicle.AddListener(SelectVehicle);
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
@@ -163,18 +159,14 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public void OpenVehicleSelection()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable
-			{
-				{ PhotonPropertyKeys.VEHICLE_ID, null },
-				{ PhotonPropertyKeys.VEHICLE_NAME, null }
-			}
+			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } }
 		);
 		VehicleSelectionScreen.SetActive(true);
 	}
 
 	private void SelectVehicle(string vehicleName)
 	{
-		_selectedVehicle = vehicleName;
+		_selectedVehicleName = vehicleName;
 		if (vehicleName != null)
 		{
 			LoadVehicleButton.interactable = true;
@@ -183,36 +175,14 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void LoadVehicleSelection()
 	{
-		var id = Guid.NewGuid().ToString();
-		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicle));
-
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable
-			{
-				{ PhotonPropertyKeys.VEHICLE_ID, id },
-				{ PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicle }
-			}
+			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicleName } }
 		);
-		photonView.RPC("StoreVehicle", RpcTarget.AllBuffered, id, serializedVehicle);
+
+		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
+		SelectedVehicle = serializedVehicle;
 
 		VehicleSelectionScreen.SetActive(false);
-	}
-
-	[PunRPC]
-	private void StoreVehicle(string id, string data)
-	{
-		_syncVehicles.Add(id, JsonUtility.FromJson<VehicleBlueprint>(data));
-		OnVehicleSynchronized?.Invoke(id);
-	}
-
-	public static VehicleBlueprint GetVehicle(string id)
-	{
-		return _syncVehicles[id];
-	}
-
-	public static bool VehicleReady(string id)
-	{
-		return _syncVehicles.ContainsKey(id);
 	}
 
 	public void LeaveRoom()
@@ -223,14 +193,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public override void OnLeftRoom()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable
-			{
-				{ PhotonPropertyKeys.VEHICLE_ID, null },
-				{ PhotonPropertyKeys.VEHICLE_NAME, null }
-			}
+			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } }
 		);
-
-		_syncVehicles.Clear();
 
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);

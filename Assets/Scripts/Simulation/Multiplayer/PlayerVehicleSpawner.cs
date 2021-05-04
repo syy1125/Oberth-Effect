@@ -15,14 +15,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			VehiclePrefab.name,
 			Vector3.right * (10 * PhotonNetwork.LocalPlayer.ActorNumber), Quaternion.identity,
 			0,
-			new object[]
-			{
-				JsonUtility.ToJson(
-					RoomScreen.GetVehicle(
-						(string) PhotonNetwork.LocalPlayer.CustomProperties[PhotonPropertyKeys.VEHICLE_ID]
-					)
-				)
-			}
+			new object[] { RoomScreen.SelectedVehicle }
 		);
 		CameraRig.Target = vehicle.transform;
 	}
