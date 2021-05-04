@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Syy1125.OberthEffect
 {
 /// <summary>

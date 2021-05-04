@@ -1,7 +1,5 @@
-﻿using System;
-using Photon.Realtime;
+﻿using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.MultiplayerLobby

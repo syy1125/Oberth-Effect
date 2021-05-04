@@ -8,13 +8,13 @@ using UnityEngine.InputSystem;
 namespace Syy1125.OberthEffect.Designer
 {
 internal class DuplicateBlockError : Exception
-{ }
+{}
 
 internal class EmptyBlockError : Exception
-{ }
+{}
 
 internal class BlockNotErasable : Exception
-{ }
+{}
 
 [RequireComponent(typeof(Grid))]
 public class VehicleDesigner : MonoBehaviour

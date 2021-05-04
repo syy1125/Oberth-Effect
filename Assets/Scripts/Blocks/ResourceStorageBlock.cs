@@ -1,4 +1,3 @@
-using System;
 using Syy1125.OberthEffect.Simulation;
 using UnityEngine;
 
