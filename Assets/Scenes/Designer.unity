@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0639daa171afdc84db08ab0cdb56dfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Designer: {fileID: 1599521575}
+  Designer: {fileID: 0}
   Hover: 0
 --- !u!222 &140859145
 CanvasRenderer:
@@ -659,7 +659,7 @@ MonoBehaviour:
   OnMenuOpen:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1599521575}
+      - m_Target: {fileID: 1543857978}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -686,7 +686,7 @@ MonoBehaviour:
   OnMenuClosed:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1599521575}
+      - m_Target: {fileID: 1543857978}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -1976,7 +1976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Activation: {fileID: 8273100114398473174, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  Designer: {fileID: 1599521575}
+  Designer: {fileID: 0}
 --- !u!1 &735330848
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,7 +3034,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SaveMode: 1
-  Designer: {fileID: 1599521575}
+  Designer: {fileID: 1543857978}
   Menu: {fileID: 253995627}
   VehicleList: {fileID: 1760213438}
   SaveLoadButton: {fileID: 540629794}
@@ -3095,7 +3095,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SaveMode: 0
-  Designer: {fileID: 1599521575}
+  Designer: {fileID: 1543857978}
   Menu: {fileID: 253995627}
   VehicleList: {fileID: 1912457902}
   SaveLoadButton: {fileID: 2125049502}
@@ -3595,6 +3595,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1543857977}
+  - component: {fileID: 1543857979}
+  - component: {fileID: 1543857978}
   m_Layer: 6
   m_Name: Designer
   m_TagString: Untagged
@@ -3617,6 +3619,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1543857978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543857976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08580aa6b71fefb4283134205234fc6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Palette: {fileID: 860709245}
+  AreaMask: {fileID: 140859144}
+  Builder: {fileID: 1599521575}
+  ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
+  RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ClickAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ScrollAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  MouseMoveAction: {fileID: 2544889378416833418, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  GrabTexture: {fileID: 2800000, guid: 8532c824d7d256c49b06634cd2c23dbc, type: 3}
+  EraserTexture: {fileID: 2800000, guid: 16413e80f5f850d4ca365cd4c3569c9e, type: 3}
+--- !u!156049354 &1543857979
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543857976}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1576258434
 GameObject:
   m_ObjectHideFlags: 0
@@ -3705,9 +3743,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1599521573}
-  - component: {fileID: 1599521574}
   - component: {fileID: 1599521575}
-  - component: {fileID: 1599521576}
   m_Layer: 6
   m_Name: Grid
   m_TagString: Untagged
@@ -3729,18 +3765,6 @@ Transform:
   m_Father: {fileID: 1543857977}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!156049354 &1599521574
-Grid:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1599521572}
-  m_Enabled: 1
-  m_CellSize: {x: 1, y: 1, z: 0}
-  m_CellGap: {x: 0, y: 0, z: 0}
-  m_CellLayout: 0
-  m_CellSwizzle: 0
 --- !u!114 &1599521575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3750,46 +3774,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1599521572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08580aa6b71fefb4283134205234fc6a, type: 3}
+  m_Script: {fileID: 11500000, guid: e36bda16023fc5f4b952874301924ce8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Palette: {fileID: 860709245}
-  AreaMask: {fileID: 140859144}
-  ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
-  RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  ClickAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  ScrollAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  MouseMoveAction: {fileID: 2544889378416833418, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  GrabTexture: {fileID: 2800000, guid: 8532c824d7d256c49b06634cd2c23dbc, type: 3}
-  EraserTexture: {fileID: 2800000, guid: 16413e80f5f850d4ca365cd4c3569c9e, type: 3}
---- !u!61 &1599521576
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1599521572}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 50, y: 50}
-  m_EdgeRadius: 0
 --- !u!1 &1601289369
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,16 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Designer
 {
-internal class DuplicateBlockError : Exception
-{}
-
-internal class EmptyBlockError : Exception
-{}
-
-internal class BlockNotErasable : Exception
-{}
-
-[RequireComponent(typeof(Grid))]
+// A high-level controller for the designer
 public class VehicleDesigner : MonoBehaviour
 {
 	#region Public Fields
@@ -25,6 +16,8 @@ public class VehicleDesigner : MonoBehaviour
 	public BlockPalette Palette;
 
 	public DesignerAreaMask AreaMask;
+
+	public VehicleBuilder Builder;
 
 	public GameObject ControlCoreBlock;
 
@@ -48,7 +41,6 @@ public class VehicleDesigner : MonoBehaviour
 	#region Private Fields
 
 	private Camera _mainCamera;
-	private Grid _grid;
 
 	private int _rotation;
 
@@ -61,22 +53,12 @@ public class VehicleDesigner : MonoBehaviour
 	private bool _dragging;
 	private Vector2Int _hoverLocation;
 	private Vector2Int? _selectedLocation;
-	private VehicleBlueprint _blueprint;
-	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posToBlock;
-	private Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]> _blockToPos;
-	private Dictionary<VehicleBlueprint.BlockInstance, GameObject> _blockToObject;
 
 	#endregion
 
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
-		_grid = GetComponent<Grid>();
-
-		_blueprint = new VehicleBlueprint();
-		_posToBlock = new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>();
-		_blockToPos = new Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]>();
-		_blockToObject = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
 	}
 
 	#region Enable and Disable
@@ -137,8 +119,8 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
-		Vector3Int gridPosition = _grid.WorldToCell(worldPosition);
-		return new Vector2Int(gridPosition.x, gridPosition.y);
+		Vector3 localPosition = transform.InverseTransformPoint(worldPosition);
+		return new Vector2Int(Mathf.RoundToInt(localPosition.x), Mathf.RoundToInt(localPosition.y));
 	}
 
 	#region Update
@@ -220,8 +202,7 @@ public class VehicleDesigner : MonoBehaviour
 				}
 			}
 
-			_preview.transform.position =
-				_grid.GetCellCenterWorld(new Vector3Int(_hoverLocation.x, _hoverLocation.y, 0));
+			_preview.transform.localPosition = new Vector3(_hoverLocation.x, _hoverLocation.y);
 
 			if (AreaMask.Hover != _prevHover || _dragging != _prevDragging)
 			{
@@ -300,15 +281,13 @@ public class VehicleDesigner : MonoBehaviour
 		Vector2Int hoverLocation = GetHoverLocation();
 		if (AreaMask.Hover)
 		{
-			var rootLocation = new Vector2Int(hoverLocation.x, hoverLocation.y);
-
 			if (Palette.SelectedIndex >= 0)
 			{
 				GameObject block = Palette.GetSelectedBlock();
 
 				try
 				{
-					AddBlock(block, rootLocation);
+					Builder.AddBlock(block, hoverLocation, _rotation);
 				}
 				catch (DuplicateBlockError error)
 				{
@@ -320,12 +299,12 @@ public class VehicleDesigner : MonoBehaviour
 				switch (Palette.SelectedIndex)
 				{
 					case BlockPalette.CURSOR_INDEX:
-						_selectedLocation = rootLocation;
+						_selectedLocation = hoverLocation;
 						break;
 					case BlockPalette.ERASE_INDEX:
 						try
 						{
-							RemoveBlock(rootLocation);
+							Builder.RemoveBlock(hoverLocation);
 						}
 						catch (EmptyBlockError)
 						{
@@ -342,142 +321,21 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void AddBlock(GameObject blockPrefab, Vector2Int rootLocation)
-	{
-		var info = blockPrefab.GetComponent<BlockInfo>();
-
-		var positions = new List<Vector2Int>();
-
-		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
-		{
-			Vector2Int globalPosition = rootLocation + RotationUtils.RotatePoint(localPosition, _rotation);
-
-			if (_posToBlock.ContainsKey(globalPosition))
-			{
-				throw new DuplicateBlockError();
-			}
-
-			positions.Add(globalPosition);
-		}
-
-		var instance = new VehicleBlueprint.BlockInstance
-		{
-			BlockID = info.BlockID,
-			X = rootLocation.x,
-			Y = rootLocation.y,
-			Rotation = _rotation
-		};
-
-		_blueprint.Blocks.Add(instance);
-		foreach (Vector2Int position in positions)
-		{
-			_posToBlock.Add(position, instance);
-		}
-
-		_blockToPos.Add(instance, positions.ToArray());
-
-		SpawnBlockGameObject(instance, blockPrefab);
-	}
-
-	private void RemoveBlock(Vector2Int location)
-	{
-		if (!_posToBlock.TryGetValue(location, out VehicleBlueprint.BlockInstance instance))
-		{
-			throw new EmptyBlockError();
-		}
-
-		var blockTemplate = BlockRegistry.Instance.GetBlock(instance.BlockID);
-		if (!blockTemplate.GetComponent<BlockInfo>().AllowErase)
-		{
-			throw new BlockNotErasable();
-		}
-
-		Vector2Int[] positions = _blockToPos[instance];
-
-		foreach (Vector2Int position in positions)
-		{
-			_posToBlock.Remove(position);
-		}
-
-		_blockToPos.Remove(instance);
-
-		_blueprint.Blocks.Remove(instance);
-
-		GameObject go = _blockToObject[instance];
-		Destroy(go);
-		_blockToObject.Remove(instance);
-	}
-
 	#endregion
-
-	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
-	{
-		GameObject go = Instantiate(blockPrefab, transform);
-		go.transform.localPosition = _grid.GetCellCenterLocal(new Vector3Int(instance.X, instance.Y, 0));
-		go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
-		go.layer = gameObject.layer;
-
-		_blockToObject.Add(instance, go);
-	}
-
-	#region Vehicle Management
-
-	private void ClearAll()
-	{
-		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
-		{
-			GameObject block = _blockToObject[instance];
-			Destroy(block);
-		}
-
-		_blueprint = new VehicleBlueprint();
-		_posToBlock.Clear();
-		_blockToPos.Clear();
-		_blockToObject.Clear();
-	}
 
 	private void InitVehicle()
 	{
-		AddBlock(ControlCoreBlock, Vector2Int.zero);
+		Builder.AddBlock(ControlCoreBlock, Vector2Int.zero, 0);
 	}
 
-	public void RenameVehicle(string vehicleName)
+	public string SaveVehicle()
 	{
-		_blueprint.Name = vehicleName;
+		return Builder.SaveVehicle();
 	}
 
-	public VehicleBlueprint SaveVehicle()
+	public void LoadVehicle(string blueprint)
 	{
-		return _blueprint;
+		Builder.LoadVehicle(blueprint);
 	}
-
-	public void LoadVehicle(VehicleBlueprint blueprint)
-	{
-		ClearAll();
-		_blueprint = blueprint;
-
-		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
-		{
-			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(instance.BlockID);
-
-			var info = blockPrefab.GetComponent<BlockInfo>();
-
-			var positions = new List<Vector2Int>();
-
-			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
-			{
-				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
-				                            + RotationUtils.RotatePoint(localPosition, instance.Rotation);
-				positions.Add(globalPosition);
-				_posToBlock.Add(globalPosition, instance);
-			}
-
-			_blockToPos.Add(instance, positions.ToArray());
-
-			SpawnBlockGameObject(instance, blockPrefab);
-		}
-	}
-
-	#endregion
 }
 }

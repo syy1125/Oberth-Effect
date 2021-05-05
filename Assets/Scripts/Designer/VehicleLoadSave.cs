@@ -87,9 +87,8 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 		Debug.Log($"Saving {FileNameInput.text}");
 
-		Designer.RenameVehicle(FileNameInput.text);
-		VehicleBlueprint blueprint = Designer.SaveVehicle();
-		string content = JsonUtility.ToJson(blueprint);
+		Designer.Builder.RenameVehicle(FileNameInput.text);
+		string content = Designer.SaveVehicle();
 		string filePath = VehicleList.ToVehiclePath(FileNameInput.text);
 		File.WriteAllText(filePath, content);
 	}
@@ -109,8 +108,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		Debug.Log($"Loading vehicle from {vehiclePath}");
 
 		string content = File.ReadAllText(vehiclePath);
-		var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
-		Designer.LoadVehicle(blueprint);
+		Designer.LoadVehicle(content);
 
 		Menu.CloseAllModals();
 	}
