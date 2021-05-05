@@ -3597,6 +3597,7 @@ GameObject:
   - component: {fileID: 1543857977}
   - component: {fileID: 1543857979}
   - component: {fileID: 1543857978}
+  - component: {fileID: 1543857980}
   m_Layer: 6
   m_Name: Designer
   m_TagString: Untagged
@@ -3633,16 +3634,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Palette: {fileID: 860709245}
   AreaMask: {fileID: 140859144}
-  Builder: {fileID: 1599521575}
   ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
+  Builder: {fileID: 1599521575}
+  Cursor: {fileID: 1543857980}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ScrollAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   MouseMoveAction: {fileID: 2544889378416833418, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  GrabTexture: {fileID: 2800000, guid: 8532c824d7d256c49b06634cd2c23dbc, type: 3}
-  EraserTexture: {fileID: 2800000, guid: 16413e80f5f850d4ca365cd4c3569c9e, type: 3}
 --- !u!156049354 &1543857979
 Grid:
   m_ObjectHideFlags: 0
@@ -3655,6 +3655,21 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!114 &1543857980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543857976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b16049ad15f494499aeaad554bc2d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetStatus: 0
+  GrabTexture: {fileID: 2800000, guid: 8532c824d7d256c49b06634cd2c23dbc, type: 3}
+  EraserTexture: {fileID: 2800000, guid: 16413e80f5f850d4ca365cd4c3569c9e, type: 3}
 --- !u!1 &1576258434
 GameObject:
   m_ObjectHideFlags: 0

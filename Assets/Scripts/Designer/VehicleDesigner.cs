@@ -17,9 +17,13 @@ public class VehicleDesigner : MonoBehaviour
 
 	public DesignerAreaMask AreaMask;
 
-	public VehicleBuilder Builder;
 
 	public GameObject ControlCoreBlock;
+
+	[Header("Components")]
+	public VehicleBuilder Builder;
+
+	public DesignerCursor Cursor;
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
@@ -30,11 +34,6 @@ public class VehicleDesigner : MonoBehaviour
 	public InputActionReference PanAction;
 	public InputActionReference DragAction;
 	public InputActionReference MouseMoveAction;
-
-	[Header("Grabbing")]
-	public Texture2D GrabTexture;
-
-	public Texture2D EraserTexture;
 
 	#endregion
 
@@ -92,7 +91,7 @@ public class VehicleDesigner : MonoBehaviour
 		ClickAction.action.performed -= HandleClick;
 		DisableActions();
 
-		Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+		Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
 	}
 
 	private void DisableActions()
@@ -215,15 +214,15 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (_dragging)
 		{
-			Cursor.SetCursor(GrabTexture, new Vector2(50f, 50f), CursorMode.Auto);
+			Cursor.TargetStatus = DesignerCursor.CursorStatus.Drag;
 		}
 		else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
 		{
-			Cursor.SetCursor(EraserTexture, new Vector2(10, 10), CursorMode.Auto);
+			Cursor.TargetStatus = DesignerCursor.CursorStatus.Eraser;
 		}
 		else
 		{
-			Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+			Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
 		}
 	}
 
