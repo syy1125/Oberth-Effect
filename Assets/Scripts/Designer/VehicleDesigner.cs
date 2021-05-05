@@ -9,14 +9,13 @@ public class VehicleDesigner : MonoBehaviour
 	#region Public Fields
 
 	[Header("References")]
-	public BlockPalette Palette;
-
 	public DesignerAreaMask AreaMask;
-
 
 	public GameObject ControlCoreBlock;
 
 	[Header("Components")]
+	public BlockPalette Palette;
+
 	public VehicleBuilder Builder;
 
 	public DesignerCursor Cursor;
