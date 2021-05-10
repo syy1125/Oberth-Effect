@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5188369339111014238}
   - component: {fileID: 4463412459619210807}
   m_Layer: 0
-  m_Name: Small Ion Thruster
+  m_Name: Small Ion Engine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,14 +127,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowInDesigner: 1
   AllowErase: 1
-  BlockID: Small Ion Thruster
-  ShortName: Small Ion Thruster
-  FullName: Small Ion Thruster
+  BlockID: Small Ion Engine
+  ShortName: Small Ion Engine
+  FullName: Small Ion Engine
   MaxHealth: 50
   IntegrityScore: 0.75
   Bounds:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 1, y: 1, z: 1}
+  AttachmentPoints:
+  - {x: 1, y: 0}
+  - {x: -1, y: 0}
+  - {x: 0, y: 1}
   CenterOfMass: {x: 0, y: 0}
   Mass: 1
   MomentOfInertia: 0.16666667

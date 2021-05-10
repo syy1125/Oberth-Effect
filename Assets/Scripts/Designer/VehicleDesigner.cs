@@ -13,8 +13,6 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
 
-	public GameObject ControlCoreBlock;
-
 	[Header("Block Notifications")]
 	public GameObject BlockWarningPrefab;
 
@@ -58,14 +56,21 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int _hoverLocation;
 	private Vector2Int? _selectedLocation;
 
+	private HashSet<Vector2Int> _conflicts;
+	private HashSet<Vector2Int> _disconnections;
 	private Dictionary<Vector2Int, GameObject> _warningObjects;
+	private bool _warningChanged;
 
 	#endregion
 
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
+
+		_conflicts = new HashSet<Vector2Int>();
+		_disconnections = new HashSet<Vector2Int>();
 		_warningObjects = new Dictionary<Vector2Int, GameObject>();
+		_warningChanged = false;
 	}
 
 	#region Enable and Disable
@@ -118,8 +123,6 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
-
-		InitVehicle();
 	}
 
 	#region Update
@@ -144,6 +147,12 @@ public class VehicleDesigner : MonoBehaviour
 		if (_dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
 		{
 			UpdateCursor();
+		}
+
+		if (_warningChanged)
+		{
+			UpdateBlockWarnings();
+			_warningChanged = false;
 		}
 	}
 
@@ -237,15 +246,35 @@ public class VehicleDesigner : MonoBehaviour
 	private void UpdateConflicts()
 	{
 		GameObject block = Palette.GetSelectedBlock();
-		HashSet<Vector2Int> newConflicts = block == null
+		_conflicts = block == null
 			? new HashSet<Vector2Int>()
 			: new HashSet<Vector2Int>(Builder.GetConflicts(block, _hoverLocation, _rotation));
+		_warningChanged = true;
+	}
+
+	private void UpdateDisconnections()
+	{
+		_disconnections = new HashSet<Vector2Int>(Builder.GetDisconnectedPositions());
+		_warningChanged = true;
+	}
+
+	private void UpdateBlockWarnings()
+	{
+		var newDisconnections = new HashSet<Vector2Int>(_disconnections);
+		var newConflicts = new HashSet<Vector2Int>(_conflicts);
 
 		foreach (KeyValuePair<Vector2Int, GameObject> pair in _warningObjects.ToArray())
 		{
-			if (newConflicts.Remove(pair.Key))
+			bool isConflict = newConflicts.Remove(pair.Key);
+			bool isDisconnected = newDisconnections.Remove(pair.Key);
+
+			if (isConflict)
 			{
 				pair.Value.GetComponent<SpriteRenderer>().color = ErrorColor;
+			}
+			else if (isDisconnected)
+			{
+				pair.Value.GetComponent<SpriteRenderer>().color = WarningColor;
 			}
 			else
 			{
@@ -261,6 +290,17 @@ public class VehicleDesigner : MonoBehaviour
 			go.GetComponent<SpriteRenderer>().color = ErrorColor;
 
 			_warningObjects.Add(conflict, go);
+
+			newDisconnections.Remove(conflict);
+		}
+
+		foreach (Vector2Int disconnection in newDisconnections)
+		{
+			GameObject go = Instantiate(BlockWarningPrefab, BlockWarningParent);
+			go.transform.localPosition = new Vector3(disconnection.x, disconnection.y);
+			go.GetComponent<SpriteRenderer>().color = WarningColor;
+
+			_warningObjects.Add(disconnection, go);
 		}
 	}
 
@@ -324,6 +364,7 @@ public class VehicleDesigner : MonoBehaviour
 				try
 				{
 					Builder.AddBlock(block, _hoverLocation, _rotation);
+					UpdateDisconnections();
 				}
 				catch (DuplicateBlockError error)
 				{
@@ -341,6 +382,7 @@ public class VehicleDesigner : MonoBehaviour
 						try
 						{
 							Builder.RemoveBlock(_hoverLocation);
+							UpdateDisconnections();
 						}
 						catch (EmptyBlockError)
 						{
@@ -358,11 +400,6 @@ public class VehicleDesigner : MonoBehaviour
 	}
 
 	#endregion
-
-	private void InitVehicle()
-	{
-		Builder.AddBlock(ControlCoreBlock, Vector2Int.zero, 0);
-	}
 
 	public string SaveVehicle()
 	{

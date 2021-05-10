@@ -3747,7 +3747,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AreaMask: {fileID: 140859144}
-  ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
   BlockWarningPrefab: {fileID: 8944186962344769619, guid: 57171fae88763a14ebe40742e64b3a65, type: 3}
   BlockWarningParent: {fileID: 1286245954}
   WarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -3910,6 +3909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e36bda16023fc5f4b952874301924ce8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ControlCoreBlock: {fileID: 7025115410308415482, guid: 52e5070fb98b1cc4c8482744b17c6646, type: 3}
 --- !u!1 &1601289369
 GameObject:
   m_ObjectHideFlags: 0

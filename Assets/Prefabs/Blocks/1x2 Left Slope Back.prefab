@@ -135,6 +135,10 @@ MonoBehaviour:
   Bounds:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 1, y: 1, z: 1}
+  AttachmentPoints:
+  - {x: 1, y: 0}
+  - {x: 0, y: 1}
+  - {x: 0, y: -1}
   CenterOfMass: {x: 0.11111111, y: -0.055555556}
   Mass: 0.75
   MomentOfInertia: 0.103009
