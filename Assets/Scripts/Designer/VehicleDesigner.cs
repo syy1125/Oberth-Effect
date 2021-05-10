@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +14,14 @@ public class VehicleDesigner : MonoBehaviour
 	public DesignerAreaMask AreaMask;
 
 	public GameObject ControlCoreBlock;
+
+	[Header("Block Notifications")]
+	public GameObject BlockWarningPrefab;
+
+	public Transform BlockWarningParent;
+
+	public Color WarningColor = Color.yellow;
+	public Color ErrorColor = Color.red;
 
 	[Header("Components")]
 	public BlockPalette Palette;
@@ -48,11 +58,14 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int _hoverLocation;
 	private Vector2Int? _selectedLocation;
 
+	private Dictionary<Vector2Int, GameObject> _warningObjects;
+
 	#endregion
 
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
+		_warningObjects = new Dictionary<Vector2Int, GameObject>();
 	}
 
 	#region Enable and Disable
@@ -125,6 +138,7 @@ public class VehicleDesigner : MonoBehaviour
 		)
 		{
 			UpdatePreview();
+			UpdateConflicts();
 		}
 
 		if (_dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
@@ -217,6 +231,36 @@ public class VehicleDesigner : MonoBehaviour
 		else
 		{
 			Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
+		}
+	}
+
+	private void UpdateConflicts()
+	{
+		GameObject block = Palette.GetSelectedBlock();
+		HashSet<Vector2Int> newConflicts = block == null
+			? new HashSet<Vector2Int>()
+			: new HashSet<Vector2Int>(Builder.GetConflicts(block, _hoverLocation, _rotation));
+
+		foreach (KeyValuePair<Vector2Int, GameObject> pair in _warningObjects.ToArray())
+		{
+			if (newConflicts.Remove(pair.Key))
+			{
+				pair.Value.GetComponent<SpriteRenderer>().color = ErrorColor;
+			}
+			else
+			{
+				Destroy(pair.Value);
+				_warningObjects.Remove(pair.Key);
+			}
+		}
+
+		foreach (Vector2Int conflict in newConflicts)
+		{
+			GameObject go = Instantiate(BlockWarningPrefab, BlockWarningParent);
+			go.transform.localPosition = new Vector3(conflict.x, conflict.y);
+			go.GetComponent<SpriteRenderer>().color = ErrorColor;
+
+			_warningObjects.Add(conflict, go);
 		}
 	}
 

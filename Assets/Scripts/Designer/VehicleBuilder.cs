@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
@@ -41,16 +42,31 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Add(instance, go);
 	}
 
+	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockInfo info, Vector2Int rootLocation, int rotation)
+	{
+		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+		{
+			yield return rootLocation + RotationUtils.RotatePoint(localPosition, rotation);
+		}
+	}
+
+	public List<Vector2Int> GetConflicts(GameObject blockPrefab, Vector2Int rootLocation, int rotation)
+	{
+		var info = blockPrefab.GetComponent<BlockInfo>();
+
+		return AllPositionsOccupiedBy(info, rootLocation, rotation)
+			.Where(position => _posToBlock.ContainsKey(position))
+			.ToList();
+	}
+
 	public void AddBlock(GameObject blockPrefab, Vector2Int rootLocation, int rotation)
 	{
 		var info = blockPrefab.GetComponent<BlockInfo>();
 
 		var positions = new List<Vector2Int>();
 
-		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+		foreach (Vector2Int globalPosition in AllPositionsOccupiedBy(info, rootLocation, rotation))
 		{
-			Vector2Int globalPosition = rootLocation + RotationUtils.RotatePoint(localPosition, rotation);
-
 			if (_posToBlock.ContainsKey(globalPosition))
 			{
 				throw new DuplicateBlockError();
