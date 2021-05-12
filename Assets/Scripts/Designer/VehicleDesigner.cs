@@ -51,7 +51,9 @@ public class VehicleDesigner : MonoBehaviour
 	private int _prevIndex;
 	private Vector2Int? _prevLocation;
 	private bool _prevDragging;
+	private Vector2Int? _prevClick;
 
+	private Vector2Int? _clickLocation;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
 	private Vector2Int _hoverLocation;
@@ -82,7 +84,6 @@ public class VehicleDesigner : MonoBehaviour
 
 		EnableActions();
 		RotateAction.action.performed += HandleRotate;
-		ClickAction.action.performed += HandleClick;
 
 		UpdateCursor();
 	}
@@ -102,7 +103,6 @@ public class VehicleDesigner : MonoBehaviour
 		Palette.OnIndexChanged -= HandleIndexChange;
 
 		RotateAction.action.performed -= HandleRotate;
-		ClickAction.action.performed -= HandleClick;
 		DisableActions();
 
 		Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
@@ -133,6 +133,7 @@ public class VehicleDesigner : MonoBehaviour
 		UpdateHover();
 		UpdateDragging();
 		UpdateScroll();
+		UpdateClick();
 
 		if (
 			Palette.SelectedIndex != _prevIndex
@@ -148,6 +149,11 @@ public class VehicleDesigner : MonoBehaviour
 		if (Dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
 		{
 			UpdateCursor();
+		}
+
+		if (_clickLocation != _prevClick)
+		{
+			UpdatePaletteUse();
 		}
 
 		if (_warningChanged)
@@ -194,6 +200,20 @@ public class VehicleDesigner : MonoBehaviour
 			Vector3 worldDelta = transform.TransformVector(newLocalPosition - oldLocalPosition);
 
 			transform.position += worldDelta;
+		}
+	}
+
+	private void UpdateClick()
+	{
+		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging;
+
+		if (click)
+		{
+			_clickLocation = _hoverLocation;
+		}
+		else
+		{
+			_clickLocation = null;
 		}
 	}
 
@@ -249,6 +269,51 @@ public class VehicleDesigner : MonoBehaviour
 		else
 		{
 			Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
+		}
+	}
+
+	private void UpdatePaletteUse()
+	{
+		if (_clickLocation == null) return;
+
+		if (Palette.SelectedIndex >= 0)
+		{
+			GameObject block = Palette.GetSelectedBlock();
+
+			try
+			{
+				Builder.AddBlock(block, _hoverLocation, _rotation);
+				UpdateDisconnections();
+			}
+			catch (DuplicateBlockError error)
+			{
+				// TODO
+			}
+		}
+		else
+		{
+			switch (Palette.SelectedIndex)
+			{
+				case BlockPalette.CURSOR_INDEX:
+					_selectedLocation = _hoverLocation;
+					break;
+				case BlockPalette.ERASE_INDEX:
+					try
+					{
+						Builder.RemoveBlock(_hoverLocation);
+						UpdateDisconnections();
+					}
+					catch (EmptyBlockError)
+					{
+						// TODO
+					}
+					catch (BlockNotErasable)
+					{
+						// TODO
+					}
+
+					break;
+			}
 		}
 	}
 
@@ -319,6 +384,7 @@ public class VehicleDesigner : MonoBehaviour
 		_prevHover = AreaMask.Hover;
 		_prevIndex = Palette.SelectedIndex;
 		_prevLocation = _hoverLocation;
+		_prevClick = _clickLocation;
 
 		if (_dragHandle != null)
 		{
@@ -365,51 +431,51 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void HandleClick(InputAction.CallbackContext context)
-	{
-		if (AreaMask.Hover)
-		{
-			if (Palette.SelectedIndex >= 0)
-			{
-				GameObject block = Palette.GetSelectedBlock();
-
-				try
-				{
-					Builder.AddBlock(block, _hoverLocation, _rotation);
-					UpdateDisconnections();
-				}
-				catch (DuplicateBlockError error)
-				{
-					// TODO
-				}
-			}
-			else
-			{
-				switch (Palette.SelectedIndex)
-				{
-					case BlockPalette.CURSOR_INDEX:
-						_selectedLocation = _hoverLocation;
-						break;
-					case BlockPalette.ERASE_INDEX:
-						try
-						{
-							Builder.RemoveBlock(_hoverLocation);
-							UpdateDisconnections();
-						}
-						catch (EmptyBlockError)
-						{
-							// TODO
-						}
-						catch (BlockNotErasable)
-						{
-							// TODO
-						}
-
-						break;
-				}
-			}
-		}
-	}
+	// private void HandleClick(InputAction.CallbackContext context)
+	// {
+	// 	if (AreaMask.Hover)
+	// 	{
+	// 		if (Palette.SelectedIndex >= 0)
+	// 		{
+	// 			GameObject block = Palette.GetSelectedBlock();
+	//
+	// 			try
+	// 			{
+	// 				Builder.AddBlock(block, _hoverLocation, _rotation);
+	// 				UpdateDisconnections();
+	// 			}
+	// 			catch (DuplicateBlockError error)
+	// 			{
+	// 				// TODO
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			switch (Palette.SelectedIndex)
+	// 			{
+	// 				case BlockPalette.CURSOR_INDEX:
+	// 					_selectedLocation = _hoverLocation;
+	// 					break;
+	// 				case BlockPalette.ERASE_INDEX:
+	// 					try
+	// 					{
+	// 						Builder.RemoveBlock(_hoverLocation);
+	// 						UpdateDisconnections();
+	// 					}
+	// 					catch (EmptyBlockError)
+	// 					{
+	// 						// TODO
+	// 					}
+	// 					catch (BlockNotErasable)
+	// 					{
+	// 						// TODO
+	// 					}
+	//
+	// 					break;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	#endregion
 
