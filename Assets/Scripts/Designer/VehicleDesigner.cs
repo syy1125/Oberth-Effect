@@ -431,53 +431,19 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	// private void HandleClick(InputAction.CallbackContext context)
-	// {
-	// 	if (AreaMask.Hover)
-	// 	{
-	// 		if (Palette.SelectedIndex >= 0)
-	// 		{
-	// 			GameObject block = Palette.GetSelectedBlock();
-	//
-	// 			try
-	// 			{
-	// 				Builder.AddBlock(block, _hoverLocation, _rotation);
-	// 				UpdateDisconnections();
-	// 			}
-	// 			catch (DuplicateBlockError error)
-	// 			{
-	// 				// TODO
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			switch (Palette.SelectedIndex)
-	// 			{
-	// 				case BlockPalette.CURSOR_INDEX:
-	// 					_selectedLocation = _hoverLocation;
-	// 					break;
-	// 				case BlockPalette.ERASE_INDEX:
-	// 					try
-	// 					{
-	// 						Builder.RemoveBlock(_hoverLocation);
-	// 						UpdateDisconnections();
-	// 					}
-	// 					catch (EmptyBlockError)
-	// 					{
-	// 						// TODO
-	// 					}
-	// 					catch (BlockNotErasable)
-	// 					{
-	// 						// TODO
-	// 					}
-	//
-	// 					break;
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	#endregion
+
+	public List<string> GetVehicleErrors()
+	{
+		var messages = new List<string>();
+
+		if (_disconnections.Count > 0)
+		{
+			messages.Add("Some blocks are disconnected");
+		}
+
+		return messages;
+	}
 
 	public string SaveVehicle()
 	{

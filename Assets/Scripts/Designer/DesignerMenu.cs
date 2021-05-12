@@ -12,10 +12,17 @@ public class DesignerMenu : MonoBehaviour
 	public InputActionReference MenuAction;
 
 	[Header("References")]
+	public VehicleDesigner Designer;
+
 	public GameObject Backdrop;
 
 	public GameObject BaseMenu;
+
+	public NotificationDialog Notification;
+
+	[Header("Events")]
 	public UnityEvent OnMenuOpen;
+
 	public UnityEvent OnMenuClosed;
 
 	private bool _enabled;
@@ -108,6 +115,21 @@ public class DesignerMenu : MonoBehaviour
 		}
 
 		CloseMenu();
+	}
+
+	public void OpenSaveVehicle(GameObject saveModal)
+	{
+		List<string> errors = Designer.GetVehicleErrors();
+
+		if (errors.Count > 0)
+		{
+			Notification.SetContent("Invalid design:\n" + string.Join("\n", errors));
+			OpenModal(Notification.gameObject);
+		}
+		else
+		{
+			OpenModal(saveModal);
+		}
 	}
 
 	public void ToMainMenu()
