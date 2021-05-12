@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NebulaBackdrop : MonoBehaviour
@@ -8,7 +9,10 @@ public class NebulaBackdrop : MonoBehaviour
 
 	private Transform _parent;
 	private Camera _mainCamera;
-	private BoundsInt _generated;
+	private Vector3 _baseScale;
+	private float _originalSize;
+
+	private HashSet<Vector3Int> _generated;
 
 	private MaterialPropertyBlock _materialProperty;
 	private int _nextSeed;
@@ -17,20 +21,18 @@ public class NebulaBackdrop : MonoBehaviour
 	{
 		_parent = transform.parent;
 		_mainCamera = Camera.main;
-		_generated = new BoundsInt();
+		_baseScale = transform.localScale;
+
+
+		_generated = new HashSet<Vector3Int>();
 		_materialProperty = new MaterialPropertyBlock();
 		_nextSeed = 0;
 
 		if (_mainCamera != null)
 		{
-			Vector2 minPoint = transform.InverseTransformPoint(_mainCamera.ViewportToWorldPoint(Vector3.zero));
-			Vector2 maxPoint = transform.InverseTransformPoint(_mainCamera.ViewportToWorldPoint(Vector3.one));
-			_generated.SetMinMax(
-				new Vector3Int(Mathf.FloorToInt(minPoint.x) - 1, Mathf.FloorToInt(minPoint.y) - 1, 0),
-				new Vector3Int(Mathf.CeilToInt(maxPoint.x) + 1, Mathf.CeilToInt(maxPoint.y) + 1, 1)
-			);
+			_originalSize = _mainCamera.orthographicSize;
 
-			foreach (Vector3Int position in _generated.allPositionsWithin)
+			foreach (Vector3Int position in GetCameraBounds(_mainCamera).allPositionsWithin)
 			{
 				bool spawnNebula = Random.value < Density;
 
@@ -38,8 +40,25 @@ public class NebulaBackdrop : MonoBehaviour
 				{
 					SpawnNebula(position);
 				}
+
+				_generated.Add(position);
 			}
 		}
+	}
+
+	private BoundsInt GetCameraBounds(Camera cam)
+	{
+		Vector2 minPoint = transform.InverseTransformPoint(cam.ViewportToWorldPoint(Vector3.zero));
+		Vector2 maxPoint = transform.InverseTransformPoint(cam.ViewportToWorldPoint(Vector3.one));
+
+		var bounds = new BoundsInt();
+
+		bounds.SetMinMax(
+			new Vector3Int(Mathf.FloorToInt(minPoint.x) - 1, Mathf.FloorToInt(minPoint.y) - 1, 0),
+			new Vector3Int(Mathf.CeilToInt(maxPoint.x) + 1, Mathf.CeilToInt(maxPoint.y) + 1, 1)
+		);
+
+		return bounds;
 	}
 
 	private void SpawnNebula(Vector3Int position)
@@ -65,16 +84,10 @@ public class NebulaBackdrop : MonoBehaviour
 
 		if (_mainCamera != null)
 		{
-			Vector2 minPoint = transform.InverseTransformPoint(_mainCamera.ViewportToWorldPoint(Vector3.zero));
-			Vector2 maxPoint = transform.InverseTransformPoint(_mainCamera.ViewportToWorldPoint(Vector3.one));
+			transform.localScale =
+				_baseScale * Mathf.Lerp(1, _mainCamera.orthographicSize / _originalSize, 1f - Parallax);
 
-			var bounds = new BoundsInt();
-			bounds.SetMinMax(
-				new Vector3Int(Mathf.FloorToInt(minPoint.x) - 1, Mathf.FloorToInt(minPoint.y) - 1, 0),
-				new Vector3Int(Mathf.CeilToInt(maxPoint.x) + 1, Mathf.CeilToInt(maxPoint.y) + 1, 1)
-			);
-
-			foreach (Vector3Int position in bounds.allPositionsWithin)
+			foreach (Vector3Int position in GetCameraBounds(_mainCamera).allPositionsWithin)
 			{
 				if (_generated.Contains(position)) continue;
 
@@ -84,12 +97,9 @@ public class NebulaBackdrop : MonoBehaviour
 				{
 					SpawnNebula(position);
 				}
-			}
 
-			_generated.SetMinMax(
-				Vector3Int.Min(_generated.min, bounds.min),
-				Vector3Int.Max(_generated.max, bounds.max)
-			);
+				_generated.Add(position);
+			}
 		}
 	}
 }

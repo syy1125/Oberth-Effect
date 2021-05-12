@@ -171,15 +171,14 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateScroll()
 	{
-		var scroll = ScrollAction.action.ReadValue<Vector2>();
+		var scroll = ScrollAction.action.ReadValue<float>();
 		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-		if (AreaMask.Hover && Mathf.Abs(scroll.y) > Mathf.Epsilon)
+		if (AreaMask.Hover && Mathf.Abs(scroll) > Mathf.Epsilon)
 		{
 			Vector3 oldLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
 
-			float zoom = Mathf.Sign(scroll.y);
-			transform.localScale *= Mathf.Exp(zoom / 10f);
+			transform.localScale *= Mathf.Exp(scroll / 10f);
 
 			Vector3 newLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
 			Vector3 worldDelta = transform.TransformVector(newLocalPosition - oldLocalPosition);

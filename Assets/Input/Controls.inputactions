@@ -36,6 +36,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "030e9137-61bc-4876-9455-111081c3559c",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -247,6 +255,17 @@
                     "action": "Strafe",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "b3639429-ab37-4605-b27c-294b3710f18c",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.01)",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -280,9 +299,9 @@
                 },
                 {
                     "name": "Zoom",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "4fdc603a-ab79-4038-bf36-2c3e78e72295",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 },
@@ -455,9 +474,9 @@
                 {
                     "name": "",
                     "id": "cb563e06-e63e-43ab-9c4d-53abb9e9969b",
-                    "path": "<Mouse>/scroll",
+                    "path": "<Mouse>/scroll/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.01)",
                     "groups": "Keyboard&Mouse",
                     "action": "Zoom",
                     "isComposite": false,
