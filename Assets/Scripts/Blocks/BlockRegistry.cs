@@ -34,7 +34,12 @@ public class BlockRegistry : MonoBehaviour
 
 	public GameObject GetBlock(string blockId)
 	{
-		return _blockById.TryGetValue(blockId, out GameObject block) ? block : null;
+		if (!_blockById.TryGetValue(blockId, out GameObject block))
+		{
+			Debug.LogError($"Unknown block {blockId}");
+		}
+
+		return block;
 	}
 }
 }

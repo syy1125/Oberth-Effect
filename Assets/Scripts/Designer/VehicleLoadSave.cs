@@ -16,6 +16,8 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 	public DesignerMenu Menu;
 
+	public NotificationDialog Notification;
+
 	[Header("Internal References")]
 	public VehicleList VehicleList;
 
@@ -91,6 +93,10 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		string content = Designer.SaveVehicle();
 		string filePath = VehicleList.ToVehiclePath(FileNameInput.text);
 		File.WriteAllText(filePath, content);
+
+		Notification.SetContent($"Vehicle {FileNameInput.text} saved!");
+		Menu.CloseTopModal();
+		Menu.OpenModal(Notification.gameObject);
 	}
 
 	private void LoadVehicle()
