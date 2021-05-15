@@ -53,6 +53,7 @@ public class VehicleDesigner : MonoBehaviour
 	private bool _prevDragging;
 	private Vector2Int? _prevClick;
 
+	private float _zoomScale;
 	private Vector2Int? _clickLocation;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
@@ -124,6 +125,9 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
+
+		_zoomScale = 1;
+		transform.localScale = Vector3.one * _zoomScale;
 	}
 
 	#region Update
@@ -131,7 +135,7 @@ public class VehicleDesigner : MonoBehaviour
 	private void Update()
 	{
 		UpdateHover();
-		UpdateDragging();
+		UpdateDragState();
 		UpdateScroll();
 		UpdateClick();
 
@@ -161,6 +165,14 @@ public class VehicleDesigner : MonoBehaviour
 			UpdateBlockWarnings();
 			_warningChanged = false;
 		}
+
+		UpdateDragPosition();
+
+		_prevDragging = Dragging;
+		_prevHover = AreaMask.Hover;
+		_prevIndex = Palette.SelectedIndex;
+		_prevLocation = _hoverLocation;
+		_prevClick = _clickLocation;
 	}
 
 	private void UpdateHover()
@@ -171,7 +183,7 @@ public class VehicleDesigner : MonoBehaviour
 		_hoverLocation = new Vector2Int(Mathf.RoundToInt(localPosition.x), Mathf.RoundToInt(localPosition.y));
 	}
 
-	private void UpdateDragging()
+	private void UpdateDragState()
 	{
 		bool dragging = AreaMask.Hover && DragAction.action.ReadValue<float>() > 0.5f;
 
@@ -194,7 +206,8 @@ public class VehicleDesigner : MonoBehaviour
 		{
 			Vector3 oldLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
 
-			transform.localScale *= Mathf.Exp(scroll / 10f);
+			_zoomScale = Mathf.Clamp(_zoomScale * Mathf.Exp(scroll / 10f), 0.1f, 10f);
+			transform.localScale = Vector3.one * _zoomScale;
 
 			Vector3 newLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
 			Vector3 worldDelta = transform.TransformVector(newLocalPosition - oldLocalPosition);
@@ -378,14 +391,8 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void LateUpdate()
+	private void UpdateDragPosition()
 	{
-		_prevDragging = Dragging;
-		_prevHover = AreaMask.Hover;
-		_prevIndex = Palette.SelectedIndex;
-		_prevLocation = _hoverLocation;
-		_prevClick = _clickLocation;
-
 		if (_dragHandle != null)
 		{
 			Vector3 mousePosition = GetLocalMousePosition();
@@ -393,7 +400,7 @@ public class VehicleDesigner : MonoBehaviour
 		}
 		else
 		{
-			transform.position -= Time.deltaTime * 2.5f * (Vector3) PanAction.action.ReadValue<Vector2>();
+			transform.Translate(Time.deltaTime * -4f * (Vector3) PanAction.action.ReadValue<Vector2>(), Space.Self);
 		}
 	}
 

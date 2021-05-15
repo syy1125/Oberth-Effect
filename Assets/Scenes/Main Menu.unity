@@ -274,7 +274,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 336136569}
   m_OnClick:
     m_PersistentCalls:
@@ -443,7 +443,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 992058889}
   m_OnClick:
     m_PersistentCalls:
@@ -526,7 +526,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Options
+  m_Text: Options [NYI]
 --- !u!222 &336136570
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1037,7 +1037,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Credits
+  m_Text: Credits [NYI]
 --- !u!222 &992058890
 CanvasRenderer:
   m_ObjectHideFlags: 0
