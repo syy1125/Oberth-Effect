@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
-using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +26,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public GameObject VehicleSelectionScreen;
 	public VehicleList VehicleList;
 
+	public Button SelectVehicleButton;
 	public Button ReadyButton;
 	public Button StartGameButton;
 
@@ -35,6 +35,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private SortedDictionary<int, GameObject> _playerPanels;
 	private string _selectedVehicleName;
+	private bool _ready;
 
 	public static string SelectedVehicle { get; private set; }
 
@@ -57,12 +58,17 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
-		// TODO ready/unready
+		_ready = false;
+		SelectVehicleButton.interactable = true;
+		ReadyButton.interactable = false;
+		SelectVehicleButton.onClick.AddListener(OpenVehicleSelection);
+		ReadyButton.onClick.AddListener(ToggleReady);
 		StartGameButton.onClick.AddListener(StartGame);
 
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UseMasterControls();
+			UpdateMasterControls();
 		}
 		else
 		{
@@ -86,6 +92,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
+		SelectVehicleButton.onClick.RemoveListener(OpenVehicleSelection);
+		ReadyButton.onClick.RemoveListener(ToggleReady);
 		StartGameButton.onClick.RemoveListener(StartGame);
 
 		foreach (GameObject go in _playerPanels.Values)
@@ -116,6 +124,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		GameObject go = Instantiate(PlayerPanelPrefab, PlayerListParent);
 		go.GetComponent<PlayerPanel>().AssignPlayer(player);
 		_playerPanels.Add(player.ActorNumber, go);
+
+		if (PhotonNetwork.LocalPlayer.IsMasterClient)
+		{
+			UpdateMasterControls();
+		}
 	}
 
 	public override void OnPlayerLeftRoom(Player player)
@@ -123,6 +136,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UseMasterControls();
+			UpdateMasterControls();
 		}
 		else
 		{
@@ -133,9 +147,14 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		_playerPanels.Remove(player.ActorNumber);
 	}
 
-	public override void OnPlayerPropertiesUpdate(Player player, Hashtable props)
+	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable props)
 	{
-		_playerPanels[player.ActorNumber].GetComponent<PlayerPanel>().UpdateProps(props);
+		_playerPanels[targetPlayer.ActorNumber].GetComponent<PlayerPanel>().UpdateProps(props);
+
+		if (PhotonNetwork.LocalPlayer.IsMasterClient)
+		{
+			UpdateMasterControls();
+		}
 	}
 
 	private void UseMasterControls()
@@ -156,7 +175,28 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		StartGameButton.gameObject.SetActive(false);
 	}
 
-	public void OpenVehicleSelection()
+	private void UpdateMasterControls()
+	{
+		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(
+			player => player.IsMasterClient
+				? player.CustomProperties.ContainsKey(PhotonPropertyKeys.VEHICLE_NAME)
+				  && player.CustomProperties[PhotonPropertyKeys.VEHICLE_NAME] != null
+				: player.CustomProperties.ContainsKey(PhotonPropertyKeys.READY)
+				  && (bool) player.CustomProperties[PhotonPropertyKeys.READY]
+		);
+
+		SelectVehicleButton.interactable = true;
+		StartGameButton.interactable = allReady;
+	}
+
+	private void UpdateClientControls()
+	{
+		SelectVehicleButton.interactable = !_ready;
+		ReadyButton.interactable = SelectedVehicle != null;
+		ReadyButton.GetComponentInChildren<Text>().text = _ready ? "Unready" : "Ready";
+	}
+
+	private void OpenVehicleSelection()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
 			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } }
@@ -183,6 +223,23 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		SelectedVehicle = serializedVehicle;
 
 		VehicleSelectionScreen.SetActive(false);
+
+		if (PhotonNetwork.LocalPlayer.IsMasterClient)
+		{
+			UpdateMasterControls();
+		}
+		else
+		{
+			UpdateClientControls();
+		}
+	}
+
+	private void ToggleReady()
+	{
+		_ready = !_ready;
+		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PhotonPropertyKeys.READY, _ready } });
+
+		UpdateClientControls();
 	}
 
 	public void LeaveRoom()
@@ -193,14 +250,14 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public override void OnLeftRoom()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } }
+			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null }, { PhotonPropertyKeys.READY, false } }
 		);
 
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);
 	}
 
-	private void StartGame()
+	private static void StartGame()
 	{
 		PhotonNetwork.AutomaticallySyncScene = true;
 		PhotonNetwork.CurrentRoom.IsOpen = false;

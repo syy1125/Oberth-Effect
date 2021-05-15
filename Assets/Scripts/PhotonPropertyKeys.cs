@@ -10,5 +10,6 @@ public static class PhotonPropertyKeys
 
 	// Player custom properties
 	public const string VEHICLE_NAME = "vn";
+	public const string READY = "r";
 }
 }
