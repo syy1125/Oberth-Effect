@@ -25,6 +25,8 @@ public class CameraFollow : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		if (Target == null) return;
+
 		var body = Target.GetComponent<Rigidbody2D>();
 
 		var currentPosition = new Vector2(transform.position.x, transform.position.y);

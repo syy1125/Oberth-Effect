@@ -249,9 +249,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnLeftRoom()
 	{
-		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null }, { PhotonPropertyKeys.READY, false } }
-		);
+		PhotonHelper.ClearPhotonPlayerProperties();
 
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);

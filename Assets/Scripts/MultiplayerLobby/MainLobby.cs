@@ -56,12 +56,12 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		base.OnEnable();
 
-		if (!PhotonNetwork.IsConnected)
+		if (!PhotonNetwork.IsConnectedAndReady)
 		{
 			PhotonNetwork.ConnectUsingSettings();
 			StatusIndicator.text = "Connecting...";
 		}
-		else if (!PhotonNetwork.InLobby)
+		else if (PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InLobby)
 		{
 			PhotonNetwork.JoinLobby();
 			StatusIndicator.text = "Connecting...";
