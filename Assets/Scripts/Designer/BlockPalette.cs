@@ -20,6 +20,7 @@ public class BlockPalette : MonoBehaviour
 	private GameObject[] _blocks;
 
 	public int SelectedIndex { get; private set; }
+	private int? _storedIndex; // For persisting index across disable/enable
 
 	public delegate void IndexChangeEvent();
 
@@ -31,10 +32,18 @@ public class BlockPalette : MonoBehaviour
 		EraserAction.action.Enable();
 		CursorAction.action.performed += SelectCursor;
 		EraserAction.action.performed += SelectEraser;
+
+		if (_storedIndex != null)
+		{
+			SelectBlockIndex(_storedIndex.Value);
+		}
 	}
 
 	private void OnDisable()
 	{
+		_storedIndex = SelectedIndex;
+		SelectCursor(new InputAction.CallbackContext());
+
 		CursorAction.action.performed -= SelectCursor;
 		EraserAction.action.performed -= SelectEraser;
 		CursorAction.action.Disable();

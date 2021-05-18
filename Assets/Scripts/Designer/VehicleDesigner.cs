@@ -218,7 +218,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateClick()
 	{
-		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging;
+		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging && AreaMask.Hover;
 
 		if (click)
 		{
