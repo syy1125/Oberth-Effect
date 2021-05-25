@@ -25,9 +25,9 @@ public class BlockColor : MonoBehaviour
 	private void OnEnable()
 	{
 		_sprite.GetPropertyBlock(_block);
-		_block.SetColor(PrimaryColor, _context.PrimaryColor);
-		_block.SetColor(SecondaryColor, _context.SecondaryColor);
-		_block.SetColor(TertiaryColor, _context.TertiaryColor);
+		_block.SetColor(PrimaryColor, _context.ColorScheme.PrimaryColor);
+		_block.SetColor(SecondaryColor, _context.ColorScheme.SecondaryColor);
+		_block.SetColor(TertiaryColor, _context.ColorScheme.TertiaryColor);
 		_sprite.SetPropertyBlock(_block);
 
 		_context.OnPrimaryColorChanged += UpdatePrimaryColor;

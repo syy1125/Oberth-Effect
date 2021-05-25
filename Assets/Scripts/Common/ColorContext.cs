@@ -1,14 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using Photon.Pun;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common
 {
-public class ColorContext : MonoBehaviour
+public class ColorContext : MonoBehaviour, IPunInstantiateMagicCallback
 {
 	public delegate void ColorChangeEvent(Color color);
 
-	public Color PrimaryColor { get; private set; }
-	public Color SecondaryColor { get; private set; }
-	public Color TertiaryColor { get; private set; }
+	private ColorScheme _colorScheme = ColorScheme.DefaultColorScheme;
+	public ColorScheme ColorScheme => _colorScheme;
 
 	public ColorChangeEvent OnPrimaryColorChanged;
 	public ColorChangeEvent OnSecondaryColorChanged;
@@ -16,20 +17,35 @@ public class ColorContext : MonoBehaviour
 
 	public void SetPrimaryColor(Color color)
 	{
-		PrimaryColor = color;
+		_colorScheme.PrimaryColor = color;
 		OnPrimaryColorChanged?.Invoke(color);
 	}
 
 	public void SetSecondaryColor(Color color)
 	{
-		SecondaryColor = color;
+		_colorScheme.SecondaryColor = color;
 		OnSecondaryColorChanged?.Invoke(color);
 	}
 
 	public void SetTertiaryColor(Color color)
 	{
-		TertiaryColor = color;
+		_colorScheme.TertiaryColor = color;
 		OnTertiaryColorChanged?.Invoke(color);
+	}
+
+	public void SetColorScheme(ColorScheme colorScheme)
+	{
+		_colorScheme = colorScheme;
+		OnPrimaryColorChanged?.Invoke(colorScheme.PrimaryColor);
+		OnSecondaryColorChanged?.Invoke(colorScheme.SecondaryColor);
+		OnTertiaryColorChanged?.Invoke(colorScheme.TertiaryColor);
+	}
+
+	public void OnPhotonInstantiate(PhotonMessageInfo info)
+	{
+		object[] instantiationData = info.photonView.InstantiationData;
+		var colorScheme = JsonUtility.FromJson<ColorScheme>((string) instantiationData[1]);
+		SetColorScheme(colorScheme);
 	}
 }
 }

@@ -1,4 +1,4 @@
-using Syy1125.OberthEffect.Vehicle;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.UI;
 

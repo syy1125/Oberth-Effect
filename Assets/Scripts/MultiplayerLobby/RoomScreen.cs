@@ -4,6 +4,8 @@ using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Designer;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,7 +39,18 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private string _selectedVehicleName;
 	private bool _ready;
 
-	public static string SelectedVehicle { get; private set; }
+	private static string _serializedVehicle;
+	public static VehicleBlueprint SelectedVehicle { get; private set; }
+
+	public static string SerializedSelectedVehicle
+	{
+		get => _serializedVehicle;
+		private set
+		{
+			_serializedVehicle = value;
+			SelectedVehicle = value == null ? null : JsonUtility.FromJson<VehicleBlueprint>(value);
+		}
+	}
 
 	private void Awake()
 	{
@@ -53,7 +66,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
 
 		_selectedVehicleName = null;
-		SelectedVehicle = null;
+		SerializedSelectedVehicle = null;
 		VehicleList.OnSelectVehicle.AddListener(SelectVehicle);
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
@@ -192,7 +205,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private void UpdateClientControls()
 	{
 		SelectVehicleButton.interactable = !_ready;
-		ReadyButton.interactable = SelectedVehicle != null;
+		ReadyButton.interactable = SerializedSelectedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = _ready ? "Unready" : "Ready";
 	}
 
@@ -220,7 +233,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		);
 
 		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
-		SelectedVehicle = serializedVehicle;
+		SerializedSelectedVehicle = serializedVehicle;
 
 		VehicleSelectionScreen.SetActive(false);
 

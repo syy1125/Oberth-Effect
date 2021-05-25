@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Designer;
-using Syy1125.OberthEffect.Vehicle;
 using UnityEngine;
 using UnityEngine.Events;
 

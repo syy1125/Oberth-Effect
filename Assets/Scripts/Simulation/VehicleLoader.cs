@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Vehicle;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation

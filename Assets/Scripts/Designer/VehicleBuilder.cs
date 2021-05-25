@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Vehicle;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer
@@ -20,9 +20,10 @@ internal class BlockNotErasable : Exception
 // Designer component responsible for interacting with the blueprint
 public class VehicleBuilder : MonoBehaviour
 {
+	public VehicleDesigner Designer;
 	public GameObject ControlCoreBlock;
 
-	private VehicleBlueprint _blueprint;
+	private VehicleBlueprint Blueprint => Designer.Blueprint;
 
 	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posToBlock;
 	private Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]> _blockToPos;
@@ -32,7 +33,6 @@ public class VehicleBuilder : MonoBehaviour
 
 	private void Awake()
 	{
-		_blueprint = new VehicleBlueprint();
 		_posToBlock = new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>();
 		_blockToPos = new Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]>();
 		_blockToObject = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
@@ -95,7 +95,7 @@ public class VehicleBuilder : MonoBehaviour
 			Rotation = rotation
 		};
 
-		_blueprint.Blocks.Add(instance);
+		Blueprint.Blocks.Add(instance);
 		foreach (Vector2Int position in positions)
 		{
 			_posToBlock.Add(position, instance);
@@ -130,7 +130,7 @@ public class VehicleBuilder : MonoBehaviour
 
 		_blockToPos.Remove(instance);
 
-		_blueprint.Blocks.Remove(instance);
+		Blueprint.Blocks.Remove(instance);
 
 		GameObject go = _blockToObject[instance];
 		Destroy(go);
@@ -220,13 +220,12 @@ public class VehicleBuilder : MonoBehaviour
 
 	private void ClearAll()
 	{
-		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
+		foreach (VehicleBlueprint.BlockInstance instance in _blockToObject.Keys.ToArray())
 		{
 			GameObject block = _blockToObject[instance];
 			Destroy(block);
 		}
 
-		_blueprint = new VehicleBlueprint();
 		_posToBlock.Clear();
 		_blockToPos.Clear();
 		_blockToObject.Clear();
@@ -234,21 +233,14 @@ public class VehicleBuilder : MonoBehaviour
 
 	public void RenameVehicle(string vehicleName)
 	{
-		_blueprint.Name = vehicleName;
+		Blueprint.Name = vehicleName;
 	}
 
-	public string SaveVehicle()
-	{
-		return JsonUtility.ToJson(_blueprint);
-	}
-
-	public void LoadVehicle(string blueprint)
+	public void ReloadVehicle()
 	{
 		ClearAll();
 
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
-
-		foreach (VehicleBlueprint.BlockInstance instance in _blueprint.Blocks)
+		foreach (VehicleBlueprint.BlockInstance instance in Blueprint.Blocks)
 		{
 			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(instance.BlockID);
 

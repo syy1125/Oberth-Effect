@@ -64,7 +64,7 @@ public class ColorPicker : MonoBehaviour
 	private void OnEnable()
 	{
 		UnpackColor();
-		EmitColor();
+		UpdateElements();
 
 		VisualSlider.onValueChanged.AddListener(SetVisualHue);
 		VisualSquare.OnChange.AddListener(SetSaturationAndValue);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Syy1125.OberthEffect.Vehicle
+namespace Syy1125.OberthEffect.Common
 {
 [Serializable]
 public class VehicleBlueprint

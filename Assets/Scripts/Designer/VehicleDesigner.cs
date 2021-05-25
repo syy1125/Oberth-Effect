@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,9 +24,8 @@ public class VehicleDesigner : MonoBehaviour
 
 	[Header("Components")]
 	public BlockPalette Palette;
-
 	public VehicleBuilder Builder;
-
+	public CraftConfig Config;
 	public DesignerCursor Cursor;
 
 	[Header("Input Actions")]
@@ -40,9 +40,19 @@ public class VehicleDesigner : MonoBehaviour
 
 	#endregion
 
-	#region Private Fields
+	#region Public Properties
+
+	public VehicleBlueprint Blueprint { get; private set; }
+
+	#endregion
+
+	#region Private Components
 
 	private Camera _mainCamera;
+
+	#endregion
+
+	#region Private States
 
 	private int _rotation;
 
@@ -69,6 +79,8 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Awake()
 	{
+		Blueprint = new VehicleBlueprint();
+
 		_mainCamera = Camera.main;
 
 		_conflicts = new HashSet<Vector2Int>();
@@ -454,12 +466,14 @@ public class VehicleDesigner : MonoBehaviour
 
 	public string SaveVehicle()
 	{
-		return Builder.SaveVehicle();
+		return JsonUtility.ToJson(Blueprint);
 	}
 
-	public void LoadVehicle(string blueprint)
+	public void LoadVehicle(string blueprintString)
 	{
-		Builder.LoadVehicle(blueprint);
+		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprintString);
+		Config.ReloadVehicle();
+		Builder.ReloadVehicle();
 	}
 }
 }

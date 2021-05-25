@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1496067975417197364}
   - component: {fileID: 8509090524700470636}
   - component: {fileID: 8509090524700470639}
+  - component: {fileID: -3674230021090741243}
   m_Layer: 0
   m_Name: Multiplayer Vehicle
   m_TagString: Player
@@ -142,3 +143,15 @@ MonoBehaviour:
   RotateResponse: 5
   RotateDerivativeTime: 2
   RotateIntegralTime: 1
+--- !u!114 &-3674230021090741243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8509090524700470632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc0d4f459c44761a86fdedf0f000736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
