@@ -49,7 +49,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		base.OnEnable();
 
 		RoomName.text = RoomNameInput.text =
-			(string) PhotonNetwork.CurrentRoom.CustomProperties[PhotonPropertyKeys.ROOM_NAME];
+			(string) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.ROOM_NAME];
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
 
 		_selectedVehicleName = null;
@@ -106,16 +106,16 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnRoomPropertiesUpdate(Hashtable nextProps)
 	{
-		if (nextProps.ContainsKey(PhotonPropertyKeys.ROOM_NAME))
+		if (nextProps.ContainsKey(PropertyKeys.ROOM_NAME))
 		{
-			RoomName.text = RoomNameInput.text = (string) nextProps[PhotonPropertyKeys.ROOM_NAME];
+			RoomName.text = RoomNameInput.text = (string) nextProps[PropertyKeys.ROOM_NAME];
 		}
 	}
 
 	private void SetRoomName(string roomName)
 	{
 		PhotonNetwork.CurrentRoom.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.ROOM_NAME, roomName } }
+			new Hashtable { { PropertyKeys.ROOM_NAME, roomName } }
 		);
 	}
 
@@ -179,10 +179,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(
 			player => player.IsMasterClient
-				? player.CustomProperties.ContainsKey(PhotonPropertyKeys.VEHICLE_NAME)
-				  && player.CustomProperties[PhotonPropertyKeys.VEHICLE_NAME] != null
-				: player.CustomProperties.ContainsKey(PhotonPropertyKeys.READY)
-				  && (bool) player.CustomProperties[PhotonPropertyKeys.READY]
+				? player.CustomProperties.ContainsKey(PropertyKeys.VEHICLE_NAME)
+				  && player.CustomProperties[PropertyKeys.VEHICLE_NAME] != null
+				: player.CustomProperties.ContainsKey(PropertyKeys.READY)
+				  && (bool) player.CustomProperties[PropertyKeys.READY]
 		);
 
 		SelectVehicleButton.interactable = true;
@@ -199,7 +199,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private void OpenVehicleSelection()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null } }
+			new Hashtable { { PropertyKeys.VEHICLE_NAME, null } }
 		);
 		VehicleSelectionScreen.SetActive(true);
 	}
@@ -216,7 +216,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private void LoadVehicleSelection()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, _selectedVehicleName } }
+			new Hashtable { { PropertyKeys.VEHICLE_NAME, _selectedVehicleName } }
 		);
 
 		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
@@ -237,7 +237,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private void ToggleReady()
 	{
 		_ready = !_ready;
-		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PhotonPropertyKeys.READY, _ready } });
+		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.READY, _ready } });
 
 		UpdateClientControls();
 	}

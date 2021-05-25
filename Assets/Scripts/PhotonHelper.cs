@@ -8,7 +8,7 @@ public static class PhotonHelper
 	public static void ClearPhotonPlayerProperties()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PhotonPropertyKeys.VEHICLE_NAME, null }, { PhotonPropertyKeys.READY, false } }
+			new Hashtable { { PropertyKeys.VEHICLE_NAME, null }, { PropertyKeys.READY, false } }
 		);
 	}
 }

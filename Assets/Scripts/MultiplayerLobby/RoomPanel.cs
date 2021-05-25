@@ -34,7 +34,7 @@ public class RoomPanel : MonoBehaviour
 	public void SetRoom(RoomInfo room)
 	{
 		_roomName = room.Name;
-		RoomNameDisplay.text = (string) room.CustomProperties[PhotonPropertyKeys.ROOM_NAME];
+		RoomNameDisplay.text = (string) room.CustomProperties[PropertyKeys.ROOM_NAME];
 	}
 
 	private void HandleClick()

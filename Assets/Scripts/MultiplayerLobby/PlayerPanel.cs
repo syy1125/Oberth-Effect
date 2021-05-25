@@ -23,7 +23,7 @@ public class PlayerPanel : MonoBehaviour
 
 	public void UpdateProps(Hashtable props)
 	{
-		if (props.ContainsKey(PhotonPropertyKeys.VEHICLE_NAME))
+		if (props.ContainsKey(PropertyKeys.VEHICLE_NAME))
 		{
 			UpdateVehicleDisplay();
 		}
@@ -31,7 +31,7 @@ public class PlayerPanel : MonoBehaviour
 
 	private void UpdateVehicleDisplay()
 	{
-		object vehicleName = _player.CustomProperties[PhotonPropertyKeys.VEHICLE_NAME];
+		object vehicleName = _player.CustomProperties[PropertyKeys.VEHICLE_NAME];
 
 		PlayerStatus.text = vehicleName == null ? "Pondering what to use" : (string) vehicleName;
 	}

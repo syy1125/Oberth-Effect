@@ -41,7 +41,14 @@ public class ToolWindows : MonoBehaviour
 		{
 			int i = index;
 			Windows[index].Button.onClick.AddListener(() => SelectIndex(i));
-			Windows[index].Window.SetActive(index == _selectedIndex);
+		}
+	}
+
+	private void Start()
+	{
+		for (var i = 0; i < Windows.Length; i++)
+		{
+			Windows[i].Window.SetActive(i == _selectedIndex);
 		}
 	}
 

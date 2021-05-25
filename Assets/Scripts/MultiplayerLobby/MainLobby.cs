@@ -12,8 +12,6 @@ namespace Syy1125.OberthEffect.MultiplayerLobby
 {
 public class MainLobby : MonoBehaviourPunCallbacks
 {
-	private const string PLAYER_NAME_KEY = "NickName";
-
 	[Header("Room List")]
 	public Transform RoomListParent;
 
@@ -41,7 +39,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		_roomPanels = new Dictionary<string, GameObject>();
 		_selectedRoom = null;
 
-		string playerName = PlayerPrefs.GetString(PLAYER_NAME_KEY, "");
+		string playerName = PlayerPrefs.GetString(PropertyKeys.PLAYER_NAME, "");
 		PhotonNetwork.NickName = playerName;
 		PlayerNameInput.text = playerName;
 		PlayerNameInput.onValueChanged.AddListener(SetName);
@@ -212,7 +210,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	private void SetName(string playerName)
 	{
 		PhotonNetwork.NickName = playerName;
-		PlayerPrefs.SetString(PLAYER_NAME_KEY, playerName);
+		PlayerPrefs.SetString(PropertyKeys.PLAYER_NAME, playerName);
 		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
 		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(playerName);
 	}
@@ -224,8 +222,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			new RoomOptions
 			{
 				CustomRoomProperties = new Hashtable
-					{ { PhotonPropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" } },
-				CustomRoomPropertiesForLobby = new[] { PhotonPropertyKeys.ROOM_NAME }
+					{ { PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" } },
+				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME }
 			}
 		);
 	}
