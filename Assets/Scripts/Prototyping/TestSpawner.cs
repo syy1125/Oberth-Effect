@@ -23,7 +23,10 @@ public class TestSpawner : MonoBehaviour
 
 	private void HandleActivation(InputAction.CallbackContext context)
 	{
-		StartCoroutine(RunLoadScene());
+		if (Application.isEditor)
+		{
+			StartCoroutine(RunLoadScene());
+		}
 	}
 
 	private IEnumerator RunLoadScene()
