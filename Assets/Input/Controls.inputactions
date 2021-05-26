@@ -44,6 +44,14 @@
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Inertia Dampener",
+                    "type": "Button",
+                    "id": "c5115309-4d01-4d7f-9da3-cafaaab753f0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -264,6 +272,17 @@
                     "processors": "Scale(factor=0.01)",
                     "groups": "Keyboard&Mouse",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97ffc094-6214-42ee-8c9b-292c6fa577a4",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Inertia Dampener",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

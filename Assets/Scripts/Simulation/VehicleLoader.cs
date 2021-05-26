@@ -31,7 +31,7 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 			GameObject go = Instantiate(blockPrefab, transform);
 			go.transform.localPosition = rootLocation;
 			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
-			go.layer = gameObject.layer;
+			SetLayerRecursively(go, gameObject.layer);
 
 			foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
 			{
@@ -64,6 +64,15 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 		body.inertia = momentOfInertia;
 
 		transform.position -= (Vector3) centerOfMass;
+	}
+
+	private static void SetLayerRecursively(GameObject go, int layer)
+	{
+		go.layer = layer;
+		foreach (Transform child in go.transform)
+		{
+			SetLayerRecursively(child.gameObject, layer);
+		}
 	}
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)

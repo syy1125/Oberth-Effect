@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation
 {
@@ -10,16 +12,22 @@ public class VehicleThrusterControl : MonoBehaviour
 {
 	[Header("Input")]
 	public InputActionReference MoveAction;
-
 	public InputActionReference StrafeAction;
+	public InputActionReference InertiaDampenerAction;
 
 	[Header("PID")]
 	public float RotateResponse;
-
 	public float RotateDerivativeTime;
 	public float RotateIntegralTime;
 
+	[Header("Config")]
+	public float InertiaDampenerStrength;
+
+	[Header("UI")]
+	public Text InertiaDampenerStatusIndicator;
+
 	private bool _isMine;
+	private bool _inertiaDampenerActive;
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -46,23 +54,47 @@ public class VehicleThrusterControl : MonoBehaviour
 	{
 		MoveAction.action.Enable();
 		StrafeAction.action.Enable();
+
+		InertiaDampenerAction.action.Enable();
+		InertiaDampenerAction.action.performed += ToggleInertiaDampener;
+	}
+
+	private void Start()
+	{
+		_inertiaDampenerActive = false;
+		UpdateUserInterface();
 	}
 
 	private void OnDisable()
 	{
 		MoveAction.action.Disable();
 		StrafeAction.action.Disable();
+
+		InertiaDampenerAction.action.performed -= ToggleInertiaDampener;
+		InertiaDampenerAction.action.Disable();
 	}
 
 	private void FixedUpdate()
 	{
 		if (!_isMine) return;
 
+		UpdateMouseModeCommands();
+
+		if (_inertiaDampenerActive)
+		{
+			ApplyInertiaDampener();
+		}
+
+		ClampCommands();
+	}
+
+	private void UpdateMouseModeCommands()
+	{
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
 		ForwardBackCommand = move.y;
-		StrafeCommand = Mathf.Clamp(move.x + strafe, -1f, 1f);
+		StrafeCommand = move.x + strafe;
 
 		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
@@ -90,7 +122,41 @@ public class VehicleThrusterControl : MonoBehaviour
 				                : timeScaledIntegral / RotateIntegralTime)
 		                )
 		                * Mathf.Deg2Rad;
+	}
+
+	private void ApplyInertiaDampener()
+	{
+		Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
+
+		if (Mathf.Approximately(ForwardBackCommand, 0))
+		{
+			ForwardBackCommand = -localVelocity.y * InertiaDampenerStrength;
+		}
+
+		if (Mathf.Approximately(StrafeCommand, 0))
+		{
+			StrafeCommand = -localVelocity.x * InertiaDampenerStrength;
+		}
+	}
+
+	private void ClampCommands()
+	{
+		ForwardBackCommand = Mathf.Clamp(ForwardBackCommand, -1f, 1f);
+		StrafeCommand = Mathf.Clamp(StrafeCommand, -1f, 1f);
 		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
+	}
+
+	private void ToggleInertiaDampener(InputAction.CallbackContext context)
+	{
+		_inertiaDampenerActive = !_inertiaDampenerActive;
+		UpdateUserInterface();
+	}
+
+	private void UpdateUserInterface()
+	{
+		string inertiaDampenerStatus =
+			_inertiaDampenerActive ? "<color=\"green\">ON</color>" : "<color=\"red\">OFF</color>";
+		InertiaDampenerStatusIndicator.text = $"Inertia Dampener {inertiaDampenerStatus}";
 	}
 }
 }

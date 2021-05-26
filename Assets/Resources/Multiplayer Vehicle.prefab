@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8509090524700470636}
   - component: {fileID: 8509090524700470639}
   - component: {fileID: -3674230021090741243}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Multiplayer Vehicle
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -140,9 +140,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveAction: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   StrafeAction: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  InertiaDampenerAction: {fileID: 7433065827582890450, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   RotateResponse: 5
   RotateDerivativeTime: 2
   RotateIntegralTime: 1
+  InertiaDampenerStrength: 1
+  InertiaDampenerStatusIndicator: {fileID: 0}
 --- !u!114 &-3674230021090741243
 MonoBehaviour:
   m_ObjectHideFlags: 0
