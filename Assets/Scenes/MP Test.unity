@@ -627,7 +627,7 @@ GameObject:
   - component: {fileID: 652958438}
   - component: {fileID: 652958439}
   - component: {fileID: 652958440}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -752,7 +752,7 @@ GameObject:
   - component: {fileID: 852185698}
   - component: {fileID: 852185699}
   - component: {fileID: 852185700}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Rendering
   m_TagString: Untagged
   m_Icon: {fileID: 0}
