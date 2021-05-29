@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 public class VehicleResourceManager : MonoBehaviour
 {

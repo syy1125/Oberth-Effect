@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviour
