@@ -3,7 +3,7 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Lobby.MultiplayerLobby
+namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
 public class PlayerPanel : MonoBehaviour
 {
