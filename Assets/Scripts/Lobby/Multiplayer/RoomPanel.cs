@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.MultiplayerLobby
+namespace Syy1125.OberthEffect.Lobby.MultiplayerLobby
 {
 [RequireComponent(typeof(Button))]
 [RequireComponent(typeof(Image))]

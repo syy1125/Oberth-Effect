@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Designer;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Lobby
 {
 [Serializable]
 public class SelectVehicleEvent : UnityEvent<string>

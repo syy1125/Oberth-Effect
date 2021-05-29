@@ -1,6 +1,6 @@
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.MultiplayerLobby;
+using Syy1125.OberthEffect.Lobby.MultiplayerLobby;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;

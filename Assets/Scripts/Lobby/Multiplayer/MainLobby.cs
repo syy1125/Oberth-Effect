@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.MultiplayerLobby
+namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
 public class MainLobby : MonoBehaviourPunCallbacks
 {

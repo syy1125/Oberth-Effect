@@ -5,11 +5,10 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Designer;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.MultiplayerLobby
+namespace Syy1125.OberthEffect.Lobby.MultiplayerLobby
 {
 [RequireComponent(typeof(PhotonView))]
 public class RoomScreen : MonoBehaviourPunCallbacks
