@@ -2,7 +2,9 @@ Shader "Custom/Invert Color Text"
 {
     Properties
     {
+        [PerRendererData]
         _MainTex ("Font Texture", 2D) = "white" {}
+        [PerRendererData]
         _Color ("Text Color", Color) = (1,1,1,1)
     }
 
@@ -39,7 +41,7 @@ Shader "Custom/Invert Color Text"
             uniform float4 _MainTex_ST;
             uniform fixed4 _Color;
 
-            v2f vert(appdata_t v)
+            v2f vert(const appdata_t v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
@@ -48,7 +50,7 @@ Shader "Custom/Invert Color Text"
                 return o;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            fixed4 frag(const v2f i) : SV_Target
             {
                 fixed4 col = i.color;
                 col *= tex2D(_MainTex, i.uv).a;
