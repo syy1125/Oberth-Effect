@@ -12,6 +12,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public CameraFollow CameraRig;
 	public CameraFollow VehicleCamera;
 	public Text InertiaDampenerStatusIndicator;
+	public ResourceDisplay ResourceDisplay;
+
 	public GameObject VehiclePrefab;
 
 	private void Start()
@@ -30,6 +32,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		CameraRig.Target = vehicle.transform;
 		VehicleCamera.Target = vehicle.transform;
+		ResourceDisplay.ResourceManager = vehicle.GetComponent<VehicleResourceManager>();
 	}
 }
 }

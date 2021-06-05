@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7557114314758818606}
   - component: {fileID: -2334377420914190835}
   - component: {fileID: -7067014801466521002}
+  - component: {fileID: 6819534193149100203}
+  - component: {fileID: 7888699975108584466}
   m_Layer: 0
   m_Name: Vehicle Control Core
   m_TagString: Untagged
@@ -153,3 +155,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac05c61e557466d8c4ceb46cdde4e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6819534193149100203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d240dcc0074e142858a4dc95082ed5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ResourceCapacities:
+  - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
+    Amount: 1000
+  - Resource: {fileID: 11400000, guid: 531995062e1f8474784b72696da7efdf, type: 2}
+    Amount: 1000
+--- !u!114 &7888699975108584466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a6767cfecfb10d478e37366e4858811, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GenerationRate:
+  - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
+    Amount: 100

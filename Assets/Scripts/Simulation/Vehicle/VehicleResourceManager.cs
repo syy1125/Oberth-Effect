@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
@@ -27,6 +28,8 @@ public class VehicleResourceManager : MonoBehaviour
 
 		_currentResources = new Dictionary<VehicleResource, float>();
 	}
+
+	#region Resource Block Access
 
 	public void AddStorage(ResourceStorageBlock block)
 	{
@@ -61,6 +64,8 @@ public class VehicleResourceManager : MonoBehaviour
 		}
 	}
 
+	#endregion
+
 	private void FixedUpdate()
 	{
 		if (_storageChanged)
@@ -91,7 +96,7 @@ public class VehicleResourceManager : MonoBehaviour
 		}
 	}
 
-	private void SumResources(
+	private static void SumResources(
 		IEnumerable<Dictionary<VehicleResource, float>> sources,
 		IDictionary<VehicleResource, float> output
 	)
@@ -104,5 +109,24 @@ public class VehicleResourceManager : MonoBehaviour
 			}
 		}
 	}
+
+	#region Public Access
+
+	// Returns tuple (current, capacity), or null if the vehicle is not capable of holding the specified resource
+	public Tuple<float, float> GetResourceStatus(VehicleResource resource)
+	{
+		if (_resourceCapacities.TryGetValue(resource, out float capacity))
+		{
+			return new Tuple<float, float>(
+				_currentResources.TryGetValue(resource, out float stored) ? stored : 0f, capacity
+			);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	#endregion
 }
 }

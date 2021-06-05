@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public class ResourceGeneratorBlock : MonoBehaviour
+public abstract class ResourceGeneratorBlock : MonoBehaviour
 {
 	private void OnEnable()
 	{
@@ -26,10 +26,9 @@ public class ResourceGeneratorBlock : MonoBehaviour
 		}
 	}
 
-	// The return value on this should be time-scaled.
-	public virtual Dictionary<VehicleResource, float> GenerateResources()
-	{
-		return null;
-	}
+	/// <remark>
+	/// The return value on this should be time-scaled by fixed delta time.
+	/// </remark>
+	public abstract Dictionary<VehicleResource, float> GenerateResources();
 }
 }
