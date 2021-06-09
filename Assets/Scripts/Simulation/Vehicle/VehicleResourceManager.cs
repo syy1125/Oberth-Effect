@@ -4,7 +4,6 @@ using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
-using UnityEngine.Windows.Speech;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {

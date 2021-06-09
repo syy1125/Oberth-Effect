@@ -1,4 +1,3 @@
-using Syy1125.OberthEffect.Simulation;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
 

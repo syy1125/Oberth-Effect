@@ -11,7 +11,7 @@ public class NotificationDialog : MonoBehaviour, IModal
 	{
 		ContentText.text = content;
 	}
-	
+
 	public void OpenModal()
 	{
 		gameObject.SetActive(true);
