@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -7,7 +11,7 @@ using UnityEngine.UI;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviour
+public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 {
 	[Header("Input")]
 	public InputActionReference MoveAction;
@@ -27,6 +31,9 @@ public class VehicleThrusterControl : MonoBehaviour
 
 	private bool _isMine;
 	private bool _inertiaDampenerActive;
+	private List<ThrusterResponse> _thrusterResponses;
+	private Dictionary<VehicleResource, float> _resourceRequests;
+	private float _resourceSatisfaction;
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -40,6 +47,9 @@ public class VehicleThrusterControl : MonoBehaviour
 
 	private void Awake()
 	{
+		_thrusterResponses = new List<ThrusterResponse>();
+		_resourceRequests = new Dictionary<VehicleResource, float>();
+
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_angleHistory = new LinkedList<float>();
@@ -73,6 +83,8 @@ public class VehicleThrusterControl : MonoBehaviour
 		InertiaDampenerAction.action.Disable();
 	}
 
+	#region Update
+
 	private void FixedUpdate()
 	{
 		if (!_isMine) return;
@@ -85,6 +97,8 @@ public class VehicleThrusterControl : MonoBehaviour
 		}
 
 		ClampCommands();
+
+		SendThrustCommands();
 	}
 
 	private void UpdateMouseModeCommands()
@@ -144,6 +158,57 @@ public class VehicleThrusterControl : MonoBehaviour
 		StrafeCommand = Mathf.Clamp(StrafeCommand, -1f, 1f);
 		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
 	}
+
+	private void SendThrustCommands()
+	{
+		_thrusterResponses.Clear();
+
+		LinearThruster[] linearThrusters = GetComponentsInChildren<LinearThruster>();
+		foreach (LinearThruster thruster in linearThrusters)
+		{
+			thruster.SetCommands(ForwardBackCommand, StrafeCommand, RotateCommand);
+			_thrusterResponses.Add(thruster.GetResponse());
+		}
+	}
+
+	#endregion
+
+	#region Resources
+
+	public int GetResourcePriority()
+	{
+		return 0;
+	}
+
+	public Dictionary<VehicleResource, float> GetResourceRequests()
+	{
+		_resourceRequests.Clear();
+		DictionaryUtils.AddDictionaries(
+			_thrusterResponses.Select(response => response.ResourceRequest),
+			_resourceRequests
+		);
+		return _resourceRequests;
+	}
+
+	public void SetSatisfactionLevel(float satisfaction)
+	{
+		foreach (ThrusterResponse response in _thrusterResponses)
+		{
+			_body.AddForceAtPosition(response.Force * satisfaction, response.ForceOrigin);
+		}
+
+		_resourceSatisfaction = satisfaction;
+	}
+
+	private void LateUpdate()
+	{
+		foreach (LinearThruster thruster in GetComponentsInChildren<LinearThruster>())
+		{
+			thruster.PlayEffect(_resourceSatisfaction);
+		}
+	}
+
+	#endregion
 
 	private void ToggleInertiaDampener(InputAction.CallbackContext context)
 	{

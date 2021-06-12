@@ -33,11 +33,6 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
 			SetLayerRecursively(go, gameObject.layer);
 
-			foreach (BlockBehaviour behaviour in go.GetComponents<BlockBehaviour>())
-			{
-				behaviour.HasPhysics = true;
-			}
-
 			var info = blockPrefab.GetComponent<BlockInfo>();
 
 			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);

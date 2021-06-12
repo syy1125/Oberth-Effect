@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
-public class VehicleResourceManager : MonoBehaviour
+// Note that this class need to execute after all resource usage scripts in order to function properly.
+public class VehicleResourceManager : MonoBehaviourPun
 {
+	private bool _isMine;
+
 	private List<ResourceStorageBlock> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<VehicleResource, float> _resourceCapacities;
@@ -16,6 +21,10 @@ public class VehicleResourceManager : MonoBehaviour
 	private List<ResourceGeneratorBlock> _generatorBlocks;
 
 	private Dictionary<VehicleResource, float> _currentResources;
+
+	private List<IResourceConsumer> _consumers;
+	private SortedDictionary<int, List<IResourceConsumer>> _orderedConsumers;
+	private Dictionary<VehicleResource, float> _resourceRequests;
 
 	private void Awake()
 	{
@@ -26,6 +35,18 @@ public class VehicleResourceManager : MonoBehaviour
 		_generatorBlocks = new List<ResourceGeneratorBlock>();
 
 		_currentResources = new Dictionary<VehicleResource, float>();
+
+		_consumers = GetComponents<MonoBehaviour>()
+			.Select(behaviour => behaviour as IResourceConsumer)
+			.Where(consumer => consumer != null)
+			.ToList();
+		_orderedConsumers = new SortedDictionary<int, List<IResourceConsumer>>(new ReverseIntComparator());
+		_resourceRequests = new Dictionary<VehicleResource, float>();
+	}
+
+	private void Start()
+	{
+		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	#region Resource Block Access
@@ -67,21 +88,96 @@ public class VehicleResourceManager : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		if (!_isMine) return;
+
 		if (_storageChanged)
 		{
 			_resourceCapacities.Clear();
-			SumResources(_storageBlocks.Select(block => block.ResourceCapacityDict), _resourceCapacities);
+			DictionaryUtils.AddDictionaries(
+				_storageBlocks.Select(block => block.ResourceCapacityDict),
+				_resourceCapacities
+			);
 
 			_storageChanged = false;
 		}
 
-		SumResources(
+		DictionaryUtils.AddDictionaries(
 			_generatorBlocks
 				.Select(generator => generator.GenerateResources())
 				.Where(dict => dict != null),
 			_currentResources
 		);
 
+		ClampCurrentResources();
+
+		_orderedConsumers.Clear();
+		foreach (IResourceConsumer consumer in _consumers)
+		{
+			int priority = consumer.GetResourcePriority();
+
+			if (!_orderedConsumers.ContainsKey(priority))
+			{
+				_orderedConsumers.Add(priority, new List<IResourceConsumer>());
+			}
+
+			_orderedConsumers[priority].Add(consumer);
+		}
+
+		_resourceRequests.Clear();
+		var resourceUsage = new Dictionary<VehicleResource, float>();
+		foreach (KeyValuePair<int, List<IResourceConsumer>> consumerPair in _orderedConsumers)
+		{
+			resourceUsage.Clear();
+
+			DictionaryUtils.AddDictionaries(
+				consumerPair.Value.Select(consumer => consumer.GetResourceRequests()),
+				_resourceRequests
+			);
+			DictionaryUtils.AddDictionaries(
+				consumerPair.Value.Select(consumer => consumer.GetResourceRequests()),
+				resourceUsage
+			);
+
+			float satisfaction = 1;
+
+			foreach (KeyValuePair<VehicleResource, float> request in resourceUsage)
+			{
+				if (_currentResources.TryGetValue(request.Key, out float available))
+				{
+					satisfaction = Mathf.Min(satisfaction, available / request.Value);
+				}
+				else
+				{
+					satisfaction = 0;
+					break;
+				}
+			}
+
+			satisfaction = Mathf.Clamp01(satisfaction);
+
+			foreach (IResourceConsumer consumer in consumerPair.Value)
+			{
+				consumer.SetSatisfactionLevel(satisfaction);
+			}
+
+			if (satisfaction > 0)
+			{
+				foreach (KeyValuePair<VehicleResource, float> usagePair in resourceUsage)
+				{
+					_currentResources[usagePair.Key] -= usagePair.Value * satisfaction;
+				}
+			}
+
+			Debug.Log(
+				$"Priority {consumerPair.Key} resources {string.Join(" ", resourceUsage.Select(entry => $"{entry.Key.ShortName} {entry.Value}"))} satisfaction {satisfaction}"
+			);
+
+			ClampCurrentResources();
+		}
+	}
+
+	private void ClampCurrentResources()
+	{
 		foreach (VehicleResource resource in _currentResources.Keys.ToArray())
 		{
 			if (_resourceCapacities.TryGetValue(resource, out float capacity))
@@ -91,20 +187,6 @@ public class VehicleResourceManager : MonoBehaviour
 			else
 			{
 				_currentResources.Remove(resource);
-			}
-		}
-	}
-
-	private static void SumResources(
-		IEnumerable<Dictionary<VehicleResource, float>> sources,
-		IDictionary<VehicleResource, float> output
-	)
-	{
-		foreach (Dictionary<VehicleResource, float> source in sources)
-		{
-			foreach (KeyValuePair<VehicleResource, float> entry in source)
-			{
-				output[entry.Key] = output.TryGetValue(entry.Key, out float value) ? value + entry.Value : entry.Value;
 			}
 		}
 	}
@@ -127,5 +209,13 @@ public class VehicleResourceManager : MonoBehaviour
 	}
 
 	#endregion
+}
+
+internal class ReverseIntComparator : IComparer<int>
+{
+	public int Compare(int x, int y)
+	{
+		return y - x;
+	}
 }
 }

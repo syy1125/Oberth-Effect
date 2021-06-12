@@ -1,31 +1,40 @@
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using System.Collections.Generic;
+using System.Linq;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public class LinearThruster : BlockBehaviour
+public struct ThrusterResponse
+{
+	public Dictionary<VehicleResource, float> ResourceRequest;
+	public Vector3 ForceOrigin;
+	public Vector3 Force;
+}
+
+public class LinearThruster : MonoBehaviour
 {
 	public float MaxForce;
+	public ResourceEntry[] MaxResourceUse;
 
 	private Rigidbody2D _body;
-	private VehicleThrusterControl _control;
 	private ParticleSystem _particles;
 
 	private float _forwardBackResponse;
 	private float _strafeResponse;
 	private float _rotateResponse;
 	private float _maxParticleSpeed;
+	private float _response;
 
 	private void Awake()
 	{
 		_body = GetComponentInParent<Rigidbody2D>();
-		_control = GetComponentInParent<VehicleThrusterControl>();
 		_particles = GetComponent<ParticleSystem>();
 	}
 
 	private void Start()
 	{
-		if (HasPhysics)
+		if (_body != null)
 		{
 			Vector3 localUp = transform.localRotation * Vector3.up;
 			Vector3 localPosition = transform.localPosition - (Vector3) _body.centerOfMass;
@@ -35,32 +44,44 @@ public class LinearThruster : BlockBehaviour
 			_rotateResponse = localUp.x * localPosition.y - localUp.y * localPosition.x;
 
 			_rotateResponse = Mathf.Abs(_rotateResponse) > 1e-5 ? Mathf.Sign(_rotateResponse) : 0f;
+		}
 
-			if (_particles != null)
-			{
-				_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-				_particles.Play();
-			}
+		if (_particles != null)
+		{
+			_maxParticleSpeed = _particles.main.startSpeedMultiplier;
+			_particles.Play();
 		}
 	}
 
-	private void FixedUpdate()
+	public void SetCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
 	{
-		if (HasPhysics)
+		float rawResponse = _forwardBackResponse * forwardBackCommand
+		                    + _strafeResponse * strafeCommand
+		                    + _rotateResponse * rotateCommand;
+		_response = Mathf.Clamp01(rawResponse);
+	}
+
+	public ThrusterResponse GetResponse()
+	{
+		return new ThrusterResponse
 		{
-			float rawResponse = _forwardBackResponse * _control.ForwardBackCommand
-			                    + _strafeResponse * _control.StrafeCommand
-			                    + _rotateResponse * _control.RotateCommand;
-			float response = Mathf.Clamp01(rawResponse);
+			ResourceRequest = MaxResourceUse.ToDictionary(
+				entry => entry.Resource, entry => entry.Amount * (_response * Time.deltaTime)
+			),
+			ForceOrigin = transform.position,
+			Force = transform.up * (MaxForce * _response)
+		};
+	}
 
-			_body.AddForceAtPosition(response * MaxForce * transform.up, transform.position);
+	public void PlayEffect(float satisfactionLevel)
+	{
+		float strength = satisfactionLevel * _response;
 
-			if (_particles != null)
-			{
-				ParticleSystem.MainModule main = _particles.main;
-				main.startSpeedMultiplier = response * _maxParticleSpeed;
-				main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, response));
-			}
+		if (_particles != null)
+		{
+			ParticleSystem.MainModule main = _particles.main;
+			main.startSpeedMultiplier = strength * _maxParticleSpeed;
+			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, strength));
 		}
 	}
 }
