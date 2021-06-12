@@ -180,11 +180,11 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 		return 0;
 	}
 
-	public Dictionary<VehicleResource, float> GetResourceRequests()
+	public Dictionary<VehicleResource, float> GetConsumptionRateRequest()
 	{
 		_resourceRequests.Clear();
 		DictionaryUtils.AddDictionaries(
-			_thrusterResponses.Select(response => response.ResourceRequest),
+			_thrusterResponses.Select(response => response.ResourceConsumptionRateRequest),
 			_resourceRequests
 		);
 		return _resourceRequests;

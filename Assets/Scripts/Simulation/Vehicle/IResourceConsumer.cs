@@ -8,7 +8,8 @@ public interface IResourceConsumer
 	// Bigger number as higher priority
 	int GetResourcePriority();
 
-	Dictionary<VehicleResource, float> GetResourceRequests();
+	// Should NOT be time-scaled
+	Dictionary<VehicleResource, float> GetConsumptionRateRequest();
 
 	// Input ranges from 0 to 1
 	void SetSatisfactionLevel(float satisfaction);

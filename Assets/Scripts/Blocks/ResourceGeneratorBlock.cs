@@ -26,8 +26,8 @@ public abstract class ResourceGeneratorBlock : MonoBehaviour
 	}
 
 	/// <remark>
-	/// The return value on this should be time-scaled by fixed delta time.
+	/// The return value on this should NOT be time-scaled.
 	/// </remark>
-	public abstract Dictionary<VehicleResource, float> GenerateResources();
+	public abstract Dictionary<VehicleResource, float> GetGenerationRate();
 }
 }

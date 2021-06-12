@@ -9,11 +9,11 @@ public class FreeResourceGeneratorBlock : ResourceGeneratorBlock
 {
 	public ResourceEntry[] GenerationRate;
 
-	public override Dictionary<VehicleResource, float> GenerateResources()
+	public override Dictionary<VehicleResource, float> GetGenerationRate()
 	{
 		return GenerationRate.ToDictionary(
 			entry => entry.Resource,
-			entry => entry.Amount * Time.fixedDeltaTime
+			entry => entry.Amount
 		);
 	}
 }

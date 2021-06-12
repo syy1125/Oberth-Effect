@@ -24,7 +24,7 @@ public class VehicleResourceManager : MonoBehaviourPun
 
 	private List<IResourceConsumer> _consumers;
 	private SortedDictionary<int, List<IResourceConsumer>> _orderedConsumers;
-	private Dictionary<VehicleResource, float> _resourceRequests;
+	private Dictionary<VehicleResource, float> _resourceRequestRate;
 
 	private void Awake()
 	{
@@ -41,7 +41,7 @@ public class VehicleResourceManager : MonoBehaviourPun
 			.Where(consumer => consumer != null)
 			.ToList();
 		_orderedConsumers = new SortedDictionary<int, List<IResourceConsumer>>(new ReverseIntComparator());
-		_resourceRequests = new Dictionary<VehicleResource, float>();
+		_resourceRequestRate = new Dictionary<VehicleResource, float>();
 	}
 
 	private void Start()
@@ -103,7 +103,12 @@ public class VehicleResourceManager : MonoBehaviourPun
 
 		DictionaryUtils.AddDictionaries(
 			_generatorBlocks
-				.Select(generator => generator.GenerateResources())
+				.Select(
+					generator => generator.GetGenerationRate().ToDictionary(
+						pair => pair.Key,
+						pair => pair.Value * Time.fixedDeltaTime
+					)
+				)
 				.Where(dict => dict != null),
 			_currentResources
 		);
@@ -123,18 +128,22 @@ public class VehicleResourceManager : MonoBehaviourPun
 			_orderedConsumers[priority].Add(consumer);
 		}
 
-		_resourceRequests.Clear();
+		_resourceRequestRate.Clear();
 		var resourceUsage = new Dictionary<VehicleResource, float>();
 		foreach (KeyValuePair<int, List<IResourceConsumer>> consumerPair in _orderedConsumers)
 		{
 			resourceUsage.Clear();
 
 			DictionaryUtils.AddDictionaries(
-				consumerPair.Value.Select(consumer => consumer.GetResourceRequests()),
-				_resourceRequests
+				consumerPair.Value.Select(consumer => consumer.GetConsumptionRateRequest()),
+				_resourceRequestRate
 			);
 			DictionaryUtils.AddDictionaries(
-				consumerPair.Value.Select(consumer => consumer.GetResourceRequests()),
+				consumerPair.Value.Select(
+					consumer => consumer.GetConsumptionRateRequest().ToDictionary(
+						pair => pair.Key, pair => pair.Value * Time.deltaTime
+					)
+				),
 				resourceUsage
 			);
 
@@ -167,10 +176,6 @@ public class VehicleResourceManager : MonoBehaviourPun
 					_currentResources[usagePair.Key] -= usagePair.Value * satisfaction;
 				}
 			}
-
-			Debug.Log(
-				$"Priority {consumerPair.Key} resources {string.Join(" ", resourceUsage.Select(entry => $"{entry.Key.ShortName} {entry.Value}"))} satisfaction {satisfaction}"
-			);
 
 			ClampCurrentResources();
 		}

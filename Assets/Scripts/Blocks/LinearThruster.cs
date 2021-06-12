@@ -7,7 +7,7 @@ namespace Syy1125.OberthEffect.Blocks
 {
 public struct ThrusterResponse
 {
-	public Dictionary<VehicleResource, float> ResourceRequest;
+	public Dictionary<VehicleResource, float> ResourceConsumptionRateRequest;
 	public Vector3 ForceOrigin;
 	public Vector3 Force;
 }
@@ -65,8 +65,8 @@ public class LinearThruster : MonoBehaviour
 	{
 		return new ThrusterResponse
 		{
-			ResourceRequest = MaxResourceUse.ToDictionary(
-				entry => entry.Resource, entry => entry.Amount * (_response * Time.deltaTime)
+			ResourceConsumptionRateRequest = MaxResourceUse.ToDictionary(
+				entry => entry.Resource, entry => entry.Amount * _response
 			),
 			ForceOrigin = transform.position,
 			Force = transform.up * (MaxForce * _response)
