@@ -4,7 +4,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
 public class ResourceDisplay : MonoBehaviour
 {

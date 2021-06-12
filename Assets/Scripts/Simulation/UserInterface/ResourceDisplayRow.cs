@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
 public class ResourceDisplayRow : MonoBehaviour
 {
