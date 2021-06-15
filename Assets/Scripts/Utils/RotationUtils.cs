@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Utils
 {
 public class RotationUtils
 {

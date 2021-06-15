@@ -1,7 +1,7 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Utils
 {
 public static class PhotonHelper
 {

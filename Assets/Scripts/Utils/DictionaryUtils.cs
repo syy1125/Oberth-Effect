@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Utils
 {
 public static class DictionaryUtils
 {
