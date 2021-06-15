@@ -58,11 +58,13 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		{
 			PhotonNetwork.ConnectUsingSettings();
 			StatusIndicator.text = "Connecting...";
+			CreateRoomButton.interactable = false;
 		}
 		else if (PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InLobby)
 		{
 			PhotonNetwork.JoinLobby();
 			StatusIndicator.text = "Connecting...";
+			CreateRoomButton.interactable = false;
 		}
 	}
 
@@ -85,6 +87,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		_rooms.Clear();
 		RenderRoomList();
+		CreateRoomButton.interactable = true;
 	}
 
 	public override void OnRoomListUpdate(List<RoomInfo> roomList)
