@@ -12,6 +12,6 @@ public interface IResourceConsumer
 	Dictionary<VehicleResource, float> GetConsumptionRateRequest();
 
 	// Input ranges from 0 to 1
-	void SetSatisfactionLevel(float satisfaction);
+	void SatisfyResourceRequestAtLevel(float satisfaction);
 }
 }

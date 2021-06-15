@@ -19,7 +19,7 @@ public enum ControlMode
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
+public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObservable
 {
 	#region Unity Fields
 
@@ -112,26 +112,27 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 	private void FixedUpdate()
 	{
-		if (!_isMine) return;
-
-		switch (ControlMode)
+		if (_isMine)
 		{
-			case ControlMode.Mouse:
-				UpdateMouseModeCommands();
-				break;
-			case ControlMode.Cruise:
-				UpdateCruiseModeCommands();
-				break;
-			default:
-				throw new ArgumentOutOfRangeException();
-		}
+			switch (ControlMode)
+			{
+				case ControlMode.Mouse:
+					UpdateMouseModeCommands();
+					break;
+				case ControlMode.Cruise:
+					UpdateCruiseModeCommands();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 
-		if (InertiaDampenerActive)
-		{
-			ApplyInertiaDampener();
-		}
+			if (InertiaDampenerActive)
+			{
+				ApplyInertiaDampener();
+			}
 
-		ClampCommands();
+			ClampCommands();
+		}
 
 		SendThrustCommands();
 	}
@@ -243,7 +244,7 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 		return _resourceRequests;
 	}
 
-	public void SetSatisfactionLevel(float satisfaction)
+	public void SatisfyResourceRequestAtLevel(float satisfaction)
 	{
 		foreach (ThrusterResponse response in _thrusterResponses)
 		{
@@ -262,6 +263,30 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 	}
 
 	#endregion
+
+	#region PUN
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			stream.SendNext(ForwardBackCommand);
+			stream.SendNext(StrafeCommand);
+			stream.SendNext(RotateCommand);
+			stream.SendNext(_resourceSatisfaction);
+		}
+		else
+		{
+			ForwardBackCommand = (float) stream.ReceiveNext();
+			StrafeCommand = (float) stream.ReceiveNext();
+			RotateCommand = (float) stream.ReceiveNext();
+			_resourceSatisfaction = (float) stream.ReceiveNext();
+		}
+	}
+
+	#endregion
+
+	#region Input Handlers
 
 	private void ToggleInertiaDampener(InputAction.CallbackContext context)
 	{
@@ -284,5 +309,7 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 		ControlModeChanged.Invoke();
 	}
+
+	#endregion
 }
 }

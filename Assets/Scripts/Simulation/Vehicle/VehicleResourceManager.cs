@@ -104,12 +104,12 @@ public class VehicleResourceManager : MonoBehaviourPun
 		DictionaryUtils.AddDictionaries(
 			_generatorBlocks
 				.Select(
-					generator => generator.GetGenerationRate().ToDictionary(
+					generator => generator.GetGenerationRate()?.ToDictionary(
 						pair => pair.Key,
 						pair => pair.Value * Time.fixedDeltaTime
 					)
 				)
-				.Where(dict => dict != null),
+				.Where(dict => dict != null && dict.Count > 0),
 			_currentResources
 		);
 
@@ -166,7 +166,7 @@ public class VehicleResourceManager : MonoBehaviourPun
 
 			foreach (IResourceConsumer consumer in consumerPair.Value)
 			{
-				consumer.SetSatisfactionLevel(satisfaction);
+				consumer.SatisfyResourceRequestAtLevel(satisfaction);
 			}
 
 			if (satisfaction > 0)
