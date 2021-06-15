@@ -12,7 +12,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 {
 	public CameraFollow CameraRig;
 	public CameraFollow VehicleCamera;
-	public Text InertiaDampenerStatusIndicator;
+	public VehicleControlDisplay ControlDisplay;
 	public ResourceDisplay ResourceDisplay;
 
 	public GameObject VehiclePrefab;
@@ -29,10 +29,10 @@ public class PlayerVehicleSpawner : MonoBehaviour
 				JsonUtility.ToJson(ColorScheme.FromBlueprint(RoomScreen.SelectedVehicle))
 			}
 		);
-		vehicle.GetComponent<VehicleThrusterControl>().InertiaDampenerStatusIndicator = InertiaDampenerStatusIndicator;
 
 		CameraRig.Target = vehicle.transform;
 		VehicleCamera.Target = vehicle.transform;
+		ControlDisplay.ThrusterControl = vehicle.GetComponent<VehicleThrusterControl>();
 		ResourceDisplay.ResourceManager = vehicle.GetComponent<VehicleResourceManager>();
 	}
 }

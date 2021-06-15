@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 {
@@ -26,11 +29,11 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 	[Header("Config")]
 	public float InertiaDampenerStrength;
 
-	[Header("UI")]
-	public Text InertiaDampenerStatusIndicator;
+	// Public state
+	public bool InertiaDampenerActive { get; private set; }
+	public UnityEvent InertiaDampenerChanged;
 
 	private bool _isMine;
-	private bool _inertiaDampenerActive;
 	private List<ThrusterResponse> _thrusterResponses;
 	private Dictionary<VehicleResource, float> _resourceRequests;
 	private float _resourceSatisfaction;
@@ -70,8 +73,8 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 	private void Start()
 	{
-		_inertiaDampenerActive = false;
-		UpdateUserInterface();
+		InertiaDampenerActive = false;
+		InertiaDampenerChanged.Invoke();
 	}
 
 	private void OnDisable()
@@ -91,7 +94,7 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 		UpdateMouseModeCommands();
 
-		if (_inertiaDampenerActive)
+		if (InertiaDampenerActive)
 		{
 			ApplyInertiaDampener();
 		}
@@ -212,15 +215,8 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 	private void ToggleInertiaDampener(InputAction.CallbackContext context)
 	{
-		_inertiaDampenerActive = !_inertiaDampenerActive;
-		UpdateUserInterface();
-	}
-
-	private void UpdateUserInterface()
-	{
-		string inertiaDampenerStatus =
-			_inertiaDampenerActive ? "<color=\"green\">ON</color>" : "<color=\"red\">OFF</color>";
-		InertiaDampenerStatusIndicator.text = $"Inertia Dampener {inertiaDampenerStatus}";
+		InertiaDampenerActive = !InertiaDampenerActive;
+		InertiaDampenerChanged.Invoke();
 	}
 }
 }

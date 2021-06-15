@@ -613,6 +613,7 @@ GameObject:
   m_Component:
   - component: {fileID: 802910227}
   - component: {fileID: 802910228}
+  - component: {fileID: 802910229}
   m_Layer: 5
   m_Name: Status Indicators
   m_TagString: Untagged
@@ -666,6 +667,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &802910229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802910226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfefa5c735544cf5ab3dd6bf849404dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _thrusterControl: {fileID: 0}
+  InertiaDampenerDisplay: {fileID: 2118248799}
 --- !u!1 &852185697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1232,7 +1247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CameraRig: {fileID: 268046306}
   VehicleCamera: {fileID: 1535607595}
-  InertiaDampenerStatusIndicator: {fileID: 2118248799}
+  ControlDisplay: {fileID: 802910229}
   ResourceDisplay: {fileID: 1006074540}
   VehiclePrefab: {fileID: 8509090524700470632, guid: d5558323a0fd8cf4e8ebfea4ad8cacb3, type: 3}
 --- !u!1 &1535607591

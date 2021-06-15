@@ -158,7 +158,9 @@ MonoBehaviour:
   RotateDerivativeTime: 2
   RotateIntegralTime: 1
   InertiaDampenerStrength: 1
-  InertiaDampenerStatusIndicator: {fileID: 0}
+  InertiaDampenerChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-3674230021090741243
 MonoBehaviour:
   m_ObjectHideFlags: 0
