@@ -1453,7 +1453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
   FollowCenterOfMass: 1
-  UsePid: 1
+  UsePid: 0
   Response: 0
   DerivativeTime: 0
   IntegralTime: 0
