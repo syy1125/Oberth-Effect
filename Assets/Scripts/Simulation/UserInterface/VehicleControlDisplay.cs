@@ -17,25 +17,26 @@ public class VehicleControlDisplay : MonoBehaviour
 		{
 			if (_thrusterControl != null)
 			{
-				_thrusterControl.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
+				DetachListeners();
 			}
 
 			_thrusterControl = value;
 
 			if (_thrusterControl != null)
 			{
-				_thrusterControl.InertiaDampenerChanged.AddListener(UpdateDisplay);
+				AttachListeners();
 			}
 		}
 	}
 
 	public Text InertiaDampenerDisplay;
+	public Text ControlModeDisplay;
 
 	private void OnEnable()
 	{
 		if (_thrusterControl != null)
 		{
-			_thrusterControl.InertiaDampenerChanged.AddListener(UpdateDisplay);
+			AttachListeners();
 		}
 	}
 
@@ -43,16 +44,36 @@ public class VehicleControlDisplay : MonoBehaviour
 	{
 		if (_thrusterControl != null)
 		{
-			_thrusterControl.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
+			DetachListeners();
 		}
+	}
+
+	private void AttachListeners()
+	{
+		_thrusterControl.InertiaDampenerChanged.AddListener(UpdateDisplay);
+		_thrusterControl.ControlModeChanged.AddListener(UpdateDisplay);
+	}
+
+	private void DetachListeners()
+	{
+		_thrusterControl.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
+		_thrusterControl.ControlModeChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void UpdateDisplay()
 	{
 		string inertiaDampenerStatus = ThrusterControl.InertiaDampenerActive
-			? "<color=\"green\">ON</color>"
+			? "<color=\"cyan\">ON</color>"
 			: "<color=\"red\">OFF</color>";
 		InertiaDampenerDisplay.text = $"Inertia Dampener {inertiaDampenerStatus}";
+
+		string controlModeStatus = ThrusterControl.ControlMode switch
+		{
+			ControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
+			ControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
+			_ => throw new ArgumentOutOfRangeException()
+		};
+		ControlModeDisplay.text = $"Control Mode {controlModeStatus}";
 	}
 }
 }

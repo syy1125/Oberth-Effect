@@ -8,18 +8,26 @@ using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
+public enum ControlMode
+{
+	Mouse,
+	Cruise
+}
+
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 {
+	#region Unity Fields
+
 	[Header("Input")]
 	public InputActionReference MoveAction;
 	public InputActionReference StrafeAction;
 	public InputActionReference InertiaDampenerAction;
+	public InputActionReference CycleControlModeAction;
 
 	[Header("PID")]
 	public float RotateResponse;
@@ -29,9 +37,17 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 	[Header("Config")]
 	public float InertiaDampenerStrength;
 
-	// Public state
+	#endregion
+
+	#region Public Read State
+
 	public bool InertiaDampenerActive { get; private set; }
 	public UnityEvent InertiaDampenerChanged;
+
+	public ControlMode ControlMode { get; private set; }
+	public UnityEvent ControlModeChanged;
+
+	#endregion
 
 	private bool _isMine;
 	private List<ThrusterResponse> _thrusterResponses;
@@ -69,12 +85,16 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 		InertiaDampenerAction.action.Enable();
 		InertiaDampenerAction.action.performed += ToggleInertiaDampener;
+		CycleControlModeAction.action.Enable();
+		CycleControlModeAction.action.performed += CycleControlMode;
 	}
 
 	private void Start()
 	{
 		InertiaDampenerActive = false;
 		InertiaDampenerChanged.Invoke();
+		ControlMode = ControlMode.Mouse;
+		ControlModeChanged.Invoke();
 	}
 
 	private void OnDisable()
@@ -84,6 +104,8 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 
 		InertiaDampenerAction.action.performed -= ToggleInertiaDampener;
 		InertiaDampenerAction.action.Disable();
+		CycleControlModeAction.action.performed -= CycleControlMode;
+		CycleControlModeAction.action.Disable();
 	}
 
 	#region Update
@@ -92,7 +114,17 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 	{
 		if (!_isMine) return;
 
-		UpdateMouseModeCommands();
+		switch (ControlMode)
+		{
+			case ControlMode.Mouse:
+				UpdateMouseModeCommands();
+				break;
+			case ControlMode.Cruise:
+				UpdateCruiseModeCommands();
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 
 		if (InertiaDampenerActive)
 		{
@@ -138,6 +170,24 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 				                : timeScaledIntegral / RotateIntegralTime)
 		                )
 		                * Mathf.Deg2Rad;
+	}
+
+	private void UpdateCruiseModeCommands()
+	{
+		var move = MoveAction.action.ReadValue<Vector2>();
+		var strafe = StrafeAction.action.ReadValue<float>();
+
+		ForwardBackCommand = move.y;
+		StrafeCommand = strafe;
+
+		if (Mathf.Abs(move.x) > Mathf.Epsilon)
+		{
+			RotateCommand = move.x;
+		}
+		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
+		{
+			RotateCommand = _body.angularVelocity;
+		}
 	}
 
 	private void ApplyInertiaDampener()
@@ -217,6 +267,22 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer
 	{
 		InertiaDampenerActive = !InertiaDampenerActive;
 		InertiaDampenerChanged.Invoke();
+	}
+
+	private void CycleControlMode(InputAction.CallbackContext context)
+	{
+		ControlMode = ControlMode switch
+		{
+			ControlMode.Mouse => ControlMode.Cruise,
+			ControlMode.Cruise => ControlMode.Mouse,
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
+		// Clear state associated with any particular control mode
+		_angleHistory.Clear();
+		_integral = 0f;
+
+		ControlModeChanged.Invoke();
 	}
 }
 }
