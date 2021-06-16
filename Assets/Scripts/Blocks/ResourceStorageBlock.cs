@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
+public interface IResourceStorageBlockRegistry : IBlockRegistry<ResourceStorageBlock>, IEventSystemHandler
+{}
+
 public class ResourceStorageBlock : MonoBehaviour
 {
 	public ResourceEntry[] ResourceCapacities;
@@ -13,11 +16,9 @@ public class ResourceStorageBlock : MonoBehaviour
 
 	private void OnEnable()
 	{
-		var manager = GetComponentInParent<VehicleResourceManager>();
-		if (manager != null)
-		{
-			manager.AddStorage(this);
-		}
+		ExecuteEvents.ExecuteHierarchy<IResourceStorageBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
 	}
 
 	private void Start()
@@ -31,11 +32,9 @@ public class ResourceStorageBlock : MonoBehaviour
 
 	private void OnDisable()
 	{
-		var manager = GetComponentInParent<VehicleResourceManager>();
-		if (manager != null)
-		{
-			manager.RemoveStorage(this);
-		}
+		ExecuteEvents.ExecuteHierarchy<IResourceStorageBlockRegistry>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
 	}
 }
 }

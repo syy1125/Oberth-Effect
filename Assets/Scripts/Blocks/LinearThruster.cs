@@ -1,18 +1,11 @@
-using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public struct ThrusterResponse
-{
-	public Dictionary<VehicleResource, float> ResourceConsumptionRateRequest;
-	public Vector3 ForceOrigin;
-	public Vector3 Force;
-}
-
-public class LinearThruster : MonoBehaviour
+public class LinearThruster : MonoBehaviour, IPropulsionBlock
 {
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
@@ -24,12 +17,18 @@ public class LinearThruster : MonoBehaviour
 	private float _strafeResponse;
 	private float _rotateResponse;
 	private float _maxParticleSpeed;
-	private float _response;
 
 	private void Awake()
 	{
 		_body = GetComponentInParent<Rigidbody2D>();
 		_particles = GetComponent<ParticleSystem>();
+	}
+
+	private void OnEnable()
+	{
+		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
 	}
 
 	private void Start()
@@ -53,32 +52,36 @@ public class LinearThruster : MonoBehaviour
 		}
 	}
 
-	public void SetCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
+	private void OnDisable()
+	{
+		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
+	}
+
+	public PropulsionRequest GetResponse(float forwardBackCommand, float strafeCommand, float rotateCommand)
 	{
 		float rawResponse = _forwardBackResponse * forwardBackCommand
 		                    + _strafeResponse * strafeCommand
 		                    + _rotateResponse * rotateCommand;
-		_response = Mathf.Clamp01(rawResponse);
-	}
+		float response = Mathf.Clamp01(rawResponse);
 
-	public ThrusterResponse GetResponse()
-	{
-		return new ThrusterResponse
+		return new PropulsionRequest
 		{
 			ResourceConsumptionRateRequest = MaxResourceUse.ToDictionary(
-				entry => entry.Resource, entry => entry.Amount * _response
+				entry => entry.Resource, entry => entry.Amount * response
 			),
 			ForceOrigin = transform.position,
-			Force = transform.up * (MaxForce * _response)
+			Force = transform.up * (MaxForce * response)
 		};
 	}
 
-	public void PlayEffect(float satisfactionLevel)
+	public void PlayEffect(PropulsionRequest request, float satisfactionLevel)
 	{
-		float strength = satisfactionLevel * _response;
-
-		if (_particles != null)
 		{
+			float response = Mathf.Clamp01(request.Force.magnitude / MaxForce);
+			float strength = satisfactionLevel * response;
+
 			ParticleSystem.MainModule main = _particles.main;
 			main.startSpeedMultiplier = strength * _maxParticleSpeed;
 			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, strength));

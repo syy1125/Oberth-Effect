@@ -19,7 +19,7 @@ public enum ControlMode
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObservable
+public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObservable, IPropulsionBlockRegistry
 {
 	#region Unity Fields
 
@@ -50,7 +50,10 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 	#endregion
 
 	private bool _isMine;
-	private List<ThrusterResponse> _thrusterResponses;
+
+	private List<IPropulsionBlock> _propulsionBlocks;
+	private Dictionary<IPropulsionBlock, PropulsionRequest> _propulsionRequests;
+
 	private Dictionary<VehicleResource, float> _resourceRequests;
 	private float _resourceSatisfaction;
 
@@ -66,7 +69,8 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 
 	private void Awake()
 	{
-		_thrusterResponses = new List<ThrusterResponse>();
+		_propulsionBlocks = new List<IPropulsionBlock>();
+		_propulsionRequests = new Dictionary<IPropulsionBlock, PropulsionRequest>();
 		_resourceRequests = new Dictionary<VehicleResource, float>();
 
 		_mainCamera = Camera.main;
@@ -107,6 +111,24 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 		CycleControlModeAction.action.performed -= CycleControlMode;
 		CycleControlModeAction.action.Disable();
 	}
+
+	#region Propulsion Registry
+
+	public void RegisterBlock(IPropulsionBlock block)
+	{
+		_propulsionBlocks.Add(block);
+	}
+
+	public void UnregisterBlock(IPropulsionBlock block)
+	{
+		bool success = _propulsionBlocks.Remove(block);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove propulsion block {block}");
+		}
+	}
+
+	#endregion
 
 	#region Update
 
@@ -215,13 +237,10 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 
 	private void SendThrustCommands()
 	{
-		_thrusterResponses.Clear();
-
-		LinearThruster[] linearThrusters = GetComponentsInChildren<LinearThruster>();
-		foreach (LinearThruster thruster in linearThrusters)
+		_propulsionRequests.Clear();
+		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			thruster.SetCommands(ForwardBackCommand, StrafeCommand, RotateCommand);
-			_thrusterResponses.Add(thruster.GetResponse());
+			_propulsionRequests.Add(block, block.GetResponse(ForwardBackCommand, StrafeCommand, RotateCommand));
 		}
 	}
 
@@ -238,7 +257,7 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 	{
 		_resourceRequests.Clear();
 		DictionaryUtils.AddDictionaries(
-			_thrusterResponses.Select(response => response.ResourceConsumptionRateRequest),
+			_propulsionRequests.Select(pair => pair.Value.ResourceConsumptionRateRequest),
 			_resourceRequests
 		);
 		return _resourceRequests;
@@ -246,9 +265,9 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 
 	public void SatisfyResourceRequestAtLevel(float satisfaction)
 	{
-		foreach (ThrusterResponse response in _thrusterResponses)
+		foreach (PropulsionRequest request in _propulsionRequests.Values)
 		{
-			_body.AddForceAtPosition(response.Force * satisfaction, response.ForceOrigin);
+			_body.AddForceAtPosition(request.Force * satisfaction, request.ForceOrigin);
 		}
 
 		_resourceSatisfaction = satisfaction;
@@ -256,9 +275,12 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 
 	private void LateUpdate()
 	{
-		foreach (LinearThruster thruster in GetComponentsInChildren<LinearThruster>())
+		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			thruster.PlayEffect(_resourceSatisfaction);
+			if (_propulsionRequests.TryGetValue(block, out PropulsionRequest request))
+			{
+				block.PlayEffect(request, _resourceSatisfaction);
+			}
 		}
 	}
 

@@ -1,28 +1,27 @@
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
+public interface IResourceGeneratorBlockRegistry : IBlockRegistry<ResourceGeneratorBlock>, IEventSystemHandler
+{}
+
 public abstract class ResourceGeneratorBlock : MonoBehaviour
 {
 	private void OnEnable()
 	{
-		var manager = GetComponentInParent<VehicleResourceManager>();
-		if (manager != null)
-		{
-			manager.AddGenerator(this);
-		}
+		ExecuteEvents.ExecuteHierarchy<IResourceGeneratorBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
 	}
 
 	private void OnDisable()
 	{
-		var manager = GetComponentInParent<VehicleResourceManager>();
-		if (manager != null)
-		{
-			manager.RemoveGenerator(this);
-		}
+		ExecuteEvents.ExecuteHierarchy<IResourceGeneratorBlockRegistry>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
 	}
 
 	/// <remark>

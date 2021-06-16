@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 // Note that this class need to execute after all resource usage scripts in order to function properly.
-public class VehicleResourceManager : MonoBehaviourPun
+public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockRegistry, IResourceGeneratorBlockRegistry
 {
 	private bool _isMine;
 
@@ -51,13 +51,13 @@ public class VehicleResourceManager : MonoBehaviourPun
 
 	#region Resource Block Access
 
-	public void AddStorage(ResourceStorageBlock block)
+	public void RegisterBlock(ResourceStorageBlock block)
 	{
 		_storageBlocks.Add(block);
 		_storageChanged = true;
 	}
 
-	public void RemoveStorage(ResourceStorageBlock block)
+	public void UnregisterBlock(ResourceStorageBlock block)
 	{
 		bool success = _storageBlocks.Remove(block);
 		if (success)
@@ -70,12 +70,12 @@ public class VehicleResourceManager : MonoBehaviourPun
 		}
 	}
 
-	public void AddGenerator(ResourceGeneratorBlock block)
+	public void RegisterBlock(ResourceGeneratorBlock block)
 	{
 		_generatorBlocks.Add(block);
 	}
 
-	public void RemoveGenerator(ResourceGeneratorBlock block)
+	public void UnregisterBlock(ResourceGeneratorBlock block)
 	{
 		bool success = _generatorBlocks.Remove(block);
 		if (!success)
