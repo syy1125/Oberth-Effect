@@ -56,7 +56,7 @@ public class BlockPalette : MonoBehaviour
 
 		Transform t = transform;
 
-		_blocks = BlockRegistry.Instance.Blocks
+		_blocks = BlockDatabase.Instance.Blocks
 			.Where(block => block.GetComponent<BlockInfo>().ShowInDesigner)
 			.ToArray();
 

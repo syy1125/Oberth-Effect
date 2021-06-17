@@ -115,7 +115,7 @@ public class VehicleBuilder : MonoBehaviour
 			throw new EmptyBlockError();
 		}
 
-		GameObject blockTemplate = BlockRegistry.Instance.GetBlock(instance.BlockID);
+		GameObject blockTemplate = BlockDatabase.Instance.GetBlock(instance.BlockID);
 		if (!blockTemplate.GetComponent<BlockInfo>().AllowErase)
 		{
 			throw new BlockNotErasable();
@@ -141,7 +141,7 @@ public class VehicleBuilder : MonoBehaviour
 
 	private IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
-		GameObject blockPrefab = BlockRegistry.Instance.GetBlock(instance.BlockID);
+		GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);
 		foreach (Vector2Int attachmentPoint in blockPrefab.GetComponent<BlockInfo>().AttachmentPoints)
 		{
 			yield return new Vector2Int(instance.X, instance.Y)
@@ -242,7 +242,7 @@ public class VehicleBuilder : MonoBehaviour
 
 		foreach (VehicleBlueprint.BlockInstance instance in Blueprint.Blocks)
 		{
-			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(instance.BlockID);
+			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);
 
 			var info = blockPrefab.GetComponent<BlockInfo>();
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1867151184862645293}
   - component: {fileID: 1867151184862645294}
   m_Layer: 0
-  m_Name: Block Registry
+  m_Name: Block Database
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

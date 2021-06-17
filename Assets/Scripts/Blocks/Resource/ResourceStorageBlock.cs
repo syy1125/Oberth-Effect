@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Syy1125.OberthEffect.Blocks
+namespace Syy1125.OberthEffect.Blocks.Resource
 {
 public interface IResourceStorageBlockRegistry : IBlockRegistry<ResourceStorageBlock>, IEventSystemHandler
 {}

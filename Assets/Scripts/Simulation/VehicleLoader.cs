@@ -19,7 +19,7 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 
 		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
 		{
-			GameObject blockPrefab = BlockRegistry.Instance.GetBlock(block.BlockID);
+			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(block.BlockID);
 
 			if (blockPrefab == null)
 			{

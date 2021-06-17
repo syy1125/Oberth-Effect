@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Common;
 
-namespace Syy1125.OberthEffect.Blocks
+namespace Syy1125.OberthEffect.Blocks.Resource
 {
 public class FreeResourceGeneratorBlock : ResourceGeneratorBlock
 {

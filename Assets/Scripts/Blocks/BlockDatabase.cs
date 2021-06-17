@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public class BlockRegistry : MonoBehaviour
+public class BlockDatabase : MonoBehaviour
 {
-	public static BlockRegistry Instance { get; private set; }
+	public static BlockDatabase Instance { get; private set; }
 
 	public GameObject[] Blocks;
 
