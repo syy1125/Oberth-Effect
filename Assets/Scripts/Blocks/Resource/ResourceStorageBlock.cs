@@ -14,20 +14,20 @@ public class ResourceStorageBlock : MonoBehaviour
 
 	public Dictionary<VehicleResource, float> ResourceCapacityDict { get; private set; }
 
-	private void OnEnable()
-	{
-		ExecuteEvents.ExecuteHierarchy<IResourceStorageBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-	}
-
-	private void Start()
+	private void Awake()
 	{
 		ResourceCapacityDict = new Dictionary<VehicleResource, float>(ResourceCapacities.Length);
 		foreach (ResourceEntry entry in ResourceCapacities)
 		{
 			ResourceCapacityDict.Add(entry.Resource, entry.Amount);
 		}
+	}
+
+	private void OnEnable()
+	{
+		ExecuteEvents.ExecuteHierarchy<IResourceStorageBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
 	}
 
 	private void OnDisable()
