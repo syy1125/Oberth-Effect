@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1068110530653244b15e12e470a5bd6, type: 3}
   m_Name: Energy
   m_EditorClassIdentifier: 
+  Id: Energy
   DisplayName: Energy
   ShortName: E
   DisplayColor: {r: 0, g: 1, b: 1, a: 1}

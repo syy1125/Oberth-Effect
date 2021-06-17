@@ -1,32 +1,45 @@
-using System.Linq;
+using System.Collections.Generic;
+using Photon.Pun;
+using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Syy1125.OberthEffect.Blocks
+namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class LinearThruster : MonoBehaviour, IPropulsionBlock
+public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumerBlock
 {
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
 
 	private Rigidbody2D _body;
 	private ParticleSystem _particles;
+	private bool _isMine;
 
 	private float _forwardBackResponse;
 	private float _strafeResponse;
 	private float _rotateResponse;
+	private float _response;
+
+	private Dictionary<VehicleResource, float> _resourceRequests;
+	private float _satisfaction;
+
 	private float _maxParticleSpeed;
 
 	private void Awake()
 	{
 		_body = GetComponentInParent<Rigidbody2D>();
 		_particles = GetComponent<ParticleSystem>();
+
+		_resourceRequests = new Dictionary<VehicleResource, float>();
 	}
 
 	private void OnEnable()
 	{
 		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
+		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
 	}
@@ -50,6 +63,9 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock
 			_maxParticleSpeed = _particles.main.startSpeedMultiplier;
 			_particles.Play();
 		}
+
+		var photonView = GetComponentInParent<PhotonView>();
+		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	private void OnDisable()
@@ -57,34 +73,50 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock
 		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
 	}
 
-	public PropulsionRequest GetResponse(float forwardBackCommand, float strafeCommand, float rotateCommand)
+	public void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
 	{
 		float rawResponse = _forwardBackResponse * forwardBackCommand
 		                    + _strafeResponse * strafeCommand
 		                    + _rotateResponse * rotateCommand;
-		float response = Mathf.Clamp01(rawResponse);
-
-		return new PropulsionRequest
-		{
-			ResourceConsumptionRateRequest = MaxResourceUse.ToDictionary(
-				entry => entry.Resource, entry => entry.Amount * response
-			),
-			ForceOrigin = transform.position,
-			Force = transform.up * (MaxForce * response)
-		};
+		_response = Mathf.Clamp01(rawResponse);
 	}
 
-	public void PlayEffect(PropulsionRequest request, float satisfactionLevel)
+	public IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
 	{
-		{
-			float response = Mathf.Clamp01(request.Force.magnitude / MaxForce);
-			float strength = satisfactionLevel * response;
+		_resourceRequests.Clear();
 
+		foreach (ResourceEntry entry in MaxResourceUse)
+		{
+			_resourceRequests.Add(entry.Resource, entry.Amount * _response);
+		}
+
+		return _resourceRequests;
+	}
+
+	public void SatisfyResourceRequestAtLevel(float level)
+	{
+		_satisfaction = level;
+	}
+
+	private void FixedUpdate()
+	{
+		float overallResponse = _response * _satisfaction;
+
+		if (_body != null && _isMine)
+		{
+			_body.AddForceAtPosition(transform.up * overallResponse, transform.position);
+		}
+
+		if (_particles != null)
+		{
 			ParticleSystem.MainModule main = _particles.main;
-			main.startSpeedMultiplier = strength * _maxParticleSpeed;
-			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, strength));
+			main.startSpeedMultiplier = overallResponse * _maxParticleSpeed;
+			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, overallResponse));
 		}
 	}
 }

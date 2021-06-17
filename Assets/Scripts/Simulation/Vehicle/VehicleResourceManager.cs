@@ -10,7 +10,12 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 // Note that this class need to execute after all resource usage scripts in order to function properly.
-public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockRegistry, IResourceGeneratorBlockRegistry
+public class VehicleResourceManager :
+	MonoBehaviourPun,
+	IPunObservable,
+	IResourceStorageBlockRegistry,
+	IResourceGeneratorBlockRegistry,
+	IResourceConsumerBlockRegistry
 {
 	private bool _isMine;
 
@@ -18,13 +23,12 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 	private bool _storageChanged;
 	private Dictionary<VehicleResource, float> _resourceCapacities;
 
-	private List<ResourceGeneratorBlock> _generatorBlocks;
-
+	private List<IResourceGeneratorBlock> _generatorBlocks;
 	private Dictionary<VehicleResource, float> _currentResources;
 
-	private List<IResourceConsumer> _consumers;
-	private SortedDictionary<int, List<IResourceConsumer>> _orderedConsumers;
+	private List<IResourceConsumerBlock> _consumerBlocks;
 	private Dictionary<VehicleResource, float> _resourceRequestRate;
+	private Dictionary<VehicleResource, float> _resourceSatisfaction;
 
 	private void Awake()
 	{
@@ -32,16 +36,12 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 		_storageChanged = false;
 		_resourceCapacities = new Dictionary<VehicleResource, float>();
 
-		_generatorBlocks = new List<ResourceGeneratorBlock>();
-
+		_generatorBlocks = new List<IResourceGeneratorBlock>();
 		_currentResources = new Dictionary<VehicleResource, float>();
 
-		_consumers = GetComponents<MonoBehaviour>()
-			.Select(behaviour => behaviour as IResourceConsumer)
-			.Where(consumer => consumer != null)
-			.ToList();
-		_orderedConsumers = new SortedDictionary<int, List<IResourceConsumer>>(new ReverseIntComparator());
+		_consumerBlocks = new List<IResourceConsumerBlock>();
 		_resourceRequestRate = new Dictionary<VehicleResource, float>();
+		_resourceSatisfaction = new Dictionary<VehicleResource, float>();
 	}
 
 	private void Start()
@@ -70,12 +70,12 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 		}
 	}
 
-	public void RegisterBlock(ResourceGeneratorBlock block)
+	public void RegisterBlock(IResourceGeneratorBlock block)
 	{
 		_generatorBlocks.Add(block);
 	}
 
-	public void UnregisterBlock(ResourceGeneratorBlock block)
+	public void UnregisterBlock(IResourceGeneratorBlock block)
 	{
 		bool success = _generatorBlocks.Remove(block);
 		if (!success)
@@ -84,23 +84,55 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 		}
 	}
 
+	public void RegisterBlock(IResourceConsumerBlock block)
+	{
+		_consumerBlocks.Add(block);
+	}
+
+	public void UnregisterBlock(IResourceConsumerBlock block)
+	{
+		bool success = _consumerBlocks.Remove(block);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove resource consumer block {block}");
+		}
+	}
+
 	#endregion
+
+	#region Update
 
 	private void FixedUpdate()
 	{
-		if (!_isMine) return;
-
-		if (_storageChanged)
+		if (_isMine)
 		{
-			_resourceCapacities.Clear();
-			DictionaryUtils.AddDictionaries(
-				_storageBlocks.Select(block => block.ResourceCapacityDict),
-				_resourceCapacities
-			);
+			if (_storageChanged)
+			{
+				UpdateStorage();
+			}
 
-			_storageChanged = false;
+			GenerateResources();
+			ClampCurrentResources();
+
+			UpdateResourceSatisfaction();
 		}
 
+		SatisfyConsumers(_isMine);
+	}
+
+	private void UpdateStorage()
+	{
+		_resourceCapacities.Clear();
+		DictionaryUtils.AddDictionaries(
+			_storageBlocks.Select(block => block.ResourceCapacityDict),
+			_resourceCapacities
+		);
+
+		_storageChanged = false;
+	}
+
+	private void GenerateResources()
+	{
 		DictionaryUtils.AddDictionaries(
 			_generatorBlocks
 				.Select(
@@ -112,73 +144,6 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 				.Where(dict => dict != null && dict.Count > 0),
 			_currentResources
 		);
-
-		ClampCurrentResources();
-
-		_orderedConsumers.Clear();
-		foreach (IResourceConsumer consumer in _consumers)
-		{
-			int priority = consumer.GetResourcePriority();
-
-			if (!_orderedConsumers.ContainsKey(priority))
-			{
-				_orderedConsumers.Add(priority, new List<IResourceConsumer>());
-			}
-
-			_orderedConsumers[priority].Add(consumer);
-		}
-
-		_resourceRequestRate.Clear();
-		var resourceUsage = new Dictionary<VehicleResource, float>();
-		foreach (KeyValuePair<int, List<IResourceConsumer>> consumerPair in _orderedConsumers)
-		{
-			resourceUsage.Clear();
-
-			DictionaryUtils.AddDictionaries(
-				consumerPair.Value.Select(consumer => consumer.GetConsumptionRateRequest()),
-				_resourceRequestRate
-			);
-			DictionaryUtils.AddDictionaries(
-				consumerPair.Value.Select(
-					consumer => consumer.GetConsumptionRateRequest().ToDictionary(
-						pair => pair.Key, pair => pair.Value * Time.deltaTime
-					)
-				),
-				resourceUsage
-			);
-
-			float satisfaction = 1;
-
-			foreach (KeyValuePair<VehicleResource, float> request in resourceUsage)
-			{
-				if (_currentResources.TryGetValue(request.Key, out float available))
-				{
-					satisfaction = Mathf.Min(satisfaction, available / request.Value);
-				}
-				else
-				{
-					satisfaction = 0;
-					break;
-				}
-			}
-
-			satisfaction = Mathf.Clamp01(satisfaction);
-
-			foreach (IResourceConsumer consumer in consumerPair.Value)
-			{
-				consumer.SatisfyResourceRequestAtLevel(satisfaction);
-			}
-
-			if (satisfaction > 0)
-			{
-				foreach (KeyValuePair<VehicleResource, float> usagePair in resourceUsage)
-				{
-					_currentResources[usagePair.Key] -= usagePair.Value * satisfaction;
-				}
-			}
-
-			ClampCurrentResources();
-		}
 	}
 
 	private void ClampCurrentResources()
@@ -195,6 +160,79 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 			}
 		}
 	}
+
+	private void UpdateResourceSatisfaction()
+	{
+		_resourceRequestRate.Clear();
+		DictionaryUtils.AddDictionaries(
+			_consumerBlocks.Select(block => block.GetResourceConsumptionRateRequest()),
+			_resourceRequestRate
+		);
+
+		_resourceSatisfaction.Clear();
+		foreach (KeyValuePair<VehicleResource, float> pair in _resourceRequestRate)
+		{
+			_resourceSatisfaction.Add(
+				pair.Key,
+				_currentResources.TryGetValue(pair.Key, out float value)
+					? Mathf.Clamp01(value / (pair.Value * Time.fixedDeltaTime))
+					: 0f
+			);
+		}
+	}
+
+	private void SatisfyConsumers(bool consumeResources)
+	{
+		foreach (IResourceConsumerBlock consumer in _consumerBlocks)
+		{
+			IDictionary<VehicleResource, float> request = consumer.GetResourceConsumptionRateRequest();
+			float satisfactionLevel = Mathf.Min(
+				request.Keys
+					.Select(resource => _resourceSatisfaction.TryGetValue(resource, out float level) ? level : 0f)
+					.ToArray()
+			);
+
+			if (consumeResources && satisfactionLevel > 0f)
+			{
+				foreach (KeyValuePair<VehicleResource, float> pair in request)
+				{
+					_currentResources[pair.Key] -= pair.Value * satisfactionLevel * Time.fixedDeltaTime;
+				}
+			}
+
+			consumer.SatisfyResourceRequestAtLevel(satisfactionLevel);
+		}
+	}
+
+	#endregion
+
+	#region PUN
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			stream.SendNext(_resourceSatisfaction.Count);
+			foreach (KeyValuePair<VehicleResource, float> pair in _resourceSatisfaction)
+			{
+				stream.SendNext(pair.Key.Id);
+				stream.SendNext(pair.Value);
+			}
+		}
+		else
+		{
+			_resourceSatisfaction.Clear();
+			int count = (int) stream.ReceiveNext();
+			for (int i = 0; i < count; i++)
+			{
+				string resourceId = (string) stream.ReceiveNext();
+				float satisfaction = (float) stream.ReceiveNext();
+				_resourceSatisfaction.Add(VehicleResourceDatabase.Instance.GetResource(resourceId), satisfaction);
+			}
+		}
+	}
+
+	#endregion
 
 	#region Public Access
 
@@ -214,13 +252,5 @@ public class VehicleResourceManager : MonoBehaviourPun, IResourceStorageBlockReg
 	}
 
 	#endregion
-}
-
-internal class ReverseIntComparator : IComparer<int>
-{
-	public int Compare(int x, int y)
-	{
-		return y - x;
-	}
 }
 }

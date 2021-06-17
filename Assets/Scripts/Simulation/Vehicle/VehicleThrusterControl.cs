@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Photon.Pun;
-using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Blocks.Propulsion;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -19,7 +16,7 @@ public enum ControlMode
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObservable, IPropulsionBlockRegistry
+public class VehicleThrusterControl : MonoBehaviour, IPunObservable, IPropulsionBlockRegistry
 {
 	#region Unity Fields
 
@@ -52,10 +49,6 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 	private bool _isMine;
 
 	private List<IPropulsionBlock> _propulsionBlocks;
-	private Dictionary<IPropulsionBlock, PropulsionRequest> _propulsionRequests;
-
-	private Dictionary<VehicleResource, float> _resourceRequests;
-	private float _resourceSatisfaction;
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -70,8 +63,6 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 	private void Awake()
 	{
 		_propulsionBlocks = new List<IPropulsionBlock>();
-		_propulsionRequests = new Dictionary<IPropulsionBlock, PropulsionRequest>();
-		_resourceRequests = new Dictionary<VehicleResource, float>();
 
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
@@ -156,7 +147,7 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 			ClampCommands();
 		}
 
-		SendThrustCommands();
+		SendCommands();
 	}
 
 	private void UpdateMouseModeCommands()
@@ -235,52 +226,11 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
 	}
 
-	private void SendThrustCommands()
-	{
-		_propulsionRequests.Clear();
-		foreach (IPropulsionBlock block in _propulsionBlocks)
-		{
-			_propulsionRequests.Add(block, block.GetResponse(ForwardBackCommand, StrafeCommand, RotateCommand));
-		}
-	}
-
-	#endregion
-
-	#region Resources
-
-	public int GetResourcePriority()
-	{
-		return 0;
-	}
-
-	public Dictionary<VehicleResource, float> GetConsumptionRateRequest()
-	{
-		_resourceRequests.Clear();
-		DictionaryUtils.AddDictionaries(
-			_propulsionRequests.Select(pair => pair.Value.ResourceConsumptionRateRequest),
-			_resourceRequests
-		);
-		return _resourceRequests;
-	}
-
-	public void SatisfyResourceRequestAtLevel(float satisfaction)
-	{
-		foreach (PropulsionRequest request in _propulsionRequests.Values)
-		{
-			_body.AddForceAtPosition(request.Force * satisfaction, request.ForceOrigin);
-		}
-
-		_resourceSatisfaction = satisfaction;
-	}
-
-	private void LateUpdate()
+	private void SendCommands()
 	{
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			if (_propulsionRequests.TryGetValue(block, out PropulsionRequest request))
-			{
-				block.PlayEffect(request, _resourceSatisfaction);
-			}
+			block.SetPropulsionCommands(ForwardBackCommand, StrafeCommand, RotateCommand);
 		}
 	}
 
@@ -295,14 +245,12 @@ public class VehicleThrusterControl : MonoBehaviour, IResourceConsumer, IPunObse
 			stream.SendNext(ForwardBackCommand);
 			stream.SendNext(StrafeCommand);
 			stream.SendNext(RotateCommand);
-			stream.SendNext(_resourceSatisfaction);
 		}
 		else
 		{
 			ForwardBackCommand = (float) stream.ReceiveNext();
 			StrafeCommand = (float) stream.ReceiveNext();
 			RotateCommand = (float) stream.ReceiveNext();
-			_resourceSatisfaction = (float) stream.ReceiveNext();
 		}
 	}
 

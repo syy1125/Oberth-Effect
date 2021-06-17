@@ -6,6 +6,7 @@ namespace Syy1125.OberthEffect.Common
 [CreateAssetMenu(menuName = "Scriptable Objects/Vehicle Resource", fileName = "Resource")]
 public class VehicleResource : ScriptableObject
 {
+	public string Id;
 	public string DisplayName;
 	public string ShortName;
 	public Color DisplayColor;
