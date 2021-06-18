@@ -165,7 +165,9 @@ public class VehicleResourceManager :
 	{
 		_resourceRequestRate.Clear();
 		DictionaryUtils.AddDictionaries(
-			_consumerBlocks.Select(block => block.GetResourceConsumptionRateRequest()),
+			_consumerBlocks
+				.Select(block => block.GetResourceConsumptionRateRequest())
+				.Where(request => request != null),
 			_resourceRequestRate
 		);
 
@@ -186,6 +188,8 @@ public class VehicleResourceManager :
 		foreach (IResourceConsumerBlock consumer in _consumerBlocks)
 		{
 			IDictionary<VehicleResource, float> request = consumer.GetResourceConsumptionRateRequest();
+			if (request == null) continue;
+
 			float satisfactionLevel = Mathf.Min(
 				request.Keys
 					.Select(resource => _resourceSatisfaction.TryGetValue(resource, out float level) ? level : 0f)

@@ -125,12 +125,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839406c5d8fc49ac8f69378005499fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowInDesigner: 1
-  AllowErase: 1
   BlockID: 1x2 Left Slope Front
   ShortName: L Slope Front
   FullName: 1x2 Left Slope Front
+  ShowInDesigner: 1
+  AllowErase: 1
   MaxHealth: 25
+  ArmorValue: 4
   IntegrityScore: 0.25
   Bounds:
     m_Position: {x: 0, y: 0, z: 0}

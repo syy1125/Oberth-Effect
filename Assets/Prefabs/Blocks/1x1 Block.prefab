@@ -123,12 +123,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839406c5d8fc49ac8f69378005499fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowInDesigner: 1
-  AllowErase: 1
   BlockID: 1x1 Block
   ShortName: Block
   FullName: 1x1 Block
+  ShowInDesigner: 1
+  AllowErase: 1
   MaxHealth: 100
+  ArmorValue: 4
   IntegrityScore: 1
   Bounds:
     m_Position: {x: 0, y: 0, z: 0}

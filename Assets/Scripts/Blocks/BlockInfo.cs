@@ -5,28 +5,26 @@ namespace Syy1125.OberthEffect.Blocks
 public class BlockInfo : MonoBehaviour
 {
 	[Header("Core Data")]
-	public bool ShowInDesigner;
-
-	public bool AllowErase;
-
 	public string BlockID;
-
 	public string ShortName;
 	public string FullName;
 
+	[Header("Designer")]
+	public bool ShowInDesigner;
+	public bool AllowErase;
+
 	[Header("Stats")]
 	public float MaxHealth;
-
+	[Range(1, 10)]
+	public float ArmorValue;
 	public float IntegrityScore;
 
 	[Header("Construction")]
 	public BoundsInt Bounds = new BoundsInt(Vector3Int.zero, Vector3Int.one);
-
 	public Vector2Int[] AttachmentPoints;
 
 	[Header("Physics")]
 	public Vector2 CenterOfMass;
-
 	public float Mass;
 	public float MomentOfInertia;
 
