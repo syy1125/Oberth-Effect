@@ -17,8 +17,6 @@ public class VehicleResourceManager :
 	IResourceGeneratorBlockRegistry,
 	IResourceConsumerBlockRegistry
 {
-	private bool _isMine;
-
 	private List<ResourceStorageBlock> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<VehicleResource, float> _resourceCapacities;
@@ -42,11 +40,6 @@ public class VehicleResourceManager :
 		_consumerBlocks = new List<IResourceConsumerBlock>();
 		_resourceRequestRate = new Dictionary<VehicleResource, float>();
 		_resourceSatisfaction = new Dictionary<VehicleResource, float>();
-	}
-
-	private void Start()
-	{
-		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	#region Resource Block Access
@@ -104,7 +97,7 @@ public class VehicleResourceManager :
 
 	private void FixedUpdate()
 	{
-		if (_isMine)
+		if (photonView.IsMine)
 		{
 			if (_storageChanged)
 			{
@@ -117,7 +110,7 @@ public class VehicleResourceManager :
 			UpdateResourceSatisfaction();
 		}
 
-		SatisfyConsumers(_isMine);
+		SatisfyConsumers(photonView.IsMine);
 	}
 
 	private void UpdateStorage()

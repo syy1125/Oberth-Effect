@@ -16,7 +16,7 @@ public enum ControlMode
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviour, IPunObservable, IPropulsionBlockRegistry
+public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropulsionBlockRegistry
 {
 	#region Unity Fields
 
@@ -46,8 +46,6 @@ public class VehicleThrusterControl : MonoBehaviour, IPunObservable, IPropulsion
 
 	#endregion
 
-	private bool _isMine;
-
 	private List<IPropulsionBlock> _propulsionBlocks;
 
 	private Camera _mainCamera;
@@ -70,7 +68,6 @@ public class VehicleThrusterControl : MonoBehaviour, IPunObservable, IPropulsion
 
 		var photonView = GetComponent<PhotonView>();
 		// Vehicle is mine if we're in singleplayer or if the photon view is mine.
-		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	private void OnEnable()
@@ -125,7 +122,7 @@ public class VehicleThrusterControl : MonoBehaviour, IPunObservable, IPropulsion
 
 	private void FixedUpdate()
 	{
-		if (_isMine)
+		if (photonView.IsMine)
 		{
 			switch (ControlMode)
 			{

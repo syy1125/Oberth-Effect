@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
+[RequireComponent(typeof(BlockCore))]
 public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem
 {
 	public GameObject WeaponPrefab;
@@ -20,6 +21,8 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	private Dictionary<VehicleResource, float> _resourceConsumption;
 
+	private BlockCore _block;
+
 	private Vector2 _aimPoint;
 	private bool _firing;
 
@@ -30,6 +33,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	private void Awake()
 	{
+		_block = GetComponent<BlockCore>();
 		_resourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
 			entry => entry.Resource, entry => entry.Amount
 		);
@@ -71,16 +75,12 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		_resourceSatisfactionLevel = level;
 	}
 
-	public int GetOwnerId()
-	{
-		return 0;
-	}
+	public int GetOwnerId() => _block.OwnerId;
 
 	public void SetAimPoint(Vector2 aimPoint)
 	{
 		_aimPoint = aimPoint;
 	}
-
 
 	public void SetFiring(bool firing)
 	{

@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 336296be7f674158ad20aa91c2ad6fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FireAction: {fileID: -5540044965373844553, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!114 &-3674230021090741243
 MonoBehaviour:
   m_ObjectHideFlags: 0
