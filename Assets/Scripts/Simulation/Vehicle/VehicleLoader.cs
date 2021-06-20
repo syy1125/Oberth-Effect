@@ -6,7 +6,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
@@ -28,6 +28,7 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 			}
 
 			var rootLocation = new Vector2(block.X, block.Y);
+			var rootLocationInt = new Vector2Int(block.X, block.Y);
 
 			GameObject go = Instantiate(blockPrefab, transform);
 			go.transform.localPosition = rootLocation;
@@ -40,6 +41,9 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 			totalMass += info.Mass;
 			centerOfMass += info.Mass * blockCenter;
 			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
+
+			var blockCore = go.GetComponent<BlockCore>();
+			blockCore.RootLocation = rootLocationInt;
 		}
 
 		if (totalMass > Mathf.Epsilon)

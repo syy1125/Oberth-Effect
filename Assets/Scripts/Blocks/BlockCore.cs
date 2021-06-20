@@ -21,6 +21,8 @@ public class BlockCore : MonoBehaviour
 
 	[HideInInspector]
 	public int OwnerId;
+	[HideInInspector]
+	public Vector2Int RootLocation;
 
 	public float Health { get; private set; }
 
