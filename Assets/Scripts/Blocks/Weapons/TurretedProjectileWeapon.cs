@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
@@ -10,18 +11,18 @@ namespace Syy1125.OberthEffect.Blocks.Weapons
 [RequireComponent(typeof(BlockCore))]
 public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem
 {
-	public GameObject WeaponPrefab;
+	public GameObject ProjectilePrefab;
 
-	public int BurstCount = 1;
-	public float BurstInterval;
 	public float ReloadTime;
 	public ResourceEntry[] ReloadResourceConsumptionRate;
 
 	public Transform Turret;
+	public Transform FiringPort;
 
 	private Dictionary<VehicleResource, float> _resourceConsumption;
 
 	private BlockCore _block;
+	private bool _isMine;
 
 	private Vector2 _aimPoint;
 	private bool _firing;
@@ -53,6 +54,9 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	{
 		_reloadProgress = ReloadTime;
 		_aimPoint = transform.TransformPoint(Vector3.up);
+
+		var photonView = GetComponentInParent<PhotonView>();
+		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	private void OnDisable()
@@ -91,15 +95,18 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	{
 		RotateTurret();
 
-		if (_firing && _reloadProgress >= ReloadTime)
+		if (_isMine)
 		{
-			_reloadProgress -= ReloadTime;
-			Debug.Log("Weapon firing");
-		}
+			if (_firing && _reloadProgress >= ReloadTime)
+			{
+				_reloadProgress -= ReloadTime;
+				PhotonNetwork.Instantiate(ProjectilePrefab.name, FiringPort.position, FiringPort.rotation);
+			}
 
-		if (_reloadProgress < ReloadTime)
-		{
-			_reloadProgress += Time.fixedDeltaTime * _resourceSatisfactionLevel;
+			if (_reloadProgress < ReloadTime)
+			{
+				_reloadProgress += Time.fixedDeltaTime * _resourceSatisfactionLevel;
+			}
 		}
 	}
 

@@ -1,8 +1,13 @@
-﻿using Syy1125.OberthEffect.Blocks.Weapons;
+﻿using Photon.Pun;
+using Syy1125.OberthEffect.Blocks.Weapons;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
+public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>, IEventSystemHandler
+{}
+
 /// <summary>
 /// Controls core behaviour of a block.
 /// For example, calculating physics and taking damage.
@@ -11,6 +16,8 @@ namespace Syy1125.OberthEffect.Blocks
 public class BlockCore : MonoBehaviour
 {
 	private BlockInfo _info;
+
+	private bool _isMine;
 
 	[HideInInspector]
 	public int OwnerId;
@@ -25,6 +32,9 @@ public class BlockCore : MonoBehaviour
 	private void Start()
 	{
 		Health = _info.MaxHealth;
+
+		var photonView = GetComponentInParent<PhotonView>();
+		_isMine = photonView == null || photonView.IsMine;
 	}
 
 	public float GetDamageModifier(float armorPierce, DamageType damageType)
@@ -35,12 +45,16 @@ public class BlockCore : MonoBehaviour
 
 	public void DestroyBlock()
 	{
+		if (!_isMine) return;
+
 		Health = 0f;
 		gameObject.SetActive(false);
 	}
 
 	public void DamageBlock(float damage)
 	{
+		if (!_isMine) return;
+
 		Health -= damage;
 	}
 }
