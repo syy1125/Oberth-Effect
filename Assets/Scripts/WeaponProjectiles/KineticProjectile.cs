@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using UnityEngine;
@@ -6,18 +7,25 @@ namespace Syy1125.OberthEffect.WeaponProjectiles
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class KineticProjectile : MonoBehaviour, IWeaponProjectile
+public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
 {
 	public float Damage;
 	[Range(1, 10)]
 	public float ArmorPierce = 1;
 
-	public IWeaponSystem From { get; set; }
+	private int _ownerId;
+
+	public void OnPhotonInstantiate(PhotonMessageInfo info)
+	{
+		_ownerId = info.Sender.ActorNumber;
+	}
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		if (!other.GetComponentInParent<PhotonView>().IsMine) return;
+
 		var block = other.GetComponentInParent<BlockCore>();
-		if (block == null || block.OwnerId == From.GetOwnerId()) return;
+		if (block == null || block.OwnerId == _ownerId) return;
 
 		float damageModifier = block.GetDamageModifier(ArmorPierce, DamageType.Kinetic);
 		float effectiveDamage = Damage * damageModifier;
@@ -30,7 +38,7 @@ public class KineticProjectile : MonoBehaviour, IWeaponProjectile
 		else
 		{
 			block.DamageBlock(effectiveDamage);
-			Destroy(gameObject);
+			PhotonNetwork.Destroy(gameObject);
 		}
 	}
 }
