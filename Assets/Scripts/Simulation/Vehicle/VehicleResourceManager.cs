@@ -186,6 +186,7 @@ public class VehicleResourceManager :
 			float satisfactionLevel = Mathf.Min(
 				request.Keys
 					.Select(resource => _resourceSatisfaction.TryGetValue(resource, out float level) ? level : 0f)
+					.Prepend(1f)
 					.ToArray()
 			);
 
