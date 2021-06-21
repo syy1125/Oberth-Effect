@@ -107,7 +107,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				);
 
 				var projectileBody = projectile.GetComponent<Rigidbody2D>();
-				projectileBody.velocity = FiringPort.forward * ProjectileSpeed;
+				projectileBody.velocity = FiringPort.up * ProjectileSpeed;
 			}
 
 			if (_reloadProgress < ReloadTime)
