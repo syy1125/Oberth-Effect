@@ -465,14 +465,14 @@ public class VehicleDesigner : MonoBehaviour
 		return messages;
 	}
 
-	public string SaveVehicle()
+	public string ExportVehicle()
 	{
 		return JsonUtility.ToJson(Blueprint);
 	}
 
-	public void LoadVehicle(string blueprintString)
+	public void ImportVehicle(string blueprint)
 	{
-		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprintString);
+		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
 		Config.ReloadVehicle();
 		Builder.ReloadVehicle();
 	}

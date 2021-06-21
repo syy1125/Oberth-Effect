@@ -33,7 +33,7 @@ public class TestSpawner : MonoBehaviour
 	{
 		DontDestroyOnLoad(gameObject);
 
-		string blueprint = Designer.SaveVehicle();
+		string blueprint = Designer.ExportVehicle();
 		AsyncOperation op = SceneManager.LoadSceneAsync("Track Test");
 
 		yield return new WaitUntil(() => op.isDone);

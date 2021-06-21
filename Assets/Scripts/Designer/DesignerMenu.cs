@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -130,6 +131,12 @@ public class DesignerMenu : MonoBehaviour
 		{
 			OpenModal(saveModal);
 		}
+	}
+
+	public void ToTestDrive()
+	{
+		VehicleSelection.SerializedVehicle = Designer.ExportVehicle();
+		SceneManager.LoadScene("Scenes/Test Drive Room");
 	}
 
 	public void ToMainMenu()

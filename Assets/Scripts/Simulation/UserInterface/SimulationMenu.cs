@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
 public class SimulationMenu : MonoBehaviourPunCallbacks
 {
 	public InputActionReference MenuAction;
+	public SceneReference ReturnScene;
 
 	private bool _open;
 
@@ -45,7 +46,7 @@ public class SimulationMenu : MonoBehaviourPunCallbacks
 	public override void OnLeftRoom()
 	{
 		PhotonHelper.ClearPhotonPlayerProperties();
-		SceneManager.LoadScene("Scenes/Multiplayer Lobby");
+		SceneManager.LoadScene(ReturnScene);
 	}
 }
 }

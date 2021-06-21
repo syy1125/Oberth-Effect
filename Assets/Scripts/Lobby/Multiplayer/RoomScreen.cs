@@ -39,19 +39,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private string _selectedVehicleName;
 	private bool _ready;
 
-	private static string _serializedVehicle;
-	public static VehicleBlueprint SelectedVehicle { get; private set; }
-
-	public static string SerializedSelectedVehicle
-	{
-		get => _serializedVehicle;
-		private set
-		{
-			_serializedVehicle = value;
-			SelectedVehicle = value == null ? null : JsonUtility.FromJson<VehicleBlueprint>(value);
-		}
-	}
-
 	private void Awake()
 	{
 		_playerPanels = new SortedDictionary<int, GameObject>();
@@ -66,7 +53,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
 
 		_selectedVehicleName = null;
-		SerializedSelectedVehicle = null;
+		VehicleSelection.SerializedVehicle = null;
 		VehicleList.OnSelectVehicle.AddListener(SelectVehicle);
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
@@ -102,6 +89,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		RoomNameInput.onEndEdit.RemoveListener(SetRoomName);
 
+		VehicleSelection.SerializedVehicle = null;
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
@@ -205,7 +193,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	private void UpdateClientControls()
 	{
 		SelectVehicleButton.interactable = !_ready;
-		ReadyButton.interactable = SerializedSelectedVehicle != null;
+		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = _ready ? "Unready" : "Ready";
 	}
 
@@ -233,7 +221,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		);
 
 		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
-		SerializedSelectedVehicle = serializedVehicle;
+		VehicleSelection.SerializedVehicle = serializedVehicle;
 
 		VehicleSelectionScreen.SetActive(false);
 

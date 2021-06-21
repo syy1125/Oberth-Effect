@@ -1,12 +1,10 @@
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Lobby.Multiplayer;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Simulation.Multiplayer
+namespace Syy1125.OberthEffect.Simulation
 {
 public class PlayerVehicleSpawner : MonoBehaviour
 {
@@ -25,8 +23,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			0,
 			new object[]
 			{
-				RoomScreen.SerializedSelectedVehicle,
-				JsonUtility.ToJson(ColorScheme.FromBlueprint(RoomScreen.SelectedVehicle))
+				VehicleSelection.SerializedVehicle,
+				JsonUtility.ToJson(ColorScheme.FromBlueprint(VehicleSelection.SelectedVehicle))
 			}
 		);
 

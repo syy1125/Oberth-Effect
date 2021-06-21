@@ -90,7 +90,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		Debug.Log($"Saving {FileNameInput.text}");
 
 		Designer.Builder.RenameVehicle(FileNameInput.text);
-		string content = Designer.SaveVehicle();
+		string content = Designer.ExportVehicle();
 		string filePath = VehicleList.ToVehiclePath(FileNameInput.text);
 		File.WriteAllText(filePath, content);
 
@@ -114,7 +114,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		Debug.Log($"Loading vehicle from {vehiclePath}");
 
 		string content = File.ReadAllText(vehiclePath);
-		Designer.LoadVehicle(content);
+		Designer.ImportVehicle(content);
 
 		Menu.CloseAllModals();
 	}
