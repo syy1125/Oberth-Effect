@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
+public class VehicleLoader : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
 	public void SpawnVehicle(VehicleBlueprint blueprint)
 	{
@@ -43,6 +43,7 @@ public class VehicleLoader : MonoBehaviour, IPunInstantiateMagicCallback
 			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
 
 			var blockCore = go.GetComponent<BlockCore>();
+			blockCore.OwnerId = photonView.OwnerActorNr;
 			blockCore.RootLocation = rootLocationInt;
 		}
 

@@ -13,6 +13,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 {
 	public GameObject ProjectilePrefab;
 
+	public float ProjectileSpeed;
 	public float ReloadTime;
 	public ResourceEntry[] ReloadResourceConsumptionRate;
 
@@ -100,7 +101,13 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			if (_firing && _reloadProgress >= ReloadTime)
 			{
 				_reloadProgress -= ReloadTime;
-				PhotonNetwork.Instantiate(ProjectilePrefab.name, FiringPort.position, FiringPort.rotation);
+
+				GameObject projectile = PhotonNetwork.Instantiate(
+					ProjectilePrefab.name, FiringPort.position, FiringPort.rotation
+				);
+
+				var projectileBody = projectile.GetComponent<Rigidbody2D>();
+				projectileBody.velocity = FiringPort.forward * ProjectileSpeed;
 			}
 
 			if (_reloadProgress < ReloadTime)

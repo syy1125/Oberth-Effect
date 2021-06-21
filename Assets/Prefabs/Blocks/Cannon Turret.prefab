@@ -27,7 +27,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
-  m_Children: []
+  m_Children:
+  - {fileID: 1064777365042586588}
   m_Father: {fileID: 1811630963265557087}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -82,6 +83,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &5566857406605748693
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1064777365042586588}
+  m_Layer: 0
+  m_Name: Firing Port
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1064777365042586588
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5566857406605748693}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4399158788272666653}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7025115410308415482
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,8 +125,10 @@ GameObject:
   - component: {fileID: 7553949386308198073}
   - component: {fileID: 7557114314758818606}
   - component: {fileID: -2334377420914190835}
+  - component: {fileID: 6307384639774762581}
   - component: {fileID: 8334574413618934734}
   - component: {fileID: 7493643608809371162}
+  - component: {fileID: -8205556832779791864}
   m_Layer: 0
   m_Name: Cannon Turret
   m_TagString: Untagged
@@ -226,6 +259,20 @@ MonoBehaviour:
   CenterOfMass: {x: 0, y: 0}
   Mass: 1.5
   MomentOfInertia: 0.25
+--- !u!114 &6307384639774762581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OwnerId: 0
+  RootLocation: {x: 0, y: 0}
 --- !u!114 &8334574413618934734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,9 +297,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38bd7c17682d48019f27a8781d4f5093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WeaponPrefab: {fileID: 0}
-  BurstCount: 1
-  BurstInterval: 0
+  ProjectilePrefab: {fileID: 7789702252903111475, guid: ceedf91930805004f84fabab6ceb9ce6, type: 3}
+  ProjectileSpeed: 10
   ReloadTime: 2
   ReloadResourceConsumptionRate: []
   Turret: {fileID: 4399158788272666653}
+  FiringPort: {fileID: 1064777365042586588}
+--- !u!114 &-8205556832779791864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OwnerId: 0
+  RootLocation: {x: 0, y: 0}

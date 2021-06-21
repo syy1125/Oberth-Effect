@@ -32,11 +32,15 @@ public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
 
 		if (effectiveDamage > block.Health)
 		{
+			Debug.Log($"Projectile hit {block} will deal {block.Health} damage and destroy block");
+
 			Damage -= block.Health / damageModifier;
 			block.DestroyBlock();
 		}
 		else
 		{
+			Debug.Log($"Projectile hit {block} will deal {effectiveDamage} damage");
+
 			block.DamageBlock(effectiveDamage);
 			PhotonNetwork.Destroy(gameObject);
 		}

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7553949386308198073}
   - component: {fileID: 2470967752226356742}
   - component: {fileID: -2486461410739294344}
+  - component: {fileID: 4651400899416898260}
   - component: {fileID: -345770150034755521}
   m_Layer: 0
   m_Name: 1x2 Left Slope Front
@@ -142,6 +143,20 @@ MonoBehaviour:
   CenterOfMass: {x: 0.3333333, y: -0.16666667}
   Mass: 0.25
   MomentOfInertia: 0.0173611
+--- !u!114 &4651400899416898260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OwnerId: 0
+  RootLocation: {x: 0, y: 0}
 --- !u!114 &-345770150034755521
 MonoBehaviour:
   m_ObjectHideFlags: 0
