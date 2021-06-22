@@ -2,7 +2,7 @@
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Designer
+namespace Syy1125.OberthEffect.Designer.Config
 {
 public class CraftConfig : MonoBehaviour
 {
