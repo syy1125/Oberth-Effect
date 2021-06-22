@@ -21,6 +21,8 @@ public class ColorPicker : MonoBehaviour
 	public GameObject[] ContentPanels;
 
 	[Header("UI Elements")]
+	public Image PreviewImage;
+
 	public Slider VisualSlider;
 	public ColorVisualSquare VisualSquare;
 
@@ -265,6 +267,8 @@ public class ColorPicker : MonoBehaviour
 	private void UpdateElements()
 	{
 		_updatingElements = true;
+
+		PreviewImage.color = _color;
 
 		VisualSlider.value = _hsv.x;
 		VisualSquare.UpdateColor(_hsv);
