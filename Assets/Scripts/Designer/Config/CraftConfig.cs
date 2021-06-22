@@ -15,14 +15,11 @@ public class CraftConfig : MonoBehaviour
 
 	private ColorContext _context;
 
-	private bool _initializing;
-
 	#region Unity Lifecycle
 
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
-		_initializing = false;
 	}
 
 	private void OnEnable()
@@ -48,37 +45,30 @@ public class CraftConfig : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
-		_initializing = true;
-
 		ColorScheme colorScheme = ColorScheme.FromBlueprint(Designer.Blueprint);
 
 		PrimaryColorPicker.InitColor(colorScheme.PrimaryColor);
 		SecondaryColorPicker.InitColor(colorScheme.SecondaryColor);
 		TertiaryColorPicker.InitColor(colorScheme.TertiaryColor);
 		_context.SetColorScheme(colorScheme);
-
-		_initializing = false;
 	}
 
 	#region Event Listeners
 
 	private void SetPrimaryColor(Color color)
 	{
-		if (_initializing) return;
 		_context.SetPrimaryColor(color);
 		PlayerPrefs.SetString(PropertyKeys.PRIMARY_COLOR, JsonUtility.ToJson(color));
 	}
 
 	private void SetSecondaryColor(Color color)
 	{
-		if (_initializing) return;
 		_context.SetSecondaryColor(color);
 		PlayerPrefs.SetString(PropertyKeys.SECONDARY_COLOR, JsonUtility.ToJson(color));
 	}
 
 	private void SetTertiaryColor(Color color)
 	{
-		if (_initializing) return;
 		_context.SetTertiaryColor(color);
 		PlayerPrefs.SetString(PropertyKeys.TERTIARY_COLOR, JsonUtility.ToJson(color));
 	}
