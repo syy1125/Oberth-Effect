@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Common;
+﻿using System.Linq;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
@@ -11,23 +12,26 @@ public class BlockColor : MonoBehaviour
 	private static readonly int TertiaryColor = Shader.PropertyToID("_TertiaryColor");
 
 	private ColorContext _context;
-	private SpriteRenderer _sprite;
+	private SpriteRenderer[] _sprites;
 	private MaterialPropertyBlock _block;
 
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
-		_sprite = GetComponent<SpriteRenderer>();
+		_sprites = GetComponentsInChildren<SpriteRenderer>();
 		_block = new MaterialPropertyBlock();
 	}
 
 	private void OnEnable()
 	{
-		_sprite.GetPropertyBlock(_block);
-		_block.SetColor(PrimaryColor, _context.ColorScheme.PrimaryColor);
-		_block.SetColor(SecondaryColor, _context.ColorScheme.SecondaryColor);
-		_block.SetColor(TertiaryColor, _context.ColorScheme.TertiaryColor);
-		_sprite.SetPropertyBlock(_block);
+		foreach (SpriteRenderer sprite in _sprites)
+		{
+			sprite.GetPropertyBlock(_block);
+			_block.SetColor(PrimaryColor, _context.ColorScheme.PrimaryColor);
+			_block.SetColor(SecondaryColor, _context.ColorScheme.SecondaryColor);
+			_block.SetColor(TertiaryColor, _context.ColorScheme.TertiaryColor);
+			sprite.SetPropertyBlock(_block);
+		}
 
 		_context.OnPrimaryColorChanged += UpdatePrimaryColor;
 		_context.OnSecondaryColorChanged += UpdateSecondaryColor;
@@ -43,23 +47,32 @@ public class BlockColor : MonoBehaviour
 
 	private void UpdatePrimaryColor(Color color)
 	{
-		_sprite.GetPropertyBlock(_block);
-		_block.SetColor(PrimaryColor, color);
-		_sprite.SetPropertyBlock(_block);
+		foreach (SpriteRenderer sprite in _sprites)
+		{
+			sprite.GetPropertyBlock(_block);
+			_block.SetColor(PrimaryColor, color);
+			sprite.SetPropertyBlock(_block);
+		}
 	}
 
 	private void UpdateSecondaryColor(Color color)
 	{
-		_sprite.GetPropertyBlock(_block);
-		_block.SetColor(SecondaryColor, color);
-		_sprite.SetPropertyBlock(_block);
+		foreach (SpriteRenderer sprite in _sprites)
+		{
+			sprite.GetPropertyBlock(_block);
+			_block.SetColor(SecondaryColor, color);
+			sprite.SetPropertyBlock(_block);
+		}
 	}
 
 	private void UpdateTertiaryColor(Color color)
 	{
-		_sprite.GetPropertyBlock(_block);
-		_block.SetColor(TertiaryColor, color);
-		_sprite.SetPropertyBlock(_block);
+		foreach (SpriteRenderer sprite in _sprites)
+		{
+			sprite.GetPropertyBlock(_block);
+			_block.SetColor(TertiaryColor, color);
+			sprite.SetPropertyBlock(_block);
+		}
 	}
 }
 }
