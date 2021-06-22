@@ -16,6 +16,8 @@ public class IntSlider : MonoBehaviour
 	private Slider _slider;
 	private InputField _input;
 
+	private bool _updatingElements;
+
 	private void Awake()
 	{
 		_slider = GetComponentInChildren<Slider>();
@@ -47,13 +49,21 @@ public class IntSlider : MonoBehaviour
 
 	private void UpdateElementsWith(int value)
 	{
+		_updatingElements = true;
+
 		value = Mathf.RoundToInt(Mathf.Clamp(value, _slider.minValue, _slider.maxValue));
 		_slider.value = value;
 		_input.text = value.ToString();
+
+		_updatingElements = false;
 	}
+
+	#region Event Listeners
 
 	private void SetFloatValue(float value)
 	{
+		if (_updatingElements) return;
+
 		int result = Mathf.RoundToInt(value);
 		UpdateElementsWith(result);
 		OnChange.Invoke(result);
@@ -61,6 +71,8 @@ public class IntSlider : MonoBehaviour
 
 	private void SetStringValue(string value)
 	{
+		if (_updatingElements) return;
+
 		if (int.TryParse(value, out int result))
 		{
 			UpdateElementsWith(result);
@@ -71,5 +83,7 @@ public class IntSlider : MonoBehaviour
 			UpdateElementsWith(Mathf.RoundToInt(_slider.value));
 		}
 	}
+
+	#endregion
 }
 }
