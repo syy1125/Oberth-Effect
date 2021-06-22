@@ -27,7 +27,7 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("Components")]
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
-	public CraftConfig Config;
+	public VehicleConfig Config;
 	public DesignerCursor Cursor;
 
 	[Header("Input Actions")]
@@ -142,6 +142,16 @@ public class VehicleDesigner : MonoBehaviour
 
 		_zoomScale = 1;
 		transform.localScale = Vector3.one * _zoomScale;
+
+		if (VehicleSelection.SerializedVehicle != null)
+		{
+			ImportVehicle(VehicleSelection.SerializedVehicle);
+			VehicleSelection.SerializedVehicle = null;
+		}
+		else
+		{
+			Builder.InitVehicle();
+		}
 	}
 
 	#region Update

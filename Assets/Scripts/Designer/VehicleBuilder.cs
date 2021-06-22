@@ -39,7 +39,7 @@ public class VehicleBuilder : MonoBehaviour
 		_connectedBlocks = new HashSet<VehicleBlueprint.BlockInstance>();
 	}
 
-	private void Start()
+	public void InitVehicle()
 	{
 		AddBlock(ControlCoreBlock, Vector2Int.zero, 0);
 	}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer.Config
 {
-public class CraftConfig : MonoBehaviour
+public class VehicleConfig : MonoBehaviour
 {
 	[Header("References")]
 	public VehicleDesigner Designer;
