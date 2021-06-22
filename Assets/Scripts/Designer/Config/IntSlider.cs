@@ -14,36 +14,32 @@ public class IntSlider : MonoBehaviour
 	public ValueChangeEvent OnChange;
 
 	private Slider _slider;
+	private Slider Slider => _slider == null ? _slider = GetComponentInChildren<Slider>() : _slider;
 	private InputField _input;
+	private InputField Input => _input == null ? _input = GetComponentInChildren<InputField>() : _input;
 
 	private bool _updatingElements;
 
-	private void Awake()
-	{
-		_slider = GetComponentInChildren<Slider>();
-		_input = GetComponentInChildren<InputField>();
-	}
-
 	private void Start()
 	{
-		_slider.wholeNumbers = true;
+		Slider.wholeNumbers = true;
 	}
 
 	private void OnEnable()
 	{
-		_slider.onValueChanged.AddListener(SetFloatValue);
-		_input.onEndEdit.AddListener(SetStringValue);
+		Slider.onValueChanged.AddListener(SetFloatValue);
+		Input.onEndEdit.AddListener(SetStringValue);
 	}
 
 	private void OnDisable()
 	{
-		_slider.onValueChanged.RemoveListener(SetFloatValue);
-		_input.onEndEdit.RemoveListener(SetStringValue);
+		Slider.onValueChanged.RemoveListener(SetFloatValue);
+		Input.onEndEdit.RemoveListener(SetStringValue);
 	}
 
 	public void UpdateFromNormalized(float value)
 	{
-		int scaledValue = Mathf.RoundToInt(Mathf.Lerp(_slider.minValue, _slider.maxValue, value));
+		int scaledValue = Mathf.RoundToInt(Mathf.Lerp(Slider.minValue, Slider.maxValue, value));
 		UpdateElementsWith(scaledValue);
 	}
 
@@ -51,9 +47,9 @@ public class IntSlider : MonoBehaviour
 	{
 		_updatingElements = true;
 
-		value = Mathf.RoundToInt(Mathf.Clamp(value, _slider.minValue, _slider.maxValue));
-		_slider.value = value;
-		_input.text = value.ToString();
+		value = Mathf.RoundToInt(Mathf.Clamp(value, Slider.minValue, Slider.maxValue));
+		Slider.value = value;
+		Input.text = value.ToString();
 
 		_updatingElements = false;
 	}
@@ -80,7 +76,7 @@ public class IntSlider : MonoBehaviour
 		}
 		else
 		{
-			UpdateElementsWith(Mathf.RoundToInt(_slider.value));
+			UpdateElementsWith(Mathf.RoundToInt(Slider.value));
 		}
 	}
 
