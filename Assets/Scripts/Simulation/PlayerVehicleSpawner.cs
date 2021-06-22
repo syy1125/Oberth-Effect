@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;

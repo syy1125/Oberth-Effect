@@ -3,6 +3,7 @@ using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ColorScheme;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,6 +23,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	private Dictionary<VehicleResource, float> _resourceConsumption;
 
+	private ColorContext _colorContext;
 	private BlockCore _block;
 	private bool _isMine;
 
@@ -35,6 +37,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	private void Awake()
 	{
+		_colorContext = GetComponentInParent<ColorContext>();
 		_block = GetComponent<BlockCore>();
 		_resourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
 			entry => entry.Resource, entry => entry.Amount
@@ -103,7 +106,8 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				_reloadProgress -= ReloadTime;
 
 				GameObject projectile = PhotonNetwork.Instantiate(
-					ProjectilePrefab.name, FiringPort.position, FiringPort.rotation
+					ProjectilePrefab.name, FiringPort.position, FiringPort.rotation,
+					data: new object[] { null, JsonUtility.ToJson(_colorContext.ColorScheme) }
 				);
 
 				var projectileBody = projectile.GetComponent<Rigidbody2D>();

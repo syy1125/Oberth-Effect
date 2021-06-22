@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.WeaponProjectiles
+namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]

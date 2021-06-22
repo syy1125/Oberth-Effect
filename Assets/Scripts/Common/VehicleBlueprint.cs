@@ -21,7 +21,7 @@ public class VehicleBlueprint
 	public List<BlockInstance> Blocks;
 
 	public bool UseCustomColors;
-	public ColorScheme ColorScheme;
+	public ColorScheme.ColorScheme ColorScheme;
 
 	public VehicleBlueprint()
 	{

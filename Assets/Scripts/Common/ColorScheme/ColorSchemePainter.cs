@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using Syy1125.OberthEffect.Common;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks
+namespace Syy1125.OberthEffect.Common.ColorScheme
 {
+// Paints color scheme from color context onto subobjects of where this is installed.
 [RequireComponent(typeof(SpriteRenderer))]
-public class BlockColor : MonoBehaviour
+public class ColorSchemePainter : MonoBehaviour
 {
 	private static readonly int PrimaryColor = Shader.PropertyToID("_PrimaryColor");
 	private static readonly int SecondaryColor = Shader.PropertyToID("_SecondaryColor");
