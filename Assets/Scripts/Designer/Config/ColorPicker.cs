@@ -43,6 +43,7 @@ public class ColorPicker : MonoBehaviour
 	private RectTransform _transform;
 
 	private bool _expanded;
+	private bool _updatingElements;
 
 	private int _mode;
 
@@ -170,8 +171,12 @@ public class ColorPicker : MonoBehaviour
 		_color = Color.HSVToRGB(_hsv.x, _hsv.y, _hsv.z);
 	}
 
+	#region Event Listeners
+
 	private void SetVisualHue(float h)
 	{
+		if (_updatingElements) return;
+
 		_hsv.x = h;
 		PackColor();
 
@@ -180,6 +185,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetSaturationAndValue(Vector2 position)
 	{
+		if (_updatingElements) return;
+
 		_hsv.y = position.x;
 		_hsv.z = position.y;
 		PackColor();
@@ -189,6 +196,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetHue(int hue)
 	{
+		if (_updatingElements) return;
+
 		_hsv.x = hue / 360f;
 		PackColor();
 
@@ -197,6 +206,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetSaturation(int s)
 	{
+		if (_updatingElements) return;
+
 		_hsv.y = s / 100f;
 		PackColor();
 
@@ -205,6 +216,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetValue(int v)
 	{
+		if (_updatingElements) return;
+
 		_hsv.z = v / 100f;
 		PackColor();
 
@@ -213,6 +226,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetRed(int red)
 	{
+		if (_updatingElements) return;
+
 		_color.r = red / 255f;
 		UnpackColor();
 
@@ -221,6 +236,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetGreen(int green)
 	{
+		if (_updatingElements) return;
+
 		_color.g = green / 255f;
 		UnpackColor();
 
@@ -229,11 +246,15 @@ public class ColorPicker : MonoBehaviour
 
 	private void SetBlue(int blue)
 	{
+		if (_updatingElements) return;
+
 		_color.b = blue / 255f;
 		UnpackColor();
 
 		EmitColor();
 	}
+
+	#endregion
 
 	private void EmitColor()
 	{
@@ -243,6 +264,8 @@ public class ColorPicker : MonoBehaviour
 
 	private void UpdateElements()
 	{
+		_updatingElements = true;
+
 		VisualSlider.value = _hsv.x;
 		VisualSquare.UpdateColor(_hsv);
 
@@ -260,6 +283,8 @@ public class ColorPicker : MonoBehaviour
 		GreenBackground.color = _color;
 		BlueSlider.UpdateFromNormalized(_color.b);
 		BlueBackground.color = _color;
+
+		_updatingElements = false;
 	}
 }
 }
