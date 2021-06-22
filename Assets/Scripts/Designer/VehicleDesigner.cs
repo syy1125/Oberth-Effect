@@ -81,8 +81,6 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Awake()
 	{
-		Blueprint = new VehicleBlueprint();
-
 		_mainCamera = Camera.main;
 
 		_conflicts = new HashSet<Vector2Int>();
@@ -150,7 +148,9 @@ public class VehicleDesigner : MonoBehaviour
 		}
 		else
 		{
+			Blueprint = new VehicleBlueprint();
 			Builder.InitVehicle();
+			Config.ReloadVehicle();
 		}
 	}
 

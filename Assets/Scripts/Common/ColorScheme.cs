@@ -20,6 +20,13 @@ public struct ColorScheme
 
 	public static ColorScheme FromBlueprint(VehicleBlueprint blueprint)
 	{
+		return blueprint.UseCustomColors
+			? blueprint.ColorScheme
+			: PlayerColorScheme();
+	}
+
+	public static ColorScheme PlayerColorScheme()
+	{
 		return new ColorScheme
 		{
 			PrimaryColor = GetPrefColor(PropertyKeys.PRIMARY_COLOR, Color.cyan),

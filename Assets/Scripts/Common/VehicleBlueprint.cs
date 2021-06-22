@@ -20,6 +20,9 @@ public class VehicleBlueprint
 	public string Description;
 	public List<BlockInstance> Blocks;
 
+	public bool UseCustomColors;
+	public ColorScheme ColorScheme;
+
 	public VehicleBlueprint()
 	{
 		Name = "New Vehicle";
