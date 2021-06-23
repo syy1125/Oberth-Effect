@@ -1,6 +1,4 @@
 using Photon.Pun;
-using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Blocks.Weapons;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -20,30 +18,48 @@ public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
 		_ownerId = info.Sender.ActorNumber;
 	}
 
+	private static IDamageable GetDamageTarget(Transform target)
+	{
+		while (target != null)
+		{
+			foreach (MonoBehaviour behaviour in target.GetComponents<MonoBehaviour>())
+			{
+				if (behaviour is IDamageable damageable)
+				{
+					return damageable;
+				}
+			}
+
+			target = target.parent;
+		}
+
+		return null;
+	}
+
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!other.GetComponentInParent<PhotonView>().IsMine) return;
+		if (other.isTrigger) return;
 
-		var block = other.GetComponentInParent<BlockCore>();
-		if (block == null || block.OwnerId == _ownerId) return;
+		IDamageable target = GetDamageTarget(other.transform);
+		if (target == null || !target.IsMine || target.OwnerId == _ownerId) return;
 
-		float damageModifier = block.GetDamageModifier(ArmorPierce, DamageType.Kinetic);
+		float damageModifier = target.GetDamageModifier(ArmorPierce, DamageType.Kinetic);
 		float effectiveDamage = Damage * damageModifier;
 
-		if (effectiveDamage > block.Health)
+		if (effectiveDamage > target.Health)
 		{
 			Debug.Log(
-				$"Projectile {gameObject} hit {block.gameObject} will deal {block.Health} damage and destroy block"
+				$"Projectile {gameObject} hit {target} will deal {target.Health} damage and destroy block"
 			);
 
-			Damage -= block.Health / damageModifier;
-			block.DestroyBlock();
+			Damage -= target.Health / damageModifier;
+			target.DestroyByDamage();
 		}
 		else
 		{
-			Debug.Log($"Projectile {gameObject} hit {block.gameObject} will deal {effectiveDamage} damage");
+			Debug.Log($"Projectile {gameObject} hit {target} will deal {effectiveDamage} damage");
 
-			block.DamageBlock(effectiveDamage);
+			target.TakeDamage(effectiveDamage);
 			PhotonNetwork.Destroy(gameObject);
 		}
 	}

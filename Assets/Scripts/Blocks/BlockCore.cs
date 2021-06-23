@@ -1,5 +1,5 @@
 ﻿using Photon.Pun;
-using Syy1125.OberthEffect.Blocks.Weapons;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,17 +13,16 @@ public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>, IEventSystemHan
 /// For example, calculating physics and taking damage.
 /// </summary>
 [RequireComponent(typeof(BlockInfo))]
-public class BlockCore : MonoBehaviour
+public class BlockCore : MonoBehaviour, IDamageable
 {
 	private BlockInfo _info;
 
-	private bool _isMine;
 
-	[HideInInspector]
-	public int OwnerId;
+	public int OwnerId { get; set; }
 	[HideInInspector]
 	public Vector2Int RootLocation;
 
+	public bool IsMine { get; private set; }
 	public float Health { get; private set; }
 
 	private void Awake()
@@ -36,7 +35,7 @@ public class BlockCore : MonoBehaviour
 		Health = _info.MaxHealth;
 
 		var photonView = GetComponentInParent<PhotonView>();
-		_isMine = photonView == null || photonView.IsMine;
+		IsMine = photonView == null || photonView.IsMine;
 	}
 
 	public float GetDamageModifier(float armorPierce, DamageType damageType)
@@ -45,17 +44,17 @@ public class BlockCore : MonoBehaviour
 		return armorModifier;
 	}
 
-	public void DestroyBlock()
+	public void DestroyByDamage()
 	{
-		if (!_isMine) return;
+		if (!IsMine) return;
 
 		Health = 0f;
 		gameObject.SetActive(false);
 	}
 
-	public void DamageBlock(float damage)
+	public void TakeDamage(float damage)
 	{
-		if (!_isMine) return;
+		if (!IsMine) return;
 
 		Health -= damage;
 	}
