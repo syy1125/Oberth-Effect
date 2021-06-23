@@ -126,7 +126,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		float targetAngle = Vector3.SignedAngle(
 			Vector3.up, transform.InverseTransformPoint(_aimPoint), Vector3.forward
 		);
-		Turret.rotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
+		Turret.localRotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
 	}
 }
 }
