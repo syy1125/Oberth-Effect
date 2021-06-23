@@ -157,7 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OwnerId: 0
   RootLocation: {x: 0, y: 0}
 --- !u!114 &-7067014801466521002
 MonoBehaviour:

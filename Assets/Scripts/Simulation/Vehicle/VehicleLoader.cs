@@ -13,10 +13,6 @@ public class VehicleLoader : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
 	public void SpawnVehicle(VehicleBlueprint blueprint)
 	{
-		float totalMass = 0f;
-		Vector2 centerOfMass = Vector2.zero;
-		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
-
 		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
 		{
 			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(block.BlockID);
@@ -35,36 +31,10 @@ public class VehicleLoader : MonoBehaviourPun, IPunInstantiateMagicCallback
 			go.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
 			SetLayerRecursively(go, gameObject.layer);
 
-			var info = blockPrefab.GetComponent<BlockInfo>();
-
-			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);
-			totalMass += info.Mass;
-			centerOfMass += info.Mass * blockCenter;
-			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
-
 			var blockCore = go.GetComponent<BlockCore>();
 			blockCore.OwnerId = photonView.OwnerActorNr;
-			blockCore.RootLocation = rootLocationInt;
+			blockCore.Initialize(rootLocationInt, block.Rotation);
 		}
-
-		if (totalMass > Mathf.Epsilon)
-		{
-			centerOfMass /= totalMass;
-		}
-
-		var momentOfInertia = 0f;
-		foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
-		{
-			(Vector2 position, float mass, float blockMoment) = blockData;
-			momentOfInertia += blockMoment + mass * (position - centerOfMass).sqrMagnitude;
-		}
-
-		var body = GetComponent<Rigidbody2D>();
-		body.mass = totalMass;
-		body.centerOfMass = centerOfMass;
-		body.inertia = momentOfInertia;
-
-		transform.position -= (Vector3) centerOfMass;
 	}
 
 	private static void SetLayerRecursively(GameObject go, int layer)
