@@ -3,20 +3,14 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
+[RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
+public class KineticProjectile : MonoBehaviourPun
 {
 	public float Damage;
 	[Range(1, 10)]
 	public float ArmorPierce = 1;
-
-	private int _ownerId;
-
-	public void OnPhotonInstantiate(PhotonMessageInfo info)
-	{
-		_ownerId = info.Sender.ActorNumber;
-	}
 
 	private static IDamageable GetDamageTarget(Transform target)
 	{
@@ -41,7 +35,7 @@ public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
 		if (other.isTrigger) return;
 
 		IDamageable target = GetDamageTarget(other.transform);
-		if (target == null || !target.IsMine || target.OwnerId == _ownerId) return;
+		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
 
 		float damageModifier = target.GetDamageModifier(ArmorPierce, DamageType.Kinetic);
 		float effectiveDamage = Damage * damageModifier;
@@ -60,6 +54,16 @@ public class KineticProjectile : MonoBehaviour, IPunInstantiateMagicCallback
 			Debug.Log($"Projectile {gameObject} hit {target} will deal {effectiveDamage} damage");
 
 			target.TakeDamage(effectiveDamage);
+			gameObject.SetActive(false);
+			photonView.RPC("DestroyProjectile", RpcTarget.All);
+		}
+	}
+
+	[PunRPC]
+	private void DestroyProjectile()
+	{
+		if (photonView.IsMine)
+		{
 			PhotonNetwork.Destroy(gameObject);
 		}
 	}

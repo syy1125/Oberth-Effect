@@ -165,7 +165,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7920430724901968352}
@@ -217,8 +217,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12dfda2c044185a4699a5988bf4aae27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 10
-  ArmorPierce: 1
+  Damage: 80
+  ArmorPierce: 5
 --- !u!114 &5123786432896332026
 MonoBehaviour:
   m_ObjectHideFlags: 0
