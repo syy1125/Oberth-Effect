@@ -89,7 +89,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		RoomNameInput.onEndEdit.RemoveListener(SetRoomName);
 
-		VehicleSelection.SerializedVehicle = null;
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
@@ -250,6 +249,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnLeftRoom()
 	{
+		VehicleSelection.SerializedVehicle = null;
+
 		PhotonHelper.ClearPhotonPlayerProperties();
 
 		gameObject.SetActive(false);
