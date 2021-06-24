@@ -10,7 +10,9 @@ namespace Syy1125.OberthEffect.Lobby.Multiplayer
 public class RoomPanel : MonoBehaviour
 {
 	public Text RoomNameDisplay;
-	public ColorBlock Colors = ColorBlock.defaultColorBlock;
+	public Color NormalColor;
+	public Color SelectedColor;
+	public float FadeDuration;
 
 	private MainLobby _lobby;
 	private Button _button;
@@ -29,7 +31,7 @@ public class RoomPanel : MonoBehaviour
 
 	private void Start()
 	{
-		_image.CrossFadeColor(Colors.normalColor, 0f, true, true);
+		_image.CrossFadeColor(NormalColor, 0f, true, true);
 	}
 
 	public void SetRoom(RoomInfo room)
@@ -46,8 +48,8 @@ public class RoomPanel : MonoBehaviour
 	public void SetSelected(bool selected)
 	{
 		_image.CrossFadeColor(
-			selected ? Colors.selectedColor : Colors.normalColor,
-			Colors.fadeDuration, true, true
+			selected ? SelectedColor : NormalColor,
+			FadeDuration, true, true
 		);
 	}
 }

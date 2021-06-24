@@ -38,8 +38,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 80}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 400, y: 80}
+  m_Pivot: {x: 0, y: 0}
 --- !u!222 &7553454834909407478
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -92,6 +92,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerName: {fileID: 7553454835104914778}
   PlayerStatus: {fileID: 7553454835475551520}
+  ReadyDisplay: {fileID: 7553454834909407479}
+  ReadyColor: {r: 0, g: 1, b: 1, a: 1}
+  FadeDuration: 0.1
 --- !u!1 &7553454835104914780
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,14 +11,17 @@ public class PlayerPanel : MonoBehaviour
 	public Text PlayerName;
 	public Text PlayerStatus;
 
+	public Image ReadyDisplay;
+	public Color ReadyColor;
+	public float FadeDuration;
+
 	private Player _player;
 
 	public void AssignPlayer(Player player)
 	{
 		_player = player;
 
-		PlayerName.text = player.NickName;
-
+		UpdateReadyDisplay();
 		UpdateVehicleDisplay();
 	}
 
@@ -28,6 +31,11 @@ public class PlayerPanel : MonoBehaviour
 		{
 			UpdateVehicleDisplay();
 		}
+
+		if (props.ContainsKey(PropertyKeys.READY))
+		{
+			UpdateReadyDisplay();
+		}
 	}
 
 	private void UpdateVehicleDisplay()
@@ -35,6 +43,18 @@ public class PlayerPanel : MonoBehaviour
 		object vehicleName = _player.CustomProperties[PropertyKeys.VEHICLE_NAME];
 
 		PlayerStatus.text = vehicleName == null ? "Pondering what to use" : (string) vehicleName;
+	}
+
+	private void UpdateReadyDisplay()
+	{
+		bool ready = _player.IsMasterClient
+		             || (_player.CustomProperties.TryGetValue(PropertyKeys.READY, out object value) && (bool) value);
+
+		PlayerName.text = ready ? _player.NickName : $"{_player.NickName} (Not Ready)";
+		ReadyDisplay.CrossFadeColor(
+			ready ? ReadyColor : Color.white,
+			FadeDuration, true, true
+		);
 	}
 }
 }

@@ -179,10 +179,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(
 			player => player.IsMasterClient
-				? player.CustomProperties.ContainsKey(PropertyKeys.VEHICLE_NAME)
-				  && player.CustomProperties[PropertyKeys.VEHICLE_NAME] != null
-				: player.CustomProperties.ContainsKey(PropertyKeys.READY)
-				  && (bool) player.CustomProperties[PropertyKeys.READY]
+				? player.CustomProperties.TryGetValue(PropertyKeys.VEHICLE_NAME, out object vehicleName)
+				  && vehicleName != null
+				: player.CustomProperties.TryGetValue(PropertyKeys.READY, out object ready)
+				  && (bool) ready
 		);
 
 		SelectVehicleButton.interactable = true;
@@ -198,9 +198,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void OpenVehicleSelection()
 	{
-		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PropertyKeys.VEHICLE_NAME, null } }
-		);
 		VehicleSelectionScreen.SetActive(true);
 	}
 

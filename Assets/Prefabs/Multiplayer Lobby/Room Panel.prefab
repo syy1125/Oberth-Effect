@@ -214,11 +214,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RoomNameDisplay: {fileID: 2541037238685908208}
-  Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0}
-    m_PressedColor: {r: 1, g: 1, b: 1, a: 0}
-    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
+  NormalColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+  SelectedColor: {r: 0, g: 1, b: 1, a: 1}
+  FadeDuration: 0.1
