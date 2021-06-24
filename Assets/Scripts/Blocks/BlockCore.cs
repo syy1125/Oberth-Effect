@@ -8,6 +8,22 @@ namespace Syy1125.OberthEffect.Blocks
 public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>, IEventSystemHandler
 {}
 
+/// <remarks>
+/// This interface is used by block scripts to execute effects on its destruction
+/// </remarks>
+internal interface IBlockDestructionEffect : IEventSystemHandler
+{
+	void OnDestroyedByDamage();
+}
+
+/// <remarks>
+/// This interface is implemented by vehicle-level scripts to monitor block events
+/// </remarks>
+public interface IBlockLifecycleListener : IEventSystemHandler
+{
+	void OnBlockDestroyedByDamage(BlockCore blockCore);
+}
+
 /// <summary>
 /// Controls core behaviour of a block.
 /// For example, calculating physics and taking damage.
@@ -18,13 +34,9 @@ public class BlockCore : MonoBehaviour, IDamageable
 	private BlockInfo _info;
 
 	public int OwnerId { get; set; }
+	public Vector2Int RootLocation { get; set; }
+	public int Rotation { get; set; }
 	public bool IsMine { get; private set; }
-
-
-	private bool _initialized;
-	private bool _registered;
-	public Vector2Int RootLocation { get; private set; }
-	public int Rotation { get; private set; }
 
 	public float Health { get; private set; }
 
@@ -35,13 +47,9 @@ public class BlockCore : MonoBehaviour, IDamageable
 
 	private void OnEnable()
 	{
-		if (_initialized)
-		{
-			ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
-				gameObject, null, (handler, _) => handler.RegisterBlock(this)
-			);
-			_registered = true;
-		}
+		ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
 	}
 
 	private void Start()
@@ -54,24 +62,9 @@ public class BlockCore : MonoBehaviour, IDamageable
 
 	private void OnDisable()
 	{
-		if (_registered)
-		{
-			ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
-				gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-			);
-		}
-	}
-
-	public void Initialize(Vector2Int rootLocation, int rotation)
-	{
-		RootLocation = rootLocation;
-		Rotation = rotation;
-		_initialized = true;
-
 		ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
-		_registered = true;
 	}
 
 	public float GetDamageModifier(float armorPierce, DamageType damageType)
@@ -85,7 +78,14 @@ public class BlockCore : MonoBehaviour, IDamageable
 		if (!IsMine) return;
 
 		Health = 0f;
-		gameObject.SetActive(false);
+
+		ExecuteEvents.Execute<IBlockDestructionEffect>(
+			gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
+		);
+		ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
+			gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(this)
+		);
+		// Note that disabling of game object will be executed by VehicleCore
 	}
 
 	public void TakeDamage(float damage)

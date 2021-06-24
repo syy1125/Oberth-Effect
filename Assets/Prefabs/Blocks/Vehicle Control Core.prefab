@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -7067014801466521002}
   - component: {fileID: 6819534193149100203}
   - component: {fileID: 7888699975108584466}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Vehicle Control Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RootLocation: {x: 0, y: 0}
 --- !u!114 &-7067014801466521002
 MonoBehaviour:
   m_ObjectHideFlags: 0

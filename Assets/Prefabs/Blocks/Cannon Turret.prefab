@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4399158788272666653}
   - component: {fileID: 6548346644822031512}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1064777365042586588}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Firing Port
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 8334574413618934734}
   - component: {fileID: 7493643608809371162}
   - component: {fileID: -8205556832779791864}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cannon Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +271,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RootLocation: {x: 0, y: 0}
 --- !u!114 &8334574413618934734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,4 +313,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edcc04f868e34bff82a2a0f0a9cc2267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RootLocation: {x: 0, y: 0}
