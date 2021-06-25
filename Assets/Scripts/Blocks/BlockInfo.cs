@@ -11,8 +11,6 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 	public string BlockID;
 	public string ShortName;
 	public string FullName;
-	[TextArea]
-	public string Description;
 
 	[Header("Designer")]
 	public bool ShowInDesigner;
@@ -58,10 +56,8 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 		return string.Join(
 			"\n",
 			FullName,
-			$"{Mass} tons",
-			$"{MaxHealth} health {ArmorValue} armor",
-			"",
-			Description
+			$"{Mass} ton(s)",
+			$"{MaxHealth} health {ArmorValue} armor"
 		).Trim();
 	}
 }

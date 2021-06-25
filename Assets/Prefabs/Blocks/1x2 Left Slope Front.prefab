@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -2486461410739294344}
   - component: {fileID: 4651400899416898260}
   - component: {fileID: -345770150034755521}
+  - component: {fileID: 1538229629697063945}
   m_Layer: 6
   m_Name: 1x2 Left Slope Front
   m_TagString: Untagged
@@ -129,7 +130,6 @@ MonoBehaviour:
   BlockID: 1x2 Left Slope Front
   ShortName: L Slope Front
   FullName: 1x2 Left Slope Front
-  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 25
@@ -168,3 +168,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac05c61e557466d8c4ceb46cdde4e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1538229629697063945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Description: A simple block used in construction.

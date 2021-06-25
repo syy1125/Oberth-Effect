@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -2334377420914190835}
   - component: {fileID: -2048733316636029792}
   - component: {fileID: 7130667491016332437}
+  - component: {fileID: 3437268163529472626}
   m_Layer: 6
   m_Name: 1x1 Half Block
   m_TagString: Untagged
@@ -127,7 +128,6 @@ MonoBehaviour:
   BlockID: 1x1 Half Block
   ShortName: Half Block
   FullName: 1x1 Half Block
-  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 50
@@ -167,3 +167,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac05c61e557466d8c4ceb46cdde4e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3437268163529472626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Description: A simple block used in construction.

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 355304993791420667}
   - component: {fileID: -2615480772136137060}
   - component: {fileID: 798784729887223643}
+  - component: {fileID: 8301937269056039283}
   - component: {fileID: 5188369339111014238}
   - component: {fileID: 4463412459619210807}
   m_Layer: 6
@@ -130,7 +131,6 @@ MonoBehaviour:
   BlockID: Small Ion Engine
   ShortName: Ion Engine
   FullName: Small Ion Engine
-  Description: 
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 50
@@ -186,6 +186,23 @@ MonoBehaviour:
   MaxResourceUse:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 50
+--- !u!114 &8301937269056039283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7025115410308415482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Description: 'A high-efficiency ion engine used to propel your spacecraft.
+
+    The
+    high exhaust speed means that thrust is achieved with minimal reaction mass,
+    but the engine does require quite a lot of power when in operation.'
 --- !u!198 &5188369339111014238
 ParticleSystem:
   m_ObjectHideFlags: 0
