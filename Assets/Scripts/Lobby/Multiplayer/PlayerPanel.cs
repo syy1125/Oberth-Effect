@@ -48,7 +48,10 @@ public class PlayerPanel : MonoBehaviour
 	private void UpdateReadyDisplay()
 	{
 		bool ready = _player.IsMasterClient
-		             || (_player.CustomProperties.TryGetValue(PropertyKeys.READY, out object value) && (bool) value);
+			? _player.CustomProperties.TryGetValue(PropertyKeys.VEHICLE_NAME, out object vehicleName)
+			  && vehicleName != null
+			: _player.CustomProperties.TryGetValue(PropertyKeys.READY, out object playerReady)
+			  && (bool) playerReady;
 
 		PlayerName.text = ready ? _player.NickName : $"{_player.NickName} (Not Ready)";
 		ReadyDisplay.CrossFadeColor(
