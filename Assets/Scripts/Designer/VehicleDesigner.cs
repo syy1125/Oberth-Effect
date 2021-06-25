@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 namespace Syy1125.OberthEffect.Designer
 {
@@ -18,11 +21,12 @@ public class VehicleDesigner : MonoBehaviour
 
 	[Header("Block Notifications")]
 	public GameObject BlockWarningPrefab;
-
 	public Transform BlockWarningParent;
 
 	public Color WarningColor = Color.yellow;
 	public Color ErrorColor = Color.red;
+
+	public float BlockTooltipDelay = 0.2f;
 
 	[Header("Components")]
 	public BlockPalette Palette;
@@ -61,7 +65,8 @@ public class VehicleDesigner : MonoBehaviour
 	private GameObject _preview;
 	private bool _prevHover;
 	private int _prevIndex;
-	private Vector2Int? _prevLocation;
+	private Vector2Int? _prevHoverLocation;
+	private Vector2Int? _prevTooltipLocation;
 	private bool _prevDragging;
 	private Vector2Int? _prevClick;
 
@@ -70,6 +75,7 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
 	private Vector2Int _hoverLocation;
+	private Vector2Int? _tooltipLocation;
 	private Vector2Int? _selectedLocation;
 
 	private HashSet<Vector2Int> _conflicts;
@@ -165,13 +171,14 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (
 			Palette.SelectedIndex != _prevIndex
-			|| _hoverLocation != _prevLocation
+			|| _hoverLocation != _prevHoverLocation
 			|| AreaMask.Hover != _prevHover
 			|| Dragging != _prevDragging
 		)
 		{
 			UpdatePreview();
 			UpdateConflicts();
+			UpdateTooltip();
 		}
 
 		if (Dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
@@ -195,7 +202,8 @@ public class VehicleDesigner : MonoBehaviour
 		_prevDragging = Dragging;
 		_prevHover = AreaMask.Hover;
 		_prevIndex = Palette.SelectedIndex;
-		_prevLocation = _hoverLocation;
+		_prevHoverLocation = _hoverLocation;
+		_prevTooltipLocation = _tooltipLocation;
 		_prevClick = _clickLocation;
 	}
 
@@ -363,6 +371,32 @@ public class VehicleDesigner : MonoBehaviour
 		_warningChanged = true;
 	}
 
+	private void UpdateTooltip()
+	{
+		if (AreaMask.Hover && Palette.SelectedIndex == BlockPalette.CURSOR_INDEX && !Dragging)
+		{
+			_tooltipLocation = _hoverLocation;
+		}
+		else
+		{
+			_tooltipLocation = null;
+		}
+		
+		if (_tooltipLocation != _prevTooltipLocation)
+		{
+			if (_prevTooltipLocation != null)
+			{
+				CancelInvoke(nameof(ShowBlockTooltip));
+				HideTooltip();
+			}
+
+			if (_tooltipLocation != null)
+			{
+				Invoke(nameof(ShowBlockTooltip), BlockTooltipDelay);
+			}
+		}
+	}
+
 	private void UpdateDisconnections()
 	{
 		_disconnections = new HashSet<Vector2Int>(Builder.GetDisconnectedPositions());
@@ -441,6 +475,22 @@ public class VehicleDesigner : MonoBehaviour
 		{
 			_selectedLocation = null;
 		}
+	}
+
+	private void ShowBlockTooltip()
+	{
+		if (_tooltipLocation == null || TooltipControl.Instance == null) return;
+		GameObject go = Builder.GetBlockObjectAt(_tooltipLocation.Value);
+		if (go == null) return;
+
+		TooltipControl.Instance.SetTooltip(TooltipProviderUtils.CombineTooltips(go));
+	}
+
+	private void HideTooltip()
+	{
+		if (TooltipControl.Instance == null) return;
+
+		TooltipControl.Instance.SetTooltip(null);
 	}
 
 	#region Block Placement

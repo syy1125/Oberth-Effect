@@ -139,6 +139,13 @@ public class VehicleBuilder : MonoBehaviour
 		UpdateConnectedBlocks();
 	}
 
+	public GameObject GetBlockObjectAt(Vector2Int position)
+	{
+		return _posToBlock.TryGetValue(position, out VehicleBlueprint.BlockInstance instance)
+			? _blockToObject[instance]
+			: null;
+	}
+
 	private IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
 		GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);

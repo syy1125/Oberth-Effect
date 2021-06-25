@@ -45,16 +45,9 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		BlockInfo info = block.GetComponent<BlockInfo>();
 		BlockName.text = info.ShortName;
 
-		LinkedList<string> tooltips = new LinkedList<string>();
-		foreach (MonoBehaviour behaviour in block.GetComponents<MonoBehaviour>())
-		{
-			if (behaviour is ITooltipProvider blockTooltip)
-			{
-				tooltips.AddLast(blockTooltip.GetTooltip());
-			}
-		}
+		string tooltip = TooltipProviderUtils.CombineTooltips(block);
 
-		_tooltip.SetTooltip(string.Join("\n\n", tooltips));
+		_tooltip.SetTooltip(tooltip);
 	}
 
 	private void SelectBlock()
