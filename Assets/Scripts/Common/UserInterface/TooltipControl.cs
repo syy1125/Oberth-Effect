@@ -1,6 +1,4 @@
 ﻿using System;
-using CodiceApp.EventTracking;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -50,6 +48,11 @@ public class TooltipControl : MonoBehaviour
 		_textSizeDelta = TooltipText.GetComponent<RectTransform>().sizeDelta;
 	}
 
+	private void Start()
+	{
+		SetTooltip(null);
+	}
+
 	private void OnDestroy()
 	{
 		if (Instance == this)
@@ -59,7 +62,17 @@ public class TooltipControl : MonoBehaviour
 	}
 
 	public void SetTooltip(string content)
-	{}
+	{
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			TooltipDisplay.gameObject.SetActive(false);
+		}
+		else
+		{
+			TooltipDisplay.gameObject.SetActive(true);
+			TooltipText.text = content;
+		}
+	}
 
 	private void LateUpdate()
 	{
