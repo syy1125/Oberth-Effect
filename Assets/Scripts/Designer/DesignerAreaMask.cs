@@ -5,10 +5,7 @@ namespace Syy1125.OberthEffect.Designer
 {
 public class DesignerAreaMask : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-	public VehicleDesigner Designer;
-
-	[HideInInspector]
-	public bool Hover;
+	public bool Hover { get; private set; }
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
