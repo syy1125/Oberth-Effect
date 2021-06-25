@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
@@ -7,10 +8,12 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumerBlock
+public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumerBlock, ITooltipProvider
 {
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
+
+	private string _cachedTooltip;
 
 	private Rigidbody2D _body;
 	private ParticleSystem _particles;
@@ -28,6 +31,8 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 
 	private void Awake()
 	{
+		_cachedTooltip = null;
+
 		_body = GetComponentInParent<Rigidbody2D>();
 		_particles = GetComponent<ParticleSystem>();
 
@@ -118,6 +123,21 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 			main.startSpeedMultiplier = overallResponse * _maxParticleSpeed;
 			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, overallResponse));
 		}
+	}
+
+	public string GetTooltip()
+	{
+		return string.Join(
+			"\n",
+			$"Max thrust {MaxForce} kN",
+			"Max resource usage "
+			+ string.Join(
+				" ",
+				MaxResourceUse.Select(
+					entry => $"{entry.Amount} <color=\"#{ColorUtility.ToHtmlStringRGB(entry.Resource.DisplayColor)}\">{entry.Resource.DisplayName}</color>/s"
+				)
+			)
+		);
 	}
 }
 }
