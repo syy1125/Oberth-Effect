@@ -198,11 +198,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Description: 'A high-efficiency ion engine used to propel your spacecraft.
+  Description: 'A highly efficient ion engine used to propel your spacecraft. The
+    high exhaust speed means that reaction mass usage is negligible.
 
-    The
-    high exhaust speed means that thrust is achieved with minimal reaction mass,
-    but the engine does require quite a lot of power when in operation.'
+    The thrust
+    is a bit low and the energy usage is rather high, but hey, it''s basically free
+    thrust.'
 --- !u!198 &5188369339111014238
 ParticleSystem:
   m_ObjectHideFlags: 0
