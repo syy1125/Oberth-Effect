@@ -177,13 +177,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void UpdateMasterControls()
 	{
-		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(
-			player => player.IsMasterClient
-				? player.CustomProperties.TryGetValue(PropertyKeys.VEHICLE_NAME, out object vehicleName)
-				  && vehicleName != null
-				: player.CustomProperties.TryGetValue(PropertyKeys.READY, out object ready)
-				  && (bool) ready
-		);
+		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
 
 		SelectVehicleButton.interactable = true;
 		StartGameButton.interactable = allReady;
