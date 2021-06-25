@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,34 +7,57 @@ namespace Syy1125.OberthEffect.Common.UserInterface
 public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 	public float Delay = 0.2f;
+	[SerializeField]
 	[TextArea]
-	public string TooltipText;
+	private string TooltipText;
 
-	private float _enterTime;
-	private float _exitTime;
+	private bool _tooltipShown;
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		_enterTime = Time.unscaledTime;
-		Invoke(nameof(ApplyTooltip), Delay);
+		Invoke(nameof(ShowTooltip), Delay);
 	}
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		_exitTime = Time.unscaledTime;
-		CancelInvoke(nameof(ApplyTooltip));
+		CancelInvoke(nameof(ShowTooltip));
+		HideTooltip();
+	}
 
-		if (TooltipControl.Instance != null)
+	public void SetTooltip(string tooltip)
+	{
+		TooltipText = tooltip;
+
+		if (_tooltipShown)
 		{
-			TooltipControl.Instance.SetTooltip(null);
+			ShowTooltip();
 		}
 	}
 
-	private void ApplyTooltip()
+	private void ShowTooltip()
 	{
 		if (TooltipControl.Instance != null)
 		{
 			TooltipControl.Instance.SetTooltip(TooltipText);
+			_tooltipShown = true;
+		}
+	}
+
+	private void HideTooltip()
+	{
+		if (TooltipControl.Instance != null)
+		{
+			TooltipControl.Instance.SetTooltip(null);
+			_tooltipShown = false;
+		}
+	}
+
+	private void OnDisable()
+	{
+		CancelInvoke(nameof(ShowTooltip));
+		if (_tooltipShown)
+		{
+			HideTooltip();
 		}
 	}
 }

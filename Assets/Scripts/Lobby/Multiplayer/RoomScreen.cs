@@ -5,6 +5,7 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +31,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public Button SelectVehicleButton;
 	public Button ReadyButton;
+	public Tooltip ReadyTooltip;
 	public Button StartGameButton;
+	public Tooltip StartGameTooltip;
 
 	[Header("Lobby Screen")]
 	public GameObject LobbyScreen;
@@ -61,6 +64,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		_ready = false;
 		SelectVehicleButton.interactable = true;
 		ReadyButton.interactable = false;
+		ReadyTooltip.enabled = true;
 		SelectVehicleButton.onClick.AddListener(OpenVehicleSelection);
 		ReadyButton.onClick.AddListener(ToggleReady);
 		StartGameButton.onClick.AddListener(StartGame);
@@ -181,6 +185,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		SelectVehicleButton.interactable = true;
 		StartGameButton.interactable = allReady;
+		StartGameTooltip.enabled = !allReady;
 	}
 
 	private void UpdateClientControls()
@@ -188,6 +193,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		SelectVehicleButton.interactable = !_ready;
 		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = _ready ? "Unready" : "Ready";
+		ReadyTooltip.enabled = VehicleSelection.SerializedVehicle == null;
 	}
 
 	private void OpenVehicleSelection()
