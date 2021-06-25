@@ -12,7 +12,7 @@ public interface IWeaponSystem
 
 	int GetOwnerId();
 
-	void SetAimPoint(Vector2 aimPoint);
+	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);
 }
 }

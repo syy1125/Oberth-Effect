@@ -27,7 +27,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	private BlockCore _block;
 	private bool _isMine;
 
-	private Vector2 _aimPoint;
+	private Vector2? _aimPoint;
 	private bool _firing;
 
 	private float _burstIndex;
@@ -57,7 +57,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	private void Start()
 	{
 		_reloadProgress = ReloadTime;
-		_aimPoint = transform.TransformPoint(Vector3.up);
+		_aimPoint = null;
 
 		var photonView = GetComponentInParent<PhotonView>();
 		_isMine = photonView == null || photonView.IsMine;
@@ -85,7 +85,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	public int GetOwnerId() => _block.OwnerId;
 
-	public void SetAimPoint(Vector2 aimPoint)
+	public void SetAimPoint(Vector2? aimPoint)
 	{
 		_aimPoint = aimPoint;
 	}
@@ -123,10 +123,17 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	private void RotateTurret()
 	{
-		float targetAngle = Vector3.SignedAngle(
-			Vector3.up, transform.InverseTransformPoint(_aimPoint), Vector3.forward
-		);
-		Turret.localRotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
+		if (_aimPoint == null)
+		{
+			Turret.localRotation = Quaternion.identity;
+		}
+		else
+		{
+			float targetAngle = Vector3.SignedAngle(
+				Vector3.up, transform.InverseTransformPoint(_aimPoint.Value), Vector3.forward
+			);
+			Turret.localRotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
+		}
 	}
 }
 }
