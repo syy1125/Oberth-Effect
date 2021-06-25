@@ -1028,6 +1028,7 @@ GameObject:
   - component: {fileID: 291934444}
   - component: {fileID: 291934447}
   - component: {fileID: 291934445}
+  - component: {fileID: 291934446}
   m_Layer: 5
   m_Name: Join Game Button
   m_TagString: Untagged
@@ -1099,6 +1100,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &291934446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291934443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 
 --- !u!222 &291934447
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1730,6 +1745,7 @@ GameObject:
   - component: {fileID: 437821176}
   - component: {fileID: 437821179}
   - component: {fileID: 437821177}
+  - component: {fileID: 437821178}
   m_Layer: 5
   m_Name: Create Room Button
   m_TagString: Untagged
@@ -1801,6 +1817,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &437821178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437821175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 
 --- !u!222 &437821179
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3901,7 +3931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00089428085}
+  m_AnchoredPosition: {x: 0, y: 0.00006537874}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1528480241
@@ -4943,7 +4973,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 272466691}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.91235626
+  m_Size: 0.9999818
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5369,7 +5399,9 @@ MonoBehaviour:
   StatusIndicator: {fileID: 1064770847}
   PlayerNameInput: {fileID: 1157178974}
   JoinRoomButton: {fileID: 291934445}
+  JoinRoomTooltip: {fileID: 291934446}
   CreateRoomButton: {fileID: 437821177}
+  CreateRoomTooltip: {fileID: 437821178}
   RoomScreen: {fileID: 222137030}
 --- !u!1001 &4761314136107207950
 PrefabInstance:

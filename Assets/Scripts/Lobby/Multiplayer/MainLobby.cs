@@ -4,6 +4,7 @@ using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,15 +16,15 @@ public class MainLobby : MonoBehaviourPunCallbacks
 {
 	[Header("Room List")]
 	public Transform RoomListParent;
-
 	public GameObject RoomPanelPrefab;
 	public Text StatusIndicator;
 
 	[Header("Player Controls")]
 	public InputField PlayerNameInput;
-
 	public Button JoinRoomButton;
+	public Tooltip JoinRoomTooltip;
 	public Button CreateRoomButton;
+	public Tooltip CreateRoomTooltip;
 
 	[Header("Room Screen")]
 	public GameObject RoomScreen;
@@ -38,16 +39,13 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 		_rooms = new Dictionary<string, RoomInfo>();
 		_roomPanels = new Dictionary<string, GameObject>();
-		_selectedRoom = null;
 
 		string playerName = PlayerPrefs.GetString(PropertyKeys.PLAYER_NAME, "");
 		PhotonNetwork.NickName = playerName;
 		PlayerNameInput.text = playerName;
 		PlayerNameInput.onValueChanged.AddListener(SetName);
 
-		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
 		CreateRoomButton.onClick.AddListener(CreateRoom);
-		JoinRoomButton.interactable = false;
 		JoinRoomButton.onClick.AddListener(JoinSelectedRoom);
 	}
 
@@ -67,6 +65,9 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			StatusIndicator.text = "Connecting...";
 			CreateRoomButton.interactable = false;
 		}
+
+		_selectedRoom = null;
+		UpdateControls();
 	}
 
 	public override void OnConnectedToMaster()
@@ -93,7 +94,14 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	public override void OnRoomListUpdate(List<RoomInfo> roomList)
 	{
-		foreach (RoomInfo room in roomList)
+		ApplyRoomListDeltas(roomList);
+		RenderRoomList();
+		UpdateControls();
+	}
+
+	private void ApplyRoomListDeltas(IEnumerable<RoomInfo> roomListDeltas)
+	{
+		foreach (RoomInfo room in roomListDeltas)
 		{
 			if (room.RemovedFromList)
 			{
@@ -116,8 +124,6 @@ public class MainLobby : MonoBehaviourPunCallbacks
 				_rooms.Add(room.Name, room);
 			}
 		}
-
-		RenderRoomList();
 	}
 
 	private void RenderRoomList()
@@ -194,6 +200,23 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		_rooms.Clear();
 	}
 
+	private void UpdateControls()
+	{
+		bool hasName = !string.IsNullOrWhiteSpace(PhotonNetwork.NickName);
+
+		CreateRoomButton.interactable = hasName;
+		CreateRoomTooltip.SetTooltip(hasName ? null : "You must enter a player name first.");
+
+		JoinRoomButton.interactable = _selectedRoom != null && hasName;
+		JoinRoomTooltip.SetTooltip(
+			_selectedRoom == null
+				? "First select a room to join."
+				: !hasName
+					? "You must enter a player name first."
+					: null
+		);
+	}
+
 	public void SelectRoom(string roomName)
 	{
 		if (_selectedRoom != null)
@@ -208,15 +231,15 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			_roomPanels[_selectedRoom]?.GetComponent<RoomPanel>().SetSelected(true);
 		}
 
-		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(PhotonNetwork.NickName);
+		UpdateControls();
 	}
 
 	private void SetName(string playerName)
 	{
 		PhotonNetwork.NickName = playerName;
 		PlayerPrefs.SetString(PropertyKeys.PLAYER_NAME, playerName);
-		CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(playerName);
-		JoinRoomButton.interactable = _selectedRoom != null && !string.IsNullOrWhiteSpace(playerName);
+
+		UpdateControls();
 	}
 
 	private void CreateRoom()
