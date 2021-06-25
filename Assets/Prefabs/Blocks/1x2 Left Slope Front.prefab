@@ -129,6 +129,7 @@ MonoBehaviour:
   BlockID: 1x2 Left Slope Front
   ShortName: L Slope Front
   FullName: 1x2 Left Slope Front
+  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 25

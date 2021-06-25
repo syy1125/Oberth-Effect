@@ -100,6 +100,7 @@ public class TooltipControl : MonoBehaviour
 				: _mouseLocalPosition.y > 0
 					? AnchorCorner.UpperLeft
 					: AnchorCorner.LowerLeft;
+
 			UseLayout(rect, bestCorner, true);
 		}
 	}
@@ -136,6 +137,7 @@ public class TooltipControl : MonoBehaviour
 		if (!force && tooltipHeight > availableSpace.y) return false;
 
 		PositionTooltip(corner, tooltipWidth, tooltipHeight);
+
 		return true;
 	}
 

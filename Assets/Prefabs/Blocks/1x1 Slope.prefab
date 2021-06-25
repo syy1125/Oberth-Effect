@@ -129,6 +129,7 @@ MonoBehaviour:
   BlockID: 1x1 Slope
   ShortName: Slope
   FullName: 1x1 Slope
+  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 50

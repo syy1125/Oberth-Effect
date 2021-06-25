@@ -2,12 +2,17 @@
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public class BlockInfo : MonoBehaviour
+/// <summary>
+/// Contains static information about the block
+/// </summary>
+public class BlockInfo : MonoBehaviour, ITooltipProvider
 {
 	[Header("Core Data")]
 	public string BlockID;
 	public string ShortName;
 	public string FullName;
+	[TextArea]
+	public string Description;
 
 	[Header("Designer")]
 	public bool ShowInDesigner;
@@ -46,6 +51,18 @@ public class BlockInfo : MonoBehaviour
 				Gizmos.DrawIcon(new Vector3(point.x, point.y), "CrossIcon");
 			}
 		}
+	}
+
+	public string GetTooltip()
+	{
+		return string.Join(
+			"\n",
+			FullName,
+			$"{Mass} tons",
+			$"{MaxHealth} health {ArmorValue} armor",
+			"",
+			Description
+		).Trim();
 	}
 }
 }

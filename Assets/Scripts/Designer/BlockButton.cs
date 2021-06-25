@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Common.UserInterface;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,12 +9,16 @@ namespace Syy1125.OberthEffect.Designer
 {
 [RequireComponent(typeof(Button))]
 [RequireComponent(typeof(Image))]
+[RequireComponent(typeof(Tooltip))]
 public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 	public ColorBlock Colors;
+	public Transform PreviewParent;
+	public Text BlockName;
 
 	private BlockPalette _controller;
 	private Image _image;
+	private Tooltip _tooltip;
 	private bool _hover;
 
 	private bool Selected => _controller.SelectedIndex == transform.GetSiblingIndex();
@@ -20,6 +27,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	{
 		_controller = GetComponentInParent<BlockPalette>();
 		_image = GetComponent<Image>();
+		_tooltip = GetComponent<Tooltip>();
 		GetComponent<Button>().onClick.AddListener(SelectBlock);
 	}
 
@@ -31,8 +39,22 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	public void DisplayBlock(GameObject block)
 	{
-		GameObject instance = Instantiate(block, transform);
+		GameObject instance = Instantiate(block, PreviewParent);
 		instance.transform.localScale = new Vector3(40, 40, 1);
+
+		BlockInfo info = block.GetComponent<BlockInfo>();
+		BlockName.text = info.ShortName;
+
+		LinkedList<string> tooltips = new LinkedList<string>();
+		foreach (MonoBehaviour behaviour in block.GetComponents<MonoBehaviour>())
+		{
+			if (behaviour is ITooltipProvider blockTooltip)
+			{
+				tooltips.AddLast(blockTooltip.GetTooltip());
+			}
+		}
+
+		_tooltip.SetTooltip(string.Join("\n\n", tooltips));
 	}
 
 	private void SelectBlock()

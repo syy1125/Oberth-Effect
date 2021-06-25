@@ -3931,7 +3931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00006537874}
+  m_AnchoredPosition: {x: 0, y: 0.000048449347}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1528480241
@@ -4973,7 +4973,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 272466691}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999818
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5497,10 +5497,6 @@ PrefabInstance:
     - target: {fileID: 4761314134912649533, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
       propertyPath: m_Name
       value: Tooltip Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 4761314135620782137, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a84c82460b6c92042b86b42f39a58165, type: 3}

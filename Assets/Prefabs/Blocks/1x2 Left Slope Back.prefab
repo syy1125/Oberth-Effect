@@ -130,6 +130,7 @@ MonoBehaviour:
   BlockID: 1x2 Left Slope Back
   ShortName: L Slope Back
   FullName: 1x2 Left Slope Back
+  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 75

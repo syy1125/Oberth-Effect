@@ -129,6 +129,7 @@ MonoBehaviour:
   BlockID: 1x2 Right Slope Front
   ShortName: R Slope Front
   FullName: 1x2 Right Slope Front
+  Description: A simple block used in construction.
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 25

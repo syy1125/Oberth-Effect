@@ -128,8 +128,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockID: Small Ion Engine
-  ShortName: Small Ion Engine
+  ShortName: Ion Engine
   FullName: Small Ion Engine
+  Description: 
   ShowInDesigner: 1
   AllowErase: 1
   MaxHealth: 50
