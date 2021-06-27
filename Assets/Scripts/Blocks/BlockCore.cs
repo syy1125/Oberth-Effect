@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -36,9 +37,12 @@ public class BlockCore : MonoBehaviour, IDamageable
 	public int OwnerId { get; set; }
 	public Vector2Int RootLocation { get; set; }
 	public int Rotation { get; set; }
+	public Vector2 CenterOfMassPosition => RootLocation + RotationUtils.RotatePoint(_info.CenterOfMass, Rotation);
 	public bool IsMine { get; private set; }
 
 	public float Health { get; private set; }
+	public float HealthFraction => Mathf.Clamp01(Health / _info.MaxHealth);
+	public bool IsDamaged => _info.MaxHealth - Health > Mathf.Epsilon;
 
 	private void Awake()
 	{

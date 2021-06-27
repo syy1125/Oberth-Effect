@@ -54,9 +54,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Cycle Control Mode",
+                    "name": "Cycle Vehicle Control Mode",
                     "type": "Button",
                     "id": "7d152ea4-8b43-4043-a7a7-adadd8c923fa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Cycle Health Bar Mode",
+                    "type": "Button",
+                    "id": "2a8cc4af-0a01-4b1f-9da6-9b5f2db286a5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -301,7 +309,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Cycle Control Mode",
+                    "action": "Cycle Vehicle Control Mode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "db9563c8-b682-459f-86c1-7482227d335e",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Cycle Health Bar Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

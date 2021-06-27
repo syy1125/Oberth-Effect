@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
@@ -12,11 +13,14 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 [RequireComponent(typeof(PhotonView))]
 public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBlockCoreRegistry, IBlockLifecycleListener
 {
+	public UnityEvent OnVehicleLoaded;
+
 	private Rigidbody2D _body;
 
 	private Dictionary<Vector2Int, GameObject> _posToBlock;
 
 	private bool _loading;
+	public bool Loaded { get; private set; }
 	private VehicleBlueprint _blueprint;
 
 	private void Awake()
@@ -76,7 +80,12 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 			blockCore.RootLocation = rootLocationInt;
 			blockCore.Rotation = block.Rotation;
 
-			_posToBlock.Add(rootLocationInt, blockObject);
+			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+			{
+				_posToBlock.Add(
+					rootLocationInt + RotationUtils.RotatePoint(localPosition, block.Rotation), blockObject
+				);
+			}
 		}
 
 		if (totalMass > Mathf.Epsilon)
@@ -98,6 +107,9 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		transform.position -= (Vector3) centerOfMass;
 
 		_loading = false;
+		Loaded = true;
+
+		OnVehicleLoaded.Invoke();
 	}
 
 	public void RegisterBlock(BlockCore blockCore)
@@ -106,7 +118,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		if (_loading) return;
 
 		BlockInfo info = blockCore.GetComponent<BlockInfo>();
-		Vector2 blockCenter = blockCore.RootLocation + RotationUtils.RotatePoint(info.CenterOfMass, blockCore.Rotation);
+		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 		AddMass(blockCenter, info.Mass, info.MomentOfInertia);
 	}
 
@@ -115,7 +127,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		if (_loading) return;
 
 		BlockInfo info = blockCore.GetComponent<BlockInfo>();
-		Vector2 blockCenter = blockCore.RootLocation + RotationUtils.RotatePoint(info.CenterOfMass, blockCore.Rotation);
+		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 		AddMass(blockCenter, -info.Mass, -info.MomentOfInertia);
 	}
 
@@ -145,5 +157,10 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 	{
 		_posToBlock[new Vector2Int(x, y)].SetActive(false);
 	}
+
+	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;
+
+	public GameObject GetBlockAt(Vector2Int localPosition) =>
+		_posToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
 }
 }

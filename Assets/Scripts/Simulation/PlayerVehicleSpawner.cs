@@ -11,8 +11,9 @@ public class PlayerVehicleSpawner : MonoBehaviour
 {
 	public CameraFollow CameraRig;
 	public CameraFollow VehicleCamera;
-	public VehicleControlDisplay ControlDisplay;
+	public VehicleInfoDisplay InfoDisplay;
 	public ResourceDisplay ResourceDisplay;
+	public BlockHealthBarControl HealthBarControl;
 
 	public GameObject VehiclePrefab;
 
@@ -31,8 +32,9 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		CameraRig.Target = vehicle.transform;
 		VehicleCamera.Target = vehicle.transform;
-		ControlDisplay.ThrusterControl = vehicle.GetComponent<VehicleThrusterControl>();
+		InfoDisplay.ThrusterControl = vehicle.GetComponent<VehicleThrusterControl>();
 		ResourceDisplay.ResourceManager = vehicle.GetComponent<VehicleResourceManager>();
+		HealthBarControl.SetTarget(vehicle.GetComponent<VehicleCore>());
 	}
 }
 }
