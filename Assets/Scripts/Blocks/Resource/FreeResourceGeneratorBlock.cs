@@ -43,7 +43,7 @@ public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock
 		return "Passive resource generation\n"
 		       + string.Join(
 			       "\n",
-			       GenerationRate.Select(entry => $"  {entry.Amount} {entry.Resource.RichTextColoredName()}/s")
+			       GenerationRate.Select(entry => $"  {entry.RichTextColoredEntry()}/s")
 		       );
 	}
 }
