@@ -131,9 +131,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b65a9970128a2042bf659f657f0fb5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnVehicleLoaded:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &5714095635331986382
 MonoBehaviour:
   m_ObjectHideFlags: 0

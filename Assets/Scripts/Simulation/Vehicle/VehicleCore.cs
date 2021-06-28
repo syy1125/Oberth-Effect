@@ -13,14 +13,12 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 [RequireComponent(typeof(PhotonView))]
 public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBlockCoreRegistry, IBlockLifecycleListener
 {
-	public UnityEvent OnVehicleLoaded;
-
 	private Rigidbody2D _body;
 
 	private Dictionary<Vector2Int, GameObject> _posToBlock;
 
-	private bool _loading;
-	public bool Loaded { get; private set; }
+	private bool _loaded;
+	private UnityEvent _loadEvent;
 	private VehicleBlueprint _blueprint;
 
 	private void Awake()
@@ -46,8 +44,6 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 	public void LoadVehicle(VehicleBlueprint blueprint)
 	{
-		_loading = true;
-
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
@@ -106,16 +102,34 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 		transform.position -= (Vector3) centerOfMass;
 
-		_loading = false;
-		Loaded = true;
+		_loaded = true;
 
-		OnVehicleLoaded.Invoke();
+		if (_loadEvent != null)
+		{
+			_loadEvent.Invoke();
+			_loadEvent.RemoveAllListeners();
+		}
 	}
+
+	public void AfterLoad(UnityAction action)
+	{
+		if (_loaded)
+		{
+			action();
+		}
+		else
+		{
+			_loadEvent ??= new UnityEvent();
+			_loadEvent.AddListener(action);
+		}
+	}
+
+	#region Block Management
 
 	public void RegisterBlock(BlockCore blockCore)
 	{
 		// When the vehicle is loading, ignore everything as the calculation will be done by the loading routine.
-		if (_loading) return;
+		if (!_loaded) return;
 
 		BlockInfo info = blockCore.GetComponent<BlockInfo>();
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
@@ -124,7 +138,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 	public void UnregisterBlock(BlockCore blockCore)
 	{
-		if (_loading) return;
+		if (!_loaded) return;
 
 		BlockInfo info = blockCore.GetComponent<BlockInfo>();
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
@@ -157,6 +171,8 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 	{
 		_posToBlock[new Vector2Int(x, y)].SetActive(false);
 	}
+
+	#endregion
 
 	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;
 

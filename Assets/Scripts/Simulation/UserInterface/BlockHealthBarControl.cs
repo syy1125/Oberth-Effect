@@ -80,24 +80,7 @@ public class BlockHealthBarControl : MonoBehaviour
 		}
 
 		_target = target;
-
-		if (_target.Loaded)
-		{
-			SpawnHealthBars();
-			UpdateAllHealthBars();
-		}
-		else
-		{
-			_target.OnVehicleLoaded.AddListener(HandleVehicleLoad);
-		}
-	}
-
-	private void HandleVehicleLoad()
-	{
-		SpawnHealthBars();
-		UpdateAllHealthBars();
-
-		_target.OnVehicleLoaded.RemoveListener(HandleVehicleLoad);
+		_target.AfterLoad(SpawnHealthBars);
 	}
 
 	private void SpawnHealthBars()
