@@ -381,7 +381,7 @@ public class VehicleDesigner : MonoBehaviour
 		{
 			_tooltipLocation = null;
 		}
-		
+
 		if (_tooltipLocation != _prevTooltipLocation)
 		{
 			if (_prevTooltipLocation != null)
@@ -479,6 +479,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void ShowBlockTooltip()
 	{
+		if (!isActiveAndEnabled) return;
 		if (_tooltipLocation == null || TooltipControl.Instance == null) return;
 		GameObject go = Builder.GetBlockObjectAt(_tooltipLocation.Value);
 		if (go == null) return;
