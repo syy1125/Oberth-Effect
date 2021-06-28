@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
@@ -23,7 +24,6 @@ public class VehicleResourceManager :
 	private List<ResourceStorageBlock> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<VehicleResource, float> _resourceCapacities;
-	private bool _initFill;
 
 	private List<IResourceGeneratorBlock> _generatorBlocks;
 	private Dictionary<VehicleResource, float> _currentResources;
@@ -50,7 +50,7 @@ public class VehicleResourceManager :
 
 	private void Start()
 	{
-		_core.AfterLoad(() => _initFill = true);
+		_core.AfterLoad(FillStorage);
 	}
 
 	#region Resource Block Access
@@ -113,12 +113,6 @@ public class VehicleResourceManager :
 			if (_storageChanged)
 			{
 				UpdateStorage();
-
-				if (_initFill)
-				{
-					FillStorage();
-					_initFill = false;
-				}
 			}
 
 			GenerateResources();
@@ -251,6 +245,7 @@ public class VehicleResourceManager :
 
 	private void FillStorage()
 	{
+		UpdateStorage();
 		_currentResources = new Dictionary<VehicleResource, float>(_resourceCapacities);
 	}
 
