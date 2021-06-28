@@ -115,6 +115,7 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private void Update()
 	{
+		// If necessary, we could optimize this more, but so far it looks like this doesn't impact performance that much
 		UpdateAllHealthBars();
 	}
 
