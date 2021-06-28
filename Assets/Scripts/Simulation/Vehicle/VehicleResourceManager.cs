@@ -10,6 +10,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 // Note that this class need to execute after all resource usage scripts in order to function properly.
+[RequireComponent(typeof(VehicleCore))]
 public class VehicleResourceManager :
 	MonoBehaviourPun,
 	IPunObservable,
@@ -17,9 +18,12 @@ public class VehicleResourceManager :
 	IResourceGeneratorBlockRegistry,
 	IResourceConsumerBlockRegistry
 {
+	private VehicleCore _core;
+
 	private List<ResourceStorageBlock> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<VehicleResource, float> _resourceCapacities;
+	private bool _initFill;
 
 	private List<IResourceGeneratorBlock> _generatorBlocks;
 	private Dictionary<VehicleResource, float> _currentResources;
@@ -30,6 +34,8 @@ public class VehicleResourceManager :
 
 	private void Awake()
 	{
+		_core = GetComponent<VehicleCore>();
+
 		_storageBlocks = new List<ResourceStorageBlock>();
 		_storageChanged = false;
 		_resourceCapacities = new Dictionary<VehicleResource, float>();
@@ -40,6 +46,11 @@ public class VehicleResourceManager :
 		_consumerBlocks = new List<IResourceConsumerBlock>();
 		_resourceRequestRate = new Dictionary<VehicleResource, float>();
 		_resourceSatisfaction = new Dictionary<VehicleResource, float>();
+	}
+
+	private void Start()
+	{
+		_core.AfterLoad(() => _initFill = true);
 	}
 
 	#region Resource Block Access
@@ -102,6 +113,12 @@ public class VehicleResourceManager :
 			if (_storageChanged)
 			{
 				UpdateStorage();
+
+				if (_initFill)
+				{
+					FillStorage();
+					_initFill = false;
+				}
 			}
 
 			GenerateResources();
@@ -232,7 +249,10 @@ public class VehicleResourceManager :
 
 	#endregion
 
-	#region Public Access
+	private void FillStorage()
+	{
+		_currentResources = new Dictionary<VehicleResource, float>(_resourceCapacities);
+	}
 
 	// Returns tuple (current, capacity), or null if the vehicle is not capable of holding the specified resource
 	public Tuple<float, float> GetResourceStatus(VehicleResource resource)
@@ -248,7 +268,5 @@ public class VehicleResourceManager :
 			return null;
 		}
 	}
-
-	#endregion
 }
 }
