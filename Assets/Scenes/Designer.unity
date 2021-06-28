@@ -1259,6 +1259,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1299714563}
+        m_TargetAssemblyTypeName: Syy1125.OberthEffect.Common.UserInterface.TooltipControl,
+          Common
+        m_MethodName: SetTooltip
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnMenuClosed:
     m_PersistentCalls:
       m_Calls:
@@ -2556,7 +2569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2592,7 +2605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4414,7 +4427,7 @@ GameObject:
   - component: {fileID: 1123721306}
   - component: {fileID: 1123721307}
   m_Layer: 0
-  m_Name: Context
+  m_Name: Designer Context
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5083,6 +5096,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
+--- !u!114 &1299714563 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4761314134912649530, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
+  m_PrefabInstance: {fileID: 1299714562}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4677ef968154527b53eeec13072b086, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1311987112
 GameObject:
   m_ObjectHideFlags: 0
@@ -7071,7 +7095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -7107,7 +7131,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -7758,7 +7782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -7794,7 +7818,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y
