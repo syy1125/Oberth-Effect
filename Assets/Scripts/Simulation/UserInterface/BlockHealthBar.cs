@@ -17,7 +17,9 @@ public class BlockHealthBar : MonoBehaviour
 		HealthBar.fillAmount = healthFraction;
 		HealthBar.color = ColorGradient.Evaluate(healthFraction);
 
-		transform.position = Target.transform.parent.TransformPoint(Target.CenterOfMassPosition);
+		Vector3 targetPosition = Target.transform.parent.TransformPoint(Target.CenterOfMassPosition);
+		targetPosition.z = transform.position.z;
+		transform.position = targetPosition;
 	}
 }
 }
