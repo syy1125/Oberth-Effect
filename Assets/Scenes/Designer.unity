@@ -4611,7 +4611,7 @@ GameObject:
   - component: {fileID: 1101043565}
   - component: {fileID: 1101043566}
   - component: {fileID: 1101043567}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Visual Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4753,7 +4753,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 503
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -5516,7 +5516,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1286245954}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Warnings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6156,7 +6156,7 @@ GameObject:
   - component: {fileID: 1543857979}
   - component: {fileID: 1543857978}
   - component: {fileID: 1543857980}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Designer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6324,7 +6324,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1599521573}
   - component: {fileID: 1599521575}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Vehicle Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
