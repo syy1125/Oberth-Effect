@@ -331,6 +331,14 @@
             "id": "1097402c-c5f8-4c99-b98d-2791a7fce1a6",
             "actions": [
                 {
+                    "name": "Help",
+                    "type": "Button",
+                    "id": "185adcd9-d521-4dea-b352-d5c159fb2628",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Move",
                     "type": "Value",
                     "id": "3d58a2d9-2e1e-4f58-9c0f-aff97a115f75",
@@ -379,17 +387,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Eraser",
+                    "name": "Cursor",
                     "type": "Button",
-                    "id": "30c22ebb-c9a4-4b07-ad68-88ff23941632",
+                    "id": "ab9de840-7c7f-4baa-9251-771b00b48d33",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
                 {
-                    "name": "Cursor",
+                    "name": "Eraser",
                     "type": "Button",
-                    "id": "ab9de840-7c7f-4baa-9251-771b00b48d33",
+                    "id": "30c22ebb-c9a4-4b07-ad68-88ff23941632",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -415,17 +423,6 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Eraser",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "beaf1769-767a-4906-b4d5-0963e52a61d5",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Cursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -536,6 +533,28 @@
                     "processors": "Scale(factor=0.01)",
                     "groups": "Keyboard&Mouse",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "beaf1769-767a-4906-b4d5-0963e52a61d5",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Cursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8fdc07e4-c8e6-4a23-b09a-394e70f98345",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Help",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

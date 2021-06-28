@@ -11,27 +11,24 @@ public class DesignerMenu : MonoBehaviour
 {
 	[Header("Input")]
 	public InputActionReference MenuAction;
+	public InputActionReference HelpAction;
 
 	[Header("References")]
 	public VehicleDesigner Designer;
-
 	public GameObject Backdrop;
 
 	public GameObject BaseMenu;
-
 	public NotificationDialog Notification;
+	public GameObject HelpScreen;
 
 	[Header("Events")]
 	public UnityEvent OnMenuOpen;
-
 	public UnityEvent OnMenuClosed;
 
-	private bool _enabled;
 	private Stack<GameObject> _modals;
 
 	private void Awake()
 	{
-		_enabled = false;
 		_modals = new Stack<GameObject>();
 	}
 
@@ -39,49 +36,63 @@ public class DesignerMenu : MonoBehaviour
 	{
 		MenuAction.action.Enable();
 		MenuAction.action.performed += ToggleMenu;
+		HelpAction.action.Enable();
+		HelpAction.action.performed += ToggleHelp;
 	}
 
 	private void OnDisable()
 	{
 		MenuAction.action.performed -= ToggleMenu;
 		MenuAction.action.Disable();
+		HelpAction.action.performed -= ToggleHelp;
+		HelpAction.action.Disable();
 	}
 
 	private void ToggleMenu(InputAction.CallbackContext context)
 	{
-		if (!_enabled)
-		{
-			OpenMenu();
-		}
-		else
+		if (_modals.Count > 0)
 		{
 			CloseTopModal();
 		}
+		else
+		{
+			OpenModal(BaseMenu);
+		}
 	}
 
-	private void OpenMenu()
+	private void ToggleHelp(InputAction.CallbackContext context)
 	{
-		Backdrop.SetActive(true);
-		OpenModal(BaseMenu);
-
-		_enabled = true;
-		OnMenuOpen.Invoke();
+		if (_modals.Count > 0 && _modals.Peek() == HelpScreen)
+		{
+			CloseTopModal();
+		}
+		else
+		{
+			OpenModal(HelpScreen);
+		}
 	}
+
+	#region Generic Modal Management
 
 	public void OpenModal(GameObject modal)
 	{
-		// Note: we can't use event system here because it doesn't work on disabled objects.
-		foreach (MonoBehaviour behaviour in modal.GetComponents<MonoBehaviour>())
-		{
-			(behaviour as IModal)?.OpenModal();
-		}
-
 		if (_modals.Count > 0)
 		{
 			foreach (MonoBehaviour behaviour in _modals.Peek().GetComponents<MonoBehaviour>())
 			{
 				(behaviour as IModal)?.CloseModal();
 			}
+		}
+		else
+		{
+			Backdrop.SetActive(true);
+			OnMenuOpen.Invoke();
+		}
+
+		// Note: we can't use event system here because it doesn't work on disabled objects.
+		foreach (MonoBehaviour behaviour in modal.GetComponents<MonoBehaviour>())
+		{
+			(behaviour as IModal)?.OpenModal();
 		}
 
 		_modals.Push(modal);
@@ -106,8 +117,6 @@ public class DesignerMenu : MonoBehaviour
 		else
 		{
 			Backdrop.SetActive(false);
-
-			_enabled = false;
 			OnMenuClosed.Invoke();
 		}
 	}
@@ -123,10 +132,10 @@ public class DesignerMenu : MonoBehaviour
 		}
 
 		Backdrop.SetActive(false);
-
-		_enabled = false;
 		OnMenuClosed.Invoke();
 	}
+
+	#endregion
 
 	public void OpenSaveVehicle(GameObject saveModal)
 	{
