@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7bc891ae1a4434d8b66eff2c1aaab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxForce: 5
+  MaxForce: 10
   MaxResourceUse:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 50

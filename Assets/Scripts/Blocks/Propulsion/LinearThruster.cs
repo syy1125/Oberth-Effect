@@ -13,8 +13,6 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
 
-	private string _cachedTooltip;
-
 	private Rigidbody2D _body;
 	private ParticleSystem _particles;
 	private bool _isMine;
@@ -31,8 +29,6 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 
 	private void Awake()
 	{
-		_cachedTooltip = null;
-
 		_body = GetComponentInParent<Rigidbody2D>();
 		_particles = GetComponent<ParticleSystem>();
 
@@ -129,12 +125,13 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 	{
 		return string.Join(
 			"\n",
-			$"Max thrust {MaxForce} kN",
-			"Max resource usage "
+			"Engine",
+			$"  Max thrust {MaxForce} kN",
+			"  Max resource usage "
 			+ string.Join(
 				" ",
 				MaxResourceUse.Select(
-					entry => $"{entry.Amount} <color=\"#{ColorUtility.ToHtmlStringRGB(entry.Resource.DisplayColor)}\">{entry.Resource.DisplayName}</color>/s"
+					entry => $"{entry.RichTextColoredEntry()}/s"
 				)
 			)
 		);

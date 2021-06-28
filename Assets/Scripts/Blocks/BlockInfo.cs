@@ -56,8 +56,9 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 		return string.Join(
 			"\n",
 			FullName,
-			$"{Mass} ton(s)",
-			$"{MaxHealth} health {ArmorValue} armor"
+			$"  <color=\"yellow\">{Mass} ton(s)</color>",
+			$"  <color=\"red\">{MaxHealth} health</color>",
+			$"  <color=\"lightblue\">{ArmorValue} armor</color>"
 		).Trim();
 	}
 }
