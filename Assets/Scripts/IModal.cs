@@ -1,6 +1,8 @@
-﻿namespace Syy1125.OberthEffect
+﻿using UnityEngine.EventSystems;
+
+namespace Syy1125.OberthEffect
 {
-public interface IModal
+public interface IModal : IEventSystemHandler
 {
 	void OpenModal();
 	void CloseModal();

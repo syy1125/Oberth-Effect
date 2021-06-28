@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-namespace Syy1125.OberthEffect.Designer
+namespace Syy1125.OberthEffect.Designer.Menu
 {
 public class DesignerMenu : MonoBehaviour
 {
@@ -53,44 +53,38 @@ public class DesignerMenu : MonoBehaviour
 		{
 			OpenMenu();
 		}
-		else if (_modals.Count > 0)
-		{
-			CloseTopModal();
-		}
 		else
 		{
-			CloseMenu();
+			CloseTopModal();
 		}
 	}
 
 	private void OpenMenu()
 	{
 		Backdrop.SetActive(true);
-		BaseMenu.SetActive(true);
+		OpenModal(BaseMenu);
 
 		_enabled = true;
 		OnMenuOpen.Invoke();
 	}
 
-	private void CloseMenu()
-	{
-		Backdrop.SetActive(false);
-		BaseMenu.SetActive(false);
-
-		_enabled = false;
-		OnMenuClosed.Invoke();
-	}
-
 	public void OpenModal(GameObject modal)
 	{
+		// Note: we can't use event system here because it doesn't work on disabled objects.
 		foreach (MonoBehaviour behaviour in modal.GetComponents<MonoBehaviour>())
 		{
 			(behaviour as IModal)?.OpenModal();
 		}
 
-		_modals.Push(modal);
+		if (_modals.Count > 0)
+		{
+			foreach (MonoBehaviour behaviour in _modals.Peek().GetComponents<MonoBehaviour>())
+			{
+				(behaviour as IModal)?.CloseModal();
+			}
+		}
 
-		BaseMenu.SetActive(false);
+		_modals.Push(modal);
 	}
 
 	public void CloseTopModal()
@@ -102,9 +96,19 @@ public class DesignerMenu : MonoBehaviour
 			(behaviour as IModal)?.CloseModal();
 		}
 
-		if (_modals.Count == 0)
+		if (_modals.Count > 0)
 		{
-			BaseMenu.SetActive(true);
+			foreach (MonoBehaviour behaviour in _modals.Peek().GetComponents<MonoBehaviour>())
+			{
+				(behaviour as IModal)?.OpenModal();
+			}
+		}
+		else
+		{
+			Backdrop.SetActive(false);
+
+			_enabled = false;
+			OnMenuClosed.Invoke();
 		}
 	}
 
@@ -112,10 +116,16 @@ public class DesignerMenu : MonoBehaviour
 	{
 		while (_modals.Count > 0)
 		{
-			CloseTopModal();
+			foreach (MonoBehaviour behaviour in _modals.Pop().GetComponents<MonoBehaviour>())
+			{
+				(behaviour as IModal)?.CloseModal();
+			}
 		}
 
-		CloseMenu();
+		Backdrop.SetActive(false);
+
+		_enabled = false;
+		OnMenuClosed.Invoke();
 	}
 
 	public void OpenSaveVehicle(GameObject saveModal)

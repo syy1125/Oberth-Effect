@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Designer
+namespace Syy1125.OberthEffect.Designer.Menu
 {
 public class VehicleLoadSave : MonoBehaviour, IModal
 {
