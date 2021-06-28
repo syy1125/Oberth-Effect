@@ -249,13 +249,15 @@ public class VehicleResourceManager :
 		_currentResources = new Dictionary<VehicleResource, float>(_resourceCapacities);
 	}
 
-	// Returns tuple (current, capacity), or null if the vehicle is not capable of holding the specified resource
-	public Tuple<float, float> GetResourceStatus(VehicleResource resource)
+	// Returns tuple (current, capacity, satisfaction), or null if the vehicle is not capable of holding the specified resource
+	public Tuple<float, float, float> GetResourceStatus(VehicleResource resource)
 	{
 		if (_resourceCapacities.TryGetValue(resource, out float capacity))
 		{
-			return new Tuple<float, float>(
-				_currentResources.TryGetValue(resource, out float stored) ? stored : 0f, capacity
+			return new Tuple<float, float, float>(
+				_currentResources.TryGetValue(resource, out float stored) ? stored : 0f,
+				capacity,
+				_resourceSatisfaction.TryGetValue(resource, out float satisfaction) ? satisfaction : 1f
 			);
 		}
 		else

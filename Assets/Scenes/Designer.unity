@@ -5656,7 +5656,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 157960892}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.75199455
+  m_Size: 0.7850467
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5793,6 +5793,10 @@ PrefabInstance:
     - target: {fileID: 4761314134912649533, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
       propertyPath: m_Name
       value: Tooltip Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761314136047142859, guid: a84c82460b6c92042b86b42f39a58165, type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a84c82460b6c92042b86b42f39a58165, type: 3}

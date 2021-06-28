@@ -40,18 +40,20 @@ public class ResourceDisplay : MonoBehaviour
 			foreach (KeyValuePair<VehicleResource, ResourceDisplayRow> entry in _rows)
 			{
 				ResourceDisplayRow row = entry.Value;
-				Tuple<float, float> resourceStatus = ResourceManager.GetResourceStatus(entry.Key);
+				Tuple<float, float, float> resourceStatus = ResourceManager.GetResourceStatus(entry.Key);
 
 				if (resourceStatus == null)
 				{
 					row.FillBar.fillAmount = 0f;
 					row.FillPercent.text = "N/A";
+					row.WarningIcon.SetActive(false);
 				}
 				else
 				{
 					float fillAmount = resourceStatus.Item1 / resourceStatus.Item2;
 					row.FillBar.fillAmount = fillAmount;
 					row.FillPercent.text = $"{fillAmount * 100:F1}%";
+					row.WarningIcon.SetActive(!Mathf.Approximately(resourceStatus.Item3, 1f));
 				}
 			}
 		}

@@ -8,5 +8,6 @@ public class ResourceDisplayRow : MonoBehaviour
 	public Text ShortName;
 	public Image FillBar;
 	public Text FillPercent;
+	public GameObject WarningIcon;
 }
 }
