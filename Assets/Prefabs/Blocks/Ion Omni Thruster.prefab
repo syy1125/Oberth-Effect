@@ -4987,7 +4987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 251b68248d844a04a0be56db1541c125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxForce: 5
+  MaxForce: 2
   MaxResourceUse:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 50
