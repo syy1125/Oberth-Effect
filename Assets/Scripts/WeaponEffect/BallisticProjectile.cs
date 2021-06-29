@@ -6,8 +6,9 @@ namespace Syy1125.OberthEffect.WeaponEffect
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class KineticProjectile : MonoBehaviourPun
+public class BallisticProjectile : MonoBehaviourPun
 {
+	public DamageType DamageType;
 	public float Damage;
 	[Range(1, 10)]
 	public float ArmorPierce = 1;
@@ -37,7 +38,7 @@ public class KineticProjectile : MonoBehaviourPun
 		IDamageable target = GetDamageTarget(other.transform);
 		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
 
-		float damageModifier = target.GetDamageModifier(ArmorPierce, DamageType.Kinetic);
+		float damageModifier = target.GetDamageModifier(ArmorPierce, DamageType);
 		float effectiveDamage = Damage * damageModifier;
 
 		if (effectiveDamage > target.Health)
