@@ -186,6 +186,9 @@ MonoBehaviour:
   MaxResourceUse:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 50
+  MaxThrottleRate: 0.5
+  MinResponse: 0
+  MaxResponse: 1
 --- !u!114 &8301937269056039283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,9 +207,12 @@ MonoBehaviour:
     In practical terms, this means that
     the only resource needed to operate the ion engine is energy.
 
-    The thrust
-    is a bit low and the energy usage is rather high, but hey, it''s basically free
-    thrust.'
+    As with all
+    engines, the ion engine needs time to increase or decrease its thrust.
+
+    The
+    thrust is a bit low and the energy usage is rather high, but hey, it''s basically
+    free thrust.'
 --- !u!198 &5188369339111014238
 ParticleSystem:
   m_ObjectHideFlags: 0

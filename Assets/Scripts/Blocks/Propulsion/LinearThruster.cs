@@ -12,6 +12,9 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 {
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
+	public float MaxThrottleRate;
+	public float MinResponse;
+	public float MaxResponse;
 
 	private Rigidbody2D _body;
 	private ParticleSystem _particles;
@@ -84,7 +87,14 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 		float rawResponse = _forwardBackResponse * forwardBackCommand
 		                    + _strafeResponse * strafeCommand
 		                    + _rotateResponse * rotateCommand;
-		_response = Mathf.Clamp01(rawResponse);
+		_response = Mathf.Clamp(
+			Mathf.Clamp(
+				rawResponse,
+				_response - MaxThrottleRate * Time.fixedDeltaTime,
+				_response + MaxThrottleRate * Time.fixedDeltaTime
+			),
+			MinResponse, MaxResponse
+		);
 	}
 
 	public IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
@@ -133,7 +143,8 @@ public class LinearThruster : MonoBehaviour, IPropulsionBlock, IResourceConsumer
 				MaxResourceUse.Select(
 					entry => $"{entry.RichTextColoredEntry()}/s"
 				)
-			)
+			),
+			$"  Throttle response rate {MaxThrottleRate * 100:F0}%/s"
 		);
 	}
 }
