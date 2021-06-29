@@ -82,7 +82,7 @@ public class OmniThruster : AbstractPropulsionBase
 
 		if (Body != null && IsMine)
 		{
-			Body.AddForceAtPosition(transform.TransformVector(overallResponse), transform.position);
+			Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
 		}
 
 		if (HorizontalParticles != null)
