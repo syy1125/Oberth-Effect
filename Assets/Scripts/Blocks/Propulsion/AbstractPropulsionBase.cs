@@ -65,7 +65,8 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		Vector3 localUp, out float forwardBackResponse, out float strafeResponse, out float rotateResponse
 	)
 	{
-		Vector3 localPosition = transform.localPosition - (Vector3) Body.centerOfMass;
+		localUp.Normalize();
+		Vector3 localPosition = Body.transform.InverseTransformPoint(transform.position) - (Vector3) Body.centerOfMass;
 
 		forwardBackResponse = localUp.y;
 		strafeResponse = localUp.x;

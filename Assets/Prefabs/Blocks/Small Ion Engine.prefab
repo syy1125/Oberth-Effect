@@ -187,8 +187,6 @@ MonoBehaviour:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 50
   MaxThrottleRate: 0.5
-  MinResponse: 0
-  MaxResponse: 1
 --- !u!114 &8301937269056039283
 MonoBehaviour:
   m_ObjectHideFlags: 0

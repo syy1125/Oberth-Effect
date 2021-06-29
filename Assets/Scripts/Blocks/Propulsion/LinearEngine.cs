@@ -42,7 +42,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 
 		if (Body != null)
 		{
-			Vector3 localUp = transform.localRotation * Vector3.up;
+			Vector3 localUp = Body.transform.InverseTransformDirection(transform.up);
 			CalculateResponse(localUp, out _forwardBackResponse, out _strafeResponse, out _rotateResponse);
 		}
 	}
@@ -80,7 +80,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 
 		if (Body != null && IsMine)
 		{
-			Body.AddForceAtPosition(transform.up * overallResponse, transform.position);
+			Body.AddForceAtPosition(transform.up * (MaxForce * overallResponse), transform.position);
 		}
 
 		if (_particles != null)
