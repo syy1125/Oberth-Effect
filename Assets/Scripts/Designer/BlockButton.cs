@@ -55,17 +55,19 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	{
 		GameObject instance = Instantiate(block, BlockCamera.transform);
 
+		BlockInfo info = block.GetComponent<BlockInfo>();
+		BlockName.text = info.ShortName;
+
 		Vector3 instancePosition = instance.transform.position;
 		instancePosition.z = 0;
 		instance.transform.position = instancePosition;
 
 		Vector3 instanceScale = instance.transform.lossyScale;
-		instance.transform.localScale = new Vector3(0.8f / instanceScale.x, 0.8f / instanceScale.y, 1f);
+		instance.transform.localScale = new Vector3(
+			0.8f * info.PreviewScale / instanceScale.x, 0.8f * info.PreviewScale / instanceScale.y, 1f
+		);
 
 		LayerUtils.SetLayerRecursively(instance, BlockRenderLayer);
-
-		BlockInfo info = block.GetComponent<BlockInfo>();
-		BlockName.text = info.ShortName;
 
 		string tooltip = TooltipProviderUtils.CombineTooltips(block);
 

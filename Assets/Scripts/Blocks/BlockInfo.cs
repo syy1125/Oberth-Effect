@@ -15,6 +15,7 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 	[Header("Designer")]
 	public bool ShowInDesigner;
 	public bool AllowErase;
+	public float PreviewScale = 1f;
 
 	[Header("Stats")]
 	public float MaxHealth;
