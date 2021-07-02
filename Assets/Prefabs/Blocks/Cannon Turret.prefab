@@ -246,6 +246,7 @@ MonoBehaviour:
   FullName: Cannon Turret
   ShowInDesigner: 1
   AllowErase: 1
+  PreviewScale: 1
   MaxHealth: 100
   ArmorValue: 5
   IntegrityScore: 1
@@ -297,11 +298,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProjectilePrefab: {fileID: 7789702252903111475, guid: ceedf91930805004f84fabab6ceb9ce6, type: 3}
-  ProjectileSpeed: 10
-  ReloadTime: 2
-  ReloadResourceConsumptionRate: []
   Turret: {fileID: 4399158788272666653}
   FiringPort: {fileID: 1064777365042586588}
+  ProjectileConfig:
+    DamageType: 0
+    Damage: 80
+    ArmorPierce: 4
+  ProjectileSpeed: 20
+  RotateSpeed: 360
+  SpreadAngle: 2
+  SpreadProfile: 2
+  ClusterCount: 1
+  BurstCount: 5
+  BurstInterval: 0.1
+  ReloadTime: 2
+  ReloadResourceConsumptionRate: []
 --- !u!114 &-8205556832779791864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,8 +337,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Description: 'A cannon turret. It shoots cannon shells. What did you expect?
+  Description: 'A cannon turret. It shoots cannon shells. The fire rate is rather
+    slow, but the projectile can be devastating if hit.
 
-    Some
-    users claim that recoil from these cannons is a viable form of propulsion, though
-    such reports are largely unsubstantiated.'
+    Some users claim that
+    recoil from these cannons is a viable form of propulsion, though such reports
+    are largely unsubstantiated.'

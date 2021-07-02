@@ -3,7 +3,6 @@
 namespace Syy1125.OberthEffect.Common.ColorScheme
 {
 // Paints color scheme from color context onto subobjects of where this is installed.
-[RequireComponent(typeof(SpriteRenderer))]
 public class ColorSchemePainter : MonoBehaviour
 {
 	private static readonly int PrimaryColor = Shader.PropertyToID("_PrimaryColor");

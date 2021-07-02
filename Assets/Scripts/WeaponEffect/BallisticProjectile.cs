@@ -1,17 +1,29 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
-[RequireComponent(typeof(PhotonView))]
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
-public class BallisticProjectile : MonoBehaviourPun
+[Serializable]
+public struct BallisticProjectileConfig
 {
 	public DamageType DamageType;
 	public float Damage;
 	[Range(1, 10)]
-	public float ArmorPierce = 1;
+	public float ArmorPierce;
+}
+
+[RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
+public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
+{
+	private BallisticProjectileConfig _config;
+
+	public void OnPhotonInstantiate(PhotonMessageInfo info)
+	{
+		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
+	}
 
 	private static IDamageable GetDamageTarget(Transform target)
 	{
@@ -38,8 +50,8 @@ public class BallisticProjectile : MonoBehaviourPun
 		IDamageable target = GetDamageTarget(other.transform);
 		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
 
-		float damageModifier = target.GetDamageModifier(ArmorPierce, DamageType);
-		float effectiveDamage = Damage * damageModifier;
+		float damageModifier = target.GetDamageModifier(_config.ArmorPierce, _config.DamageType);
+		float effectiveDamage = _config.Damage * damageModifier;
 
 		if (effectiveDamage > target.Health)
 		{
@@ -47,7 +59,7 @@ public class BallisticProjectile : MonoBehaviourPun
 				$"Projectile {gameObject} hit {target} will deal {target.Health} damage and destroy block"
 			);
 
-			Damage -= target.Health / damageModifier;
+			_config.Damage -= target.Health / damageModifier;
 			target.DestroyByDamage();
 		}
 		else

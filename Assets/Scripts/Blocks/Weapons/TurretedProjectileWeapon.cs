@@ -1,25 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Random = UnityEngine.Random;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-[RequireComponent(typeof(BlockCore))]
-public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem
+public enum ClusterSpreadProfile
 {
+	None,
+	Gaussian,
+	Uniform
+}
+
+[RequireComponent(typeof(BlockCore))]
+public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem, ITooltipProvider
+{
+	[Header("References")]
 	public GameObject ProjectilePrefab;
-
-	public float ProjectileSpeed;
-	public float ReloadTime;
-	public ResourceEntry[] ReloadResourceConsumptionRate;
-
 	public Transform Turret;
 	public Transform FiringPort;
+
+	[Header("Projectile Config")]
+	public BallisticProjectileConfig ProjectileConfig;
+	public float ProjectileSpeed;
+
+	[Header("Weapon Config")]
+	public float RotateSpeed;
+	public float SpreadAngle = 0f;
+	public ClusterSpreadProfile SpreadProfile;
+	public int ClusterCount = 1;
+	public int BurstCount = 1;
+	public float BurstInterval;
+	public float ReloadTime; // Does NOT adjust for burst time
+	public ResourceEntry[] ReloadResourceConsumptionRate;
 
 	private Dictionary<VehicleResource, float> _resourceConsumption;
 
@@ -28,10 +49,9 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	private bool _isMine;
 
 	private Vector2? _aimPoint;
+	private float _angle;
 	private bool _firing;
 
-	private float _burstIndex;
-	private float _burstCooldown;
 	private float _reloadProgress;
 	private float _resourceSatisfactionLevel;
 
@@ -58,6 +78,8 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	{
 		_reloadProgress = ReloadTime;
 		_aimPoint = null;
+		_angle = 0;
+		ApplyTurretRotation();
 
 		var photonView = GetComponentInParent<PhotonView>();
 		_isMine = photonView == null || photonView.IsMine;
@@ -105,13 +127,11 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			{
 				_reloadProgress -= ReloadTime;
 
-				GameObject projectile = PhotonNetwork.Instantiate(
-					ProjectilePrefab.name, FiringPort.position, FiringPort.rotation,
-					data: new object[] { null, JsonUtility.ToJson(_colorContext.ColorScheme) }
-				);
-
-				var projectileBody = projectile.GetComponent<Rigidbody2D>();
-				projectileBody.velocity = FiringPort.up * ProjectileSpeed;
+				FireCluster();
+				for (int i = 0; i < BurstCount; i++)
+				{
+					Invoke(nameof(FireCluster), BurstInterval * i);
+				}
 			}
 
 			if (_reloadProgress < ReloadTime)
@@ -121,19 +141,101 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		}
 	}
 
+	private void FireCluster()
+	{
+		for (int i = 0; i < ClusterCount; i++)
+		{
+			float deviationAngle = SpreadProfile switch
+			{
+				ClusterSpreadProfile.None => 0f,
+				ClusterSpreadProfile.Gaussian => RandomNumberUtils.NextGaussian() * SpreadAngle,
+				ClusterSpreadProfile.Uniform => Random.Range(-SpreadAngle, SpreadAngle),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+			deviationAngle *= Mathf.Deg2Rad;
+
+			GameObject projectile = PhotonNetwork.Instantiate(
+				ProjectilePrefab.name, FiringPort.position, FiringPort.rotation,
+				data: new object[]
+					{ JsonUtility.ToJson(ProjectileConfig), JsonUtility.ToJson(_colorContext.ColorScheme) }
+			);
+
+			var projectileBody = projectile.GetComponent<Rigidbody2D>();
+			projectileBody.velocity =
+				FiringPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f) * ProjectileSpeed;
+		}
+	}
+
 	private void RotateTurret()
 	{
-		if (_aimPoint == null)
-		{
-			Turret.localRotation = Quaternion.identity;
-		}
-		else
-		{
-			float targetAngle = Vector3.SignedAngle(
+		float targetAngle = _aimPoint == null
+			? 0f
+			: Vector3.SignedAngle(
 				Vector3.up, transform.InverseTransformPoint(_aimPoint.Value), Vector3.forward
 			);
-			Turret.localRotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
+
+		_angle = Mathf.MoveTowardsAngle(_angle, targetAngle, RotateSpeed * Time.fixedDeltaTime);
+
+		ApplyTurretRotation();
+	}
+
+	private void ApplyTurretRotation()
+	{
+		Turret.localRotation = Quaternion.AngleAxis(_angle, Vector3.forward);
+	}
+
+	public string GetTooltip()
+	{
+		float maxDps = ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime;
+
+		List<string> lines = new List<string>
+		{
+			"Turreted Projectile Weapon",
+			"  Turret",
+			$"    Rotation speed {RotateSpeed}°/s",
+		};
+
+		if (ClusterCount > 1)
+		{
+			lines.Add($"    {ClusterCount} shots per cluster");
 		}
+
+		if (BurstCount > 1)
+		{
+			string clusterDescription = ClusterCount > 1 ? "clusters" : "shots";
+			lines.Add(
+				$"    {BurstCount} {clusterDescription} per burst, {BurstInterval}s between {clusterDescription} in burst"
+			);
+		}
+
+		switch (SpreadProfile)
+		{
+			case ClusterSpreadProfile.None:
+				break;
+			case ClusterSpreadProfile.Gaussian:
+				lines.Add($"    Gaussian spread ±{SpreadAngle}°");
+				break;
+			case ClusterSpreadProfile.Uniform:
+				lines.Add($"    Uniform spread ±{SpreadAngle}°");
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
+
+		lines.Add($"    Reload time {ReloadTime}s");
+
+		lines.AddRange(
+			new[]
+			{
+				"  Projectile",
+				$"    Damage {ProjectileConfig.Damage:F0}, AP {ProjectileConfig.ArmorPierce:F0}",
+				$"    Speed {ProjectileSpeed:F1}units/s"
+			}
+		);
+
+		lines.Add($"  Theoretical maximum DPS {maxDps:F1}");
+
+		return string.Join("\n", lines);
 	}
 }
 }
