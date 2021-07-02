@@ -309,7 +309,7 @@ MonoBehaviour:
   SpreadAngle: 2
   SpreadProfile: 2
   ClusterCount: 1
-  BurstCount: 5
+  BurstCount: 1
   BurstInterval: 0.1
   ReloadTime: 2
   ReloadResourceConsumptionRate: []

@@ -191,20 +191,25 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		List<string> lines = new List<string>
 		{
 			"Turreted Projectile Weapon",
+			"  Projectile",
+			$"    Damage {ProjectileConfig.Damage:F0}, AP {ProjectileConfig.ArmorPierce:F0}",
+			$"    Speed {ProjectileSpeed * GamePhysicsConstants.METERS_PER_UNIT:F1} m/s",
 			"  Turret",
 			$"    Rotation speed {RotateSpeed}°/s",
 		};
 
 		if (ClusterCount > 1)
 		{
-			lines.Add($"    {ClusterCount} shots per cluster");
-		}
-
-		if (BurstCount > 1)
-		{
-			string clusterDescription = ClusterCount > 1 ? "clusters" : "shots";
 			lines.Add(
-				$"    {BurstCount} {clusterDescription} per burst, {BurstInterval}s between {clusterDescription} in burst"
+				BurstCount > 1
+					? $"    {ClusterCount} shots per cluster, {BurstCount} clusters per burst, {BurstInterval}s between clusters in burst"
+					: $"    {ClusterCount} shots per cluster"
+			);
+		}
+		else if (BurstCount > 1)
+		{
+			lines.Add(
+				$"    {BurstCount} shots per burst, "
 			);
 		}
 
@@ -222,15 +227,13 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				throw new ArgumentOutOfRangeException();
 		}
 
-		lines.Add($"    Reload time {ReloadTime}s");
-
-		lines.AddRange(
-			new[]
-			{
-				"  Projectile",
-				$"    Damage {ProjectileConfig.Damage:F0}, AP {ProjectileConfig.ArmorPierce:F0}",
-				$"    Speed {ProjectileSpeed:F1}units/s"
-			}
+		string reloadCost = string.Join(
+			" ", ReloadResourceConsumptionRate.Select(entry => $"{entry.RichTextColoredEntry()}/s")
+		);
+		lines.Add(
+			ReloadResourceConsumptionRate.Length > 0
+				? $"    Reload time {ReloadTime}s, reload cost {reloadCost}"
+				: $"    Reload time {ReloadTime}s"
 		);
 
 		lines.Add($"  Theoretical maximum DPS {maxDps:F1}");
