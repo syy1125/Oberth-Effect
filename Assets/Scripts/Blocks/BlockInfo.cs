@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Syy1125.OberthEffect.Common;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
 {
@@ -57,9 +58,8 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 		return string.Join(
 			"\n",
 			FullName,
-			$"  <color=\"yellow\">{Mass} ton(s)</color>",
-			$"  <color=\"red\">{MaxHealth} health</color>",
-			$"  <color=\"lightblue\">{ArmorValue} armor</color>"
+			$"  {Mass} ton(s), {Bounds.size.x * GamePhysicsConstants.METERS_PER_UNIT:F0}m × {Bounds.size.y * GamePhysicsConstants.METERS_PER_UNIT:F0}m",
+			$"  <color=\"red\">{MaxHealth} health</color>, <color=\"lightblue\">{ArmorValue} armor</color>"
 		).Trim();
 	}
 }
