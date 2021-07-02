@@ -134,36 +134,56 @@ public class TooltipControl : MonoBehaviour
 		LayoutRebuilder.ForceRebuildLayoutImmediate(TooltipDisplay);
 		float tooltipHeight = TooltipText.preferredHeight - _textSizeDelta.y;
 
-		if (!force && tooltipHeight > availableSpace.y) return false;
+		Vector2 offset = Vector2.zero;
+		if (tooltipHeight > availableSpace.y)
+		{
+			if (force)
+			{
+				offset = new Vector2(
+					0f, corner switch
+					{
+						AnchorCorner.UpperRight => tooltipHeight - availableSpace.y,
+						AnchorCorner.LowerRight => availableSpace.y - tooltipHeight,
+						AnchorCorner.LowerLeft => availableSpace.y - tooltipHeight,
+						AnchorCorner.UpperLeft => tooltipHeight - availableSpace.y,
+						_ => throw new ArgumentOutOfRangeException(nameof(corner), corner, null)
+					}
+				);
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-		PositionTooltip(corner, tooltipWidth, tooltipHeight);
+		PositionTooltip(corner, new Vector2(tooltipWidth, tooltipHeight), offset);
 
 		return true;
 	}
 
-	private void PositionTooltip(AnchorCorner corner, float tooltipWidth, float tooltipHeight)
+	private void PositionTooltip(AnchorCorner corner, Vector2 size, Vector2 offset)
 	{
 		switch (corner)
 		{
 			case AnchorCorner.UpperRight:
 				TooltipDisplay.pivot = Vector2.one;
-				TooltipDisplay.offsetMin = new Vector2(-tooltipWidth - TooltipOffset, -tooltipHeight - TooltipOffset);
-				TooltipDisplay.offsetMax = new Vector2(-TooltipOffset, -TooltipOffset);
+				TooltipDisplay.offsetMin = new Vector2(-size.x - TooltipOffset, -size.y - TooltipOffset) + offset;
+				TooltipDisplay.offsetMax = new Vector2(-TooltipOffset, -TooltipOffset) + offset;
 				break;
 			case AnchorCorner.LowerRight:
 				TooltipDisplay.pivot = Vector2.right;
-				TooltipDisplay.offsetMin = new Vector2(-tooltipWidth - TooltipOffset, TooltipOffset);
-				TooltipDisplay.offsetMax = new Vector2(-TooltipOffset, tooltipHeight + TooltipOffset);
+				TooltipDisplay.offsetMin = new Vector2(-size.x - TooltipOffset, TooltipOffset) + offset;
+				TooltipDisplay.offsetMax = new Vector2(-TooltipOffset, size.y + TooltipOffset) + offset;
 				break;
 			case AnchorCorner.LowerLeft:
 				TooltipDisplay.pivot = Vector2.zero;
-				TooltipDisplay.offsetMin = new Vector2(TooltipOffset, TooltipOffset);
-				TooltipDisplay.offsetMax = new Vector2(tooltipWidth + TooltipOffset, tooltipHeight + TooltipOffset);
+				TooltipDisplay.offsetMin = new Vector2(TooltipOffset, TooltipOffset) + offset;
+				TooltipDisplay.offsetMax = new Vector2(size.x + TooltipOffset, size.y + TooltipOffset) + offset;
 				break;
 			case AnchorCorner.UpperLeft:
 				TooltipDisplay.pivot = Vector2.up;
-				TooltipDisplay.offsetMin = new Vector2(TooltipOffset, -tooltipHeight - TooltipOffset);
-				TooltipDisplay.offsetMax = new Vector2(tooltipWidth + TooltipOffset, -TooltipOffset);
+				TooltipDisplay.offsetMin = new Vector2(TooltipOffset, -size.y - TooltipOffset) + offset;
+				TooltipDisplay.offsetMax = new Vector2(size.x + TooltipOffset, -TooltipOffset) + offset;
 				break;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(corner), corner, null);
