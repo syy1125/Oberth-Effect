@@ -311,6 +311,8 @@ MonoBehaviour:
   ClusterCount: 1
   BurstCount: 1
   BurstInterval: 0.1
+  UseRecoil: 1
+  ClusterRecoil: 5
   ReloadTime: 2
   ReloadResourceConsumptionRate: []
 --- !u!114 &-8205556832779791864

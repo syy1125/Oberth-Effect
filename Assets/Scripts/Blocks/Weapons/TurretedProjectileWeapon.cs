@@ -39,12 +39,15 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	public int ClusterCount = 1;
 	public int BurstCount = 1;
 	public float BurstInterval;
+	public bool UseRecoil;
+	public float ClusterRecoil;
 	public float ReloadTime; // Does NOT adjust for burst time
 	public ResourceEntry[] ReloadResourceConsumptionRate;
 
 	private Dictionary<VehicleResource, float> _resourceConsumption;
 
 	private ColorContext _colorContext;
+	private Rigidbody2D _body;
 	private BlockCore _block;
 	private bool _isMine;
 
@@ -58,6 +61,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	private void Awake()
 	{
 		_colorContext = GetComponentInParent<ColorContext>();
+		_body = GetComponentInParent<Rigidbody2D>();
 		_block = GetComponent<BlockCore>();
 		_resourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
 			entry => entry.Resource, entry => entry.Amount
@@ -165,6 +169,11 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			projectileBody.velocity =
 				FiringPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f) * ProjectileSpeed;
 		}
+
+		if (UseRecoil)
+		{
+			_body.AddForceAtPosition(-FiringPort.up * ClusterRecoil, FiringPort.position, ForceMode2D.Impulse);
+		}
 	}
 
 	private void RotateTurret()
@@ -210,8 +219,14 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		else if (BurstCount > 1)
 		{
 			lines.Add(
-				$"    {BurstCount} shots per burst, "
+				$"    {BurstCount} shots per burst, {BurstInterval}s between shots in burst"
 			);
+		}
+
+		if (UseRecoil)
+		{
+			string shotOrCluster = ClusterCount > 1 ? "cluster" : "shot";
+			lines.Add($"    Recoil {ClusterRecoil}kNs per {shotOrCluster}");
 		}
 
 		switch (SpreadProfile)
