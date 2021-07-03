@@ -128,7 +128,8 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				_reloadProgress -= ReloadTime;
 
 				FireCluster();
-				for (int i = 0; i < BurstCount; i++)
+
+				for (int i = 1; i < BurstCount; i++)
 				{
 					Invoke(nameof(FireCluster), BurstInterval * i);
 				}
