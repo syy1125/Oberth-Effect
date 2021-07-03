@@ -1,4 +1,5 @@
 ﻿using System;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
@@ -117,8 +118,8 @@ public class VehicleInfoDisplay : MonoBehaviour
 
 		string controlModeStatus = ThrusterControl.ControlMode switch
 		{
-			ControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
-			ControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
+			VehicleControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
+			VehicleControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
 			_ => throw new ArgumentOutOfRangeException()
 		};
 		ControlModeDisplay.text = $"Control Mode {controlModeStatus}";

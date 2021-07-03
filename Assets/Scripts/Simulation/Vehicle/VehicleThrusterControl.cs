@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
-public enum ControlMode
-{
-	Mouse,
-	Cruise
-}
-
-
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropulsionBlockRegistry
+public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropulsionBlockRegistry,
+	IPunInstantiateMagicCallback
 {
 	#region Unity Fields
 
@@ -41,7 +36,7 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	public bool InertiaDampenerActive { get; private set; }
 	public UnityEvent InertiaDampenerChanged;
 
-	public ControlMode ControlMode { get; private set; }
+	public VehicleControlMode ControlMode { get; private set; }
 	public UnityEvent ControlModeChanged;
 
 	#endregion
@@ -58,6 +53,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	public float StrafeCommand { get; private set; }
 	public float RotateCommand { get; private set; }
 
+	#region Unity Lifecycle
+
 	private void Awake()
 	{
 		_propulsionBlocks = new List<IPropulsionBlock>();
@@ -65,9 +62,6 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_angleHistory = new LinkedList<float>();
-
-		var photonView = GetComponent<PhotonView>();
-		// Vehicle is mine if we're in singleplayer or if the photon view is mine.
 	}
 
 	private void OnEnable()
@@ -85,8 +79,6 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	{
 		InertiaDampenerActive = false;
 		InertiaDampenerChanged.Invoke();
-		ControlMode = ControlMode.Mouse;
-		ControlModeChanged.Invoke();
 	}
 
 	private void OnDisable()
@@ -99,6 +91,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		CycleControlModeAction.action.performed -= CycleControlMode;
 		CycleControlModeAction.action.Disable();
 	}
+
+	#endregion
 
 	#region Propulsion Registry
 
@@ -126,10 +120,10 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		{
 			switch (ControlMode)
 			{
-				case ControlMode.Mouse:
+				case VehicleControlMode.Mouse:
 					UpdateMouseModeCommands();
 					break;
-				case ControlMode.Cruise:
+				case VehicleControlMode.Cruise:
 					UpdateCruiseModeCommands();
 					break;
 				default:
@@ -235,6 +229,15 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 
 	#region PUN
 
+	public void OnPhotonInstantiate(PhotonMessageInfo info)
+	{
+		VehicleBlueprint blueprint =
+			JsonUtility.FromJson<VehicleBlueprint>((string) info.photonView.InstantiationData[0]);
+
+		ControlMode = blueprint.DefaultControlMode;
+		ControlModeChanged.Invoke();
+	}
+
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -265,8 +268,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	{
 		ControlMode = ControlMode switch
 		{
-			ControlMode.Mouse => ControlMode.Cruise,
-			ControlMode.Cruise => ControlMode.Mouse,
+			VehicleControlMode.Mouse => VehicleControlMode.Cruise,
+			VehicleControlMode.Cruise => VehicleControlMode.Mouse,
 			_ => throw new ArgumentOutOfRangeException()
 		};
 

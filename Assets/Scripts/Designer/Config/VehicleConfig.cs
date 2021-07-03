@@ -1,5 +1,8 @@
-﻿using Syy1125.OberthEffect.Common;
+﻿using System;
+using System.Linq;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +13,8 @@ public class VehicleConfig : MonoBehaviour
 {
 	[Header("References")]
 	public VehicleDesigner Designer;
+
+	public SwitchSelect ControlModeSelect;
 
 	public Toggle CustomColorToggle;
 	public ColorPicker PrimaryColorPicker;
@@ -29,14 +34,21 @@ public class VehicleConfig : MonoBehaviour
 
 	private void OnEnable()
 	{
+		ControlModeSelect.OnValueChanged.AddListener(SetControlMode);
 		CustomColorToggle.onValueChanged.AddListener(SetUseCustomColor);
 		PrimaryColorPicker.OnChange.AddListener(SetPrimaryColor);
 		SecondaryColorPicker.OnChange.AddListener(SetSecondaryColor);
 		TertiaryColorPicker.OnChange.AddListener(SetTertiaryColor);
 	}
 
+	private void Start()
+	{
+		ControlModeSelect.SetOptions(Enum.GetNames(typeof(VehicleControlMode)));
+	}
+
 	private void OnDisable()
 	{
+		ControlModeSelect.OnValueChanged.RemoveListener(SetControlMode);
 		CustomColorToggle.onValueChanged.RemoveListener(SetUseCustomColor);
 		PrimaryColorPicker.OnChange.RemoveListener(SetPrimaryColor);
 		SecondaryColorPicker.OnChange.RemoveListener(SetSecondaryColor);
@@ -47,6 +59,8 @@ public class VehicleConfig : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
+		ControlModeSelect.Value = (int) Blueprint.DefaultControlMode;
+
 		ColorScheme colorScheme = ColorScheme.FromBlueprint(Designer.Blueprint);
 
 		CustomColorToggle.isOn = Blueprint.UseCustomColors;
@@ -59,6 +73,11 @@ public class VehicleConfig : MonoBehaviour
 	}
 
 	#region Event Listeners
+
+	private void SetControlMode(int modeIndex)
+	{
+		Blueprint.DefaultControlMode = (VehicleControlMode) modeIndex;
+	}
 
 	private void SetUseCustomColor(bool useCustomColors)
 	{

@@ -23,6 +23,8 @@ public class VehicleBlueprint
 	public bool UseCustomColors;
 	public ColorScheme.ColorScheme ColorScheme;
 
+	public VehicleControlMode DefaultControlMode;
+
 	public VehicleBlueprint()
 	{
 		Name = "New Vehicle";
