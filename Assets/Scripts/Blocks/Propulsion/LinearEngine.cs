@@ -91,6 +91,11 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 		}
 	}
 
+	public override float GetMaxPropulsionForce(CardinalDirection localDirection)
+	{
+		return localDirection == CardinalDirection.Down ? MaxForce : 0f;
+	}
+
 	public string GetTooltip()
 	{
 		return string.Join(

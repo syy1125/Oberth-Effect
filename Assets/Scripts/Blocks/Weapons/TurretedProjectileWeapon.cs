@@ -203,7 +203,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			"Turreted Projectile Weapon",
 			"  Projectile",
 			$"    <color=\"red\">{ProjectileConfig.Damage:F0} damage</color>, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:F0} AP</color>",
-			$"    Speed {ProjectileSpeed * GamePhysicsConstants.METERS_PER_UNIT:F1} m/s",
+			$"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:F1} m/s",
 			"  Turret",
 			$"    Rotation speed {RotateSpeed}°/s",
 		};

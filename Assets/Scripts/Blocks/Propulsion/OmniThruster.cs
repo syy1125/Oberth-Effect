@@ -99,5 +99,10 @@ public class OmniThruster : AbstractPropulsionBase
 			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, Mathf.Abs(overallResponse.y)));
 		}
 	}
+
+	public override float GetMaxPropulsionForce(CardinalDirection localDirection)
+	{
+		return MaxForce;
+	}
 }
 }

@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Syy1125.OberthEffect.Designer
 {
@@ -137,6 +140,11 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Remove(instance);
 
 		UpdateConnectedBlocks();
+	}
+
+	public GameObject GetBlockObject(VehicleBlueprint.BlockInstance block)
+	{
+		return _blockToObject[block];
 	}
 
 	public GameObject GetBlockObjectAt(Vector2Int position)

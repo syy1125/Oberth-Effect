@@ -74,5 +74,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 
 		rotateResponse = Mathf.Abs(rotateResponse) > 1e-5 ? Mathf.Sign(rotateResponse) : 0f;
 	}
+
+	public abstract float GetMaxPropulsionForce(CardinalDirection localDirection);
 }
 }
