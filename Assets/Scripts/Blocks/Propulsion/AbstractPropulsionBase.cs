@@ -13,8 +13,8 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	public ResourceEntry[] MaxResourceUse;
 
 	protected Rigidbody2D Body;
+	protected CenterOfMassContext MassContext;
 	protected bool IsMine;
-
 
 	protected Dictionary<VehicleResource, float> ResourceRequests;
 	protected float Satisfaction;
@@ -22,6 +22,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	protected virtual void Awake()
 	{
 		Body = GetComponentInParent<Rigidbody2D>();
+		MassContext = GetComponentInParent<CenterOfMassContext>();
 
 		ResourceRequests = new Dictionary<VehicleResource, float>();
 	}
@@ -66,7 +67,8 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	)
 	{
 		localUp.Normalize();
-		Vector3 localPosition = Body.transform.InverseTransformPoint(transform.position) - (Vector3) Body.centerOfMass;
+		Vector3 localPosition = MassContext.transform.InverseTransformPoint(transform.position)
+		                        - (Vector3) MassContext.GetCenterOfMass();
 
 		forwardBackResponse = localUp.y;
 		strafeResponse = localUp.x;
