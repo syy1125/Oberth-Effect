@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
@@ -44,10 +46,12 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 	public void LoadVehicle(VehicleBlueprint blueprint)
 	{
+		var blocks = new List<Tuple<VehicleBlueprint.BlockInstance, GameObject>>();
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
+		// Instantiate blocks
 		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
 		{
 			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(block.BlockID);
@@ -82,8 +86,11 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 					rootLocationInt + RotationUtils.RotatePoint(localPosition, block.Rotation), blockObject
 				);
 			}
+
+			blocks.Add(new Tuple<VehicleBlueprint.BlockInstance, GameObject>(block, blockObject));
 		}
 
+		// Physics computation
 		if (totalMass > Mathf.Epsilon)
 		{
 			centerOfMass /= totalMass;
@@ -101,6 +108,33 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		_body.inertia = momentOfInertia;
 
 		transform.position -= (Vector3) centerOfMass;
+
+		// Load config
+		foreach (Tuple<VehicleBlueprint.BlockInstance, GameObject> tuple in blocks)
+		{
+			JObject config = null;
+
+			try
+			{
+				config = JObject.Parse(tuple.Item1.Config);
+			}
+			catch (JsonReaderException)
+			{}
+
+			foreach (MonoBehaviour behaviour in tuple.Item2.GetComponents<MonoBehaviour>())
+			{
+				if (behaviour is IConfigComponent component)
+				{
+					component.InitDefaultConfig();
+					string configKey = ConfigUtils.GetConfigKey(component.GetType());
+
+					if (config != null && config.ContainsKey(configKey))
+					{
+						component.ImportConfig((JObject) config[configKey]);
+					}
+				}
+			}
+		}
 
 		_loaded = true;
 
