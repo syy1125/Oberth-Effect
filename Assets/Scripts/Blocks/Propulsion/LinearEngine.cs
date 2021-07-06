@@ -1,20 +1,27 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
+public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigComponent
 {
+	public const string CONFIG_KEY = "LinearEngine";
+
 	public float MaxThrottleRate;
 
 	private ParticleSystem _particles;
 
-	private float _forwardBackResponse;
-	private float _strafeResponse;
-	private float _rotateResponse;
-	private float _response;
+	[HideInInspector]
+	public float ForwardBackResponse;
+	[HideInInspector]
+	public float StrafeResponse;
+	[HideInInspector]
+	public float RotateResponse;
+
+	private float _targetThrustStrength;
 
 	private float _maxParticleSpeed;
 
@@ -30,34 +37,60 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 	{
 		base.Start();
 
-		if (_particles != null)
+		if (Body != null && _particles != null)
 		{
+			// We are in simulation and we have particles
 			_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-
-			if (Body != null) // Then we are in simulation
-			{
-				_particles.Play();
-			}
-		}
-
-		if (Body != null)
-		{
-			Vector3 localUp = Body.transform.InverseTransformDirection(transform.up);
-			CalculateResponse(localUp, out _forwardBackResponse, out _strafeResponse, out _rotateResponse);
+			_particles.Play();
 		}
 	}
 
+	public JObject ExportConfig()
+	{
+		return new JObject
+		{
+			{ "ForwardBackResponse", new JValue(ForwardBackResponse) },
+			{ "StrafeResponse", new JValue(StrafeResponse) },
+			{ "RotateResponse", new JValue(RotateResponse) }
+		};
+	}
+
+	public void InitDefaultConfig()
+	{
+		Vector3 localUp = MassContext.transform.InverseTransformDirection(transform.up);
+		// Engines ignore rotation commands
+		CalculateResponse(localUp, out ForwardBackResponse, out StrafeResponse, out float _);
+		RotateResponse = 0f;
+	}
+
+	public void ImportConfig(JObject config)
+	{
+		if (config.ContainsKey("ForwardBackResponse"))
+		{
+			ForwardBackResponse = config["ForwardBackResponse"].ToObject<float>();
+		}
+
+		if (config.ContainsKey("StrafeResponse"))
+		{
+			StrafeResponse = config["StrafeResponse"].ToObject<float>();
+		}
+
+		if (config.ContainsKey("RotateResponse"))
+		{
+			RotateResponse = config["RotateResponse"].ToObject<float>();
+		}
+	}
 
 	public override void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
 	{
-		float rawResponse = _forwardBackResponse * forwardBackCommand
-		                    + _strafeResponse * strafeCommand
-		                    + _rotateResponse * rotateCommand;
-		_response = Mathf.Clamp01(
+		float rawResponse = ForwardBackResponse * forwardBackCommand
+		                    + StrafeResponse * strafeCommand
+		                    + RotateResponse * rotateCommand;
+		_targetThrustStrength = Mathf.Clamp01(
 			Mathf.Clamp(
 				rawResponse,
-				_response - MaxThrottleRate * Time.fixedDeltaTime,
-				_response + MaxThrottleRate * Time.fixedDeltaTime
+				_targetThrustStrength - MaxThrottleRate * Time.fixedDeltaTime,
+				_targetThrustStrength + MaxThrottleRate * Time.fixedDeltaTime
 			)
 		);
 	}
@@ -68,7 +101,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 
 		foreach (ResourceEntry entry in MaxResourceUse)
 		{
-			ResourceRequests.Add(entry.Resource, entry.Amount * _response);
+			ResourceRequests.Add(entry.Resource, entry.Amount * _targetThrustStrength);
 		}
 
 		return ResourceRequests;
@@ -76,7 +109,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider
 
 	private void FixedUpdate()
 	{
-		float overallResponse = _response * Satisfaction;
+		float overallResponse = _targetThrustStrength * Satisfaction;
 
 		if (Body != null && IsMine)
 		{
