@@ -31,7 +31,7 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("Components")]
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
-	public VehicleConfig Config;
+	public DesignerConfig Config;
 	public DesignerCursor Cursor;
 
 	[Header("Input Actions")]

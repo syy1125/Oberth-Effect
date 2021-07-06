@@ -9,13 +9,13 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Config
 {
-public class VehicleConfig : MonoBehaviour
+public class DesignerConfig : MonoBehaviour
 {
 	[Header("References")]
 	public VehicleDesigner Designer;
 
+	[Header("Vehicle Config")]
 	public SwitchSelect ControlModeSelect;
-
 	public Toggle CustomColorToggle;
 	public ColorPicker PrimaryColorPicker;
 	public ColorPicker SecondaryColorPicker;
@@ -72,7 +72,7 @@ public class VehicleConfig : MonoBehaviour
 		_context.SetColorScheme(colorScheme);
 	}
 
-	#region Event Listeners
+	#region Vehicle Config Event Listeners
 
 	private void SetControlMode(int modeIndex)
 	{
