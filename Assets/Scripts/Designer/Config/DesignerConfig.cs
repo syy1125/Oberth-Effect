@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.UserInterface;
@@ -56,6 +58,37 @@ public class DesignerConfig : MonoBehaviour
 	}
 
 	#endregion
+
+	public static void SyncConfig(GameObject blockObject, VehicleBlueprint.BlockInstance block)
+	{
+		JObject config = new JObject();
+
+		try
+		{
+			config = JObject.Parse(block.Config);
+		}
+		catch (JsonReaderException)
+		{}
+
+		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
+		{
+			if (behaviour is IConfigComponent component)
+			{
+				component.InitDefaultConfig();
+
+				string configKey = ConfigUtils.GetConfigKey(component.GetType());
+
+				if (config.ContainsKey(configKey))
+				{
+					component.ImportConfig((JObject) config[configKey]);
+				}
+
+				config[configKey] = component.ExportConfig();
+			}
+		}
+
+		block.Config = config.ToString(Formatting.None);
+	}
 
 	public void ReloadVehicle()
 	{

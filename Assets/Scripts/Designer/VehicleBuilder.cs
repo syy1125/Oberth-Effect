@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
@@ -52,10 +53,7 @@ public class VehicleBuilder : MonoBehaviour
 		go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
 		go.layer = gameObject.layer;
 
-		foreach (var behaviour in go.GetComponents<MonoBehaviour>())
-		{
-			(behaviour as IConfigComponent)?.InitDefaultConfig();
-		}
+		DesignerConfig.SyncConfig(go, instance);
 
 		_blockToObject.Add(instance, go);
 	}

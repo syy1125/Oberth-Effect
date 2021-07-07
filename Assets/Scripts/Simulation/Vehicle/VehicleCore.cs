@@ -112,28 +112,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		// Load config
 		foreach (Tuple<VehicleBlueprint.BlockInstance, GameObject> tuple in blocks)
 		{
-			JObject config = null;
-
-			try
-			{
-				config = JObject.Parse(tuple.Item1.Config);
-			}
-			catch (JsonReaderException)
-			{}
-
-			foreach (MonoBehaviour behaviour in tuple.Item2.GetComponents<MonoBehaviour>())
-			{
-				if (behaviour is IConfigComponent component)
-				{
-					component.InitDefaultConfig();
-					string configKey = ConfigUtils.GetConfigKey(component.GetType());
-
-					if (config != null && config.ContainsKey(configKey))
-					{
-						component.ImportConfig((JObject) config[configKey]);
-					}
-				}
-			}
+			LoadConfig(tuple.Item1, tuple.Item2);
 		}
 
 		_loaded = true;
@@ -142,6 +121,32 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		{
 			_loadEvent.Invoke();
 			_loadEvent.RemoveAllListeners();
+		}
+	}
+
+	private static void LoadConfig(VehicleBlueprint.BlockInstance block, GameObject blockObject)
+	{
+		JObject config = new JObject();
+
+		try
+		{
+			config = JObject.Parse(block.Config);
+		}
+		catch (JsonReaderException)
+		{}
+
+		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
+		{
+			if (behaviour is IConfigComponent component)
+			{
+				component.InitDefaultConfig();
+				string configKey = ConfigUtils.GetConfigKey(component.GetType());
+
+				if (config.ContainsKey(configKey))
+				{
+					component.ImportConfig((JObject) config[configKey]);
+				}
+			}
 		}
 	}
 
