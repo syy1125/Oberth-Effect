@@ -7,7 +7,6 @@ using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 namespace Syy1125.OberthEffect.Designer
 {
@@ -74,9 +73,8 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int? _clickLocation;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
-	private Vector2Int _hoverLocation;
+	public Vector2Int HoverLocation { get; private set; }
 	private Vector2Int? _tooltipLocation;
-	private Vector2Int? _selectedLocation;
 
 	private HashSet<Vector2Int> _conflicts;
 	private HashSet<Vector2Int> _disconnections;
@@ -99,8 +97,6 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnEnable()
 	{
-		Palette.OnIndexChanged += HandleIndexChange;
-
 		EnableActions();
 		RotateAction.action.performed += HandleRotate;
 
@@ -119,8 +115,6 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnDisable()
 	{
-		Palette.OnIndexChanged -= HandleIndexChange;
-
 		RotateAction.action.performed -= HandleRotate;
 		DisableActions();
 
@@ -171,7 +165,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (
 			Palette.SelectedIndex != _prevIndex
-			|| _hoverLocation != _prevHoverLocation
+			|| HoverLocation != _prevHoverLocation
 			|| AreaMask.Hover != _prevHover
 			|| Dragging != _prevDragging
 		)
@@ -202,7 +196,7 @@ public class VehicleDesigner : MonoBehaviour
 		_prevDragging = Dragging;
 		_prevHover = AreaMask.Hover;
 		_prevIndex = Palette.SelectedIndex;
-		_prevHoverLocation = _hoverLocation;
+		_prevHoverLocation = HoverLocation;
 		_prevTooltipLocation = _tooltipLocation;
 		_prevClick = _clickLocation;
 	}
@@ -212,7 +206,7 @@ public class VehicleDesigner : MonoBehaviour
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 		Vector3 localPosition = transform.InverseTransformPoint(worldPosition);
-		_hoverLocation = new Vector2Int(Mathf.RoundToInt(localPosition.x), Mathf.RoundToInt(localPosition.y));
+		HoverLocation = new Vector2Int(Mathf.RoundToInt(localPosition.x), Mathf.RoundToInt(localPosition.y));
 	}
 
 	private void UpdateDragState()
@@ -254,7 +248,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (click)
 		{
-			_clickLocation = _hoverLocation;
+			_clickLocation = HoverLocation;
 		}
 		else
 		{
@@ -292,7 +286,7 @@ public class VehicleDesigner : MonoBehaviour
 				}
 			}
 
-			_preview.transform.localPosition = new Vector3(_hoverLocation.x, _hoverLocation.y);
+			_preview.transform.localPosition = new Vector3(HoverLocation.x, HoverLocation.y);
 
 			if (AreaMask.Hover != _prevHover || Dragging != _prevDragging)
 			{
@@ -327,7 +321,7 @@ public class VehicleDesigner : MonoBehaviour
 
 			try
 			{
-				Builder.AddBlock(block, _hoverLocation, _rotation);
+				Builder.AddBlock(block, HoverLocation, _rotation);
 				UpdateDisconnections();
 			}
 			catch (DuplicateBlockError error)
@@ -339,13 +333,10 @@ public class VehicleDesigner : MonoBehaviour
 		{
 			switch (Palette.SelectedIndex)
 			{
-				case BlockPalette.CURSOR_INDEX:
-					_selectedLocation = _hoverLocation;
-					break;
 				case BlockPalette.ERASE_INDEX:
 					try
 					{
-						Builder.RemoveBlock(_hoverLocation);
+						Builder.RemoveBlock(HoverLocation);
 						UpdateDisconnections();
 					}
 					catch (EmptyBlockError)
@@ -367,7 +358,7 @@ public class VehicleDesigner : MonoBehaviour
 		GameObject block = Palette.GetSelectedBlock();
 		_conflicts = block == null
 			? new HashSet<Vector2Int>()
-			: new HashSet<Vector2Int>(Builder.GetConflicts(block, _hoverLocation, _rotation));
+			: new HashSet<Vector2Int>(Builder.GetConflicts(block, HoverLocation, _rotation));
 		_warningChanged = true;
 	}
 
@@ -375,7 +366,7 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (AreaMask.Hover && Palette.SelectedIndex == BlockPalette.CURSOR_INDEX && !Dragging)
 		{
-			_tooltipLocation = _hoverLocation;
+			_tooltipLocation = HoverLocation;
 		}
 		else
 		{
@@ -467,14 +458,6 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector3 GetLocalMousePosition()
 	{
 		return transform.InverseTransformPoint(_mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
-	}
-
-	private void HandleIndexChange()
-	{
-		if (Palette.SelectedIndex != BlockPalette.CURSOR_INDEX)
-		{
-			_selectedLocation = null;
-		}
 	}
 
 	private void ShowBlockTooltip()
