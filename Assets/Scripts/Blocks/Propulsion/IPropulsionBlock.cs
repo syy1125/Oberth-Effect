@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Common;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
@@ -8,7 +9,7 @@ public interface IPropulsionBlockRegistry : IBlockRegistry<IPropulsionBlock>, IE
 
 public interface IPropulsionBlock
 {
-	void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand);
+	void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
 }

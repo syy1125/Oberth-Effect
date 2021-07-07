@@ -49,9 +49,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	private LinkedList<float> _angleHistory;
 	private float _integral;
 
-	public float ForwardBackCommand { get; private set; }
-	public float StrafeCommand { get; private set; }
-	public float RotateCommand { get; private set; }
+	private Vector2 _translateCommand;
+	private float _rotateCommand;
 
 	#region Unity Lifecycle
 
@@ -146,8 +145,7 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
-		ForwardBackCommand = move.y;
-		StrafeCommand = move.x + strafe;
+		_translateCommand = move + new Vector2(strafe, 0f);
 
 		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
@@ -166,15 +164,15 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 
 		float timeScaledIntegral = _integral * Time.fixedDeltaTime;
 
-		RotateCommand = RotateResponse
-		                * (
-			                angle
-			                + derivative * RotateDerivativeTime
-			                + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
-				                ? 0f
-				                : timeScaledIntegral / RotateIntegralTime)
-		                )
-		                * Mathf.Deg2Rad;
+		_rotateCommand = RotateResponse
+		                 * (
+			                 angle
+			                 + derivative * RotateDerivativeTime
+			                 + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
+				                 ? 0f
+				                 : timeScaledIntegral / RotateIntegralTime)
+		                 )
+		                 * Mathf.Deg2Rad;
 	}
 
 	private void UpdateCruiseModeCommands()
@@ -182,16 +180,15 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
-		ForwardBackCommand = move.y;
-		StrafeCommand = strafe;
+		_translateCommand = new Vector2(strafe, move.y);
 
 		if (Mathf.Abs(move.x) > Mathf.Epsilon)
 		{
-			RotateCommand = move.x;
+			_rotateCommand = move.x;
 		}
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
-			RotateCommand = _body.angularVelocity;
+			_rotateCommand = _body.angularVelocity;
 		}
 	}
 
@@ -199,29 +196,29 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	{
 		Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
 
-		if (Mathf.Approximately(ForwardBackCommand, 0))
+		if (Mathf.Approximately(_translateCommand.x, 0))
 		{
-			ForwardBackCommand = -localVelocity.y * InertiaDampenerStrength;
+			_translateCommand.x = -localVelocity.x * InertiaDampenerStrength;
 		}
 
-		if (Mathf.Approximately(StrafeCommand, 0))
+		if (Mathf.Approximately(_translateCommand.y, 0))
 		{
-			StrafeCommand = -localVelocity.x * InertiaDampenerStrength;
+			_translateCommand.y = -localVelocity.y * InertiaDampenerStrength;
 		}
 	}
 
 	private void ClampCommands()
 	{
-		ForwardBackCommand = Mathf.Clamp(ForwardBackCommand, -1f, 1f);
-		StrafeCommand = Mathf.Clamp(StrafeCommand, -1f, 1f);
-		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
+		_translateCommand.x = Mathf.Clamp(_translateCommand.x, -1f, 1f);
+		_translateCommand.y = Mathf.Clamp(_translateCommand.y, -1f, 1f);
+		_rotateCommand = Mathf.Clamp(_rotateCommand, -1f, 1f);
 	}
 
 	private void SendCommands()
 	{
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			block.SetPropulsionCommands(ForwardBackCommand, StrafeCommand, RotateCommand);
+			block.SetPropulsionCommands(_translateCommand, _rotateCommand);
 		}
 	}
 
@@ -242,15 +239,13 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	{
 		if (stream.IsWriting)
 		{
-			stream.SendNext(ForwardBackCommand);
-			stream.SendNext(StrafeCommand);
-			stream.SendNext(RotateCommand);
+			stream.SendNext(_translateCommand);
+			stream.SendNext(_rotateCommand);
 		}
 		else
 		{
-			ForwardBackCommand = (float) stream.ReceiveNext();
-			StrafeCommand = (float) stream.ReceiveNext();
-			RotateCommand = (float) stream.ReceiveNext();
+			_translateCommand = (Vector2) stream.ReceiveNext();
+			_rotateCommand = (float) stream.ReceiveNext();
 		}
 	}
 

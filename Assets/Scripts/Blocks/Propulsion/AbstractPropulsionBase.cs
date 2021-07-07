@@ -53,7 +53,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		);
 	}
 
-	public abstract void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand);
+	public abstract void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
 	public abstract IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest();
 

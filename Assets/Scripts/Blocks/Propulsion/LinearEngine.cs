@@ -12,16 +12,17 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	public float MaxThrottleRate;
 
+	public bool RespondToTranslation;
+	public bool RespondToRotation;
+
 	private ParticleSystem _particles;
 
-	[HideInInspector]
-	public float ForwardBackResponse;
-	[HideInInspector]
-	public float StrafeResponse;
-	[HideInInspector]
-	public float RotateResponse;
+	private float _forwardBackResponse;
+	private float _strafeResponse;
+	private float _rotateResponse;
 
 	private float _targetThrustStrength;
+	private float _trueThrustStrength;
 
 	private float _maxParticleSpeed;
 
@@ -37,11 +38,18 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		base.Start();
 
-		if (Body != null && _particles != null)
+		if (Body != null)
 		{
-			// We are in simulation and we have particles
-			_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-			_particles.Play();
+			// We are in simulation
+			Vector3 localUp = MassContext.transform.InverseTransformDirection(transform.up);
+			CalculateResponse(localUp, out _forwardBackResponse, out _strafeResponse, out _rotateResponse);
+
+			if (_particles != null)
+			{
+				// We have particles
+				_maxParticleSpeed = _particles.main.startSpeedMultiplier;
+				_particles.Play();
+			}
 		}
 	}
 
@@ -49,48 +57,48 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		return new JObject
 		{
-			{ "ForwardBackResponse", new JValue(ForwardBackResponse) },
-			{ "StrafeResponse", new JValue(StrafeResponse) },
-			{ "RotateResponse", new JValue(RotateResponse) }
+			{ "RespondToTranslation", new JValue(RespondToTranslation) },
+			{ "RespondToRotation", new JValue(RespondToRotation) }
 		};
 	}
 
 	public void InitDefaultConfig()
 	{
-		Vector3 localUp = MassContext.transform.InverseTransformDirection(transform.up);
-		// Engines ignore rotation commands
-		CalculateResponse(localUp, out ForwardBackResponse, out StrafeResponse, out float _);
-		RotateResponse = 0f;
+		RespondToTranslation = true;
+		RespondToRotation = false;
 	}
 
 	public void ImportConfig(JObject config)
 	{
-		if (config.ContainsKey("ForwardBackResponse"))
+		if (config.ContainsKey("RespondToTranslation"))
 		{
-			ForwardBackResponse = config["ForwardBackResponse"].ToObject<float>();
+			RespondToTranslation = config["RespondToTranslation"].Value<bool>();
 		}
 
-		if (config.ContainsKey("StrafeResponse"))
+		if (config.ContainsKey("RespondToRotation"))
 		{
-			StrafeResponse = config["StrafeResponse"].ToObject<float>();
-		}
-
-		if (config.ContainsKey("RotateResponse"))
-		{
-			RotateResponse = config["RotateResponse"].ToObject<float>();
+			RespondToRotation = config["RespondToRotation"].Value<bool>();
 		}
 	}
 
-	public override void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
+	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
-		float rawResponse = ForwardBackResponse * forwardBackCommand
-		                    + StrafeResponse * strafeCommand
-		                    + RotateResponse * rotateCommand;
+		float rawResponse = 0f;
+		if (RespondToTranslation)
+		{
+			rawResponse += _forwardBackResponse * translateCommand.y + _strafeResponse * translateCommand.x;
+		}
+
+		if (RespondToRotation)
+		{
+			rawResponse += _rotateResponse * rotateCommand;
+		}
+
 		_targetThrustStrength = Mathf.Clamp01(
 			Mathf.Clamp(
 				rawResponse,
-				_targetThrustStrength - MaxThrottleRate * Time.fixedDeltaTime,
-				_targetThrustStrength + MaxThrottleRate * Time.fixedDeltaTime
+				_trueThrustStrength - MaxThrottleRate * Time.fixedDeltaTime,
+				_trueThrustStrength + MaxThrottleRate * Time.fixedDeltaTime
 			)
 		);
 	}
@@ -109,18 +117,18 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	private void FixedUpdate()
 	{
-		float overallResponse = _targetThrustStrength * Satisfaction;
+		_trueThrustStrength = _targetThrustStrength * Satisfaction;
 
 		if (Body != null && IsMine)
 		{
-			Body.AddForceAtPosition(transform.up * (MaxForce * overallResponse), transform.position);
+			Body.AddForceAtPosition(transform.up * (MaxForce * _trueThrustStrength), transform.position);
 		}
 
 		if (_particles != null)
 		{
 			ParticleSystem.MainModule main = _particles.main;
-			main.startSpeedMultiplier = overallResponse * _maxParticleSpeed;
-			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, overallResponse));
+			main.startSpeedMultiplier = _trueThrustStrength * _maxParticleSpeed;
+			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, _trueThrustStrength));
 		}
 	}
 

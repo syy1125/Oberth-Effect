@@ -51,10 +51,10 @@ public class OmniThruster : AbstractPropulsionBase
 		}
 	}
 
-	public override void SetPropulsionCommands(float forwardBackCommand, float strafeCommand, float rotateCommand)
+	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
-		Vector2 rawResponse = _forwardBackResponse * forwardBackCommand
-		                      + _strafeResponse * strafeCommand
+		Vector2 rawResponse = _forwardBackResponse * translateCommand.y
+		                      + _strafeResponse * translateCommand.x
 		                      + _rotateResponse * rotateCommand;
 		_response = new Vector2(
 			Mathf.Clamp(rawResponse.x, -1f, 1f),
