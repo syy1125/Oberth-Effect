@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Syy1125.OberthEffect.Utils
 {
@@ -30,6 +32,22 @@ public static class ConfigUtils
 		}
 
 		return value;
+	}
+
+	public static JObject ParseConfig(string blockConfig)
+	{
+		JObject config = new JObject();
+
+		try
+		{
+			config = JObject.Parse(blockConfig);
+		}
+		catch (JsonReaderException)
+		{}
+		catch (ArgumentNullException)
+		{}
+
+		return config;
 	}
 }
 }

@@ -61,14 +61,7 @@ public class DesignerConfig : MonoBehaviour
 
 	public static void SyncConfig(GameObject blockObject, VehicleBlueprint.BlockInstance block)
 	{
-		JObject config = new JObject();
-
-		try
-		{
-			config = JObject.Parse(block.Config);
-		}
-		catch (JsonReaderException)
-		{}
+		JObject config = ConfigUtils.ParseConfig(block.Config);
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{

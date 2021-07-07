@@ -126,14 +126,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 	private static void LoadConfig(VehicleBlueprint.BlockInstance block, GameObject blockObject)
 	{
-		JObject config = new JObject();
-
-		try
-		{
-			config = JObject.Parse(block.Config);
-		}
-		catch (JsonReaderException)
-		{}
+		JObject config = ConfigUtils.ParseConfig(block.Config);
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
