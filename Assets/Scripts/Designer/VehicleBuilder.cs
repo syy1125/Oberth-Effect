@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Syy1125.OberthEffect.Designer
 {
@@ -50,9 +47,15 @@ public class VehicleBuilder : MonoBehaviour
 	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
 	{
 		GameObject go = Instantiate(blockPrefab, transform);
+
 		go.transform.localPosition = new Vector3(instance.X, instance.Y);
 		go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
 		go.layer = gameObject.layer;
+
+		foreach (var behaviour in go.GetComponents<MonoBehaviour>())
+		{
+			(behaviour as IConfigComponent)?.InitDefaultConfig();
+		}
 
 		_blockToObject.Add(instance, go);
 	}
@@ -154,7 +157,7 @@ public class VehicleBuilder : MonoBehaviour
 			: null;
 	}
 
-	private IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
+	private static IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
 		GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);
 		foreach (Vector2Int attachmentPoint in blockPrefab.GetComponent<BlockInfo>().AttachmentPoints)
