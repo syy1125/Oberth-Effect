@@ -58,7 +58,7 @@ public class BlockInfo : MonoBehaviour, ITooltipProvider
 		return string.Join(
 			"\n",
 			FullName,
-			$"  {Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.##} kg, {Bounds.size.x * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m × {Bounds.size.y * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m",
+			$"  {Mass * PhysicsConstants.KG_PER_UNIT_MASS:#,0.##}kg, {Bounds.size.x * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m × {Bounds.size.y * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m",
 			$"  <color=\"red\">{MaxHealth} health</color>, <color=\"lightblue\">{ArmorValue} armor</color>"
 		).Trim();
 	}

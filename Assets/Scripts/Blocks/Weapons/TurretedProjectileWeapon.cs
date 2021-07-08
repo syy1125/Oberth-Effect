@@ -226,7 +226,7 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		if (UseRecoil)
 		{
 			string shotOrCluster = ClusterCount > 1 ? "cluster" : "shot";
-			lines.Add($"    Recoil {ClusterRecoil}kNs per {shotOrCluster}");
+			lines.Add($"    Recoil {ClusterRecoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN per {shotOrCluster}");
 		}
 
 		switch (SpreadProfile)

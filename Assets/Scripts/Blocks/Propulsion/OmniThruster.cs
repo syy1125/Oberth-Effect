@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class OmniThruster : AbstractPropulsionBase
+public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 {
 	public ParticleSystem HorizontalParticles;
 	public ParticleSystem VerticalParticles;
@@ -103,6 +103,23 @@ public class OmniThruster : AbstractPropulsionBase
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)
 	{
 		return MaxForce;
+	}
+
+	public string GetTooltip()
+	{
+		return string.Join(
+			"\n",
+			"Maneuvering thruster",
+			"  Omni-directional",
+			$"  Max thrust per direction {MaxForce * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN",
+			"  Max resource usage per direction "
+			+ string.Join(
+				" ",
+				MaxResourceUse.Select(
+					entry => $"{entry.RichTextColoredEntry()}/s"
+				)
+			)
+		);
 	}
 }
 }

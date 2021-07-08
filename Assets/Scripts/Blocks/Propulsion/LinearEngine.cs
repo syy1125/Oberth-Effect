@@ -142,7 +142,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		return string.Join(
 			"\n",
 			"Engine",
-			$"  Max thrust {MaxForce} kN",
+			$"  Max thrust {MaxForce * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN",
 			"  Max resource usage "
 			+ string.Join(
 				" ",
