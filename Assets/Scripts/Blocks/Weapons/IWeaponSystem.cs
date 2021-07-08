@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,5 +19,6 @@ public interface IWeaponSystem
 	void SetFiring(bool firing);
 
 	Dictionary<DamageType, float> GetDamageRatePotential();
+	Dictionary<VehicleResource, float> GetMaxResourceUseRate();
 }
 }

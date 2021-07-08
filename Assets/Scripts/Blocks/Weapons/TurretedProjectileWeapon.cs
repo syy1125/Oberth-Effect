@@ -267,5 +267,10 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			{ ProjectileConfig.DamageType, ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime }
 		};
 	}
+
+	public Dictionary<VehicleResource, float> GetMaxResourceUseRate()
+	{
+		return _resourceConsumption;
+	}
 }
 }

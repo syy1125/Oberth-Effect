@@ -46,5 +46,10 @@ public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock
 			       GenerationRate.Select(entry => $"  {entry.RichTextColoredEntry()}/s")
 		       );
 	}
+
+	public Dictionary<VehicleResource, float> GetMaxGenerationRate()
+	{
+		return _generationRate;
+	}
 }
 }
