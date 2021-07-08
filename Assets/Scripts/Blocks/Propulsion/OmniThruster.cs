@@ -112,7 +112,7 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 			"Maneuvering thruster",
 			"  Omni-directional",
 			$"  Max thrust per direction {MaxForce * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN",
-			"  Max resource usage per direction "
+			"  Max resource usage "
 			+ string.Join(
 				" ",
 				MaxResourceUse.Select(
