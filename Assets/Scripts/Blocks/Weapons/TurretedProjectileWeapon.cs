@@ -167,7 +167,9 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 			var projectileBody = projectile.GetComponent<Rigidbody2D>();
 			projectileBody.velocity =
-				FiringPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f) * ProjectileSpeed;
+				_body.GetPointVelocity(FiringPort.position)
+				+ (Vector2) FiringPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f)
+				* ProjectileSpeed;
 		}
 
 		if (UseRecoil)
