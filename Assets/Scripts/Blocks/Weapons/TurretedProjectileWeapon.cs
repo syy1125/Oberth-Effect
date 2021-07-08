@@ -203,7 +203,8 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			"Turreted Projectile Weapon",
 			"  Projectile",
 			$"    <color=\"red\">{ProjectileConfig.Damage:F0} damage</color>, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:F0} AP</color>",
-			$"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:F1} m/s",
+			$"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s",
+			$"    Max range {ProjectileSpeed * ProjectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m",
 			"  Turret",
 			$"    Rotation speed {RotateSpeed}°/s",
 		};
@@ -252,9 +253,17 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				: $"    Reload time {ReloadTime}s"
 		);
 
-		lines.Add($"  Theoretical maximum DPS {maxDps:F1}");
+		lines.Add($"  Theoretical maximum DPS {maxDps:F1} {ProjectileConfig.DamageType}");
 
 		return string.Join("\n", lines);
+	}
+
+	public Dictionary<DamageType, float> GetDamageRatePotential()
+	{
+		return new Dictionary<DamageType, float>
+		{
+			{ ProjectileConfig.DamageType, ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime }
+		};
 	}
 }
 }

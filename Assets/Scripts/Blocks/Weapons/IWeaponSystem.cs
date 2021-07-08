@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,5 +16,7 @@ public interface IWeaponSystem
 
 	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);
+
+	Dictionary<DamageType, float> GetDamageRatePotential();
 }
 }

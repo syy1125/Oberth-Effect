@@ -11,6 +11,7 @@ public struct BallisticProjectileConfig
 	public float Damage;
 	[Range(1, 10)]
 	public float ArmorPierce;
+	public float Lifetime;
 }
 
 [RequireComponent(typeof(PhotonView))]
@@ -23,6 +24,11 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
+	}
+
+	private void Start()
+	{
+		Invoke(nameof(Despawn), _config.Lifetime);
 	}
 
 	private static IDamageable GetDamageTarget(Transform target)
@@ -69,6 +75,15 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			target.TakeDamage(effectiveDamage);
 			gameObject.SetActive(false);
 			photonView.RPC("DestroyProjectile", RpcTarget.All);
+		}
+	}
+
+	private void Despawn()
+	{
+		gameObject.SetActive(false);
+		if (photonView.IsMine)
+		{
+			PhotonNetwork.Destroy(gameObject);
 		}
 	}
 
