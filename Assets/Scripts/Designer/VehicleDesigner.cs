@@ -32,6 +32,7 @@ public class VehicleDesigner : MonoBehaviour
 	public VehicleBuilder Builder;
 	public DesignerConfig Config;
 	public DesignerCursor Cursor;
+	public VehicleAnalyzer Analyzer;
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
@@ -520,6 +521,7 @@ public class VehicleDesigner : MonoBehaviour
 		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
 		Config.ReloadVehicle();
 		Builder.ReloadVehicle();
+		Analyzer.StartAnalysis();
 	}
 }
 }

@@ -14,5 +14,10 @@ public static class CardinalDirectionUtils
 	{
 		return (CardinalDirection) ((((int) direction + rotation) % 4 + 4) % 4);
 	}
+
+	public static CardinalDirection InverseRotate(CardinalDirection direction, int rotation)
+	{
+		return Rotate(direction, 4 - rotation);
+	}
 }
 }

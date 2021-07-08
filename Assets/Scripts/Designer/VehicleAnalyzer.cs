@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
@@ -16,24 +17,41 @@ public struct VehicleAnalysisResult
 	public float Mass;
 	public Vector2 CenterOfMass;
 	public float MomentOfInertia;
+	public float PropulsionUp;
+	public float PropulsionDown;
+	public float PropulsionRight;
+	public float PropulsionLeft;
 }
 
 public class VehicleAnalyzer : MonoBehaviour
 {
+	[Header("References")]
 	public VehicleDesigner Designer;
 	public VehicleBuilder Builder;
-	public Text Output;
+
+	[Header("Output")]
+	public RectTransform OutputParent;
+	[Space]
+	public Text StatusOutput;
+	public Text PhysicsOutput;
 	public GameObject CenterOfMassIndicator;
+	[Space]
+	public GameObject PropulsionOutput;
+	public Text PropulsionUpOutput;
+	public Text PropulsionDownOutput;
+	public Text PropulsionLeftOutput;
+	public Text PropulsionRightOutput;
+	public Text AccelerationUpOutput;
+	public Text AccelerationDownOutput;
+	public Text AccelerationLeftOutput;
+	public Text AccelerationRightOutput;
 
 	private VehicleAnalysisResult _result;
 	private Coroutine _analysisCoroutine;
 
 	private void OnEnable()
 	{
-		if (Designer.Blueprint != null)
-		{
-			_analysisCoroutine = StartCoroutine(AnalyzeVehicle());
-		}
+		StartAnalysis();
 	}
 
 	private void OnDisable()
@@ -46,13 +64,37 @@ public class VehicleAnalyzer : MonoBehaviour
 		CenterOfMassIndicator.SetActive(false);
 	}
 
+	public void StartAnalysis()
+	{
+		if (!gameObject.activeSelf) return;
+
+		if (_analysisCoroutine != null)
+		{
+			StopCoroutine(_analysisCoroutine);
+		}
+
+		if (Designer.Blueprint != null)
+		{
+			_analysisCoroutine = StartCoroutine(AnalyzeVehicle());
+		}
+	}
+
 	private IEnumerator AnalyzeVehicle()
 	{
+		StatusOutput.gameObject.SetActive(true);
+		PhysicsOutput.gameObject.SetActive(false);
+		PropulsionOutput.SetActive(false);
+		CenterOfMassIndicator.SetActive(false);
+
 		_result = new VehicleAnalysisResult
 		{
 			Mass = 0f,
 			CenterOfMass = Vector2.zero,
-			MomentOfInertia = 0f
+			MomentOfInertia = 0f,
+			PropulsionUp = 0f,
+			PropulsionDown = 0f,
+			PropulsionLeft = 0f,
+			PropulsionRight = 0f
 		};
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
@@ -75,14 +117,33 @@ public class VehicleAnalyzer : MonoBehaviour
 			_result.CenterOfMass += info.Mass * blockCenter;
 			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
 
-			long time = Stopwatch.GetTimestamp();
-			if (time - timestamp > timeThreshold)
+			foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 			{
-				Output.text = $"Analyzing physics {progress}/{blockCount} ({progress * 100f / blockCount:F0}%)";
-
-				yield return null;
-				timestamp = time;
+				if (behaviour is IPropulsionBlock propulsion)
+				{
+					_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+					);
+					_result.PropulsionDown += propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+					);
+					_result.PropulsionLeft += propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+					);
+					_result.PropulsionRight += propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+					);
+				}
 			}
+
+			long time = Stopwatch.GetTimestamp();
+			// if (time - timestamp > timeThreshold)
+			// {
+			StatusOutput.text = $"Performing analysis {progress}/{blockCount} ({progress * 100f / blockCount:F0}%)";
+
+			yield return null;
+			timestamp = time;
+			// }
 		}
 
 		if (_result.Mass > Mathf.Epsilon)
@@ -96,14 +157,33 @@ public class VehicleAnalyzer : MonoBehaviour
 			_result.MomentOfInertia += blockMoment + mass * (position - _result.CenterOfMass).sqrMagnitude;
 		}
 
-		Output.text = string.Join(
+		StatusOutput.text = "Analysis Results";
+		PhysicsOutput.text = string.Join(
 			"\n",
-			$"Block count {blockCount}",
-			$"Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.#} kg",
-			$"<color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
+			"Physics",
+			$"  Block count {blockCount}",
+			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.#} kg",
+			$"  <color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
 		);
+		PhysicsOutput.gameObject.SetActive(true);
 		CenterOfMassIndicator.transform.localPosition = _result.CenterOfMass;
 		CenterOfMassIndicator.SetActive(true);
+
+		PropulsionUpOutput.text = $"{_result.PropulsionUp * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+		PropulsionDownOutput.text = $"{_result.PropulsionDown * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+		PropulsionLeftOutput.text = $"{_result.PropulsionLeft * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+		PropulsionRightOutput.text = $"{_result.PropulsionRight * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+		AccelerationUpOutput.text =
+			$"{_result.PropulsionUp / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
+		AccelerationDownOutput.text =
+			$"{_result.PropulsionDown / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
+		AccelerationLeftOutput.text =
+			$"{_result.PropulsionLeft / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
+		AccelerationRightOutput.text =
+			$"{_result.PropulsionRight / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
+		PropulsionOutput.SetActive(true);
+
+		LayoutRebuilder.MarkLayoutForRebuild(OutputParent);
 	}
 }
 }
