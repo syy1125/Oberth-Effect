@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
+using Syy1125.OberthEffect.Blocks.Resource;
+using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
@@ -14,13 +16,22 @@ namespace Syy1125.OberthEffect.Designer
 {
 public struct VehicleAnalysisResult
 {
+	// Physics
 	public float Mass;
 	public Vector2 CenterOfMass;
 	public float MomentOfInertia;
+
+	// Propulsion
 	public float PropulsionUp;
 	public float PropulsionDown;
 	public float PropulsionRight;
 	public float PropulsionLeft;
+
+	// Resource
+	public Dictionary<VehicleResource, float> MaxResourceGeneration;
+	public Dictionary<VehicleResource, float> MaxResourceConsumption;
+	public Dictionary<VehicleResource, float> MaxPropulsionResourceUse;
+	public Dictionary<VehicleResource, float> MaxWeaponResourceUse;
 }
 
 public class VehicleAnalyzer : MonoBehaviour
@@ -94,7 +105,11 @@ public class VehicleAnalyzer : MonoBehaviour
 			PropulsionUp = 0f,
 			PropulsionDown = 0f,
 			PropulsionLeft = 0f,
-			PropulsionRight = 0f
+			PropulsionRight = 0f,
+			MaxResourceGeneration = new Dictionary<VehicleResource, float>(),
+			MaxResourceConsumption = new Dictionary<VehicleResource, float>(),
+			MaxPropulsionResourceUse = new Dictionary<VehicleResource, float>(),
+			MaxWeaponResourceUse = new Dictionary<VehicleResource, float>()
 		};
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
@@ -119,8 +134,16 @@ public class VehicleAnalyzer : MonoBehaviour
 
 			foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 			{
+				if (behaviour is IResourceGeneratorBlock generator)
+				{
+					DictionaryUtils.AddDictionary(generator.GetMaxGenerationRate(), _result.MaxResourceGeneration);
+				}
+
 				if (behaviour is IPropulsionBlock propulsion)
 				{
+					DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxPropulsionResourceUse);
+					DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
+
 					_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
 						CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
 					);
@@ -134,15 +157,21 @@ public class VehicleAnalyzer : MonoBehaviour
 						CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
 					);
 				}
+
+				if (behaviour is IWeaponSystem weaponSystem)
+				{
+					DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxWeaponResourceUse);
+					DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
+				}
 			}
 
-			long time = Stopwatch.GetTimestamp();
+			// long time = Stopwatch.GetTimestamp();
 			// if (time - timestamp > timeThreshold)
 			// {
 			StatusOutput.text = $"Performing analysis {progress}/{blockCount} ({progress * 100f / blockCount:F0}%)";
 
 			yield return null;
-			timestamp = time;
+			// timestamp = time;
 			// }
 		}
 

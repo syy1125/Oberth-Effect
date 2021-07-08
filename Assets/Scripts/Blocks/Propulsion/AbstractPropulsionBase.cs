@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
@@ -78,5 +79,10 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	}
 
 	public abstract float GetMaxPropulsionForce(CardinalDirection localDirection);
+
+	public virtual Dictionary<VehicleResource, float> GetMaxResourceUseRate()
+	{
+		return MaxResourceUse.ToDictionary(entry => entry.Resource, entry => entry.Amount);
+	}
 }
 }

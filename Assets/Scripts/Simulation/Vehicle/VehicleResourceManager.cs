@@ -127,7 +127,7 @@ public class VehicleResourceManager :
 	private void UpdateStorage()
 	{
 		_resourceCapacities.Clear();
-		DictionaryUtils.AddDictionaries(
+		DictionaryUtils.SumDictionaries(
 			_storageBlocks.Select(block => block.ResourceCapacityDict),
 			_resourceCapacities
 		);
@@ -137,7 +137,7 @@ public class VehicleResourceManager :
 
 	private void GenerateResources()
 	{
-		DictionaryUtils.AddDictionaries(
+		DictionaryUtils.SumDictionaries(
 			_generatorBlocks
 				.Select(
 					generator => generator.GetGenerationRate()?.ToDictionary(
@@ -168,7 +168,7 @@ public class VehicleResourceManager :
 	private void UpdateResourceSatisfaction()
 	{
 		_resourceRequestRate.Clear();
-		DictionaryUtils.AddDictionaries(
+		DictionaryUtils.SumDictionaries(
 			_consumerBlocks
 				.Select(block => block.GetResourceConsumptionRateRequest())
 				.Where(request => request != null),

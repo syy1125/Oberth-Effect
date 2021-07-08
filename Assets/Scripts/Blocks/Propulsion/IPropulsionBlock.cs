@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Common;
+﻿using System.Collections.Generic;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,5 +13,7 @@ public interface IPropulsionBlock
 	void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
+
+	Dictionary<VehicleResource, float> GetMaxResourceUseRate();
 }
 }
