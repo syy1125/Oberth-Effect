@@ -28,6 +28,7 @@ public struct VehicleAnalysisResult
 	public float PropulsionLeft;
 
 	// Resource
+	public Dictionary<VehicleResource, float> MaxResourceStorage;
 	public Dictionary<VehicleResource, float> MaxResourceGeneration;
 	public Dictionary<VehicleResource, float> MaxResourceConsumption;
 	public Dictionary<VehicleResource, float> MaxPropulsionResourceUse;
@@ -106,6 +107,7 @@ public class VehicleAnalyzer : MonoBehaviour
 			PropulsionDown = 0f,
 			PropulsionLeft = 0f,
 			PropulsionRight = 0f,
+			MaxResourceStorage = new Dictionary<VehicleResource, float>(),
 			MaxResourceGeneration = new Dictionary<VehicleResource, float>(),
 			MaxResourceConsumption = new Dictionary<VehicleResource, float>(),
 			MaxPropulsionResourceUse = new Dictionary<VehicleResource, float>(),
@@ -137,6 +139,11 @@ public class VehicleAnalyzer : MonoBehaviour
 				if (behaviour is IResourceGeneratorBlock generator)
 				{
 					DictionaryUtils.AddDictionary(generator.GetMaxGenerationRate(), _result.MaxResourceGeneration);
+				}
+
+				if (behaviour is ResourceStorageBlock storage)
+				{
+					DictionaryUtils.AddDictionary(storage.ResourceCapacityDict, _result.MaxResourceStorage);
 				}
 
 				if (behaviour is IPropulsionBlock propulsion)
