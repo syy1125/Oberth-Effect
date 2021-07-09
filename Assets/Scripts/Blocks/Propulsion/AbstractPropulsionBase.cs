@@ -18,6 +18,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	protected CenterOfMassContext MassContext;
 	protected bool IsMine;
 
+	protected bool FuelPropulsionActive;
 	protected Dictionary<VehicleResource, float> ResourceRequests;
 	protected float Satisfaction;
 
@@ -53,6 +54,11 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+	}
+
+	public void SetFuelPropulsionActive(bool fuelActive)
+	{
+		FuelPropulsionActive = fuelActive;
 	}
 
 	public abstract void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);

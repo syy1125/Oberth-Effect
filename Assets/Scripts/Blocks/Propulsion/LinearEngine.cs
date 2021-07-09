@@ -83,6 +83,12 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
+		if (IsFuelPropulsion && !FuelPropulsionActive)
+		{
+			_targetThrustStrength = 0f;
+			return;
+		}
+
 		float rawResponse = 0f;
 		if (RespondToTranslation)
 		{
@@ -106,7 +112,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	public override IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
 	{
 		ResourceRequests.Clear();
-
+		
 		foreach (ResourceEntry entry in MaxResourceUse)
 		{
 			ResourceRequests.Add(entry.Resource, entry.Amount * _targetThrustStrength);

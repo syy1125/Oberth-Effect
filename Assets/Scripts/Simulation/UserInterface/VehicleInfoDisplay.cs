@@ -54,6 +54,7 @@ public class VehicleInfoDisplay : MonoBehaviour
 
 	public Text InertiaDampenerDisplay;
 	public Text ControlModeDisplay;
+	public Text FuelPropulsionDisplay;
 	public Text HealthBarModeDisplay;
 
 	private void OnEnable()
@@ -91,12 +92,14 @@ public class VehicleInfoDisplay : MonoBehaviour
 	{
 		_thrusterControl.InertiaDampenerChanged.AddListener(UpdateDisplay);
 		_thrusterControl.ControlModeChanged.AddListener(UpdateDisplay);
+		_thrusterControl.FuelPropulsionActiveChanged.AddListener(UpdateDisplay);
 	}
 
 	private void DetachThrustControlListeners()
 	{
 		_thrusterControl.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
 		_thrusterControl.ControlModeChanged.RemoveListener(UpdateDisplay);
+		_thrusterControl.FuelPropulsionActiveChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void AttachHealthBarListeners()
@@ -123,6 +126,11 @@ public class VehicleInfoDisplay : MonoBehaviour
 			_ => throw new ArgumentOutOfRangeException()
 		};
 		ControlModeDisplay.text = $"Control Mode {controlModeStatus}";
+
+		string fuelPropulsionStatus = ThrusterControl.FuelPropulsionActive
+			? "<color=\"cyan\">ON</color>"
+			: "<color=\"red\">OFF</color>";
+		FuelPropulsionDisplay.text = $"Fuel Thrusters {fuelPropulsionStatus}";
 
 		string healthBarStatus = HealthBarControl.DisplayMode switch
 		{

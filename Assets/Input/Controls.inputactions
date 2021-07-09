@@ -68,6 +68,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Toggle Fuel Propulsion",
+                    "type": "Button",
+                    "id": "1f4e58fb-dcff-4e0d-973f-d22bf70aaaaa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -321,6 +329,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Cycle Health Bar Mode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27e76db8-c0c8-484c-b8b1-14845b988b9e",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Toggle Fuel Propulsion",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

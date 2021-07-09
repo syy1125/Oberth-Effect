@@ -20,6 +20,7 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	public InputActionReference StrafeAction;
 	public InputActionReference InertiaDampenerAction;
 	public InputActionReference CycleControlModeAction;
+	public InputActionReference ToggleFuelPropulsionAction;
 
 	[Header("PID")]
 	public float RotateResponse;
@@ -38,6 +39,9 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 
 	public VehicleControlMode ControlMode { get; private set; }
 	public UnityEvent ControlModeChanged;
+
+	public bool FuelPropulsionActive { get; private set; }
+	public UnityEvent FuelPropulsionActiveChanged;
 
 	#endregion
 
@@ -72,6 +76,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		InertiaDampenerAction.action.performed += ToggleInertiaDampener;
 		CycleControlModeAction.action.Enable();
 		CycleControlModeAction.action.performed += CycleControlMode;
+		ToggleFuelPropulsionAction.action.Enable();
+		ToggleFuelPropulsionAction.action.performed += ToggleFuelPropulsion;
 	}
 
 	private void Start()
@@ -89,6 +95,8 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		InertiaDampenerAction.action.Disable();
 		CycleControlModeAction.action.performed -= CycleControlMode;
 		CycleControlModeAction.action.Disable();
+		ToggleFuelPropulsionAction.action.performed -= ToggleFuelPropulsion;
+		ToggleFuelPropulsionAction.action.Disable();
 	}
 
 	#endregion
@@ -98,6 +106,7 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 	public void RegisterBlock(IPropulsionBlock block)
 	{
 		_propulsionBlocks.Add(block);
+		block.SetFuelPropulsionActive(FuelPropulsionActive);
 	}
 
 	public void UnregisterBlock(IPropulsionBlock block)
@@ -273,6 +282,18 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		_integral = 0f;
 
 		ControlModeChanged.Invoke();
+	}
+
+	private void ToggleFuelPropulsion(InputAction.CallbackContext context)
+	{
+		FuelPropulsionActive = !FuelPropulsionActive;
+
+		foreach (IPropulsionBlock block in _propulsionBlocks)
+		{
+			block.SetFuelPropulsionActive(FuelPropulsionActive);
+		}
+
+		FuelPropulsionActiveChanged.Invoke();
 	}
 
 	#endregion

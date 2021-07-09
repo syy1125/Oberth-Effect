@@ -213,6 +213,7 @@ MonoBehaviour:
   StrafeAction: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   InertiaDampenerAction: {fileID: 7433065827582890450, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   CycleControlModeAction: {fileID: -3588560342972414599, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ToggleFuelPropulsionAction: {fileID: 8084621224224648871, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   RotateResponse: 5
   RotateDerivativeTime: 2
   RotateIntegralTime: 1
@@ -221,6 +222,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   ControlModeChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  FuelPropulsionActiveChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &1675783647980130284
