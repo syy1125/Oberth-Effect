@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
@@ -47,6 +48,8 @@ public class VehicleAnalyzer : MonoBehaviour
 	public Text StatusOutput;
 	public Text PhysicsOutput;
 	public GameObject CenterOfMassIndicator;
+	[Space]
+	public Text ResourceOutput;
 	[Space]
 	public GameObject PropulsionOutput;
 	public Text PropulsionUpOutput;
@@ -205,6 +208,19 @@ public class VehicleAnalyzer : MonoBehaviour
 		CenterOfMassIndicator.transform.localPosition = _result.CenterOfMass;
 		CenterOfMassIndicator.SetActive(true);
 
+		ResourceOutput.text = string.Join(
+			"\n",
+			"Resources",
+			"  Max storage",
+			"    " + string.Join(", ", _result.MaxResourceStorage.Select(FormatResourceEntry)),
+			"  Max resource generation",
+			"    " + string.Join(", ", _result.MaxResourceGeneration.Select(FormatResourceRateEntry)),
+			"  Max resource consumption",
+			FormatResourceUseRate("    ", "Total", _result.MaxResourceConsumption),
+			FormatResourceUseRate("    ", "Propulsion", _result.MaxPropulsionResourceUse),
+			FormatResourceUseRate("    ", "Weapon systems", _result.MaxWeaponResourceUse)
+		);
+
 		PropulsionUpOutput.text = $"{_result.PropulsionUp * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
 		PropulsionDownOutput.text = $"{_result.PropulsionDown * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
 		PropulsionLeftOutput.text = $"{_result.PropulsionLeft * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
@@ -220,6 +236,30 @@ public class VehicleAnalyzer : MonoBehaviour
 		PropulsionOutput.SetActive(true);
 
 		LayoutRebuilder.MarkLayoutForRebuild(OutputParent);
+	}
+
+	private static string FormatResourceEntry(KeyValuePair<VehicleResource, float> entry)
+	{
+		return
+			$"<color=\"#{ColorUtility.ToHtmlStringRGB(entry.Key.DisplayColor)}\">{entry.Value:0.#} {entry.Key.DisplayName}</color>";
+	}
+
+	private static string FormatResourceRateEntry(KeyValuePair<VehicleResource, float> entry)
+	{
+		return
+			$"<color=\"#{ColorUtility.ToHtmlStringRGB(entry.Key.DisplayColor)}\">{entry.Value:0.#} {entry.Key.DisplayName}</color>/s";
+	}
+
+	private static string FormatResourceUseRate(string indent, string label, Dictionary<VehicleResource, float> useRate)
+	{
+		if (useRate.Count == 0)
+		{
+			return indent + label + " N/A";
+		}
+		else
+		{
+			return indent + label + "\n" + indent + "  " + string.Join(", ", useRate.Select(FormatResourceRateEntry));
+		}
 	}
 }
 }

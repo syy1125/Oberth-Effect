@@ -315,7 +315,9 @@ MonoBehaviour:
   UseRecoil: 1
   ClusterRecoil: 5
   ReloadTime: 2
-  ReloadResourceConsumptionRate: []
+  ReloadResourceConsumptionRate:
+  - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
+    Amount: 200
 --- !u!114 &-8205556832779791864
 MonoBehaviour:
   m_ObjectHideFlags: 0
