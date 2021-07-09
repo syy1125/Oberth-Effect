@@ -76,16 +76,15 @@ public class NebulaBackdrop : MonoBehaviour
 		nebula.SetActive(true);
 	}
 
-	private void Update()
+	private void LateUpdate()
 	{
 		Vector3 offset = -Parallax * _parent.position;
-		offset.z = transform.localPosition.z;
-		transform.localPosition = offset;
 
 		if (_mainCamera != null)
 		{
-			transform.localScale =
-				_baseScale * Mathf.Lerp(1, _mainCamera.orthographicSize / _originalSize, 1f - Parallax);
+			float scaleFactor = Mathf.Lerp(1, _mainCamera.orthographicSize / _originalSize, 1f - Parallax);
+			transform.localScale = _baseScale * scaleFactor;
+			offset *= scaleFactor;
 
 			foreach (Vector3Int position in GetCameraBounds(_mainCamera).allPositionsWithin)
 			{
@@ -101,5 +100,8 @@ public class NebulaBackdrop : MonoBehaviour
 				_generated.Add(position);
 			}
 		}
+
+		offset.z = transform.localPosition.z;
+		transform.localPosition = offset;
 	}
 }
