@@ -12,6 +12,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 {
 	public float MaxForce;
 	public ResourceEntry[] MaxResourceUse;
+	public bool IsFuelPropulsion;
 
 	protected Rigidbody2D Body;
 	protected CenterOfMassContext MassContext;

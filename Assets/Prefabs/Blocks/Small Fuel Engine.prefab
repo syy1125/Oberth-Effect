@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 5188369339111014238}
   - component: {fileID: 4463412459619210807}
   m_Layer: 6
-  m_Name: Small Ion Engine
+  m_Name: Small Fuel Engine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: aa0d8397718155c4aaf4eaf2abf2c52e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e328bc9481dbbc14a8b83f623430c445, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -105,7 +105,7 @@ BoxCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
-    border: {x: 0.14999999, y: 0.14999999, z: 0.14999999, w: 0.14999999}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
@@ -128,9 +128,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839406c5d8fc49ac8f69378005499fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BlockID: Small Ion Engine
-  ShortName: Ion Engine
-  FullName: Small Ion Engine
+  BlockID: Small Fuel Engine
+  ShortName: Fuel Engine
+  FullName: Small Fuel Engine
   ShowInDesigner: 1
   AllowErase: 1
   PreviewScale: 1
@@ -141,8 +141,6 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 1, y: 1, z: 1}
   AttachmentPoints:
-  - {x: 1, y: 0}
-  - {x: -1, y: 0}
   - {x: 0, y: 1}
   CenterOfMass: {x: 0, y: 0}
   Mass: 1
@@ -183,11 +181,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7bc891ae1a4434d8b66eff2c1aaab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxForce: 10
+  MaxForce: 50
   MaxResourceUse:
-  - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
+  - Resource: {fileID: 11400000, guid: 531995062e1f8474784b72696da7efdf, type: 2}
     Amount: 50
-  IsFuelThruster: 0
+  IsFuelPropulsion: 1
   MaxThrottleRate: 0.5
   RespondToTranslation: 1
   RespondToRotation: 0
@@ -203,18 +201,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 933c12a38bb84309ac919b2e337d308d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Description: 'An ion engine used to propel your spacecraft. The high exhaust speed
-    makes reaction mass usage negligible.
+  Description: 'A fuel-guzzling engine that generates a large amount of thrust.
 
-    In practical terms, this means that
-    the only resource needed to operate the ion engine is energy.
-
-    As with all
-    engines, the ion engine needs time to increase or decrease its thrust.
-
-    The
-    thrust is a bit low and the energy usage is rather high, but hey, it''s basically
-    free thrust.'
+    While
+    the thrust generated is significantly higher than ion engines, the fuel supply
+    is often limited, making fuel-reliant engines impractical for sustained use.'
 --- !u!198 &5188369339111014238
 ParticleSystem:
   m_ObjectHideFlags: 0
