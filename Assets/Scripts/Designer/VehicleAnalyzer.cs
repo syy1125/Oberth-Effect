@@ -199,7 +199,7 @@ public class VehicleAnalyzer : MonoBehaviour
 		StatusOutput.text = "Analysis Results";
 		PhysicsOutput.text = string.Join(
 			"\n",
-			"Physics",
+			"<b>Physics</b>",
 			$"  Block count {blockCount}",
 			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.#} kg",
 			$"  <color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
@@ -210,7 +210,7 @@ public class VehicleAnalyzer : MonoBehaviour
 
 		ResourceOutput.text = string.Join(
 			"\n",
-			"Resources",
+			"<b>Resources</b>",
 			"  Max storage",
 			"    " + string.Join(", ", _result.MaxResourceStorage.Select(FormatResourceEntry)),
 			"  Max resource generation",
