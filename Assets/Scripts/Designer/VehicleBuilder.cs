@@ -143,6 +143,18 @@ public class VehicleBuilder : MonoBehaviour
 		UpdateConnectedBlocks();
 	}
 
+	#region Query Methods
+
+	public bool HasBlockAt(Vector2Int position)
+	{
+		return _posToBlock.ContainsKey(position);
+	}
+
+	public VehicleBlueprint.BlockInstance GetBlockInstanceAt(Vector2Int position)
+	{
+		return _posToBlock.TryGetValue(position, out VehicleBlueprint.BlockInstance instance) ? instance : null;
+	}
+
 	public GameObject GetBlockObject(VehicleBlueprint.BlockInstance block)
 	{
 		return _blockToObject[block];
@@ -154,6 +166,10 @@ public class VehicleBuilder : MonoBehaviour
 			? _blockToObject[instance]
 			: null;
 	}
+
+	#endregion
+
+	#region Attachment Handling
 
 	private static IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
@@ -234,6 +250,10 @@ public class VehicleBuilder : MonoBehaviour
 		return disconnected;
 	}
 
+	#endregion
+
+	#region Administration
+
 	private void ClearAll()
 	{
 		foreach (VehicleBlueprint.BlockInstance instance in _blockToObject.Keys.ToArray())
@@ -279,5 +299,7 @@ public class VehicleBuilder : MonoBehaviour
 
 		UpdateConnectedBlocks();
 	}
+
+	#endregion
 }
 }

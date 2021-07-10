@@ -1,5 +1,6 @@
 ﻿using System;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.UserInterface;
@@ -20,7 +21,9 @@ public class DesignerConfig : MonoBehaviour
 	public VehicleDesigner Designer;
 	public VehicleBuilder Builder;
 	public DesignerAreaMask AreaMask;
+	public Transform SelectionIndicator;
 	public Text StatusText;
+	public RectTransform ConfigParent;
 
 	[Header("Vehicle Config")]
 	public SwitchSelect ControlModeSelect;
@@ -29,10 +32,15 @@ public class DesignerConfig : MonoBehaviour
 	public ColorPicker SecondaryColorPicker;
 	public ColorPicker TertiaryColorPicker;
 
+	[Header("Engine Config")]
+	public Toggle EngineTranslationToggle;
+	public Toggle EngineRotationToggle;
+
 	private VehicleBlueprint Blueprint => Designer.Blueprint;
 
 	private ColorContext _context;
 	private Vector2Int? _selectedLocation;
+	private bool _updatingElements;
 
 	#region Unity Lifecycle
 
@@ -45,6 +53,7 @@ public class DesignerConfig : MonoBehaviour
 	{
 		EnableActions();
 		AttachVehicleConfigListeners();
+		AttachEngineConfigListeners();
 
 		_selectedLocation = null;
 		ShowVehicleConfig();
@@ -67,6 +76,12 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.AddListener(SetTertiaryColor);
 	}
 
+	private void AttachEngineConfigListeners()
+	{
+		EngineTranslationToggle.onValueChanged.AddListener(SetEngineRespondToTranslation);
+		EngineRotationToggle.onValueChanged.AddListener(SetEngineRespondToRotation);
+	}
+
 	private void Start()
 	{
 		ControlModeSelect.SetOptions(Enum.GetNames(typeof(VehicleControlMode)));
@@ -76,8 +91,10 @@ public class DesignerConfig : MonoBehaviour
 	{
 		DisableActions();
 		DetachVehicleConfigListeners();
+		DetachEngineConfigListeners();
 
 		_selectedLocation = null;
+		SelectionIndicator.gameObject.SetActive(false);
 	}
 
 	private void DisableActions()
@@ -97,13 +114,19 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.RemoveListener(SetTertiaryColor);
 	}
 
+	private void DetachEngineConfigListeners()
+	{
+		EngineTranslationToggle.onValueChanged.RemoveListener(SetEngineRespondToTranslation);
+		EngineRotationToggle.onValueChanged.RemoveListener(SetEngineRespondToRotation);
+	}
+
 	#endregion
 
 	#region Input Event Handlers
 
 	private void HandleSelect(InputAction.CallbackContext context)
 	{
-		if (AreaMask.Hover && Builder.GetBlockObjectAt(Designer.HoverLocation) != null)
+		if (AreaMask.Hover && Builder.HasBlockAt(Designer.HoverLocation))
 		{
 			_selectedLocation = Designer.HoverLocation;
 			ShowBlockConfig();
@@ -131,6 +154,79 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.InitColor(colorScheme.TertiaryColor);
 
 		_context.SetColorScheme(colorScheme);
+	}
+
+	private void ShowVehicleConfig()
+	{
+		Debug.Assert(_selectedLocation == null, nameof(_selectedLocation) + " == null");
+
+		StatusText.text = string.Join(
+			"\n",
+			"Showing vehicle config",
+			"Click on a block to view its config"
+		);
+
+		SetVehicleConfigEnabled(true);
+		SetEngineConfigEnabled(false);
+
+		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
+
+		SelectionIndicator.gameObject.SetActive(false);
+	}
+
+	private void ShowBlockConfig()
+	{
+		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+
+		StatusText.text = string.Join(
+			"\n",
+			$"Configuring {blockObject.GetComponent<BlockInfo>().FullName}",
+			"Press 'Q' to show vehicle config"
+		);
+
+		SetVehicleConfigEnabled(false);
+
+		LinearEngine engine = blockObject.GetComponent<LinearEngine>();
+		SetEngineConfigEnabled(engine != null);
+		if (engine != null) UpdateEngineConfigElements(engine);
+
+		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
+
+		BoundsInt blockBounds = TransformUtils.TransformBounds(
+			blockObject.GetComponent<BlockInfo>().Bounds,
+			new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
+		);
+		SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
+		SelectionIndicator.localScale = blockBounds.size;
+		SelectionIndicator.gameObject.SetActive(true);
+	}
+
+	private void SetVehicleConfigEnabled(bool configEnabled)
+	{
+		ControlModeSelect.gameObject.SetActive(configEnabled);
+		CustomColorToggle.gameObject.SetActive(configEnabled);
+		PrimaryColorPicker.gameObject.SetActive(configEnabled);
+		SecondaryColorPicker.gameObject.SetActive(configEnabled);
+		TertiaryColorPicker.gameObject.SetActive(configEnabled);
+	}
+
+	private void SetEngineConfigEnabled(bool configEnabled)
+	{
+		EngineTranslationToggle.gameObject.SetActive(configEnabled);
+		EngineRotationToggle.gameObject.SetActive(configEnabled);
+	}
+
+	private void UpdateEngineConfigElements(LinearEngine engine)
+	{
+		_updatingElements = true;
+
+		EngineTranslationToggle.isOn = engine.RespondToTranslation;
+		EngineRotationToggle.isOn = engine.RespondToRotation;
+
+		_updatingElements = false;
 	}
 
 	#region Vehicle Config Event Listeners
@@ -192,30 +288,32 @@ public class DesignerConfig : MonoBehaviour
 
 	#endregion
 
-	private void ShowVehicleConfig()
+	#region Engine Config Event Listeners
+
+	private void SetEngineRespondToTranslation(bool engineTranslation)
 	{
-		Debug.Assert(_selectedLocation == null, nameof(_selectedLocation) + " == null");
-
-		StatusText.text = string.Join(
-			"\n",
-			"Showing vehicle config",
-			"Click on a block to view its config"
-		);
-
-		// TODO
-	}
-
-	private void ShowBlockConfig()
-	{
+		if (_updatingElements) return;
 		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
 
-		StatusText.text = string.Join(
-			"\n",
-			$"Showing config for {Builder.GetBlockObjectAt(_selectedLocation.Value).GetComponent<BlockInfo>().FullName}",
-			"Press 'Q' to show vehicle config"
-		);
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
 
-		// TODO
+		blockObject.GetComponent<LinearEngine>().RespondToTranslation = engineTranslation;
+		BlockConfigHelper.SaveConfig(blockInstance, blockObject);
 	}
+
+	private void SetEngineRespondToRotation(bool engineRotation)
+	{
+		if (_updatingElements) return;
+		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+
+		blockObject.GetComponent<LinearEngine>().RespondToRotation = engineRotation;
+		BlockConfigHelper.SaveConfig(blockInstance, blockObject);
+	}
+
+	#endregion
 }
 }
