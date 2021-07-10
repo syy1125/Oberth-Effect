@@ -5738,6 +5738,7 @@ MonoBehaviour:
   AreaMask: {fileID: 140859144}
   SelectionIndicator: {fileID: 186659804}
   StatusText: {fileID: 1298027625}
+  ConfigParent: {fileID: 414402581}
   ControlModeSelect: {fileID: 355799198105889326}
   CustomColorToggle: {fileID: 778286036}
   PrimaryColorPicker: {fileID: 1931512748}
@@ -8091,7 +8092,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 157960892}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.6278026
+  m_Size: 0.60045946
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
