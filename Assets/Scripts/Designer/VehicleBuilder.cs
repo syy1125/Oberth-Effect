@@ -47,22 +47,22 @@ public class VehicleBuilder : MonoBehaviour
 
 	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
 	{
-		GameObject go = Instantiate(blockPrefab, transform);
+		GameObject blockObject = Instantiate(blockPrefab, transform);
 
-		go.transform.localPosition = new Vector3(instance.X, instance.Y);
-		go.transform.localRotation = RotationUtils.GetPhysicalRotation(instance.Rotation);
-		go.layer = gameObject.layer;
+		blockObject.transform.localPosition = new Vector3(instance.X, instance.Y);
+		blockObject.transform.localRotation = TransformUtils.GetPhysicalRotation(instance.Rotation);
+		blockObject.layer = gameObject.layer;
 
-		DesignerConfig.SyncConfig(go, instance);
+		BlockConfigHelper.SyncConfig(instance, blockObject);
 
-		_blockToObject.Add(instance, go);
+		_blockToObject.Add(instance, blockObject);
 	}
 
 	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockInfo info, Vector2Int rootLocation, int rotation)
 	{
 		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
 		{
-			yield return rootLocation + RotationUtils.RotatePoint(localPosition, rotation);
+			yield return rootLocation + TransformUtils.RotatePoint(localPosition, rotation);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class VehicleBuilder : MonoBehaviour
 		foreach (Vector2Int attachmentPoint in blockPrefab.GetComponent<BlockInfo>().AttachmentPoints)
 		{
 			yield return new Vector2Int(instance.X, instance.Y)
-			             + RotationUtils.RotatePoint(attachmentPoint, instance.Rotation);
+			             + TransformUtils.RotatePoint(attachmentPoint, instance.Rotation);
 		}
 	}
 
@@ -267,7 +267,7 @@ public class VehicleBuilder : MonoBehaviour
 			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
 			{
 				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
-				                            + RotationUtils.RotatePoint(localPosition, instance.Rotation);
+				                            + TransformUtils.RotatePoint(localPosition, instance.Rotation);
 				positions.Add(globalPosition);
 				_posToBlock.Add(globalPosition, instance);
 			}

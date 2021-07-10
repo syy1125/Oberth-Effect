@@ -132,7 +132,7 @@ public class VehicleAnalyzer : MonoBehaviour
 			Vector2 rootLocation = new Vector2(block.X, block.Y);
 
 			BlockInfo info = blockObject.GetComponent<BlockInfo>();
-			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
 			_result.Mass += info.Mass;
 			_result.CenterOfMass += info.Mass * blockCenter;
 			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));

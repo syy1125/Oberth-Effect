@@ -276,7 +276,7 @@ public class VehicleDesigner : MonoBehaviour
 				}
 
 				_preview = Instantiate(Palette.GetSelectedBlock(), transform);
-				_preview.transform.rotation = transform.rotation * RotationUtils.GetPhysicalRotation(_rotation);
+				_preview.transform.rotation = transform.rotation * TransformUtils.GetPhysicalRotation(_rotation);
 				_preview.SetActive(AreaMask.Hover);
 
 				foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())

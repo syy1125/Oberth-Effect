@@ -58,5 +58,46 @@ public static class TransformUtils
 			_ => throw new ArgumentException()
 		};
 	}
+
+	public static BoundsInt TransformBounds(BoundsInt bounds, Vector2Int rootLocation, int rotation)
+	{
+		BoundsInt output = new BoundsInt();
+
+		// There are some +1's in there to adjust for how BoundsInt is inclusive min and exclusive max
+		switch (rotation)
+		{
+			case 0:
+				output.SetMinMax((Vector3Int) rootLocation + bounds.min, (Vector3Int) rootLocation + bounds.max);
+				break;
+			case 1:
+				output.xMin = rootLocation.x + bounds.yMin;
+				output.yMin = rootLocation.y - bounds.xMax + 1;
+				output.xMax = rootLocation.x + bounds.yMax;
+				output.yMax = rootLocation.y - bounds.xMin + 1;
+				output.zMin = 0;
+				output.zMax = 1;
+				break;
+			case 2:
+				output.xMin = rootLocation.x - bounds.xMax + 1;
+				output.yMin = rootLocation.y - bounds.yMax + 1;
+				output.xMax = rootLocation.x - bounds.xMin + 1;
+				output.yMax = rootLocation.y - bounds.yMin + 1;
+				output.zMin = 0;
+				output.zMax = 1;
+				break;
+			case 3:
+				output.xMin = rootLocation.x - bounds.yMax + 1;
+				output.yMin = rootLocation.y + bounds.xMin;
+				output.xMax = rootLocation.x - bounds.yMin + 1;
+				output.yMax = rootLocation.y + bounds.xMax;
+				output.zMin = 0;
+				output.zMax = 1;
+				break;
+			default:
+				throw new ArgumentException();
+		}
+
+		return output;
+	}
 }
 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
@@ -67,10 +65,10 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 			GameObject blockObject = Instantiate(blockPrefab, transform);
 			blockObject.transform.localPosition = rootLocation;
-			blockObject.transform.localRotation = RotationUtils.GetPhysicalRotation(block.Rotation);
+			blockObject.transform.localRotation = TransformUtils.GetPhysicalRotation(block.Rotation);
 
 			BlockInfo info = blockPrefab.GetComponent<BlockInfo>();
-			Vector2 blockCenter = rootLocation + RotationUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
 			totalMass += info.Mass;
 			centerOfMass += info.Mass * blockCenter;
 			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
@@ -83,7 +81,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
 			{
 				_posToBlock.Add(
-					rootLocationInt + RotationUtils.RotatePoint(localPosition, block.Rotation), blockObject
+					rootLocationInt + TransformUtils.RotatePoint(localPosition, block.Rotation), blockObject
 				);
 			}
 
@@ -112,7 +110,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		// Load config
 		foreach (Tuple<VehicleBlueprint.BlockInstance, GameObject> tuple in blocks)
 		{
-			LoadConfig(tuple.Item1, tuple.Item2);
+			BlockConfigHelper.LoadConfig(tuple.Item1, tuple.Item2);
 		}
 
 		_loaded = true;
@@ -121,25 +119,6 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		{
 			_loadEvent.Invoke();
 			_loadEvent.RemoveAllListeners();
-		}
-	}
-
-	private static void LoadConfig(VehicleBlueprint.BlockInstance block, GameObject blockObject)
-	{
-		JObject config = ConfigUtils.ParseConfig(block.Config);
-
-		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
-		{
-			if (behaviour is IConfigComponent component)
-			{
-				component.InitDefaultConfig();
-				string configKey = ConfigUtils.GetConfigKey(component.GetType());
-
-				if (config.ContainsKey(configKey))
-				{
-					component.ImportConfig((JObject) config[configKey]);
-				}
-			}
 		}
 	}
 

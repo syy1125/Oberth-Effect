@@ -2,6 +2,7 @@
 {
 public static class ExplosionUtils
 {
+	// TODO
 	public static float GetExplosionRadius(float strength)
 	{
 		return 0f;

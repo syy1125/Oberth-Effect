@@ -37,7 +37,7 @@ public class BlockCore : MonoBehaviour, IDamageable
 	public int OwnerId { get; set; }
 	public Vector2Int RootLocation { get; set; }
 	public int Rotation { get; set; }
-	public Vector2 CenterOfMassPosition => RootLocation + RotationUtils.RotatePoint(_info.CenterOfMass, Rotation);
+	public Vector2 CenterOfMassPosition => RootLocation + TransformUtils.RotatePoint(_info.CenterOfMass, Rotation);
 	public bool IsMine { get; private set; }
 
 	public float Health { get; private set; }
