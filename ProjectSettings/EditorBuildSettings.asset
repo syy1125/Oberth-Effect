@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Test Drive Room.unity
     guid: 5d4fb7245d9a8304b84d56ef2fd63b8f
   - enabled: 1
-    path: Assets/Scenes/MP Test.unity
+    path: Assets/Scenes/Multiplayer Game.unity
     guid: 81192ae983b7a754181de3a93de151be
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: e298538c39772834fb8154737d2c1b28, type: 2}
