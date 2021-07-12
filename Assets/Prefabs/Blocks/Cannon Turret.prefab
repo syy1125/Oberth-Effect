@@ -302,8 +302,8 @@ MonoBehaviour:
   FiringPort: {fileID: 1064777365042586588}
   ProjectileConfig:
     DamageType: 0
-    Damage: 80
-    ArmorPierce: 4
+    Damage: 150
+    ArmorPierce: 5
     Lifetime: 5
   ProjectileSpeed: 20
   RotateSpeed: 360
@@ -314,7 +314,7 @@ MonoBehaviour:
   BurstInterval: 0.1
   UseRecoil: 1
   ClusterRecoil: 5
-  ReloadTime: 2
+  ReloadTime: 2.5
   ReloadResourceConsumptionRate:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 200
