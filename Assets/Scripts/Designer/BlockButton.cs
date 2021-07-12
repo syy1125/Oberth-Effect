@@ -38,10 +38,13 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		GetComponent<Button>().onClick.AddListener(SelectBlock);
 	}
 
-	private void Start()
+	private void OnEnable()
 	{
 		_image.CrossFadeColor(Colors.normalColor, 0, true, true);
+	}
 
+	private void Start()
+	{
 		_rt = new RenderTexture(100, 100, 0, RenderTextureFormat.Default);
 		_rt.Create();
 
