@@ -9,6 +9,7 @@ using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -34,6 +35,9 @@ public struct VehicleAnalysisResult
 	public Dictionary<VehicleResource, float> MaxResourceConsumption;
 	public Dictionary<VehicleResource, float> MaxPropulsionResourceUse;
 	public Dictionary<VehicleResource, float> MaxWeaponResourceUse;
+
+	// Firepower
+	public Dictionary<DamageType, float> MaxDamageRatePotential;
 }
 
 public class VehicleAnalyzer : MonoBehaviour
@@ -60,13 +64,22 @@ public class VehicleAnalyzer : MonoBehaviour
 	public Text AccelerationDownOutput;
 	public Text AccelerationLeftOutput;
 	public Text AccelerationRightOutput;
+	[Space]
+	public Text FirepowerOutput;
 
 	private VehicleAnalysisResult _result;
 	private Coroutine _analysisCoroutine;
+	private LinkedList<Tuple<Vector2, float, float>> _momentOfInertiaData;
 
 	private void OnEnable()
 	{
 		StartAnalysis();
+	}
+
+
+	private void Start()
+	{
+		Debug.Log($"Stopwatch frequency {Stopwatch.Frequency}");
 	}
 
 	private void OnDisable()
@@ -114,11 +127,11 @@ public class VehicleAnalyzer : MonoBehaviour
 			MaxResourceGeneration = new Dictionary<VehicleResource, float>(),
 			MaxResourceConsumption = new Dictionary<VehicleResource, float>(),
 			MaxPropulsionResourceUse = new Dictionary<VehicleResource, float>(),
-			MaxWeaponResourceUse = new Dictionary<VehicleResource, float>()
+			MaxWeaponResourceUse = new Dictionary<VehicleResource, float>(),
+			MaxDamageRatePotential = new Dictionary<DamageType, float>()
 		};
-		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
+		_momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
-		Debug.Log($"Stopwatch frequency {Stopwatch.Frequency}");
 		long timestamp = Stopwatch.GetTimestamp();
 		long timeThreshold = Stopwatch.Frequency / 100; // 10ms
 
@@ -127,53 +140,7 @@ public class VehicleAnalyzer : MonoBehaviour
 		for (int progress = 0; progress < blockCount; progress++)
 		{
 			VehicleBlueprint.BlockInstance block = Designer.Blueprint.Blocks[progress];
-			GameObject blockObject = Builder.GetBlockObject(block);
-
-			Vector2 rootLocation = new Vector2(block.X, block.Y);
-
-			BlockInfo info = blockObject.GetComponent<BlockInfo>();
-			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
-			_result.Mass += info.Mass;
-			_result.CenterOfMass += info.Mass * blockCenter;
-			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
-
-			foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
-			{
-				if (behaviour is IResourceGeneratorBlock generator)
-				{
-					DictionaryUtils.AddDictionary(generator.GetMaxGenerationRate(), _result.MaxResourceGeneration);
-				}
-
-				if (behaviour is ResourceStorageBlock storage)
-				{
-					DictionaryUtils.AddDictionary(storage.ResourceCapacityDict, _result.MaxResourceStorage);
-				}
-
-				if (behaviour is IPropulsionBlock propulsion)
-				{
-					DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxPropulsionResourceUse);
-					DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
-
-					_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
-						CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
-					);
-					_result.PropulsionDown += propulsion.GetMaxPropulsionForce(
-						CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
-					);
-					_result.PropulsionLeft += propulsion.GetMaxPropulsionForce(
-						CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
-					);
-					_result.PropulsionRight += propulsion.GetMaxPropulsionForce(
-						CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
-					);
-				}
-
-				if (behaviour is IWeaponSystem weaponSystem)
-				{
-					DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxWeaponResourceUse);
-					DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
-				}
-			}
+			AnalyzeBlock(block);
 
 			// long time = Stopwatch.GetTimestamp();
 			// if (time - timestamp > timeThreshold)
@@ -190,17 +157,77 @@ public class VehicleAnalyzer : MonoBehaviour
 			_result.CenterOfMass /= _result.Mass;
 		}
 
-		foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
+		foreach (Tuple<Vector2, float, float> blockData in _momentOfInertiaData)
 		{
 			(Vector2 position, float mass, float blockMoment) = blockData;
 			_result.MomentOfInertia += blockMoment + mass * (position - _result.CenterOfMass).sqrMagnitude;
 		}
 
+		DisplayResults();
+	}
+
+	private void AnalyzeBlock(VehicleBlueprint.BlockInstance block)
+	{
+		GameObject blockObject = Builder.GetBlockObject(block);
+
+		Vector2 rootLocation = new Vector2(block.X, block.Y);
+
+		BlockInfo info = blockObject.GetComponent<BlockInfo>();
+		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+		_result.Mass += info.Mass;
+		_result.CenterOfMass += info.Mass * blockCenter;
+		_momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
+
+		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
+		{
+			if (behaviour is IResourceGeneratorBlock generator)
+			{
+				DictionaryUtils.AddDictionary(generator.GetMaxGenerationRate(), _result.MaxResourceGeneration);
+			}
+
+			if (behaviour is ResourceStorageBlock storage)
+			{
+				DictionaryUtils.AddDictionary(storage.ResourceCapacityDict, _result.MaxResourceStorage);
+			}
+
+			if (behaviour is IPropulsionBlock propulsion)
+			{
+				DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxPropulsionResourceUse);
+				DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
+
+				_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+				);
+				_result.PropulsionDown += propulsion.GetMaxPropulsionForce(
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+				);
+				_result.PropulsionLeft += propulsion.GetMaxPropulsionForce(
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+				);
+				_result.PropulsionRight += propulsion.GetMaxPropulsionForce(
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+				);
+			}
+
+			if (behaviour is IWeaponSystem weaponSystem)
+			{
+				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxWeaponResourceUse);
+				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
+
+				DictionaryUtils.AddDictionary(
+					weaponSystem.GetDamageRatePotential(), _result.MaxDamageRatePotential
+				);
+			}
+		}
+	}
+
+	private void DisplayResults()
+	{
 		StatusOutput.text = "Analysis Results";
 		PhysicsOutput.text = string.Join(
 			"\n",
 			"<b>Physics</b>",
-			$"  Block count {blockCount}",
+			$"  Block count {Designer.Blueprint.Blocks.Count}",
 			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.#} kg",
 			$"  <color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
 		);
@@ -234,6 +261,19 @@ public class VehicleAnalyzer : MonoBehaviour
 		AccelerationRightOutput.text =
 			$"{_result.PropulsionRight / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
 		PropulsionOutput.SetActive(true);
+
+		_result.MaxDamageRatePotential.TryGetValue(DamageType.Kinetic, out float kineticDamage);
+		_result.MaxDamageRatePotential.TryGetValue(DamageType.Energy, out float energyDamage);
+		_result.MaxDamageRatePotential.TryGetValue(DamageType.Explosive, out float explosiveDamage);
+		FirepowerOutput.text = string.Join(
+			"\n",
+			"<b>Firepower</b>",
+			$"  Total {_result.MaxDamageRatePotential.Values.Sum():#,0.#}/s",
+			$"  Kinetic {kineticDamage:#,0.#}/s",
+			$"  Energy {energyDamage:#,0.#}/s",
+			$"  Explosive {explosiveDamage:#,0.#}/s"
+		);
+		FirepowerOutput.gameObject.SetActive(true);
 
 		LayoutRebuilder.MarkLayoutForRebuild(OutputParent);
 	}
