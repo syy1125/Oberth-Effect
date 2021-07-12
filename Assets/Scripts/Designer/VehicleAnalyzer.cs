@@ -268,10 +268,11 @@ public class VehicleAnalyzer : MonoBehaviour
 		FirepowerOutput.text = string.Join(
 			"\n",
 			"<b>Firepower</b>",
-			$"  Total {_result.MaxDamageRatePotential.Values.Sum():#,0.#}/s",
-			$"  Kinetic {kineticDamage:#,0.#}/s",
-			$"  Energy {energyDamage:#,0.#}/s",
-			$"  Explosive {explosiveDamage:#,0.#}/s"
+			"  Theoretical maximum DPS",
+			$"    Total {_result.MaxDamageRatePotential.Values.Sum():#,0.#}",
+			$"    Kinetic {kineticDamage:#,0.#}",
+			$"    Energy {energyDamage:#,0.#}",
+			$"    Explosive {explosiveDamage:#,0.#}"
 		);
 		FirepowerOutput.gameObject.SetActive(true);
 

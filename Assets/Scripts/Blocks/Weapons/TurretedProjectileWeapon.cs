@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
@@ -200,20 +201,22 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 	{
 		float maxDps = ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime;
 
-		List<string> lines = new List<string>
-		{
-			"Turreted Projectile Weapon",
-			"  Projectile",
-			$"    <color=\"red\">{ProjectileConfig.Damage:F0} damage</color>, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:F0} AP</color>",
-			$"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s",
-			$"    Max range {ProjectileSpeed * ProjectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m",
-			"  Turret",
-			$"    Rotation speed {RotateSpeed}°/s",
-		};
+		StringBuilder builder = new StringBuilder();
+		builder.AppendLine("Turreted Projectile Weapon")
+			.AppendLine("  Projectile")
+			.AppendLine(
+				$"    <color=\"red\">{ProjectileConfig.Damage:F0} damage</color>, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:F0} AP</color>"
+			)
+			.AppendLine($"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
+			.AppendLine(
+				$"    Max range {ProjectileSpeed * ProjectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
+			)
+			.AppendLine("  Turret")
+			.AppendLine($"    Rotation speed {RotateSpeed}°/s");
 
 		if (ClusterCount > 1)
 		{
-			lines.Add(
+			builder.AppendLine(
 				BurstCount > 1
 					? $"    {ClusterCount} shots per cluster, {BurstCount} clusters per burst, {BurstInterval}s between clusters in burst"
 					: $"    {ClusterCount} shots per cluster"
@@ -221,15 +224,15 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		}
 		else if (BurstCount > 1)
 		{
-			lines.Add(
-				$"    {BurstCount} shots per burst, {BurstInterval}s between shots in burst"
-			);
+			builder.AppendLine($"    {BurstCount} shots per burst, {BurstInterval}s between shots in burst");
 		}
 
 		if (UseRecoil)
 		{
 			string shotOrCluster = ClusterCount > 1 ? "cluster" : "shot";
-			lines.Add($"    Recoil {ClusterRecoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN per {shotOrCluster}");
+			builder.AppendLine(
+				$"    Recoil {ClusterRecoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN per {shotOrCluster}"
+			);
 		}
 
 		switch (SpreadProfile)
@@ -237,10 +240,10 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			case ClusterSpreadProfile.None:
 				break;
 			case ClusterSpreadProfile.Gaussian:
-				lines.Add($"    Gaussian spread ±{SpreadAngle}°");
+				builder.AppendLine($"    Gaussian spread ±{SpreadAngle}°");
 				break;
 			case ClusterSpreadProfile.Uniform:
-				lines.Add($"    Uniform spread ±{SpreadAngle}°");
+				builder.AppendLine($"    Uniform spread ±{SpreadAngle}°");
 				break;
 			default:
 				throw new ArgumentOutOfRangeException();
@@ -249,15 +252,15 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		string reloadCost = string.Join(
 			" ", ReloadResourceConsumptionRate.Select(entry => $"{entry.RichTextColoredEntry()}/s")
 		);
-		lines.Add(
+		builder.AppendLine(
 			ReloadResourceConsumptionRate.Length > 0
 				? $"    Reload time {ReloadTime}s, reload cost {reloadCost}"
 				: $"    Reload time {ReloadTime}s"
 		);
 
-		lines.Add($"  Theoretical maximum DPS {maxDps:F1} {ProjectileConfig.DamageType}");
+		builder.AppendLine($"  Theoretical maximum DPS {maxDps:F1} {ProjectileConfig.DamageType}");
 
-		return string.Join("\n", lines);
+		return builder.ToString();
 	}
 
 	public Dictionary<DamageType, float> GetDamageRatePotential()
