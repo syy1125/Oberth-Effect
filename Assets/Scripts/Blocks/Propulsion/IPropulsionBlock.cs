@@ -11,7 +11,7 @@ public interface IPropulsionBlockRegistry : IBlockRegistry<IPropulsionBlock>, IE
 public interface IPropulsionBlock
 {
 	void SetFuelPropulsionActive(bool fuelActive);
-	
+
 	void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);

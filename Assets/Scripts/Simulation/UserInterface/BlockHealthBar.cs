@@ -1,5 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Blocks;
+﻿using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 using UnityEngine.UI;
 

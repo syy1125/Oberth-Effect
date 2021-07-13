@@ -112,7 +112,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	public override IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
 	{
 		ResourceRequests.Clear();
-		
+
 		foreach (ResourceEntry entry in MaxResourceUse)
 		{
 			ResourceRequests.Add(entry.Resource, entry.Amount * _targetThrustStrength);

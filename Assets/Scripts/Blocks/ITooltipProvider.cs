@@ -13,7 +13,7 @@ public static class TooltipProviderUtils
 	public static string CombineTooltips(GameObject block)
 	{
 		LinkedList<string> tooltips = new LinkedList<string>();
-		
+
 		foreach (MonoBehaviour behaviour in block.GetComponents<MonoBehaviour>())
 		{
 			if (behaviour is ITooltipProvider blockTooltip)

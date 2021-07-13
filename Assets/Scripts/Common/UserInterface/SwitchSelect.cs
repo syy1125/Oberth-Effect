@@ -1,5 +1,4 @@
 using System;
-using ExitGames.Client.Photon;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
