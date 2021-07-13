@@ -1,6 +1,5 @@
-﻿using System;
-using Syy1125.OberthEffect.Simulation;
-using Syy1125.OberthEffect.Utils;
+﻿using Syy1125.OberthEffect.Simulation;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,7 +24,7 @@ public class ExplosionEffectTest : MonoBehaviour
 			position.z = 0f;
 			ExplosionEffectManager.Instance.PlayEffectAt(position, 1f);
 
-			Debug.Log(ExplosionUtils.EstimateOverlapFraction(_min, _max, position, 0.5f));
+			Debug.Log(ExplosionUtils.CalculateDamageFactor(_min, _max, position, 0.5f));
 		}
 
 		if (Mouse.current.rightButton.wasPressedThisFrame)
@@ -34,7 +33,7 @@ public class ExplosionEffectTest : MonoBehaviour
 			position.z = 0f;
 			ExplosionEffectManager.Instance.PlayEffectAt(position, 2f);
 
-			Debug.Log(ExplosionUtils.EstimateOverlapFraction(_min, _max, position, 1f));
+			Debug.Log(ExplosionUtils.CalculateDamageFactor(_min, _max, position, 1f));
 		}
 	}
 }

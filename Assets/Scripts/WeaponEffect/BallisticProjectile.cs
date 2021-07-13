@@ -11,6 +11,7 @@ public struct BallisticProjectileConfig
 	public float Damage;
 	[Range(1, 10)]
 	public float ArmorPierce;
+	public float ExplosionRadius; // Only relevant for explosive damage
 	public float Lifetime;
 }
 
