@@ -258,7 +258,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		PhotonNetwork.AutomaticallySyncScene = true;
 		PhotonNetwork.CurrentRoom.IsOpen = false;
-		PhotonNetwork.LoadLevel("Scenes/MP Test");
+		PhotonNetwork.LoadLevel("Scenes/Multiplayer Game");
 	}
 }
 }
