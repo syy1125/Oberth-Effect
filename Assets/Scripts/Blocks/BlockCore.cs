@@ -40,9 +40,10 @@ public class BlockCore : MonoBehaviour, IDamageable
 	public Vector2 CenterOfMassPosition => RootLocation + TransformUtils.RotatePoint(_info.CenterOfMass, Rotation);
 	public bool IsMine { get; private set; }
 
-	public float Health { get; private set; }
-	public float HealthFraction => Mathf.Clamp01(Health / _info.MaxHealth);
-	public bool IsDamaged => _info.MaxHealth - Health > Mathf.Epsilon;
+	private float _health;
+	public float HealthFraction => Mathf.Clamp01(_health / _info.MaxHealth);
+	public bool IsDamaged => _info.MaxHealth - _health > Mathf.Epsilon;
+
 	private Bounds _damageBounds;
 
 	private void Awake()
@@ -62,7 +63,7 @@ public class BlockCore : MonoBehaviour, IDamageable
 
 	private void Start()
 	{
-		Health = _info.MaxHealth;
+		_health = _info.MaxHealth;
 
 		var photonView = GetComponentInParent<PhotonView>();
 		IsMine = photonView == null || photonView.IsMine;
@@ -80,32 +81,34 @@ public class BlockCore : MonoBehaviour, IDamageable
 		return _damageBounds;
 	}
 
-	public float GetDamageModifier(float armorPierce, DamageType damageType)
+	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
-		float armorModifier = Mathf.Min(armorPierce / _info.ArmorValue, 1f);
-		return armorModifier;
-	}
+		float damageModifier = Mathf.Min(armorPierce / _info.ArmorValue, 1f);
+		Debug.Assert(damageModifier > Mathf.Epsilon, "Damage modifier should not be zero");
 
-	public void DestroyByDamage()
-	{
-		if (!IsMine) return;
+		float effectiveDamage = damage * damageModifier;
+		float effectiveHealth = _health / damageModifier;
 
-		Health = 0f;
+		if (effectiveDamage < _health)
+		{
+			_health -= effectiveDamage;
+			damage = 0f;
+			damageExhausted = true;
+		}
+		else
+		{
+			_health = 0f;
+			damage -= effectiveHealth;
+			damageExhausted = false;
 
-		ExecuteEvents.Execute<IBlockDestructionEffect>(
-			gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
-		);
-		ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
-			gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(this)
-		);
-		// Note that disabling of game object will be executed by VehicleCore
-	}
-
-	public void TakeDamage(float damage)
-	{
-		if (!IsMine) return;
-
-		Health -= damage;
+			ExecuteEvents.Execute<IBlockDestructionEffect>(
+				gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
+			);
+			ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
+				gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(this)
+			);
+			// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore
+		}
 	}
 }
 }

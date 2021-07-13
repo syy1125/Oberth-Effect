@@ -188,18 +188,8 @@ public class ExplosionManager : MonoBehaviour
 
 		for (int i = 0; i < count; i++)
 		{
-			float damageFactor = results[i];
-			float damageModifier = _targets[i].GetDamageModifier(1f, DamageType.Explosive);
-			float effectiveDamage = d * damageFactor * damageModifier;
-
-			if (effectiveDamage > _targets[i].Health)
-			{
-				_targets[i].DestroyByDamage();
-			}
-			else
-			{
-				_targets[i].TakeDamage(effectiveDamage);
-			}
+			float effectiveDamage = d * results[i];
+			_targets[i].TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
 		}
 
 		minX.Dispose();

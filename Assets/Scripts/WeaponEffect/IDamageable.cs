@@ -10,14 +10,8 @@ public interface IDamageable
 
 	int OwnerId { get; }
 
-	float Health { get; }
-
 	Bounds GetExplosionDamageBounds();
 
-	float GetDamageModifier(float armorPierce, DamageType damageType);
-
-	void TakeDamage(float damage);
-
-	void DestroyByDamage();
+	void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted);
 }
 }

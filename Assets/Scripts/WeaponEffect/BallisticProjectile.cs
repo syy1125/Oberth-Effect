@@ -26,6 +26,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
+		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
 	}
 
 	private void Start()
@@ -53,17 +54,10 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		else
 		{
 			// Normal projectile damage behaviour
-			float damageModifier = target.GetDamageModifier(_config.ArmorPierce, _config.DamageType);
-			float effectiveDamage = _config.Damage * damageModifier;
+			target.TakeDamage(_config.DamageType, ref _config.Damage, _config.ArmorPierce, out bool damageExhausted);
 
-			if (effectiveDamage > target.Health)
+			if (damageExhausted)
 			{
-				_config.Damage -= target.Health / damageModifier;
-				target.DestroyByDamage();
-			}
-			else
-			{
-				target.TakeDamage(effectiveDamage);
 				gameObject.SetActive(false);
 				photonView.RPC("DestroyProjectile", RpcTarget.All);
 			}
