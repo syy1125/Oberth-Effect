@@ -22,18 +22,18 @@ public class ExplosionEffectTest : MonoBehaviour
 		{
 			Vector3 position = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 			position.z = 0f;
-			ExplosionEffectManager.Instance.PlayEffectAt(position, 1f);
+			ExplosionManager.Instance.PlayEffectAt(position, 1f);
 
-			Debug.Log(ExplosionUtils.CalculateDamageFactor(_min, _max, position, 0.5f));
+			Debug.Log(ExplosionManager.CalculateDamageFactor(_min, _max, position, 0.5f));
 		}
 
 		if (Mouse.current.rightButton.wasPressedThisFrame)
 		{
 			Vector3 position = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 			position.z = 0f;
-			ExplosionEffectManager.Instance.PlayEffectAt(position, 2f);
+			ExplosionManager.Instance.PlayEffectAt(position, 2f);
 
-			Debug.Log(ExplosionUtils.CalculateDamageFactor(_min, _max, position, 1f));
+			Debug.Log(ExplosionManager.CalculateDamageFactor(_min, _max, position, 1f));
 		}
 	}
 }
