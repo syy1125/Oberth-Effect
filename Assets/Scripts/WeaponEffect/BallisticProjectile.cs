@@ -1,5 +1,6 @@
 using System;
 using Photon.Pun;
+using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -10,7 +11,7 @@ public struct BallisticProjectileConfig
 	public DamageType DamageType;
 	public float Damage;
 	[Range(1, 10)]
-	public float ArmorPierce;
+	public float ArmorPierce; // Note that explosive damage will always have damage output value of 1
 	public float ExplosionRadius; // Only relevant for explosive damage
 	public float Lifetime;
 }
@@ -32,29 +33,11 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		Invoke(nameof(LifetimeDespawn), _config.Lifetime);
 	}
 
-	private static IDamageable GetDamageTarget(Transform target)
-	{
-		while (target != null)
-		{
-			foreach (MonoBehaviour behaviour in target.GetComponents<MonoBehaviour>())
-			{
-				if (behaviour is IDamageable damageable)
-				{
-					return damageable;
-				}
-			}
-
-			target = target.parent;
-		}
-
-		return null;
-	}
-
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.isTrigger) return;
 
-		IDamageable target = GetDamageTarget(other.transform);
+		IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(other.transform);
 		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
 
 		// At this point, we've established that damage should be applied and that this client should be responsible for calculating damage.
@@ -62,7 +45,10 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		if (_config.DamageType == DamageType.Explosive)
 		{
 			// Explosive damage special case
-			CreateExplosionAt(transform.position, _config.Damage);
+			photonView.RPC(
+				nameof(CreateExplosionAt), RpcTarget.All,
+				transform.position, _config.ExplosionRadius, _config.Damage
+			);
 		}
 		else
 		{
@@ -72,17 +58,11 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 			if (effectiveDamage > target.Health)
 			{
-				Debug.Log(
-					$"Projectile {gameObject} hit {target} will deal {target.Health} damage and destroy block"
-				);
-
 				_config.Damage -= target.Health / damageModifier;
 				target.DestroyByDamage();
 			}
 			else
 			{
-				Debug.Log($"Projectile {gameObject} hit {target} will deal {effectiveDamage} damage");
-
 				target.TakeDamage(effectiveDamage);
 				gameObject.SetActive(false);
 				photonView.RPC("DestroyProjectile", RpcTarget.All);
@@ -98,7 +78,10 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		{
 			if (_config.DamageType == DamageType.Explosive)
 			{
-				photonView.RPC(nameof(CreateExplosionAt), RpcTarget.All, transform.position);
+				photonView.RPC(
+					nameof(CreateExplosionAt), RpcTarget.All,
+					transform.position, _config.ExplosionRadius, _config.Damage
+				);
 			}
 
 			PhotonNetwork.Destroy(gameObject);
@@ -106,9 +89,9 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	}
 
 	[PunRPC]
-	private void CreateExplosionAt(Vector3 position, float damage)
+	private void CreateExplosionAt(Vector3 position, float radius, float damage)
 	{
-		// TODO
+		ExplosionManager.Instance.CreateExplosionAt(position, radius, damage);
 	}
 
 	[PunRPC]

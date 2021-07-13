@@ -64,6 +64,11 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public int OwnerId => photonView.OwnerActorNr;
 	public float Health => float.PositiveInfinity;
 
+	public Bounds GetExplosionDamageBounds()
+	{
+		return new Bounds();
+	}
+
 	public float GetDamageModifier(float armorPierce, DamageType damageType)
 	{
 		return 0f;

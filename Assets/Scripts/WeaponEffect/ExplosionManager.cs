@@ -1,5 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Utils;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -8,13 +11,19 @@ public class ExplosionManager : MonoBehaviour
 {
 	public static ExplosionManager Instance { get; private set; }
 
+	[Header("Damage Calculation")]
+	public LayerMask AffectedLayers;
+
 	[Header("Visual Effect")]
 	public GameObject ExplosionEffectPrefab;
 	public AnimationCurve AlphaCurve;
 	public float EffectDuration;
 
 	private Stack<GameObject> _visualEffectPool;
+
+	private ContactFilter2D _contactFilter;
 	private List<Collider2D> _colliders;
+	private List<IDamageable> _targets;
 
 	private void Awake()
 	{
@@ -30,6 +39,14 @@ public class ExplosionManager : MonoBehaviour
 		}
 
 		_visualEffectPool = new Stack<GameObject>();
+
+		_contactFilter = new ContactFilter2D
+		{
+			layerMask = AffectedLayers,
+			useLayerMask = true
+		};
+		_colliders = new List<Collider2D>();
+		_targets = new List<IDamageable>(64);
 	}
 
 	private void OnDestroy()
@@ -39,6 +56,15 @@ public class ExplosionManager : MonoBehaviour
 			Instance = null;
 		}
 	}
+
+
+	public void CreateExplosionAt(Vector3 center, float radius, float damage)
+	{
+		DealExplosionDamageAt(center, radius, damage);
+		PlayEffectAt(center, radius);
+	}
+
+	#region Damage Calculation
 
 	/// <summary>
 	/// Calculate the damage factor for the damage a block should receive from an explosion
@@ -77,17 +103,124 @@ public class ExplosionManager : MonoBehaviour
 		return baseFactor * unitArea;
 	}
 
-	public void CreateExplosionAt(Vector3 center, float damage, float radius)
+	private struct CalculateDamageFactorJob : IJobParallelFor
 	{
-		int resultCount = Physics2D.OverlapCircle(center, radius, new ContactFilter2D().NoFilter(), _colliders);
+		// Inputs
+		[ReadOnly]
+		public NativeArray<float> MinX;
+		[ReadOnly]
+		public NativeArray<float> MinY;
+		[ReadOnly]
+		public NativeArray<float> MaxX;
+		[ReadOnly]
+		public NativeArray<float> MaxY;
+		[ReadOnly]
+		public NativeArray<float> CenterX;
+		[ReadOnly]
+		public NativeArray<float> CenterY;
+		[ReadOnly]
+		public float Radius;
+
+		// Output
+		public NativeArray<float> Results;
+
+		public void Execute(int index)
+		{
+			Vector2 min = new Vector2(MinX[index], MinY[index]);
+			Vector2 max = new Vector2(MaxX[index], MaxY[index]);
+			Vector2 center = new Vector2(CenterX[index], CenterY[index]);
+
+			Results[index] = CalculateDamageFactor(min, max, center, Radius);
+		}
 	}
+
+	private void DealExplosionDamageAt(Vector3 center, float radius, float damage)
+	{
+		int colliderCount = Physics2D.OverlapCircle(center, radius, _contactFilter, _colliders);
+
+		if (_targets.Capacity < colliderCount) _targets.Capacity += colliderCount;
+		NativeArray<float> minX = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		NativeArray<float> minY = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		NativeArray<float> maxX = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		NativeArray<float> maxY = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		NativeArray<float> centerX = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		NativeArray<float> centerY = new NativeArray<float>(colliderCount, Allocator.TempJob);
+
+		int count = 0;
+		for (int i = 0; i < colliderCount; i++)
+		{
+			Collider2D c = _colliders[i];
+			IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(c.transform);
+
+			if (target == null || !target.IsMine) continue;
+
+			_targets[count] = target;
+
+			Bounds bounds = target.GetExplosionDamageBounds();
+			minX[count] = bounds.min.x;
+			minY[count] = bounds.min.y;
+			maxX[count] = bounds.max.x;
+			maxY[count] = bounds.max.y;
+			Vector3 localExplosionCenter = target.transform.InverseTransformPoint(center);
+			centerX[count] = localExplosionCenter.x;
+			centerY[count] = localExplosionCenter.y;
+
+			count++;
+		}
+
+		NativeArray<float> results = new NativeArray<float>(count, Allocator.TempJob);
+
+		var job = new CalculateDamageFactorJob
+		{
+			MinX = minX,
+			MinY = minY,
+			MaxX = maxX,
+			MaxY = maxY,
+			CenterX = centerX,
+			CenterY = centerY,
+			Radius = radius
+		};
+
+		JobHandle handle = job.Schedule(count, 2);
+		handle.Complete();
+
+		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
+
+		for (int i = 0; i < count; i++)
+		{
+			float damageFactor = results[i];
+			float damageModifier = _targets[i].GetDamageModifier(1f, DamageType.Explosive);
+			float effectiveDamage = d * damageFactor * damageModifier;
+
+			if (effectiveDamage > _targets[i].Health)
+			{
+				_targets[i].DestroyByDamage();
+			}
+			else
+			{
+				_targets[i].TakeDamage(effectiveDamage);
+			}
+		}
+
+		minX.Dispose();
+		minY.Dispose();
+		maxX.Dispose();
+		maxY.Dispose();
+		centerX.Dispose();
+		centerY.Dispose();
+		results.Dispose();
+	}
+
+	#endregion
+
+	#region Visual Effects
 
 	public void PlayEffectAt(Vector3 position, float size)
 	{
 		StartCoroutine(DoPlayEffect(position, size));
 	}
 
-	private IEnumerator DoPlayEffect(Vector3 position, float size)
+	private IEnumerator DoPlayEffect(Vector2 position, float size)
 	{
 		GameObject effect = _visualEffectPool.Count > 0
 			? _visualEffectPool.Pop()
@@ -116,5 +249,7 @@ public class ExplosionManager : MonoBehaviour
 		effect.SetActive(false);
 		_visualEffectPool.Push(effect);
 	}
+
+	#endregion
 }
 }

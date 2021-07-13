@@ -2,6 +2,7 @@
     "name": "WeaponEffect",
     "rootNamespace": "",
     "references": [
+        "GUID:3f38ca15b9f19514c84b720c1ba0f876",
         "GUID:831409e8f9d13b5479a3baef9822ad34",
         "GUID:57c32fc907df0f54e8e6e8f0d2488336"
     ],

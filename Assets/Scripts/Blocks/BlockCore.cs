@@ -43,10 +43,14 @@ public class BlockCore : MonoBehaviour, IDamageable
 	public float Health { get; private set; }
 	public float HealthFraction => Mathf.Clamp01(Health / _info.MaxHealth);
 	public bool IsDamaged => _info.MaxHealth - Health > Mathf.Epsilon;
+	private Bounds _damageBounds;
 
 	private void Awake()
 	{
 		_info = GetComponent<BlockInfo>();
+		// BoundsInt has inclusive min and exclusive max.
+		// To account for that behaviour, subtract 0.5 from the center when converting to float Bounds.  
+		_damageBounds = new Bounds(_info.Bounds.center - new Vector3(0.5f, 0.5f, 0f), _info.Bounds.size);
 	}
 
 	private void OnEnable()
@@ -69,6 +73,11 @@ public class BlockCore : MonoBehaviour, IDamageable
 		ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+	}
+
+	public Bounds GetExplosionDamageBounds()
+	{
+		return _damageBounds;
 	}
 
 	public float GetDamageModifier(float armorPierce, DamageType damageType)
