@@ -304,7 +304,8 @@ MonoBehaviour:
     DamageType: 0
     Damage: 150
     ArmorPierce: 5
-    Lifetime: 5
+    ExplosionRadius: 0
+    Lifetime: 2
   ProjectileSpeed: 20
   RotateSpeed: 360
   SpreadAngle: 2
