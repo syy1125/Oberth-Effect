@@ -28,7 +28,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 	private void Start()
 	{
-		Invoke(nameof(Despawn), _config.Lifetime);
+		Invoke(nameof(LifetimeDespawn), _config.Lifetime);
 	}
 
 	private static IDamageable GetDamageTarget(Transform target)
@@ -56,35 +56,58 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		IDamageable target = GetDamageTarget(other.transform);
 		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
 
-		float damageModifier = target.GetDamageModifier(_config.ArmorPierce, _config.DamageType);
-		float effectiveDamage = _config.Damage * damageModifier;
+		// At this point, we've established that damage should be applied and that this client should be responsible for calculating damage.
 
-		if (effectiveDamage > target.Health)
+		if (_config.DamageType == DamageType.Explosive)
 		{
-			Debug.Log(
-				$"Projectile {gameObject} hit {target} will deal {target.Health} damage and destroy block"
-			);
-
-			_config.Damage -= target.Health / damageModifier;
-			target.DestroyByDamage();
+			// Explosive damage special case
+			CreateExplosionAt(transform.position, _config.Damage);
 		}
 		else
 		{
-			Debug.Log($"Projectile {gameObject} hit {target} will deal {effectiveDamage} damage");
+			// Normal projectile damage behaviour
+			float damageModifier = target.GetDamageModifier(_config.ArmorPierce, _config.DamageType);
+			float effectiveDamage = _config.Damage * damageModifier;
 
-			target.TakeDamage(effectiveDamage);
-			gameObject.SetActive(false);
-			photonView.RPC("DestroyProjectile", RpcTarget.All);
+			if (effectiveDamage > target.Health)
+			{
+				Debug.Log(
+					$"Projectile {gameObject} hit {target} will deal {target.Health} damage and destroy block"
+				);
+
+				_config.Damage -= target.Health / damageModifier;
+				target.DestroyByDamage();
+			}
+			else
+			{
+				Debug.Log($"Projectile {gameObject} hit {target} will deal {effectiveDamage} damage");
+
+				target.TakeDamage(effectiveDamage);
+				gameObject.SetActive(false);
+				photonView.RPC("DestroyProjectile", RpcTarget.All);
+			}
 		}
 	}
 
-	private void Despawn()
+	private void LifetimeDespawn()
 	{
 		gameObject.SetActive(false);
+
 		if (photonView.IsMine)
 		{
+			if (_config.DamageType == DamageType.Explosive)
+			{
+				photonView.RPC(nameof(CreateExplosionAt), RpcTarget.All, transform.position);
+			}
+
 			PhotonNetwork.Destroy(gameObject);
 		}
+	}
+
+	[PunRPC]
+	private void CreateExplosionAt(Vector3 position, float damage)
+	{
+		// TODO
 	}
 
 	[PunRPC]
