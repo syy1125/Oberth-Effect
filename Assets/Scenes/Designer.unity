@@ -9011,7 +9011,7 @@ MonoBehaviour:
   Palette: {fileID: 860709245}
   Builder: {fileID: 1599521575}
   Config: {fileID: 782769141}
-  Cursor: {fileID: 1543857980}
+  CursorTexture: {fileID: 1543857980}
   Analyzer: {fileID: 135774809}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}

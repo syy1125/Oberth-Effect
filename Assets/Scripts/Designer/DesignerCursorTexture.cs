@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer
 {
-public class DesignerCursor : MonoBehaviour
+public class DesignerCursorTexture : MonoBehaviour
 {
 	public enum CursorStatus
 	{

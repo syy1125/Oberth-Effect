@@ -31,7 +31,7 @@ public class VehicleDesigner : MonoBehaviour
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
 	public DesignerConfig Config;
-	public DesignerCursor Cursor;
+	public DesignerCursorTexture CursorTexture;
 	public VehicleAnalyzer Analyzer;
 
 	[Header("Input Actions")]
@@ -122,7 +122,7 @@ public class VehicleDesigner : MonoBehaviour
 		DebugAction.action.performed -= HandleDebug;
 		DisableActions();
 
-		Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
+		CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Default;
 	}
 
 	private void DisableActions()
@@ -303,15 +303,15 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (Dragging)
 		{
-			Cursor.TargetStatus = DesignerCursor.CursorStatus.Drag;
+			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Drag;
 		}
 		else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
 		{
-			Cursor.TargetStatus = DesignerCursor.CursorStatus.Eraser;
+			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Eraser;
 		}
 		else
 		{
-			Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
+			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Default;
 		}
 	}
 
