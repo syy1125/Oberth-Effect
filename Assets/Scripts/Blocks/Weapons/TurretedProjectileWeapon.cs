@@ -199,13 +199,14 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 
 	public string GetTooltip()
 	{
-		float maxDps = ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime;
-
 		StringBuilder builder = new StringBuilder();
+
 		builder.AppendLine("Turreted Projectile Weapon")
 			.AppendLine("  Projectile")
 			.AppendLine(
-				$"    <color=\"red\">{ProjectileConfig.Damage:F0} damage</color>, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:F0} AP</color>"
+				ProjectileConfig.DamageType == DamageType.Explosive
+					? $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredTag(ProjectileConfig.DamageType)} damage, {ProjectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
+					: $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredTag(ProjectileConfig.DamageType)} damage, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine($"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
 			.AppendLine(
@@ -258,7 +259,11 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 				: $"    Reload time {ReloadTime}s"
 		);
 
-		builder.AppendLine($"  Theoretical maximum DPS {maxDps:F1} {ProjectileConfig.DamageType}");
+		float maxDps = ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime;
+		float ap = ProjectileConfig.DamageType == DamageType.Explosive ? 1f : ProjectileConfig.ArmorPierce;
+		float minArmorModifier = Mathf.Min(ap / 10f, 1f);
+		builder.AppendLine($"  Theoretical maximum DPS vs 1 armor {maxDps:F1}");
+		builder.AppendLine($"  Theoretical maximum DPS vs 10 armor {maxDps * minArmorModifier:F1}");
 
 		return builder.ToString();
 	}

@@ -302,7 +302,7 @@ MonoBehaviour:
   FiringPort: {fileID: 1064777365042586588}
   ProjectileConfig:
     ProjectileSize: {x: 0.1, y: 0.2}
-    DamageType: 1
+    DamageType: 2
     Damage: 20
     ArmorPierce: 5
     ExplosionRadius: 2
