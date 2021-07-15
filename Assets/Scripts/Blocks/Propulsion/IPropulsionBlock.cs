@@ -14,6 +14,8 @@ public interface IPropulsionBlock
 
 	void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
+	Vector2 GetPropulsionForceOrigin();
+
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
 
 	Dictionary<VehicleResource, float> GetMaxResourceUseRate();

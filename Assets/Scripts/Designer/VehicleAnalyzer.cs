@@ -28,6 +28,8 @@ public struct VehicleAnalysisResult
 	public float PropulsionDown;
 	public float PropulsionRight;
 	public float PropulsionLeft;
+	public float PropulsionCcw;
+	public float PropulsionCw;
 
 	// Resource
 	public Dictionary<VehicleResource, float> MaxResourceStorage;
@@ -56,23 +58,27 @@ public class VehicleAnalyzer : MonoBehaviour
 	public Text ResourceOutput;
 	[Space]
 	public GameObject PropulsionOutput;
-	public Text PropulsionUpOutput;
-	public Text PropulsionDownOutput;
-	public Text PropulsionLeftOutput;
-	public Text PropulsionRightOutput;
-	public Text AccelerationUpOutput;
-	public Text AccelerationDownOutput;
-	public Text AccelerationLeftOutput;
-	public Text AccelerationRightOutput;
+	public Button ForceModeButton;
+	public Button AccelerationModeButton;
+	public Text TranslationLabel;
+	public Text TranslationUpOutput;
+	public Text TranslationDownOutput;
+	public Text TranslationLeftOutput;
+	public Text TranslationRightOutput;
+	public Text RotationLabel;
+	public Text RotationCcwOutput;
+	public Text RotationCwOutput;
 	[Space]
 	public Text FirepowerOutput;
 
 	private VehicleAnalysisResult _result;
 	private Coroutine _analysisCoroutine;
-	private LinkedList<Tuple<Vector2, float, float>> _momentOfInertiaData;
+	private bool _accelerationMode;
 
 	private void OnEnable()
 	{
+		ForceModeButton.onClick.AddListener(SetForceMode);
+		AccelerationModeButton.onClick.AddListener(SetAccelerationMode);
 		StartAnalysis();
 	}
 
@@ -84,6 +90,9 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void OnDisable()
 	{
+		ForceModeButton.onClick.RemoveListener(SetForceMode);
+		AccelerationModeButton.onClick.RemoveListener(SetAccelerationMode);
+
 		if (_analysisCoroutine != null)
 		{
 			StopCoroutine(_analysisCoroutine);
@@ -130,22 +139,23 @@ public class VehicleAnalyzer : MonoBehaviour
 			MaxWeaponResourceUse = new Dictionary<VehicleResource, float>(),
 			MaxDamageRatePotential = new Dictionary<DamageType, float>()
 		};
-		_momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
 		long timestamp = Stopwatch.GetTimestamp();
 		long timeThreshold = Stopwatch.Frequency / 100; // 10ms
 
 		int blockCount = Designer.Blueprint.Blocks.Count;
+		int totalCount = blockCount * 2; // 2 passes in an analysis
 
+		// First pass - analyze center of mass and most components
 		for (int progress = 0; progress < blockCount; progress++)
 		{
 			VehicleBlueprint.BlockInstance block = Designer.Blueprint.Blocks[progress];
-			AnalyzeBlock(block);
+			AnalyzeBlockFirstPass(block);
 
 			// long time = Stopwatch.GetTimestamp();
 			// if (time - timestamp > timeThreshold)
 			// {
-			StatusOutput.text = $"Performing analysis {progress}/{blockCount} ({progress * 100f / blockCount:F0}%)";
+			StatusOutput.text = $"Performing analysis {progress}/{totalCount} ({progress * 100f / totalCount:F0}%)";
 
 			yield return null;
 			// timestamp = time;
@@ -157,16 +167,27 @@ public class VehicleAnalyzer : MonoBehaviour
 			_result.CenterOfMass /= _result.Mass;
 		}
 
-		foreach (Tuple<Vector2, float, float> blockData in _momentOfInertiaData)
+		// Second pass - analyze moment of inertia and rotational motion
+		for (int progress = 0; progress < blockCount; progress++)
 		{
-			(Vector2 position, float mass, float blockMoment) = blockData;
-			_result.MomentOfInertia += blockMoment + mass * (position - _result.CenterOfMass).sqrMagnitude;
+			VehicleBlueprint.BlockInstance block = Designer.Blueprint.Blocks[progress];
+			AnalyzeBlockSecondPass(block);
+
+			// long time = Stopwatch.GetTimestamp();
+			// if (time - timestamp > timeThreshold)
+			// {
+			StatusOutput.text =
+				$"Performing analysis {progress}/{totalCount} ({(blockCount + progress) * 100f / totalCount:F0}%)";
+
+			yield return null;
+			// timestamp = time;
+			// }
 		}
 
 		DisplayResults();
 	}
 
-	private void AnalyzeBlock(VehicleBlueprint.BlockInstance block)
+	private void AnalyzeBlockFirstPass(VehicleBlueprint.BlockInstance block)
 	{
 		GameObject blockObject = Builder.GetBlockObject(block);
 
@@ -176,7 +197,6 @@ public class VehicleAnalyzer : MonoBehaviour
 		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
 		_result.Mass += info.Mass;
 		_result.CenterOfMass += info.Mass * blockCenter;
-		_momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
@@ -221,20 +241,108 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 	}
 
+	private void AnalyzeBlockSecondPass(VehicleBlueprint.BlockInstance block)
+	{
+		GameObject blockObject = Builder.GetBlockObject(block);
+
+		Vector2 rootLocation = new Vector2(block.X, block.Y);
+		BlockInfo info = blockObject.GetComponent<BlockInfo>();
+		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+
+		_result.MomentOfInertia += info.MomentOfInertia + info.Mass * (blockCenter - _result.CenterOfMass).sqrMagnitude;
+
+		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
+		{
+			if (behaviour is IPropulsionBlock propulsion)
+			{
+				Vector2 forceOrigin =
+					rootLocation + TransformUtils.RotatePoint(propulsion.GetPropulsionForceOrigin(), block.Rotation);
+
+				if (forceOrigin.x > Mathf.Epsilon)
+				{
+					_result.PropulsionCcw +=
+						forceOrigin.x
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+						);
+					_result.PropulsionCw +=
+						forceOrigin.x
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+						);
+				}
+				else if (forceOrigin.x < -Mathf.Epsilon)
+				{
+					_result.PropulsionCcw -=
+						forceOrigin.x
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+						);
+					_result.PropulsionCw -=
+						forceOrigin.x
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+						);
+				}
+
+				if (forceOrigin.y > Mathf.Epsilon)
+				{
+					_result.PropulsionCcw +=
+						forceOrigin.y
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+						);
+					_result.PropulsionCw +=
+						forceOrigin.y
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+						);
+				}
+				else if (forceOrigin.y < -Mathf.Epsilon)
+				{
+					_result.PropulsionCcw -=
+						forceOrigin.y
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+						);
+					_result.PropulsionCw -=
+						forceOrigin.y
+						* propulsion.GetMaxPropulsionForce(
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+						);
+				}
+			}
+		}
+	}
+
 	private void DisplayResults()
+	{
+		DisplayPhysicsResults();
+		DisplayResourceResults();
+		DisplayPropulsionResults();
+		DisplayFirepowerResults();
+
+		LayoutRebuilder.MarkLayoutForRebuild(OutputParent);
+	}
+
+	private void DisplayPhysicsResults()
 	{
 		StatusOutput.text = "Analysis Results";
 		PhysicsOutput.text = string.Join(
 			"\n",
 			"<b>Physics</b>",
 			$"  Block count {Designer.Blueprint.Blocks.Count}",
-			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:0.#} kg",
+			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:#,0.#}kg",
+			$"  Moment of inertia {_result.MomentOfInertia * PhysicsConstants.KG_PER_UNIT_MASS * PhysicsConstants.METERS_PER_UNIT_LENGTH * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}kgm²",
 			$"  <color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
 		);
 		PhysicsOutput.gameObject.SetActive(true);
 		CenterOfMassIndicator.transform.localPosition = _result.CenterOfMass;
 		CenterOfMassIndicator.SetActive(true);
+	}
 
+	private void DisplayResourceResults()
+	{
 		ResourceOutput.text = string.Join(
 			"\n",
 			"<b>Resources</b>",
@@ -247,21 +355,58 @@ public class VehicleAnalyzer : MonoBehaviour
 			FormatResourceUseRate("    ", "Propulsion", _result.MaxPropulsionResourceUse),
 			FormatResourceUseRate("    ", "Weapon systems", _result.MaxWeaponResourceUse)
 		);
+	}
 
-		PropulsionUpOutput.text = $"{_result.PropulsionUp * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-		PropulsionDownOutput.text = $"{_result.PropulsionDown * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-		PropulsionLeftOutput.text = $"{_result.PropulsionLeft * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-		PropulsionRightOutput.text = $"{_result.PropulsionRight * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-		AccelerationUpOutput.text =
-			$"{_result.PropulsionUp / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
-		AccelerationDownOutput.text =
-			$"{_result.PropulsionDown / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
-		AccelerationLeftOutput.text =
-			$"{_result.PropulsionLeft / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
-		AccelerationRightOutput.text =
-			$"{_result.PropulsionRight / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.0#}";
-		PropulsionOutput.SetActive(true);
+	private void DisplayPropulsionResults()
+	{
+		if (_accelerationMode)
+		{
+			TranslationLabel.text = "Theoretical maximum acceleration (m/s²)";
+			TranslationUpOutput.text =
+				$"{_result.PropulsionUp / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+			TranslationDownOutput.text =
+				$"{_result.PropulsionDown / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+			TranslationLeftOutput.text =
+				$"{_result.PropulsionLeft / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+			TranslationRightOutput.text =
+				$"{_result.PropulsionRight / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
 
+			RotationLabel.text = "Theoretical maximum angular acceleration (deg/s²)";
+			RotationCcwOutput.text = $"{_result.PropulsionCcw / _result.MomentOfInertia * Mathf.Rad2Deg:#,0.#}";
+			RotationCwOutput.text = $"{_result.PropulsionCw / _result.MomentOfInertia * Mathf.Rad2Deg:#,0.#}";
+
+			ForceModeButton.GetComponentInChildren<Text>().color = Color.gray;
+			ForceModeButton.GetComponentInChildren<Image>().enabled = false;
+			AccelerationModeButton.GetComponentInChildren<Text>().color = Color.cyan;
+			AccelerationModeButton.GetComponentInChildren<Image>().enabled = true;
+
+			PropulsionOutput.SetActive(true);
+		}
+		else
+		{
+			TranslationLabel.text = "Theoretical maximum force (kN)";
+			TranslationUpOutput.text = $"{_result.PropulsionUp * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+			TranslationDownOutput.text = $"{_result.PropulsionDown * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+			TranslationLeftOutput.text = $"{_result.PropulsionLeft * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+			TranslationRightOutput.text = $"{_result.PropulsionRight * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+
+			RotationLabel.text = "Theoretical maximum torque (kNm)";
+			RotationCcwOutput.text =
+				$"{_result.PropulsionCcw * PhysicsConstants.KN_PER_UNIT_FORCE * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+			RotationCwOutput.text =
+				$"{_result.PropulsionCw * PhysicsConstants.KN_PER_UNIT_FORCE * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+
+			ForceModeButton.GetComponentInChildren<Text>().color = Color.yellow;
+			ForceModeButton.GetComponentInChildren<Image>().enabled = true;
+			AccelerationModeButton.GetComponentInChildren<Text>().color = Color.gray;
+			AccelerationModeButton.GetComponentInChildren<Image>().enabled = false;
+
+			PropulsionOutput.SetActive(true);
+		}
+	}
+
+	private void DisplayFirepowerResults()
+	{
 		_result.MaxDamageRatePotential.TryGetValue(DamageType.Kinetic, out float kineticDamage);
 		_result.MaxDamageRatePotential.TryGetValue(DamageType.Energy, out float energyDamage);
 		_result.MaxDamageRatePotential.TryGetValue(DamageType.Explosive, out float explosiveDamage);
@@ -275,9 +420,21 @@ public class VehicleAnalyzer : MonoBehaviour
 			$"    Explosive {explosiveDamage:#,0.#}"
 		);
 		FirepowerOutput.gameObject.SetActive(true);
-
-		LayoutRebuilder.MarkLayoutForRebuild(OutputParent);
 	}
+
+	private void SetForceMode()
+	{
+		_accelerationMode = false;
+		DisplayPropulsionResults();
+	}
+
+	private void SetAccelerationMode()
+	{
+		_accelerationMode = true;
+		DisplayPropulsionResults();
+	}
+
+	#region String Formatting
 
 	private static string FormatResourceEntry(KeyValuePair<VehicleResource, float> entry)
 	{
@@ -302,5 +459,7 @@ public class VehicleAnalyzer : MonoBehaviour
 			return indent + label + "\n" + indent + "  " + string.Join(", ", useRate.Select(FormatResourceRateEntry));
 		}
 	}
+
+	#endregion
 }
 }

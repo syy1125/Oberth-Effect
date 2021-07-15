@@ -85,6 +85,11 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		rotateResponse = Mathf.Abs(rotateResponse) > 1e-5 ? Mathf.Sign(rotateResponse) : 0f;
 	}
 
+	public virtual Vector2 GetPropulsionForceOrigin()
+	{
+		return Vector2.zero;
+	}
+
 	public abstract float GetMaxPropulsionForce(CardinalDirection localDirection);
 
 	public virtual Dictionary<VehicleResource, float> GetMaxResourceUseRate()
