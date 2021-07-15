@@ -210,7 +210,7 @@ public class VehicleDesigner : MonoBehaviour
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 		Vector3 localPosition = transform.InverseTransformPoint(worldPosition);
-		HoverLocation = new Vector2Int(Mathf.RoundToInt(localPosition.x), Mathf.RoundToInt(localPosition.y));
+		HoverLocation = Vector2Int.RoundToInt(localPosition);
 	}
 
 	private void UpdateDragState()
