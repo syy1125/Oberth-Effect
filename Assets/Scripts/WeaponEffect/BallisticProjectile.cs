@@ -8,6 +8,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 [Serializable]
 public struct BallisticProjectileConfig
 {
+	public Vector2 ProjectileSize;
 	public DamageType DamageType;
 	public float Damage;
 	[Range(1, 10)]
@@ -21,12 +22,17 @@ public struct BallisticProjectileConfig
 [RequireComponent(typeof(Collider2D))]
 public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
+	public Transform ProjectileVisual;
+	public BoxCollider2D ProjectileCollider; 
+		
 	private BallisticProjectileConfig _config;
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
 		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
+		ProjectileVisual.localScale = new Vector3(_config.ProjectileSize.x, _config.ProjectileSize.y, 1f);
+		ProjectileCollider.size = _config.ProjectileSize;
 	}
 
 	private void Start()

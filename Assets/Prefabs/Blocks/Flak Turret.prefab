@@ -301,6 +301,7 @@ MonoBehaviour:
   Turret: {fileID: 4399158788272666653}
   FiringPort: {fileID: 1064777365042586588}
   ProjectileConfig:
+    ProjectileSize: {x: 0.1, y: 0.2}
     DamageType: 1
     Damage: 20
     ArmorPierce: 5
