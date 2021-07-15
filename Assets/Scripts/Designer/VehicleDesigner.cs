@@ -42,7 +42,8 @@ public class VehicleDesigner : MonoBehaviour
 
 	public InputActionReference PanAction;
 	public InputActionReference DragAction;
-	public InputActionReference MouseMoveAction;
+
+	public InputActionReference DebugAction;
 
 	#endregion
 
@@ -100,6 +101,7 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		EnableActions();
 		RotateAction.action.performed += HandleRotate;
+		DebugAction.action.performed += HandleDebug;
 
 		UpdateCursor();
 	}
@@ -111,12 +113,13 @@ public class VehicleDesigner : MonoBehaviour
 		ScrollAction.action.Enable();
 		PanAction.action.Enable();
 		DragAction.action.Enable();
-		MouseMoveAction.action.Enable();
+		DebugAction.action.Enable();
 	}
 
 	private void OnDisable()
 	{
 		RotateAction.action.performed -= HandleRotate;
+		DebugAction.action.performed -= HandleDebug;
 		DisableActions();
 
 		Cursor.TargetStatus = DesignerCursor.CursorStatus.Default;
@@ -129,7 +132,7 @@ public class VehicleDesigner : MonoBehaviour
 		ScrollAction.action.Disable();
 		PanAction.action.Disable();
 		DragAction.action.Disable();
-		MouseMoveAction.action.Disable();
+		DebugAction.action.Disable();
 	}
 
 	#endregion
@@ -523,5 +526,20 @@ public class VehicleDesigner : MonoBehaviour
 		Builder.ReloadVehicle();
 		Analyzer.StartAnalysis();
 	}
+
+	#region Debug
+
+	private void HandleDebug(InputAction.CallbackContext context)
+	{
+		Debug.Log($"Palette selection index {Palette.SelectedIndex}");
+		VehicleBlueprint.BlockInstance hoverBlock = Builder.GetBlockInstanceAt(HoverLocation);
+		Debug.Log(
+			hoverBlock == null
+				? $"Hovering at {HoverLocation} over null"
+				: $"Hovering at {HoverLocation} over {hoverBlock.BlockID} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
+		);
+	}
+
+	#endregion
 }
 }
