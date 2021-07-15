@@ -75,6 +75,12 @@ public class VehicleAnalyzer : MonoBehaviour
 	private Coroutine _analysisCoroutine;
 	private bool _accelerationMode;
 
+	private void Awake()
+	{
+		int useAcc = PlayerPrefs.GetInt(PropertyKeys.ANALYSIS_USE_ACC_MODE, 0);
+		_accelerationMode = useAcc == 1;
+	}
+
 	private void OnEnable()
 	{
 		ForceModeButton.onClick.AddListener(SetForceMode);
@@ -425,12 +431,14 @@ public class VehicleAnalyzer : MonoBehaviour
 	private void SetForceMode()
 	{
 		_accelerationMode = false;
+		PlayerPrefs.SetInt(PropertyKeys.ANALYSIS_USE_ACC_MODE, 0);
 		DisplayPropulsionResults();
 	}
 
 	private void SetAccelerationMode()
 	{
 		_accelerationMode = true;
+		PlayerPrefs.SetInt(PropertyKeys.ANALYSIS_USE_ACC_MODE, 1);
 		DisplayPropulsionResults();
 	}
 
