@@ -29,14 +29,15 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 	protected ColorContext ColorContext;
 	protected Rigidbody2D Body;
 
+	protected bool Firing { get; private set; }
+	protected float ResourceSatisfactionLevel { get; private set; }
+	protected Dictionary<VehicleResource, float> ResourceConsumption { get; private set; }
+
 	private BlockCore _block;
-	private Dictionary<VehicleResource, float> _resourceConsumption;
 	private bool _isMine;
 	private Vector2? _aimPoint;
 	private float _angle;
 	private float _reloadProgress;
-	private bool _firing;
-	private float _resourceSatisfactionLevel;
 
 	#region Unity Lifecycle
 
@@ -45,7 +46,7 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 		ColorContext = GetComponentInParent<ColorContext>();
 		Body = GetComponentInParent<Rigidbody2D>();
 		_block = GetComponent<BlockCore>();
-		_resourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
+		ResourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
 			entry => entry.Resource, entry => entry.Amount
 		);
 	}
@@ -60,7 +61,7 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 		);
 	}
 
-	private void Start()
+	protected virtual void Start()
 	{
 		_reloadProgress = ReloadTime;
 		_aimPoint = null;
@@ -85,14 +86,14 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	#region Block Functionality
 
-	public IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
+	public virtual IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
 	{
-		return _reloadProgress >= ReloadTime ? null : _resourceConsumption;
+		return _reloadProgress >= ReloadTime ? null : ResourceConsumption;
 	}
 
 	public void SatisfyResourceRequestAtLevel(float level)
 	{
-		_resourceSatisfactionLevel = level;
+		ResourceSatisfactionLevel = level;
 	}
 
 	public int GetOwnerId() => _block.OwnerId;
@@ -104,26 +105,31 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	public void SetFiring(bool firing)
 	{
-		_firing = firing;
+		Firing = firing;
 	}
-	
+
 	private void FixedUpdate()
 	{
 		RotateTurret();
 
 		if (_isMine)
 		{
-			if (_firing && _reloadProgress >= ReloadTime)
-			{
-				_reloadProgress -= ReloadTime;
+			FireFixedUpdate();
+		}
+	}
 
-				Fire();
-			}
+	protected virtual void FireFixedUpdate()
+	{
+		if (Firing && _reloadProgress >= ReloadTime)
+		{
+			_reloadProgress -= ReloadTime;
 
-			if (_reloadProgress < ReloadTime)
-			{
-				_reloadProgress += Time.fixedDeltaTime * _resourceSatisfactionLevel;
-			}
+			Fire();
+		}
+
+		if (_reloadProgress < ReloadTime)
+		{
+			_reloadProgress += Time.fixedDeltaTime * ResourceSatisfactionLevel;
 		}
 	}
 
@@ -153,7 +159,7 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	public Dictionary<VehicleResource, float> GetMaxResourceUseRate()
 	{
-		return _resourceConsumption;
+		return ResourceConsumption;
 	}
 
 	public abstract Dictionary<DamageType, float> GetDamageRatePotential();
