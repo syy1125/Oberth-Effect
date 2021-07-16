@@ -14,140 +14,29 @@ using Random = UnityEngine.Random;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public enum ClusterSpreadProfile
-{
-	None,
-	Gaussian,
-	Uniform
-}
-
 [RequireComponent(typeof(BlockCore))]
-public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem, ITooltipProvider
+public class TurretedProjectileWeapon : TurretedWeapon
 {
-	[Header("References")]
+	[Header("Projectile")]
 	public GameObject ProjectilePrefab;
-	public Transform Turret;
-	public Transform FiringPort;
-
-	[Header("Projectile Config")]
 	public BallisticProjectileConfig ProjectileConfig;
 	public float ProjectileSpeed;
 
-	[Header("Weapon Config")]
-	public float RotateSpeed;
-	public float SpreadAngle = 0f;
-	public ClusterSpreadProfile SpreadProfile;
 	public int ClusterCount = 1;
 	public int BurstCount = 1;
 	public float BurstInterval;
-	public bool UseRecoil;
-	public float ClusterRecoil;
-	public float ReloadTime; // Does NOT adjust for burst time
-	public ResourceEntry[] ReloadResourceConsumptionRate;
 
-	private Dictionary<VehicleResource, float> _resourceConsumption;
-
-	private ColorContext _colorContext;
-	private Rigidbody2D _body;
-	private BlockCore _block;
-	private bool _isMine;
-
-	private Vector2? _aimPoint;
-	private float _angle;
-	private bool _firing;
-
-	private float _reloadProgress;
-	private float _resourceSatisfactionLevel;
-
-	private void Awake()
+	protected override void Fire()
 	{
-		_colorContext = GetComponentInParent<ColorContext>();
-		_body = GetComponentInParent<Rigidbody2D>();
-		_block = GetComponent<BlockCore>();
-		_resourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
-			entry => entry.Resource, entry => entry.Amount
-		);
-	}
+		FireCluster();
 
-	private void OnEnable()
-	{
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-	}
-
-	private void Start()
-	{
-		_reloadProgress = ReloadTime;
-		_aimPoint = null;
-		_angle = 0;
-		ApplyTurretRotation();
-
-		var photonView = GetComponentInParent<PhotonView>();
-		_isMine = photonView == null || photonView.IsMine;
-	}
-
-	private void OnDisable()
-	{
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
-	}
-
-	public IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
-	{
-		return _reloadProgress >= ReloadTime ? null : _resourceConsumption;
-	}
-
-	public void SatisfyResourceRequestAtLevel(float level)
-	{
-		_resourceSatisfactionLevel = level;
-	}
-
-	public int GetOwnerId() => _block.OwnerId;
-
-	public void SetAimPoint(Vector2? aimPoint)
-	{
-		_aimPoint = aimPoint;
-	}
-
-	public void SetFiring(bool firing)
-	{
-		_firing = firing;
-	}
-
-	private void FixedUpdate()
-	{
-		RotateTurret();
-
-		if (_isMine)
+		for (int i = 1; i < BurstCount; i++)
 		{
-			if (_firing && _reloadProgress >= ReloadTime)
-			{
-				_reloadProgress -= ReloadTime;
-
-				FireCluster();
-
-				for (int i = 1; i < BurstCount; i++)
-				{
-					Invoke(nameof(FireCluster), BurstInterval * i);
-				}
-			}
-
-			if (_reloadProgress < ReloadTime)
-			{
-				_reloadProgress += Time.fixedDeltaTime * _resourceSatisfactionLevel;
-			}
+			Invoke(nameof(FireCluster), BurstInterval * i);
 		}
 	}
 
-	private void FireCluster()
+	protected void FireCluster()
 	{
 		for (int i = 0; i < ClusterCount; i++)
 		{
@@ -163,41 +52,31 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 			GameObject projectile = PhotonNetwork.Instantiate(
 				ProjectilePrefab.name, FiringPort.position, FiringPort.rotation,
 				data: new object[]
-					{ JsonUtility.ToJson(ProjectileConfig), JsonUtility.ToJson(_colorContext.ColorScheme) }
+					{ JsonUtility.ToJson(ProjectileConfig), JsonUtility.ToJson(ColorContext.ColorScheme) }
 			);
 
 			var projectileBody = projectile.GetComponent<Rigidbody2D>();
 			projectileBody.velocity =
-				_body.GetPointVelocity(FiringPort.position)
+				Body.GetPointVelocity(FiringPort.position)
 				+ (Vector2) FiringPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f)
 				* ProjectileSpeed;
 		}
 
 		if (UseRecoil)
 		{
-			_body.AddForceAtPosition(-FiringPort.up * ClusterRecoil, FiringPort.position, ForceMode2D.Impulse);
+			Body.AddForceAtPosition(-FiringPort.up * ClusterRecoil, FiringPort.position, ForceMode2D.Impulse);
 		}
 	}
 
-	private void RotateTurret()
+	public override Dictionary<DamageType, float> GetDamageRatePotential()
 	{
-		float targetAngle = _aimPoint == null
-			? 0f
-			: Vector3.SignedAngle(
-				Vector3.up, transform.InverseTransformPoint(_aimPoint.Value), Vector3.forward
-			);
-
-		_angle = Mathf.MoveTowardsAngle(_angle, targetAngle, RotateSpeed * Time.fixedDeltaTime);
-
-		ApplyTurretRotation();
+		return new Dictionary<DamageType, float>
+		{
+			{ ProjectileConfig.DamageType, ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime }
+		};
 	}
 
-	private void ApplyTurretRotation()
-	{
-		Turret.localRotation = Quaternion.AngleAxis(_angle, Vector3.forward);
-	}
-
-	public string GetTooltip()
+	public override string GetTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
 
@@ -266,19 +145,6 @@ public class TurretedProjectileWeapon : MonoBehaviour, IResourceConsumerBlock, I
 		builder.AppendLine($"  Theoretical maximum DPS vs 10 armor {maxDps * minArmorModifier:F1}");
 
 		return builder.ToString();
-	}
-
-	public Dictionary<DamageType, float> GetDamageRatePotential()
-	{
-		return new Dictionary<DamageType, float>
-		{
-			{ ProjectileConfig.DamageType, ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime }
-		};
-	}
-
-	public Dictionary<VehicleResource, float> GetMaxResourceUseRate()
-	{
-		return _resourceConsumption;
 	}
 }
 }
