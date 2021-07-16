@@ -10,14 +10,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public enum ClusterSpreadProfile
-{
-	None,
-	Gaussian,
-	Uniform
-}
-
-public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem, ITooltipProvider
+public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem
 {
 	[Header("References")]
 	public Transform Turret;
@@ -26,7 +19,7 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 	[Header("Weapon Config")]
 	public float RotateSpeed;
 	public float SpreadAngle = 0f;
-	public ClusterSpreadProfile SpreadProfile;
+	public WeaponSpreadProfile SpreadProfile;
 	public bool UseRecoil;
 	public float ClusterRecoil;
 
@@ -164,8 +157,6 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 	}
 
 	public abstract Dictionary<DamageType, float> GetDamageRatePotential();
-
-	public abstract string GetTooltip();
 
 	#endregion
 }

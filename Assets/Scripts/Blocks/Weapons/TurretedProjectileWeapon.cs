@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Photon.Pun;
-using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 [RequireComponent(typeof(BlockCore))]
-public class TurretedProjectileWeapon : TurretedWeapon
+public class TurretedProjectileWeapon : TurretedWeapon, ITooltipProvider
 {
 	[Header("Projectile")]
 	public GameObject ProjectilePrefab;
@@ -40,14 +37,7 @@ public class TurretedProjectileWeapon : TurretedWeapon
 	{
 		for (int i = 0; i < ClusterCount; i++)
 		{
-			float deviationAngle = SpreadProfile switch
-			{
-				ClusterSpreadProfile.None => 0f,
-				ClusterSpreadProfile.Gaussian => RandomNumberUtils.NextGaussian() * SpreadAngle,
-				ClusterSpreadProfile.Uniform => Random.Range(-SpreadAngle, SpreadAngle),
-				_ => throw new ArgumentOutOfRangeException()
-			};
-			deviationAngle *= Mathf.Deg2Rad;
+			float deviationAngle = GetDeviationAngle();
 
 			GameObject projectile = PhotonNetwork.Instantiate(
 				ProjectilePrefab.name, FiringPort.position, FiringPort.rotation,
@@ -68,6 +58,19 @@ public class TurretedProjectileWeapon : TurretedWeapon
 		}
 	}
 
+	private float GetDeviationAngle()
+	{
+		float deviationAngle = SpreadProfile switch
+		{
+			WeaponSpreadProfile.None => 0f,
+			WeaponSpreadProfile.Gaussian => RandomNumberUtils.NextGaussian() * SpreadAngle,
+			WeaponSpreadProfile.Uniform => Random.Range(-SpreadAngle, SpreadAngle),
+			_ => throw new ArgumentOutOfRangeException()
+		};
+		deviationAngle *= Mathf.Deg2Rad;
+		return deviationAngle;
+	}
+
 	public override Dictionary<DamageType, float> GetDamageRatePotential()
 	{
 		return new Dictionary<DamageType, float>
@@ -76,7 +79,7 @@ public class TurretedProjectileWeapon : TurretedWeapon
 		};
 	}
 
-	public override string GetTooltip()
+	public string GetTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
 
@@ -117,12 +120,12 @@ public class TurretedProjectileWeapon : TurretedWeapon
 
 		switch (SpreadProfile)
 		{
-			case ClusterSpreadProfile.None:
+			case WeaponSpreadProfile.None:
 				break;
-			case ClusterSpreadProfile.Gaussian:
+			case WeaponSpreadProfile.Gaussian:
 				builder.AppendLine($"    Gaussian spread ±{SpreadAngle}°");
 				break;
-			case ClusterSpreadProfile.Uniform:
+			case WeaponSpreadProfile.Uniform:
 				builder.AppendLine($"    Uniform spread ±{SpreadAngle}°");
 				break;
 			default:
