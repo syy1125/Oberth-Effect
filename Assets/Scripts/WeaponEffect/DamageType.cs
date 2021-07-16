@@ -14,7 +14,7 @@ public static class DamageTypeUtils
 {
 	private static readonly Color _silver;
 
-	public static string GetColoredTag(DamageType damageType)
+	public static string GetColoredText(DamageType damageType)
 	{
 		return damageType switch
 		{

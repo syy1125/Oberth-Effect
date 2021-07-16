@@ -87,14 +87,24 @@ public class TurretedProjectileWeapon : TurretedWeapon, ITooltipProvider
 			.AppendLine("  Projectile")
 			.AppendLine(
 				ProjectileConfig.DamageType == DamageType.Explosive
-					? $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredTag(ProjectileConfig.DamageType)} damage, {ProjectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
-					: $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredTag(ProjectileConfig.DamageType)} damage, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:0.#} AP</color>"
+					? $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(ProjectileConfig.DamageType)} damage, {ProjectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
+					: $"    {ProjectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(ProjectileConfig.DamageType)} damage, <color=\"lightblue\">{ProjectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine($"    Speed {ProjectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
 			.AppendLine(
 				$"    Max range {ProjectileSpeed * ProjectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
-			)
-			.AppendLine("  Turret")
+			);
+		
+		string reloadCost = string.Join(
+			" ", ReloadResourceConsumptionRate.Select(entry => $"{entry.RichTextColoredEntry()}/s")
+		);
+		builder.AppendLine(
+			ReloadResourceConsumptionRate.Length > 0
+				? $"    Reload time {ReloadTime}s, reload cost {reloadCost}"
+				: $"    Reload time {ReloadTime}s"
+		);
+
+		builder.AppendLine("  Turret")
 			.AppendLine($"    Rotation speed {RotateSpeed}°/s");
 
 		if (ClusterCount > 1)
@@ -131,15 +141,6 @@ public class TurretedProjectileWeapon : TurretedWeapon, ITooltipProvider
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
-
-		string reloadCost = string.Join(
-			" ", ReloadResourceConsumptionRate.Select(entry => $"{entry.RichTextColoredEntry()}/s")
-		);
-		builder.AppendLine(
-			ReloadResourceConsumptionRate.Length > 0
-				? $"    Reload time {ReloadTime}s, reload cost {reloadCost}"
-				: $"    Reload time {ReloadTime}s"
-		);
 
 		float maxDps = ProjectileConfig.Damage * ClusterCount * BurstCount / ReloadTime;
 		float ap = ProjectileConfig.DamageType == DamageType.Explosive ? 1f : ProjectileConfig.ArmorPierce;
