@@ -5195,16 +5195,19 @@ MonoBehaviour:
   SpreadProfile: 0
   UseRecoil: 0
   ClusterRecoil: 0
-  ReloadTime: 1
+  ReloadTime: 1.5
   ReloadResourceConsumptionRate:
   - Resource: {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
     Amount: 200
   EffectRenderer: {fileID: 3934662834582519126}
+  HitLayerMask:
+    serializedVersion: 2
+    m_Bits: 448
   DamageType: 1
   Continuous: 0
   Damage: 50
   ArmorPierce: 2
-  BeamDurationTicks: 10
+  BeamDurationTicks: 20
   MaxRange: 20
   RangeAttenuation: 0
 --- !u!114 &5964761174369124014

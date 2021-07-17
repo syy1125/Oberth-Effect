@@ -41,7 +41,7 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	#region Unity Lifecycle
 
-	private void Awake()
+	protected virtual void Awake()
 	{
 		ColorContext = GetComponentInParent<ColorContext>();
 		Body = GetComponentInParent<Rigidbody2D>();
@@ -116,6 +116,10 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 		{
 			FireFixedUpdate();
 		}
+		else
+		{
+			VisualFixedUpdate();
+		}
 	}
 
 	protected virtual void FireFixedUpdate()
@@ -132,6 +136,9 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 			_reloadProgress += Time.fixedDeltaTime * ResourceSatisfactionLevel;
 		}
 	}
+
+	protected virtual void VisualFixedUpdate()
+	{}
 
 	private void RotateTurret()
 	{

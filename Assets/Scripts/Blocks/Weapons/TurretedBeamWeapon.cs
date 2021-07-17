@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Photon.Pun;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
+[RequireComponent(typeof(BlockCore))]
 public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 {
 	[Header("Beam Weapon Config")]
 	public GameObject EffectRenderer;
+	public LayerMask HitLayerMask;
 
 	public DamageType DamageType;
 	public bool Continuous;
@@ -24,8 +28,21 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 	public float MaxRange;
 	public float RangeAttenuation;
 
+	private BlockCore _core;
+
 	private float _tickDamage;
+	private ContactFilter2D _raycastFilter;
+	private List<RaycastHit2D> _raycastHits;
+	private Comparer<RaycastHit2D> _hitComparer;
+
 	private int _beamDurationRemaining;
+
+	protected override void Awake()
+	{
+		base.Awake();
+
+		_core = GetComponent<BlockCore>();
+	}
 
 	protected override void Start()
 	{
@@ -36,6 +53,13 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 			(handler, _) => handler.SetColorScheme(ColorContext.ColorScheme)
 		);
 		_tickDamage = Continuous ? Damage * Time.fixedDeltaTime : Damage / BeamDurationTicks;
+		_raycastFilter = new ContactFilter2D
+		{
+			layerMask = HitLayerMask,
+			useLayerMask = true
+		};
+		_raycastHits = new List<RaycastHit2D>();
+		_hitComparer = Comparer<RaycastHit2D>.Create(CompareRaycastHitDistance);
 	}
 
 	public override IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
@@ -51,10 +75,22 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 		{
 			if (Firing)
 			{
+				if (_beamDurationRemaining <= 0)
+				{
+					_beamDurationRemaining = 1;
+					SendBeamDuration();
+				}
+
 				FireBeamTick(_tickDamage * ResourceSatisfactionLevel);
 			}
 			else
 			{
+				if (_beamDurationRemaining > 0)
+				{
+					_beamDurationRemaining = 0;
+					SendBeamDuration();
+				}
+
 				EffectRenderer.gameObject.SetActive(false);
 			}
 		}
@@ -74,9 +110,21 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 		}
 	}
 
+	private void SendBeamDuration()
+	{
+		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
+			gameObject, null,
+			(relay, _) => relay.InvokeBlockRpc(
+				_core.RootLocation, typeof(TurretedBeamWeapon), "SetVisualFiring", RpcTarget.Others,
+				_beamDurationRemaining
+			)
+		);
+	}
+
 	protected override void Fire()
 	{
 		_beamDurationRemaining = BeamDurationTicks;
+		SendBeamDuration();
 	}
 
 	private void FireBeamTick()
@@ -86,14 +134,77 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 
 	private void FireBeamTick(float damage)
 	{
+		ShowBeamVisual();
+	}
+
+	private static int CompareRaycastHitDistance(RaycastHit2D x, RaycastHit2D y)
+	{
+		return 0;
+	}
+
+	public void SetVisualFiring(int ticks)
+	{
+		_beamDurationRemaining = ticks;
+	}
+
+	protected override void VisualFixedUpdate()
+	{
+		if (Continuous)
+		{
+			if (_beamDurationRemaining > 0)
+			{
+				ShowBeamVisual();
+			}
+			else
+			{
+				EffectRenderer.SetActive(false);
+			}
+		}
+		else
+		{
+			if (_beamDurationRemaining > 0)
+			{
+				ShowBeamVisual();
+				_beamDurationRemaining--;
+			}
+			else
+			{
+				EffectRenderer.SetActive(false);
+			}
+		}
+	}
+
+	private void ShowBeamVisual()
+	{
 		Vector3 start = FiringPort.position;
+
+		bool hitTarget = false;
+		Vector3 end = start + FiringPort.up * MaxRange;
+		int count = Physics2D.Raycast(start, FiringPort.up, _raycastFilter, _raycastHits, MaxRange);
+
+		if (count > 0)
+		{
+			Debug.Log($"Visual raycast hit {count} targets");
+			_raycastHits.Sort(0, count, _hitComparer);
+
+			for (int i = 0; i < count; i++)
+			{
+				RaycastHit2D hit = _raycastHits[i];
+				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
+
+				if (target != null && target.OwnerId != GetOwnerId())
+				{
+					hitTarget = true;
+					end = hit.point;
+					break;
+				}
+			}
+		}
 
 		EffectRenderer.gameObject.SetActive(true);
 		ExecuteEvents.Execute<IBeamWeaponVisualEffect>(
 			EffectRenderer, null,
-			(handler, _) => handler.SetBeamPoints(
-				start, start + FiringPort.up * MaxRange, false
-			)
+			(handler, _) => handler.SetBeamPoints(start, end, hitTarget)
 		);
 	}
 
