@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Prototyping
 {
-public class ModListTest : MonoBehaviour
+public class ModLoaderTest : MonoBehaviour
 {
 	private void Start()
 	{

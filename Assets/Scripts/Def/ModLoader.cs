@@ -24,14 +24,14 @@ public static class ModLoader
 		public List<ModListElement> ModList;
 	}
 
-	private static string _modRoot;
+	private static string _modsRoot;
 
 	public static IReadOnlyList<ModListElement> AllMods { get; private set; }
 
 
 	public static void DiscoverMods()
 	{
-		_modRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
+		_modsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
 
 		List<string> modFolders = GetValidModFolders();
 		List<ModListElement> modList = ReadModList();
@@ -47,7 +47,7 @@ public static class ModLoader
 	{
 		List<string> modFolders = new List<string>();
 
-		foreach (string modFolder in Directory.EnumerateDirectories(_modRoot))
+		foreach (string modFolder in Directory.EnumerateDirectories(_modsRoot))
 		{
 			if (File.Exists(Path.Combine(modFolder, "mod.json")))
 			{
@@ -66,7 +66,7 @@ public static class ModLoader
 
 	private static List<ModListElement> ReadModList()
 	{
-		string modListPath = Path.Combine(_modRoot, "modlist.json");
+		string modListPath = Path.Combine(_modsRoot, "modlist.json");
 
 		if (!File.Exists(modListPath)) return new List<ModListElement>();
 
@@ -117,14 +117,14 @@ public static class ModLoader
 
 	private static ModSpec LoadModSpec(string modFolder)
 	{
-		string modDefPath = Path.Combine(_modRoot, modFolder, "mod.json");
+		string modDefPath = Path.Combine(_modsRoot, modFolder, "mod.json");
 		return JsonUtility.FromJson<ModSpec>(File.ReadAllText(modDefPath));
 	}
 
 	private static void SaveModList(List<ModListElement> modList)
 	{
 		string content = JsonUtility.ToJson(new ModListSpec { ModList = modList }, true);
-		File.WriteAllText(Path.Combine(_modRoot, "modlist.json"), content);
+		File.WriteAllText(Path.Combine(_modsRoot, "modlist.json"), content);
 	}
 }
 }
