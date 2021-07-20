@@ -1,9 +1,11 @@
 ﻿using System.IO;
 using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.ObjectFactories;
 
 namespace Syy1125.OberthEffect.Prototyping
 {
@@ -32,6 +34,7 @@ public class ModLoaderTest : MonoBehaviour
 		var deserializer = new DeserializerBuilder()
 			.WithTypeConverter(new Vector2TypeConverter())
 			.WithTypeConverter(new Vector2IntTypeConverter())
+			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
 			.Build();
 		var block = deserializer.Deserialize<BlockSpec>(content);
 		Debug.Log(block);

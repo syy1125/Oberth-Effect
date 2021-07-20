@@ -1,4 +1,4 @@
-BlockId: Block1x1
+BlockId: OberthEffect/Block1x1
 Info:
   ShortName: Block
   FullName: Block 1x1
@@ -16,6 +16,9 @@ Physics:
   CenterOfMass: { "X": 0, "Y": 0 }
   Mass: 1
   MomentOfInertia: 0.1666667
+  BoxCollider:
+    Center: { "X": 0, "Y": 0 }
+    Size: { "X": 1, "Y": 1 }
 Combat:
   MaxHealth: 100
   ArmorValue: 4

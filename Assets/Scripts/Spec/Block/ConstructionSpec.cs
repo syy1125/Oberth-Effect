@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec
+namespace Syy1125.OberthEffect.Spec.Block
 {
 public struct ConstructionSpec
 {
