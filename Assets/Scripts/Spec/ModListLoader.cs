@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec
 {
-public static class ModLoader
+public static class ModListLoader
 {
 	[Serializable]
 	public struct ModListElement

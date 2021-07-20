@@ -1,6 +1,6 @@
 {
-    "name": "Def",
-    "rootNamespace": "",
+    "name": "Spec",
+    "rootNamespace": "Syy1125.OberthEffect.Spec",
     "references": [
         "GUID:b3f49edfedc855a48aa1a9e5d3cba438"
     ],
