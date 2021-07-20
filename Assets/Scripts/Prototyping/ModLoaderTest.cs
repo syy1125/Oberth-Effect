@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;

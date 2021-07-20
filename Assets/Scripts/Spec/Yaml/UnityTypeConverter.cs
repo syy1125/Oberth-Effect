@@ -6,7 +6,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace Syy1125.OberthEffect.Spec
+namespace Syy1125.OberthEffect.Spec.Yaml
 {
 public sealed class Vector2TypeConverter : IYamlTypeConverter
 {

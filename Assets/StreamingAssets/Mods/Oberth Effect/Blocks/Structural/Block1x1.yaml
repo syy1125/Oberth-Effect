@@ -1,10 +1,10 @@
 BlockId: Block1x1
-Designer:
+Info:
   ShortName: Block
   FullName: Block 1x1
+Construction:
   ShowInDesigner: true
   AllowErase: true
-Physics:
   BoundsMin: { "X": 0, "Y": 0 }
   BoundsMax: { "X": 1, "Y": 1 }
   AttachmentPoints:
@@ -12,6 +12,7 @@ Physics:
     - { "X": 1, "Y": 0 }
     - { "X": 0, "Y": -1 }
     - { "X": 0, "Y": 1 }
+Physics:
   CenterOfMass: { "X": 0, "Y": 0 }
   Mass: 1
   MomentOfInertia: 0.1666667
