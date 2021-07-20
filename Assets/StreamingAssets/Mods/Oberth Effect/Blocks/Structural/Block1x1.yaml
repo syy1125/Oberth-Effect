@@ -1,7 +1,10 @@
 BlockId: OberthEffect/Block1x1
+Enabled: true
 Info:
   ShortName: Block
   FullName: Block 1x1
+Renderers:
+  - TextureId: OberthEffect/Square
 Construction:
   ShowInDesigner: true
   AllowErase: true
@@ -17,7 +20,7 @@ Physics:
   Mass: 1
   MomentOfInertia: 0.1666667
   BoxCollider:
-    Center: { "X": 0, "Y": 0 }
+    Offset: { "X": 0, "Y": 0 }
     Size: { "X": 1, "Y": 1 }
 Combat:
   MaxHealth: 100

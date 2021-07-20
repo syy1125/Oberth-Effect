@@ -37,7 +37,6 @@ public class ModLoaderTest : MonoBehaviour
 			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
 			.Build();
 		var block = deserializer.Deserialize<BlockSpec>(content);
-		Debug.Log(block);
 	}
 }
 }
