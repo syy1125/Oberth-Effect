@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Def
+namespace Syy1125.OberthEffect.Spec
 {
 public static class ModLoader
 {

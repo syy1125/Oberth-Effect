@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Syy1125.OberthEffect.Def
+namespace Syy1125.OberthEffect.Spec
 {
 [Serializable]
 public struct ModSpec
