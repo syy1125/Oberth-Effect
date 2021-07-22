@@ -1,7 +1,7 @@
 {
     "ModList": [
         {
-            "Folder": "Oberth Effect",
+            "Directory": "Oberth Effect",
             "Enabled": true
         }
     ]

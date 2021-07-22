@@ -13,12 +13,12 @@ public class ModLoaderTest : MonoBehaviour
 {
 	private void Start()
 	{
-		ModListLoader.DiscoverMods();
-		Debug.Log(ModListLoader.AllMods.Count);
-		foreach (ModListLoader.ModListElement element in ModListLoader.AllMods)
+		ModLoader.LoadModList();
+		Debug.Log(ModLoader.AllMods.Count);
+		foreach (ModLoader.ModListElement element in ModLoader.AllMods)
 		{
 			Debug.Log(
-				$"{element.Folder} {element.Enabled} / {element.Mod.DisplayName} {element.Mod.Version} {element.Mod.Description}"
+				$"{element.Directory} {element.Enabled} / {element.Mod.DisplayName} {element.Mod.Version} {element.Mod.Description}"
 			);
 		}
 
