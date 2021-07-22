@@ -3,7 +3,7 @@
 public struct TextureSpec
 {
 	public string TextureId;
-	public float ImagePath;
+	public string ImagePath;
 	public float PixelsPerUnit;
 	public bool ApplyVehicleColors;
 }
