@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
 namespace Syy1125.OberthEffect.Spec.Yaml
 {
+public class YamlMergeException : YamlException
+{
+	public YamlMergeException(string message) : base(message)
+	{}
+}
+
 public static class YamlHelper
 {
+	public static YamlDocument DeepMerge(YamlDocument left, YamlDocument right)
+	{
+		return new YamlDocument(DeepMerge((YamlMappingNode) left.RootNode, (YamlMappingNode) right.RootNode));
+	}
+
 	public static YamlMappingNode DeepMerge(YamlMappingNode left, YamlMappingNode right)
 	{
 		var output = DeepCopy(left);
@@ -31,7 +43,7 @@ public static class YamlHelper
 								}
 								else goto default;
 							default:
-								throw new ArgumentException(
+								throw new YamlMergeException(
 									$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
 								);
 						}
@@ -44,7 +56,7 @@ public static class YamlHelper
 						}
 						else
 						{
-							throw new ArgumentException(
+							throw new YamlMergeException(
 								$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
 							);
 						}
@@ -64,7 +76,7 @@ public static class YamlHelper
 								}
 								else goto default;
 							default:
-								throw new ArgumentException(
+								throw new YamlMergeException(
 									$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
 								);
 						}
@@ -81,6 +93,11 @@ public static class YamlHelper
 		}
 
 		return output;
+	}
+
+	public static YamlDocument DeepCopy(YamlDocument document)
+	{
+		return new YamlDocument(DeepCopy(document.RootNode));
 	}
 
 	public static YamlNode DeepCopy(YamlNode node)

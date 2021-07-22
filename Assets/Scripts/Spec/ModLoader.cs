@@ -1,17 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
+using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.ObjectFactories;
 
 namespace Syy1125.OberthEffect.Spec
 {
+internal class InvalidSpecStructureException : Exception
+{}
+
 public static class ModLoader
 {
 	[Serializable]
 	public struct ModListElement
 	{
+		// Folder name only, not full path
 		public string Directory;
 		public bool Enabled;
 
@@ -131,6 +140,182 @@ public static class ModLoader
 	{
 		string content = JsonUtility.ToJson(new ModListSpec { ModList = modList }, true);
 		File.WriteAllText(Path.Combine(_modsRoot, "modlist.json"), content);
+	}
+
+	#endregion
+
+	#region Mod Content
+
+	public struct SpecInstance<T>
+	{
+		public T Data;
+		public List<string> OverrideOrder;
+	}
+
+	public static IReadOnlyCollection<SpecInstance<BlockSpec>> AllBlocks;
+
+	public static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
+
+	private class GameSpecDocument
+	{
+		public YamlDocument SpecDocument;
+		public List<string> OverrideOrder;
+	}
+
+	public static void LoadAllEnabledContent()
+	{
+		var blockDocuments = new Dictionary<string, GameSpecDocument>();
+		var textureDocuments = new Dictionary<string, GameSpecDocument>();
+
+		foreach (ModListElement mod in AllMods)
+		{
+			if (!mod.Enabled) continue;
+
+			LoadModContent(
+				mod, "Blocks", null,
+				nameof(BlockSpec.BlockId), blockDocuments
+			);
+
+			LoadModContent(
+				mod, "Textures",
+				(filePath, document) =>
+				{
+					var mappingNode = (YamlMappingNode) document.RootNode;
+
+					if (mappingNode.Children.TryGetValue(nameof(TextureSpec.ImagePath), out YamlNode node))
+					{
+						mappingNode.Children[nameof(TextureSpec.ImagePath)] = new YamlScalarNode(
+							Path.Combine(filePath, ((YamlScalarNode) node).Value)
+						);
+					}
+				},
+				nameof(TextureSpec.TextureId), textureDocuments
+			);
+		}
+
+		var deserializer = new DeserializerBuilder()
+			.WithTypeConverter(new Vector2TypeConverter())
+			.WithTypeConverter(new Vector2IntTypeConverter())
+			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
+			.Build();
+
+		AllBlocks = blockDocuments.Values
+			.Select(
+				document => new SpecInstance<BlockSpec>
+				{
+					Data = deserializer.Deserialize<BlockSpec>(
+						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
+					),
+					OverrideOrder = document.OverrideOrder
+				}
+			)
+			.ToList();
+
+		AllTextures = textureDocuments.Values
+			.Select(
+				document => new SpecInstance<TextureSpec>
+				{
+					Data = deserializer.Deserialize<TextureSpec>(
+						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
+					),
+					OverrideOrder = document.OverrideOrder
+				}
+			)
+			.ToList();
+	}
+
+	private static void LoadModContent(
+		ModListElement mod, string subDirectory, Action<string, YamlDocument> preprocess,
+		string idKey, IDictionary<string, GameSpecDocument> result
+	)
+	{
+		string contentRoot = Path.Combine(_modsRoot, mod.Directory, subDirectory);
+
+		foreach (string file in Directory.EnumerateFiles(contentRoot, "*.yaml", SearchOption.AllDirectories))
+		{
+			StreamReader reader = File.OpenText(file);
+
+			// Each file should have strong exception guarantee
+			// Either all documents in the file load and merge successfully, or none of them do.
+
+			try
+			{
+				YamlStream yaml = new YamlStream();
+				yaml.Load(reader);
+
+				var altered = new Dictionary<string, YamlDocument>();
+
+				foreach (YamlDocument document in yaml.Documents)
+				{
+					preprocess?.Invoke(file, document);
+
+					try
+					{
+						string id = ((YamlScalarNode) document.RootNode[idKey]).Value;
+
+						if (altered.TryGetValue(id, out YamlDocument current))
+						{
+							altered[id] = YamlHelper.DeepMerge(current, document);
+						}
+						else if (result.TryGetValue(id, out GameSpecDocument original))
+						{
+							altered.Add(id, YamlHelper.DeepMerge(original.SpecDocument, document));
+						}
+						else
+						{
+							altered.Add(id, YamlHelper.DeepCopy(document));
+						}
+					}
+					catch (InvalidCastException)
+					{
+						throw new InvalidSpecStructureException();
+					}
+					catch (YamlMergeException)
+					{
+						throw new InvalidSpecStructureException();
+					}
+				}
+
+				// At this point, merge attempts are all successful, and we shouldn't see any more exceptions popping up.
+				// (We can't really do anything anyway if dictionary operations and assignment operations are failing)
+				foreach (KeyValuePair<string, YamlDocument> entry in altered)
+				{
+					if (result.TryGetValue(entry.Key, out GameSpecDocument original))
+					{
+						original.SpecDocument = entry.Value;
+						original.OverrideOrder.Add(mod.Mod.DisplayName);
+					}
+					else
+					{
+						result.Add(
+							entry.Key, new GameSpecDocument
+							{
+								SpecDocument = entry.Value,
+								OverrideOrder = new List<string>(new[] { mod.Mod.DisplayName })
+							}
+						);
+					}
+				}
+			}
+			catch (YamlException)
+			{
+				Debug.LogError($"Failed to parse yaml from {file}, skipping. This is most likely a mod problem.");
+			}
+			catch (InvalidSpecStructureException)
+			{
+				Debug.LogError($"Invalid spec structure in {file}, skipping. This is most likely a mod problem.");
+			}
+			catch (Exception)
+			{
+				Debug.Log(
+					$"Unexpected error when loading file {file}. This is a problem with mod loading system!"
+				);
+			}
+			finally
+			{
+				reader.Dispose();
+			}
+		}
 	}
 
 	#endregion

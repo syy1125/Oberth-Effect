@@ -13,8 +13,11 @@ public class ModLoaderTest : MonoBehaviour
 {
 	private void Start()
 	{
+		ModLoader.Init();
+
 		ModLoader.LoadModList();
 		Debug.Log(ModLoader.AllMods.Count);
+
 		foreach (ModLoader.ModListElement element in ModLoader.AllMods)
 		{
 			Debug.Log(
@@ -22,21 +25,9 @@ public class ModLoaderTest : MonoBehaviour
 			);
 		}
 
-		string content = File.ReadAllText(
-			Path.Combine(
-				Application.streamingAssetsPath,
-				"Mods", "Oberth Effect", "Blocks", "Structural", "Block1x1.yaml"
-			)
-		);
-		YamlStream yaml = new YamlStream();
-		yaml.Load(new StringReader(content));
+		ModLoader.LoadAllEnabledContent();
 
-		var deserializer = new DeserializerBuilder()
-			.WithTypeConverter(new Vector2TypeConverter())
-			.WithTypeConverter(new Vector2IntTypeConverter())
-			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
-			.Build();
-		var block = deserializer.Deserialize<BlockSpec>(content);
+		Debug.Log($"Block count {ModLoader.AllBlocks.Count} texture count {ModLoader.AllTextures.Count}");
 	}
 }
 }

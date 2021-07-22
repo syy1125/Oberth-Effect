@@ -52,6 +52,7 @@ internal static class YamlStreamConverter
 	private static IEnumerable<ParsingEvent> ConvertToEventStream(YamlSequenceNode sequence)
 	{
 		yield return new SequenceStart(sequence.Anchor, sequence.Tag, false, sequence.Style);
+
 		foreach (var node in sequence.Children)
 		{
 			foreach (var evt in ConvertToEventStream(node))
@@ -66,6 +67,7 @@ internal static class YamlStreamConverter
 	private static IEnumerable<ParsingEvent> ConvertToEventStream(YamlMappingNode mapping)
 	{
 		yield return new MappingStart(mapping.Anchor, mapping.Tag, false, mapping.Style);
+
 		foreach (var pair in mapping.Children)
 		{
 			foreach (var evt in ConvertToEventStream(pair.Key))
