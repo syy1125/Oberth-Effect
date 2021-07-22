@@ -6,33 +6,116 @@ namespace Syy1125.OberthEffect.Spec.Yaml
 {
 public static class YamlHelper
 {
-	public static void MergeMappingNodes(YamlMappingNode source, YamlMappingNode overrides)
+	public static YamlMappingNode DeepMerge(YamlMappingNode left, YamlMappingNode right)
 	{
-		foreach (KeyValuePair<YamlNode, YamlNode> entry in overrides.Children)
+		var output = DeepCopy(left);
+
+		foreach (KeyValuePair<YamlNode, YamlNode> entry in right.Children)
 		{
-			if (!source.Children.ContainsKey(entry.Key))
+			if (output.Children.TryGetValue(entry.Key, out YamlNode value))
 			{
-				source.Children[entry.Key] = entry.Value;
-				continue;
-			}
+				switch (value)
+				{
+					case YamlMappingNode leftMappingNode:
+						// A mapping node can be merged with another mapping node, or set to null.
+						switch (entry.Value)
+						{
+							case YamlMappingNode rightMappingNode:
+								DeepMerge(leftMappingNode, rightMappingNode);
+								break;
+							case YamlScalarNode rightScalarNode:
+								if (rightScalarNode.Value == null)
+								{
+									output.Children[entry.Key] = new YamlScalarNode(null);
+									break;
+								}
+								else goto default;
+							default:
+								throw new ArgumentException(
+									$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
+								);
+						}
 
-			YamlNode sourceChild = source.Children[entry.Key];
-			YamlMappingNode sourceChildMap = sourceChild as YamlMappingNode;
-			YamlMappingNode overrideChildMap = entry.Value as YamlMappingNode;
+						break;
+					case YamlSequenceNode leftSequenceNode:
+						if (entry.Value is YamlSequenceNode rightSequenceNode)
+						{
+							output.Children[entry.Key] = DeepCopy(rightSequenceNode);
+						}
+						else
+						{
+							throw new ArgumentException(
+								$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
+							);
+						}
 
-			if (sourceChildMap != null && overrideChildMap != null)
-			{
-				MergeMappingNodes(sourceChildMap, overrideChildMap);
-			}
-			else if (sourceChildMap == null && overrideChildMap == null)
-			{
-				source.Children[entry.Key] = entry.Value;
+						break;
+					case YamlScalarNode leftScalarNode:
+						switch (entry.Value)
+						{
+							case YamlScalarNode rightScalarNode:
+								output.Children[entry.Key] = new YamlScalarNode(rightScalarNode.Value);
+								break;
+							case YamlMappingNode rightMappingNode:
+								if (leftScalarNode.Value == null)
+								{
+									output.Children[entry.Key] = DeepCopy(rightMappingNode);
+									break;
+								}
+								else goto default;
+							default:
+								throw new ArgumentException(
+									$"Cannot merge {value.NodeType}Node with {entry.Value.NodeType}Node"
+								);
+						}
+
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(value));
+				}
 			}
 			else
 			{
-				throw new ArgumentException("Cannot merge mapping and non-mapping node");
+				output.Children.Add(entry.Key, DeepCopy(entry.Value));
 			}
 		}
+
+		return output;
+	}
+
+	public static YamlNode DeepCopy(YamlNode node)
+	{
+		return node switch
+		{
+			YamlMappingNode mappingNode => DeepCopy(mappingNode),
+			YamlSequenceNode sequenceNode => DeepCopy(sequenceNode),
+			YamlScalarNode scalarNode => new YamlScalarNode(scalarNode.Value),
+			_ => throw new ArgumentOutOfRangeException(nameof(node))
+		};
+	}
+
+	public static YamlMappingNode DeepCopy(YamlMappingNode node)
+	{
+		var output = new YamlMappingNode();
+
+		foreach (KeyValuePair<YamlNode, YamlNode> entry in node.Children)
+		{
+			output.Children[entry.Key] = DeepCopy(entry.Value);
+		}
+
+		return output;
+	}
+
+	public static YamlNode DeepCopy(YamlSequenceNode node)
+	{
+		var output = new YamlSequenceNode();
+
+		foreach (YamlNode childNode in node.Children)
+		{
+			output.Children.Add(DeepCopy(childNode));
+		}
+
+		return output;
 	}
 }
 }
