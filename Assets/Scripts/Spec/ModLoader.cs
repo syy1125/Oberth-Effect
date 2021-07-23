@@ -148,13 +148,19 @@ public static class ModLoader
 
 	public struct SpecInstance<T>
 	{
-		public T Data;
+		public T Spec;
 		public List<string> OverrideOrder;
 	}
 
+	private static Dictionary<string, GameSpecDocument> _blockDocuments;
 	public static IReadOnlyCollection<SpecInstance<BlockSpec>> AllBlocks;
 
+	private static Dictionary<string, GameSpecDocument> _textureDocuments;
 	public static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
+
+	public static uint Checksum { get; private set; }
+
+	public static bool DataReady { get; private set; }
 
 	private class GameSpecDocument
 	{
@@ -164,8 +170,17 @@ public static class ModLoader
 
 	public static void LoadAllEnabledContent()
 	{
-		var blockDocuments = new Dictionary<string, GameSpecDocument>();
-		var textureDocuments = new Dictionary<string, GameSpecDocument>();
+		LoadDocuments();
+		ParseDocuments();
+		ValidateData();
+		ComputeChecksum();
+		DataReady = true;
+	}
+
+	private static void LoadDocuments()
+	{
+		_blockDocuments = new Dictionary<string, GameSpecDocument>();
+		_textureDocuments = new Dictionary<string, GameSpecDocument>();
 
 		foreach (ModListElement mod in AllMods)
 		{
@@ -173,7 +188,7 @@ public static class ModLoader
 
 			LoadModContent(
 				mod, "Blocks", null,
-				nameof(BlockSpec.BlockId), blockDocuments
+				nameof(BlockSpec.BlockId), _blockDocuments
 			);
 
 			LoadModContent(
@@ -185,43 +200,16 @@ public static class ModLoader
 					if (mappingNode.Children.TryGetValue(nameof(TextureSpec.ImagePath), out YamlNode node))
 					{
 						mappingNode.Children[nameof(TextureSpec.ImagePath)] = new YamlScalarNode(
-							Path.Combine(filePath, ((YamlScalarNode) node).Value)
+							Path.Combine(
+								Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
+								((YamlScalarNode) node).Value
+							)
 						);
 					}
 				},
-				nameof(TextureSpec.TextureId), textureDocuments
+				nameof(TextureSpec.TextureId), _textureDocuments
 			);
 		}
-
-		var deserializer = new DeserializerBuilder()
-			.WithTypeConverter(new Vector2TypeConverter())
-			.WithTypeConverter(new Vector2IntTypeConverter())
-			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
-			.Build();
-
-		AllBlocks = blockDocuments.Values
-			.Select(
-				document => new SpecInstance<BlockSpec>
-				{
-					Data = deserializer.Deserialize<BlockSpec>(
-						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
-					),
-					OverrideOrder = document.OverrideOrder
-				}
-			)
-			.ToList();
-
-		AllTextures = textureDocuments.Values
-			.Select(
-				document => new SpecInstance<TextureSpec>
-				{
-					Data = deserializer.Deserialize<TextureSpec>(
-						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
-					),
-					OverrideOrder = document.OverrideOrder
-				}
-			)
-			.ToList();
 	}
 
 	private static void LoadModContent(
@@ -255,15 +243,15 @@ public static class ModLoader
 
 						if (altered.TryGetValue(id, out YamlDocument current))
 						{
-							altered[id] = YamlHelper.DeepMerge(current, document);
+							altered[id] = YamlMergeHelper.DeepMerge(current, document);
 						}
 						else if (result.TryGetValue(id, out GameSpecDocument original))
 						{
-							altered.Add(id, YamlHelper.DeepMerge(original.SpecDocument, document));
+							altered.Add(id, YamlMergeHelper.DeepMerge(original.SpecDocument, document));
 						}
 						else
 						{
-							altered.Add(id, YamlHelper.DeepCopy(document));
+							altered.Add(id, YamlMergeHelper.DeepCopy(document));
 						}
 					}
 					catch (InvalidCastException)
@@ -316,6 +304,84 @@ public static class ModLoader
 				reader.Dispose();
 			}
 		}
+	}
+
+	private static void ParseDocuments()
+	{
+		var deserializer = new DeserializerBuilder()
+			.WithTypeConverter(new Vector2TypeConverter())
+			.WithTypeConverter(new Vector2IntTypeConverter())
+			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
+			.Build();
+
+		AllBlocks = _blockDocuments.Values
+			.Select(
+				document => new SpecInstance<BlockSpec>
+				{
+					Spec = deserializer.Deserialize<BlockSpec>(
+						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
+					),
+					OverrideOrder = document.OverrideOrder
+				}
+			)
+			.ToList();
+
+		AllTextures = _textureDocuments.Values
+			.Select(
+				document => new SpecInstance<TextureSpec>
+				{
+					Spec = deserializer.Deserialize<TextureSpec>(
+						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
+					),
+					OverrideOrder = document.OverrideOrder
+				}
+			)
+			.ToList();
+	}
+
+	private static void ValidateData()
+	{
+		HashSet<string> textureIds = new HashSet<string>(AllTextures.Select(instance => instance.Spec.TextureId));
+
+		foreach (SpecInstance<BlockSpec> instance in AllBlocks)
+		{
+			foreach (RendererSpec renderer in instance.Spec.Renderers)
+			{
+				if (!textureIds.Contains(renderer.TextureId))
+				{
+					Debug.LogError(
+						$"Block {instance.Spec.BlockId} references texture {renderer.TextureId} which does not exist"
+					);
+				}
+			}
+		}
+
+		foreach (SpecInstance<TextureSpec> instance in AllTextures)
+		{
+			if (!File.Exists(instance.Spec.ImagePath))
+			{
+				Debug.LogError(
+					$"Texture {instance.Spec.TextureId} references image at {instance.Spec.ImagePath} which does not exist"
+				);
+			}
+		}
+	}
+
+	private static void ComputeChecksum()
+	{
+		uint blockSpecChecksum = GetChecksum(_blockDocuments.Values);
+		uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
+
+		Checksum = blockSpecChecksum + textureSpecChecksum;
+	}
+
+	private static uint GetChecksum(IEnumerable<GameSpecDocument> values)
+	{
+		return values
+			.AsParallel()
+			.Select(document => YamlChecksum.GetChecksum(document.SpecDocument))
+			.AsSequential()
+			.Aggregate(0u, (sum, item) => sum + item);
 	}
 
 	#endregion

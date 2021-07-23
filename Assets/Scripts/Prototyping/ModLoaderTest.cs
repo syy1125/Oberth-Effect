@@ -1,11 +1,5 @@
-﻿using System.IO;
-using Syy1125.OberthEffect.Spec;
-using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.Spec.Yaml;
+﻿using Syy1125.OberthEffect.Spec;
 using UnityEngine;
-using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.ObjectFactories;
 
 namespace Syy1125.OberthEffect.Prototyping
 {
@@ -28,6 +22,7 @@ public class ModLoaderTest : MonoBehaviour
 		ModLoader.LoadAllEnabledContent();
 
 		Debug.Log($"Block count {ModLoader.AllBlocks.Count} texture count {ModLoader.AllTextures.Count}");
+		Debug.Log($"Game checksum {ModLoader.Checksum:x}");
 	}
 }
 }

@@ -11,7 +11,7 @@ public class YamlMergeException : YamlException
 	{}
 }
 
-public static class YamlHelper
+public static class YamlMergeHelper
 {
 	public static YamlDocument DeepMerge(YamlDocument left, YamlDocument right)
 	{
