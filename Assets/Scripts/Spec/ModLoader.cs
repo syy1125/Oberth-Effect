@@ -311,7 +311,7 @@ public static class ModLoader
 		var deserializer = new DeserializerBuilder()
 			.WithTypeConverter(new Vector2TypeConverter())
 			.WithTypeConverter(new Vector2IntTypeConverter())
-			.WithObjectFactory(new BlockSpecFactory(new DefaultObjectFactory()))
+			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())))
 			.Build();
 
 		AllBlocks = _blockDocuments.Values
