@@ -1,0 +1,127 @@
+﻿{
+    "$id": "BlockSpecSchema",
+    "type": "object",
+    "required": ["BlockId"],
+    "properties": {
+        "BlockId": {
+            "type": "string"
+        },
+        "Enabled": {
+            "type": "boolean"
+        },
+        "Info": {
+            "type": "object",
+            "properties": {
+                "ShortName": {
+                    "type": "string"
+                },
+                "FullName": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "PreviewScale": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "Renderers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "TextureId": {
+                        "type": "string"
+                    },
+                    "Offset": {
+                        "$ref": "Vector2Schema.json"
+                    },
+                    "Rotation": {
+                        "type": "number"
+                    },
+                    "Scale": {
+                        "$ref": "Vector2Schema.json"
+                    }
+                }
+            }
+        },
+        "Construction": {
+            "type": "object",
+            "properties": {
+                "ShowInDesigner": {
+                    "type": "boolean"
+                },
+                "AllowErase": {
+                    "type": "boolean"
+                },
+                "BoundsMin": {
+                    "$ref": "Vector2IntSchema.json"
+                },
+                "BoundsMax": {
+                    "$ref": "Vector2IntSchema.json"
+                },
+                "AttachmentPoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "Vector2IntSchema.json"
+                    }
+                }
+            }
+        },
+        "Physics": {
+            "type": "object",
+            "properties": {
+                "CenterOfMass": {
+                    "$ref": "Vector2Schema.json"
+                },
+                "Mass": {
+                    "type": "number"
+                },
+                "MomentOfInertia": {
+                    "type": "number"
+                },
+                "BoxCollider": {
+                    "type": "object",
+                    "properties": {
+                        "Offset": {
+                            "$ref": "Vector2Schema.json"
+                        },
+                        "Size": {
+                            "$ref": "Vector2Schema.json"
+                        }
+                    }
+                },
+                "PolygonCollider": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "Path": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "Vector2Schema.json"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Combat": {
+            "type": "object",
+            "properties": {
+                "MaxHealth": {
+                    "type": "number"
+                },
+                "ArmorValue": {
+                    "type": "number"
+                },
+                "IntegrityScore": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}
