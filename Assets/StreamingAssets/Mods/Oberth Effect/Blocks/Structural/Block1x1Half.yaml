@@ -1,0 +1,28 @@
+﻿BlockId: OberthEffect/Block1x1Half
+Enabled: true
+Info:
+  ShortName: Half Block
+  FullName: Half Block 1x1
+Renderers:
+  - TextureId: OberthEffect/Square
+    Offset: { X: 0, Y: -0.25 }
+    Scale: { X: 1, Y: 0.5 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: 0, Y: -0.25 }
+  Mass: 0.5
+  MomentOfInertia: 0.0520833
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 0.5 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 4
