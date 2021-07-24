@@ -146,17 +146,11 @@ public static class ModLoader
 
 	#region Mod Content
 
-	public struct SpecInstance<T>
-	{
-		public T Spec;
-		public List<string> OverrideOrder;
-	}
-
 	private static Dictionary<string, GameSpecDocument> _blockDocuments;
-	public static IReadOnlyCollection<SpecInstance<BlockSpec>> AllBlocks;
+	internal static IReadOnlyCollection<SpecInstance<BlockSpec>> AllBlocks;
 
 	private static Dictionary<string, GameSpecDocument> _textureDocuments;
-	public static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
+	internal static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
 
 	public static uint Checksum { get; private set; }
 

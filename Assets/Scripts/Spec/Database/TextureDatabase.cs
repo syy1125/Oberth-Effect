@@ -10,7 +10,7 @@ public class TextureDatabase : MonoBehaviour
 {
 	public static TextureDatabase Instance { get; private set; }
 
-	private Dictionary<string, TextureSpec> _specs;
+	private Dictionary<string, SpecInstance<TextureSpec>> _specs;
 	private Dictionary<string, Sprite> _sprites;
 
 	private void Awake()
@@ -27,8 +27,16 @@ public class TextureDatabase : MonoBehaviour
 		}
 
 		_specs = ModLoader.AllTextures
-			.ToDictionary(instance => instance.Spec.TextureId, instance => instance.Spec);
+			.ToDictionary(instance => instance.Spec.TextureId, instance => instance);
 		_sprites = new Dictionary<string, Sprite>();
+	}
+
+	private void OnDestroy()
+	{
+		if (Instance == this)
+		{
+			Instance = null;
+		}
 	}
 
 	public bool HasTexture(string textureId)
@@ -36,7 +44,7 @@ public class TextureDatabase : MonoBehaviour
 		return _specs.ContainsKey(textureId);
 	}
 
-	public TextureSpec GetTextureSpec(string textureId)
+	public SpecInstance<TextureSpec> GetTextureSpec(string textureId)
 	{
 		return _specs[textureId];
 	}
@@ -45,14 +53,15 @@ public class TextureDatabase : MonoBehaviour
 	{
 		if (!_sprites.TryGetValue(textureId, out Sprite sprite))
 		{
-			var spec = _specs[textureId];
+			var instance = _specs[textureId];
 
 			// Reference: https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html
 			var texture = new Texture2D(2, 2);
-			texture.LoadImage(File.ReadAllBytes(spec.ImagePath));
+			texture.LoadImage(File.ReadAllBytes(instance.Spec.ImagePath));
 
 			sprite = Sprite.Create(
-				texture, new Rect(0f, 0f, texture.width, texture.height), spec.Pivot, spec.PixelsPerUnit
+				texture, new Rect(0f, 0f, texture.width, texture.height),
+				instance.Spec.Pivot, instance.Spec.PixelsPerUnit
 			);
 			_sprites.Add(textureId, sprite);
 		}

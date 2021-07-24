@@ -1,4 +1,4 @@
-﻿using Vector2 = System.Numerics.Vector2;
+﻿using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block.Physics
 {
