@@ -1,0 +1,34 @@
+﻿BlockId: OberthEffect/Slope2x1RightBack
+Enabled: true
+Info:
+  ShortName: R Slope Back
+  FullName: Slope 2x1 Right Back
+Renderers:
+  - TextureId: OberthEffect/Square
+    Offset: { X: -0.25, Y: 0 }
+    Scale: { X: 0.5, Y: 1 }
+  - TextureId: OberthEffect/Slope
+    Offset: { X: 0.25, Y: 0 }
+    Scale: { X: 0.5, Y: 1 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: -0.1111111, Y: -0.05555556 }
+  Mass: 0.75
+  MomentOfInertia: 0.103009
+  PolygonCollider:
+    - Path:
+        - { X: -0.5, Y: -0.5 }
+        - { X: -0.5, Y: 0.5 }
+        - { X: 0, Y: 0.5 }
+        - { X: 0.5, Y: -0.5 }
+Combat:
+  MaxHealth: 75
+  ArmorValue: 4

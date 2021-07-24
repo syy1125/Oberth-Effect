@@ -1,0 +1,29 @@
+﻿BlockId: OberthEffect/Slope2x1RightFront
+Enabled: true
+Info:
+  ShortName: R Slope Front
+  FullName: Slope 2x1 Right Front
+Renderers:
+  - TextureId: OberthEffect/Slope
+    Offset: { X: -0.25, Y: 0 }
+    Scale: { X: 0.5, Y: 1 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: -0.3333333, Y: -0.1666667 }
+  Mass: 0.25
+  MomentOfInertia: 0.0173611
+  PolygonCollider:
+    - Path:
+        - { X: -0.5, Y: -0.5 }
+        - { X: -0.5, Y: 0.5 }
+        - { X: 0, Y: -0.5 }
+Combat:
+  MaxHealth: 25
+  ArmorValue: 4

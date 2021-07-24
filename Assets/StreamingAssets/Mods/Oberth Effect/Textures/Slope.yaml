@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/Slope
+ImagePath: ./Slope.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true
