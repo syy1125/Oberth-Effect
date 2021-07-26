@@ -6,5 +6,7 @@ public struct VehicleResourceSpec
 	public string DisplayName;
 	public string ShortName;
 	public string DisplayColor;
+
+	public string WrapColorTag(string content) => $"<color=\"{DisplayColor}\">{content}</color>";
 }
 }

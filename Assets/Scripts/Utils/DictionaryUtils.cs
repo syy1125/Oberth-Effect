@@ -4,15 +4,15 @@ namespace Syy1125.OberthEffect.Utils
 {
 public static class DictionaryUtils
 {
-	public static void SumDictionaries<T>(IEnumerable<IDictionary<T, float>> src, IDictionary<T, float> dst)
+	public static void SumDictionaries<T>(IEnumerable<IReadOnlyDictionary<T, float>> src, IDictionary<T, float> dst)
 	{
-		foreach (IDictionary<T, float> d in src)
+		foreach (IReadOnlyDictionary<T, float> d in src)
 		{
 			AddDictionary(d, dst);
 		}
 	}
 
-	public static void AddDictionary<T>(IDictionary<T, float> src, IDictionary<T, float> dst)
+	public static void AddDictionary<T>(IReadOnlyDictionary<T, float> src, IDictionary<T, float> dst)
 	{
 		foreach (KeyValuePair<T, float> pair in src)
 		{

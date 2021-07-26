@@ -342,6 +342,8 @@ public static class ModLoader
 	private static void ValidateData()
 	{
 		HashSet<string> textureIds = new HashSet<string>(AllTextures.Select(instance => instance.Spec.TextureId));
+		HashSet<string> resourceIds =
+			new HashSet<string>(AllVehicleResources.Select(instance => instance.Spec.ResourceId));
 
 		foreach (SpecInstance<BlockSpec> instance in AllBlocks)
 		{
@@ -352,6 +354,32 @@ public static class ModLoader
 					Debug.LogError(
 						$"Block {instance.Spec.BlockId} references texture {renderer.TextureId} which does not exist"
 					);
+				}
+			}
+
+			if (instance.Spec.Propulsion.Engine != null)
+			{
+				foreach (string key in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
+				{
+					if (!resourceIds.Contains(key))
+					{
+						Debug.LogError(
+							$"Block {instance.Spec.BlockId} references VehicleResource {key} which does not exist"
+						);
+					}
+				}
+			}
+
+			if (instance.Spec.Propulsion.OmniThruster != null)
+			{
+				foreach (string key in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
+				{
+					if (!resourceIds.Contains(key))
+					{
+						Debug.LogError(
+							$"Block {instance.Spec.BlockId} references VehicleResource {key} which does not exist"
+						);
+					}
 				}
 			}
 		}

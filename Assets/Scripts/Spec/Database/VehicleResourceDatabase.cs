@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -34,6 +35,14 @@ public class VehicleResourceDatabase : MonoBehaviour
 	public SpecInstance<VehicleResourceSpec> GetResourceSpec(string resourceId)
 	{
 		return _specs[resourceId];
+	}
+
+	public IEnumerable<string> FormatResourceDict(IReadOnlyDictionary<string, float> dict)
+	{
+		return dict
+			.Where(entry => HasResource(entry.Key))
+			.Select(entry => new Tuple<VehicleResourceSpec, float>(GetResourceSpec(entry.Key).Spec, entry.Value))
+			.Select(entry => entry.Item1.WrapColorTag($"{entry.Item2:0.#} {entry.Item1.DisplayColor}"));
 	}
 }
 }
