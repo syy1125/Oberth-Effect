@@ -13,8 +13,8 @@ public class TextureDatabase : MonoBehaviour
 	private Dictionary<string, SpecInstance<TextureSpec>> _specs;
 	private Dictionary<string, Sprite> _sprites;
 
-	private Material _vehicleBlockMaterial;
-	private Material _propulsionParticleMaterial;
+	public Material VehicleBlockMaterial;
+	public Material DefaultParticleMaterial;
 
 	private void Awake()
 	{
@@ -70,18 +70,6 @@ public class TextureDatabase : MonoBehaviour
 		}
 
 		return sprite;
-	}
-
-	public Material GetVehicleColorBlockMaterial()
-	{
-		_vehicleBlockMaterial ??= new Material(Shader.Find("Shader Graphs/Vehicle Block"));
-		return _vehicleBlockMaterial;
-	}
-
-	public Material GetPropulsionParticleMaterial()
-	{
-		_propulsionParticleMaterial ??= new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
-		return _propulsionParticleMaterial;
 	}
 }
 }
