@@ -1,5 +1,6 @@
 ﻿using System;
 using Syy1125.OberthEffect.Spec.Block.Physics;
+using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
@@ -14,6 +15,7 @@ public struct BlockSpec
 	public ConstructionSpec Construction;
 	public PhysicsSpec Physics;
 	public CombatSpec Combat;
+	public PropulsionSpec Propulsion;
 }
 
 public class BlockSpecFactory : IObjectFactory

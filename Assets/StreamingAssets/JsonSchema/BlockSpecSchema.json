@@ -124,6 +124,52 @@
                     "type": "number"
                 }
             }
+        },
+        "Propulsion": {
+            "type": "object",
+            "properties": {
+                "Engine": {
+                    "type": "object",
+                    "properties": {
+                        "MaxForce": {
+                            "type": "number"
+                        },
+                        "MaxResourceUse": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^.*$": {
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "IsFuelPropulsion": {
+                            "type": "boolean"
+                        },
+                        "MaxThrottleRate": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "OmniThruster": {
+                    "type": "object",
+                    "properties": {
+                        "MaxForce": {
+                            "type": "number"
+                        },
+                        "MaxResourceUse": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^.*$": {
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "IsFuelPropulsion": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
         }
     }
 }
