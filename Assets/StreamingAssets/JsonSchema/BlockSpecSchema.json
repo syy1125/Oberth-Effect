@@ -147,6 +147,12 @@
                         },
                         "MaxThrottleRate": {
                             "type": "number"
+                        },
+                        "Particles": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "ParticleSystemSpecSchema.json"
+                            }
                         }
                     }
                 },
@@ -166,6 +172,12 @@
                         },
                         "IsFuelPropulsion": {
                             "type": "boolean"
+                        },
+                        "Particles": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "ParticleSystemSpecSchema.json"
+                            }
                         }
                     }
                 }

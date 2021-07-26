@@ -1,0 +1,24 @@
+﻿{
+    "$id": "ParticleSystemSpecSchema",
+    "type": "object",
+    "properties": {
+        "Offset": {
+            "$ref": "Vector2Schema.json"
+        },
+        "Direction": {
+            "$ref": "Vector2Schema.json"
+        },
+        "Size": {
+            "type": "number"
+        },
+        "MaxSpeed": {
+            "type": "number"
+        },
+        "Lifetime": {
+            "type": "number"
+        },
+        "Color": {
+            "type": "string"
+        }
+    }
+}
