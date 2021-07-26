@@ -1,0 +1,40 @@
+﻿BlockId: OberthEffect/SmallIonEngine
+Enabled: true
+Info:
+  ShortName: Ion Engine
+  FullName: Small Ion Engine
+Renderers:
+  - TextureId: OberthEffect/SmallIonEngine
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 1
+  MomentOfInertia: 0.1666667
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 1
+Propulsion:
+  Engine:
+    MaxForce: 10
+    MaxResourceUse:
+      OberthEffect/Energy: 50
+    IsFuelPropulsion: false
+    MaxThrottleRate: 0.5
+    Particles:
+      - Offset: { X: 0, Y: -0.2 }
+        Direction: { X: 0, Y: -1 }
+        Size: 0.8
+        MaxSpeed: 5
+        Lifetime: 0.5
+        Color: lightblue

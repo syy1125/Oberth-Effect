@@ -1,0 +1,24 @@
+﻿{
+    "$id": "TextureSpecSchema",
+    "type": "object",
+    "required": [
+        "TextureId"
+    ],
+    "properties": {
+        "TextureId": {
+            "type": "string"
+        },
+        "ImagePath": {
+            "type": "string"
+        },
+        "Pivot": {
+            "$ref": "Vector2Schema.json"
+        },
+        "PixelsPerUnit": {
+            "type": "number"
+        },
+        "ApplyVehicleColors": {
+            "type": "boolean"
+        }
+    }
+}
