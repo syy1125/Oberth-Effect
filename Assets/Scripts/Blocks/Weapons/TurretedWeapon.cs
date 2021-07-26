@@ -24,14 +24,13 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 	public float ClusterRecoil;
 
 	public float ReloadTime; // Does NOT adjust for burst time
-	public ResourceEntry[] ReloadResourceConsumptionRate;
+	public Dictionary<string, float> ReloadResourceUse;
 
 	protected ColorContext ColorContext;
 	protected Rigidbody2D Body;
 
 	protected bool Firing { get; private set; }
 	protected float ResourceSatisfactionLevel { get; private set; }
-	protected Dictionary<VehicleResource, float> ResourceConsumption { get; private set; }
 
 	private BlockCore _block;
 	private bool _isMine;
@@ -46,9 +45,6 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 		ColorContext = GetComponentInParent<ColorContext>();
 		Body = GetComponentInParent<Rigidbody2D>();
 		_block = GetComponent<BlockCore>();
-		ResourceConsumption = ReloadResourceConsumptionRate.ToDictionary(
-			entry => entry.Resource, entry => entry.Amount
-		);
 	}
 
 	private void OnEnable()
@@ -86,9 +82,9 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	#region Block Functionality
 
-	public virtual IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
+	public virtual IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
-		return _reloadProgress >= ReloadTime ? null : ResourceConsumption;
+		return _reloadProgress >= ReloadTime ? null : ReloadResourceUse;
 	}
 
 	public void SatisfyResourceRequestAtLevel(float level)
@@ -164,9 +160,9 @@ public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IW
 
 	#region User Interface
 
-	public Dictionary<VehicleResource, float> GetMaxResourceUseRate()
+	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		return ResourceConsumption;
+		return ReloadResourceUse;
 	}
 
 	public abstract Dictionary<DamageType, float> GetDamageRatePotential();

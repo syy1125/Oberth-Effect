@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
@@ -62,10 +63,10 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 		_hitComparer = Comparer<RaycastHit2D>.Create(CompareRaycastHitDistance);
 	}
 
-	public override IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
+	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
 		return Continuous
-			? Firing ? ResourceConsumption : null
+			? Firing ? ReloadResourceUse : null
 			: base.GetResourceConsumptionRateRequest();
 	}
 
@@ -115,7 +116,7 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
 			gameObject, null,
 			(relay, _) => relay.InvokeBlockRpc(
-				_core.RootLocation, typeof(TurretedBeamWeapon), "SetVisualFiring", RpcTarget.Others,
+				_core.RootPosition, typeof(TurretedBeamWeapon), "SetVisualFiring", RpcTarget.Others,
 				_beamDurationRemaining
 			)
 		);
@@ -230,11 +231,11 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 			.AppendLine($"    Max range {MaxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH}m");
 
 		string resourceCost = string.Join(
-			" ", ReloadResourceConsumptionRate.Select(entry => $"{entry.RichTextColoredEntry()}/s")
+			", ", VehicleResourceDatabase.Instance.FormatResourceDict(ReloadResourceUse)
 		);
 		if (Continuous)
 		{
-			if (ReloadResourceConsumptionRate.Length > 0)
+			if (ReloadResourceUse.Count > 0)
 			{
 				builder.AppendLine($"    Firing cost {resourceCost}");
 			}
@@ -242,7 +243,7 @@ public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
 		else
 		{
 			builder.AppendLine(
-				ReloadResourceConsumptionRate.Length > 0
+				ReloadResourceUse.Count > 0
 					? $"    Beam duration {BeamDurationTicks * Time.fixedDeltaTime:0.0#}s, recharge time {ReloadTime}s, recharge cost {resourceCost}"
 					: $"    Beam duration {BeamDurationTicks * Time.fixedDeltaTime:0.0#}, recharge time {ReloadTime}s"
 			);

@@ -19,6 +19,6 @@ public interface IWeaponSystem
 	void SetFiring(bool firing);
 
 	Dictionary<DamageType, float> GetDamageRatePotential();
-	Dictionary<VehicleResource, float> GetMaxResourceUseRate();
+	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 }
 }
