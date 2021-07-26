@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
 using YamlDotNet.Core;
@@ -359,26 +360,32 @@ public static class ModLoader
 
 			if (instance.Spec.Propulsion.Engine != null)
 			{
-				foreach (string key in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
+				foreach (string resourceId in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
 				{
-					if (!resourceIds.Contains(key))
+					ValidateResourceId(resourceId, instance.Spec.BlockId, resourceIds);
+				}
+
+				if (instance.Spec.Propulsion.Engine.Particles != null)
+				{
+					foreach (ParticleSystemSpec particle in instance.Spec.Propulsion.Engine.Particles)
 					{
-						Debug.LogError(
-							$"Block {instance.Spec.BlockId} references VehicleResource {key} which does not exist"
-						);
+						ValidateColor(particle.Color, instance.Spec.BlockId, "ParticleSystem", true);
 					}
 				}
 			}
 
 			if (instance.Spec.Propulsion.OmniThruster != null)
 			{
-				foreach (string key in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
+				foreach (string resourceId in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
 				{
-					if (!resourceIds.Contains(key))
+					ValidateResourceId(resourceId, instance.Spec.BlockId, resourceIds);
+				}
+
+				if (instance.Spec.Propulsion.OmniThruster.Particles != null)
+				{
+					foreach (ParticleSystemSpec particle in instance.Spec.Propulsion.OmniThruster.Particles)
 					{
-						Debug.LogError(
-							$"Block {instance.Spec.BlockId} references VehicleResource {key} which does not exist"
-						);
+						ValidateColor(particle.Color, instance.Spec.BlockId, "ParticleSystem", true);
 					}
 				}
 			}
@@ -402,6 +409,41 @@ public static class ModLoader
 					$"VehicleResource {instance.Spec.ResourceId} has invalid color {instance.Spec.DisplayColor}"
 				);
 			}
+		}
+	}
+
+	private static void ValidateResourceId(string checkResourceId, string blockId, ICollection<string> validResourceIds)
+	{
+		if (!validResourceIds.Contains(checkResourceId))
+		{
+			Debug.LogError(
+				$"Block {blockId} references VehicleResource {checkResourceId} which does not exist"
+			);
+		}
+	}
+
+	private static void ValidateColor(string color, string blockId, string component, bool acceptColorScheme)
+	{
+		switch (color.ToLower())
+		{
+			case "primary":
+			case "secondary":
+			case "tertiary":
+				if (!acceptColorScheme)
+				{
+					Debug.LogError($"{component} in {blockId} does not accept color scheme based color assignments");
+				}
+
+				break;
+			default:
+				if (!ColorUtility.TryParseHtmlString(color, out Color _))
+				{
+					Debug.LogError(
+						$"{component} in {blockId} uses invalid color {color}"
+					);
+				}
+
+				break;
 		}
 	}
 
