@@ -1,7 +1,9 @@
 ﻿{
     "$id": "BlockSpecSchema",
     "type": "object",
-    "required": ["BlockId"],
+    "required": [
+        "BlockId"
+    ],
     "properties": {
         "BlockId": {
             "type": "string"

@@ -152,6 +152,9 @@ public static class ModLoader
 	private static Dictionary<string, GameSpecDocument> _textureDocuments;
 	internal static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
 
+	private static Dictionary<string, GameSpecDocument> _vehicleResourceDocuments;
+	internal static IReadOnlyCollection<SpecInstance<VehicleResourceSpec>> AllVehicleResources;
+
 	public static uint Checksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
@@ -175,6 +178,7 @@ public static class ModLoader
 	{
 		_blockDocuments = new Dictionary<string, GameSpecDocument>();
 		_textureDocuments = new Dictionary<string, GameSpecDocument>();
+		_vehicleResourceDocuments = new Dictionary<string, GameSpecDocument>();
 
 		foreach (ModListElement mod in AllMods)
 		{
@@ -202,6 +206,11 @@ public static class ModLoader
 					}
 				},
 				nameof(TextureSpec.TextureId), _textureDocuments
+			);
+
+			LoadModContent(
+				mod, "Vehicle Resources", null,
+				nameof(VehicleResourceSpec.ResourceId), _vehicleResourceDocuments
 			);
 		}
 	}
@@ -308,23 +317,20 @@ public static class ModLoader
 			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())))
 			.Build();
 
-		AllBlocks = _blockDocuments.Values
-			.Select(
-				document => new SpecInstance<BlockSpec>
-				{
-					Spec = deserializer.Deserialize<BlockSpec>(
-						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
-					),
-					OverrideOrder = document.OverrideOrder
-				}
-			)
-			.ToList();
+		AllBlocks = ParseSpecInstance<BlockSpec>(deserializer, _blockDocuments.Values);
+		AllTextures = ParseSpecInstance<TextureSpec>(deserializer, _textureDocuments.Values);
+		AllVehicleResources = ParseSpecInstance<VehicleResourceSpec>(deserializer, _vehicleResourceDocuments.Values);
+	}
 
-		AllTextures = _textureDocuments.Values
+	private static IReadOnlyCollection<SpecInstance<T>> ParseSpecInstance<T>(
+		IDeserializer deserializer, IEnumerable<GameSpecDocument> documents
+	)
+	{
+		return documents
 			.Select(
-				document => new SpecInstance<TextureSpec>
+				document => new SpecInstance<T>
 				{
-					Spec = deserializer.Deserialize<TextureSpec>(
+					Spec = deserializer.Deserialize<T>(
 						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
 					),
 					OverrideOrder = document.OverrideOrder
@@ -359,14 +365,28 @@ public static class ModLoader
 				);
 			}
 		}
+
+		foreach (SpecInstance<VehicleResourceSpec> instance in AllVehicleResources)
+		{
+			if (!ColorUtility.TryParseHtmlString(instance.Spec.DisplayColor, out Color _))
+			{
+				Debug.LogError(
+					$"VehicleResource {instance.Spec.ResourceId} has invalid color {instance.Spec.DisplayColor}"
+				);
+			}
+		}
 	}
 
 	private static void ComputeChecksum()
 	{
-		uint blockSpecChecksum = GetChecksum(_blockDocuments.Values);
-		uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
+		unchecked
+		{
+			uint blockSpecChecksum = GetChecksum(_blockDocuments.Values);
+			uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
+			uint vehicleResourceChecksum = GetChecksum(_vehicleResourceDocuments.Values);
 
-		Checksum = blockSpecChecksum + textureSpecChecksum;
+			Checksum = blockSpecChecksum + textureSpecChecksum + vehicleResourceChecksum;
+		}
 	}
 
 	private static uint GetChecksum(IEnumerable<GameSpecDocument> values)
