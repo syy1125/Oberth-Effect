@@ -7,7 +7,7 @@
           <value>
             <SchemaInfo>
               <option name="name" value="Block Spec" />
-              <option name="relativePathToSchema" value="Assets/StreamingAssets/BlockSpecSchema.json" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/BlockSpecSchema.json" />
               <option name="schemaVersion" value="JSON Schema version 7" />
               <option name="patterns">
                 <list>
@@ -31,13 +31,9 @@
               <option name="patterns">
                 <list>
                   <Item>
-                    <option name="path" value="Assets/StreamingAssets/BlockSpecSchema.json" />
-                  </Item>
-                  <Item>
-                    <option name="path" value="Assets/StreamingAssets/Vector2Schema.json" />
-                  </Item>
-                  <Item>
-                    <option name="path" value="Assets/StreamingAssets/Vector2IntSchema.json" />
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/JsonSchema/*.json" />
+                    <option name="mappingKind" value="Pattern" />
                   </Item>
                 </list>
               </option>
