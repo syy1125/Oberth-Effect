@@ -12,8 +12,8 @@ public interface IResourceGeneratorBlock
 	/// <remark>
 	/// The return value on this should NOT be time-scaled.
 	/// </remark>
-	public Dictionary<VehicleResource, float> GetGenerationRate();
+	public IReadOnlyDictionary<string, float> GetGenerationRate();
 
-	public Dictionary<VehicleResource, float> GetMaxGenerationRate();
+	public IReadOnlyDictionary<string, float> GetMaxGenerationRate();
 }
 }

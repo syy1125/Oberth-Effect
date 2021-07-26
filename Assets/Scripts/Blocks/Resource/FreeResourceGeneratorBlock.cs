@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,16 +9,8 @@ namespace Syy1125.OberthEffect.Blocks.Resource
 {
 public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock, ITooltipProvider
 {
-	public ResourceEntry[] GenerationRate;
-	private Dictionary<VehicleResource, float> _generationRate;
-
-	private void Awake()
-	{
-		_generationRate = GenerationRate.ToDictionary(
-			entry => entry.Resource,
-			entry => entry.Amount
-		);
-	}
+	[NonSerialized]
+	public Dictionary<string, float> GenerationRate;
 
 	private void OnEnable()
 	{
@@ -33,9 +26,9 @@ public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock
 		);
 	}
 
-	public Dictionary<VehicleResource, float> GetGenerationRate()
+	public IReadOnlyDictionary<string, float> GetGenerationRate()
 	{
-		return _generationRate;
+		return GenerationRate;
 	}
 
 	public string GetTooltip()
@@ -43,13 +36,14 @@ public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock
 		return "Passive resource generation\n"
 		       + string.Join(
 			       "\n",
-			       GenerationRate.Select(entry => $"  {entry.RichTextColoredEntry()}/s")
+			       VehicleResourceDatabase.Instance.FormatResourceDict(GenerationRate)
+				       .Select(line => $"  {line}")
 		       );
 	}
 
-	public Dictionary<VehicleResource, float> GetMaxGenerationRate()
+	public IReadOnlyDictionary<string, float> GetMaxGenerationRate()
 	{
-		return _generationRate;
+		return GenerationRate;
 	}
 }
 }

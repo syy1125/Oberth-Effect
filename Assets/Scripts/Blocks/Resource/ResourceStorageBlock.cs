@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,18 +13,8 @@ public interface IResourceStorageBlockRegistry : IBlockRegistry<ResourceStorageB
 
 public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 {
-	public ResourceEntry[] ResourceCapacities;
-
-	public Dictionary<VehicleResource, float> ResourceCapacityDict { get; private set; }
-
-	private void Awake()
-	{
-		ResourceCapacityDict = new Dictionary<VehicleResource, float>(ResourceCapacities.Length);
-		foreach (ResourceEntry entry in ResourceCapacities)
-		{
-			ResourceCapacityDict.Add(entry.Resource, entry.Amount);
-		}
-	}
+	[NonSerialized]
+	public Dictionary<string, float> ResourceCapacity;
 
 	private void OnEnable()
 	{
@@ -43,9 +35,8 @@ public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 		return "Resource storage capacity\n"
 		       + string.Join(
 			       "\n",
-			       ResourceCapacities.Select(
-				       entry => $"  {entry.RichTextColoredEntry()}"
-			       )
+			       VehicleResourceDatabase.Instance.FormatResourceDict(ResourceCapacity)
+				       .Select(line => $"  {line}")
 		       );
 	}
 }

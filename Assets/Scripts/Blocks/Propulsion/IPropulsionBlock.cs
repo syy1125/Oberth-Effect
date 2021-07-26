@@ -18,6 +18,6 @@ public interface IPropulsionBlock
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
 
-	Dictionary<VehicleResource, float> GetMaxResourceUseRate();
+	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 }
 }

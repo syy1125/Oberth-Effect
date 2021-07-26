@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,16 +10,16 @@ namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
 public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, IResourceConsumerBlock
 {
-	public float MaxForce;
-	public ResourceEntry[] MaxResourceUse;
-	public bool IsFuelPropulsion;
+	protected float MaxForce;
+	protected Dictionary<string, float> MaxResourceUse;
+	protected bool IsFuelPropulsion;
 
 	protected Rigidbody2D Body;
 	protected CenterOfMassContext MassContext;
 	protected bool IsMine;
 
 	protected bool FuelPropulsionActive;
-	protected Dictionary<VehicleResource, float> ResourceRequests;
+	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
 
 	protected virtual void Awake()
@@ -27,7 +27,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		Body = GetComponentInParent<Rigidbody2D>();
 		MassContext = GetComponentInParent<CenterOfMassContext>();
 
-		ResourceRequests = new Dictionary<VehicleResource, float>();
+		ResourceRequests = new Dictionary<string, float>();
 	}
 
 	protected virtual void OnEnable()
@@ -38,6 +38,20 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
+	}
+
+	protected static ParticleSystem CreateParticleSystem(Transform parent, ParticleSystemSpec spec)
+	{
+		GameObject particleHolder = new GameObject("ParticleSystem");
+
+		var holderTransform = particleHolder.transform;
+		holderTransform.SetParent(parent);
+		holderTransform.localPosition = new Vector3(spec.Offset.x, spec.Offset.y, 1f);
+		holderTransform.localRotation = Quaternion.LookRotation(spec.Direction);
+
+		var particles = particleHolder.AddComponent<ParticleSystem>();
+		particles.LoadSpec(spec);
+		return particles;
 	}
 
 	protected virtual void Start()
@@ -63,7 +77,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 
 	public abstract void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
 
-	public abstract IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest();
+	public abstract IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 
 	public void SatisfyResourceRequestAtLevel(float level)
 	{
@@ -92,9 +106,9 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 
 	public abstract float GetMaxPropulsionForce(CardinalDirection localDirection);
 
-	public virtual Dictionary<VehicleResource, float> GetMaxResourceUseRate()
+	public virtual IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		return MaxResourceUse.ToDictionary(entry => entry.Resource, entry => entry.Amount);
+		return MaxResourceUse;
 	}
 }
 }

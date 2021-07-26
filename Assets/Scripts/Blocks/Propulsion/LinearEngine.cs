@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
@@ -10,29 +13,42 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 {
 	public const string CONFIG_KEY = "LinearEngine";
 
-	public float MaxThrottleRate;
+	private float _maxThrottleRate;
 
+	[NonSerialized]
 	public bool RespondToTranslation;
+	[NonSerialized]
 	public bool RespondToRotation;
 
-	private ParticleSystem _particles;
+	private ParticleSystem[] _particles;
+	private float[] _maxParticleSpeeds;
 
 	private float _forwardBackResponse;
 	private float _strafeResponse;
 	private float _rotateResponse;
 
 	private float _targetThrustStrength;
-	private float _trueThrustStrength;
 
-	private float _maxParticleSpeed;
-
-	protected override void Awake()
+	public void LoadSpec(LinearEngineSpec spec)
 	{
-		base.Awake();
+		MaxForce = spec.MaxForce;
+		MaxResourceUse = spec.MaxResourceUse;
+		IsFuelPropulsion = spec.IsFuelPropulsion;
+		_maxThrottleRate = spec.MaxThrottleRate;
 
-		_particles = GetComponent<ParticleSystem>();
+		if (spec.Particles != null)
+		{
+			_particles = new ParticleSystem[spec.Particles.Length];
+			_maxParticleSpeeds = new float[spec.Particles.Length];
+			Transform engineTransform = transform;
+
+			for (var i = 0; i < spec.Particles.Length; i++)
+			{
+				_particles[i] = CreateParticleSystem(engineTransform, spec.Particles[i]);
+				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
+			}
+		}
 	}
-
 
 	protected override void Start()
 	{
@@ -47,8 +63,10 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			if (_particles != null)
 			{
 				// We have particles
-				_maxParticleSpeed = _particles.main.startSpeedMultiplier;
-				_particles.Play();
+				foreach (ParticleSystem particle in _particles)
+				{
+					particle.Play();
+				}
 			}
 		}
 	}
@@ -100,22 +118,23 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			rawResponse += _rotateResponse * rotateCommand;
 		}
 
+		float trueThrustStrength = _targetThrustStrength * Satisfaction;
 		_targetThrustStrength = Mathf.Clamp01(
 			Mathf.Clamp(
 				rawResponse,
-				_trueThrustStrength - MaxThrottleRate * Time.fixedDeltaTime,
-				_trueThrustStrength + MaxThrottleRate * Time.fixedDeltaTime
+				trueThrustStrength - _maxThrottleRate * Time.fixedDeltaTime,
+				trueThrustStrength + _maxThrottleRate * Time.fixedDeltaTime
 			)
 		);
 	}
 
-	public override IDictionary<VehicleResource, float> GetResourceConsumptionRateRequest()
+	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
 		ResourceRequests.Clear();
 
-		foreach (ResourceEntry entry in MaxResourceUse)
+		foreach (KeyValuePair<string, float> entry in MaxResourceUse)
 		{
-			ResourceRequests.Add(entry.Resource, entry.Amount * _targetThrustStrength);
+			ResourceRequests.Add(entry.Key, entry.Value * _targetThrustStrength);
 		}
 
 		return ResourceRequests;
@@ -123,18 +142,23 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	private void FixedUpdate()
 	{
-		_trueThrustStrength = _targetThrustStrength * Satisfaction;
+		float trueThrustStrength = _targetThrustStrength * Satisfaction;
 
 		if (Body != null && IsMine)
 		{
-			Body.AddForceAtPosition(transform.up * (MaxForce * _trueThrustStrength), transform.position);
+			Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustStrength), transform.position);
 		}
 
 		if (_particles != null)
 		{
-			ParticleSystem.MainModule main = _particles.main;
-			main.startSpeedMultiplier = _trueThrustStrength * _maxParticleSpeed;
-			main.startColor = new ParticleSystem.MinMaxGradient(new Color(1f, 1f, 1f, _trueThrustStrength));
+			for (var i = 0; i < _particles.Length; i++)
+			{
+				ParticleSystem.MainModule main = _particles[i].main;
+				main.startSpeedMultiplier = trueThrustStrength * _maxParticleSpeeds[i];
+				Color startColor = main.startColor.color;
+				startColor.a = trueThrustStrength;
+				main.startColor = new ParticleSystem.MinMaxGradient(startColor);
+			}
 		}
 	}
 
@@ -149,14 +173,12 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			"\n",
 			"Engine",
 			$"  Max thrust {MaxForce * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN",
-			"  Max resource usage "
+			"  Max resource usage per second "
 			+ string.Join(
-				" ",
-				MaxResourceUse.Select(
-					entry => $"{entry.RichTextColoredEntry()}/s"
-				)
+				", ",
+				VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)
 			),
-			$"  Throttle response rate {MaxThrottleRate * 100:F0}%/s"
+			$"  Throttle response rate {_maxThrottleRate * 100:F0}%/s"
 		);
 	}
 }
