@@ -11,5 +11,8 @@ public struct ParticleSystemSpec
 	public float MaxSpeed;
 	public float Lifetime;
 	public string Color;
+
+	public float EmissionRateOverTime;
+	public float EmissionRateOverDistance;
 }
 }

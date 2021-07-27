@@ -20,6 +20,13 @@
         "Color": {
             "type": "string",
             "description": "The color of the particles. Can take either an accepted HTML color string (\"red\") or a hex code (\"#ff0000\"). Depending on the context, this could also reference a color in the paint scheme of the vehicle (\"primary\", \"secondary\", \"tertiary\")"
+        },
+        "EmissionRateOverTime": {
+            "type": "number",
+            "default": 50
+        },
+        "EmissionRateOverDistance": {
+            "type": "number"
         }
     }
 }

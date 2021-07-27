@@ -6,7 +6,7 @@ using YamlDotNet.Serialization;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
-public struct BlockSpec
+public class BlockSpec
 {
 	public string BlockId;
 	public bool Enabled;
@@ -41,6 +41,13 @@ public class BlockSpecFactory : IObjectFactory
 			return new RendererSpec
 			{
 				Scale = Vector2.one
+			};
+		}
+		else if (type == typeof(ParticleSystemSpec))
+		{
+			return new ParticleSystemSpec
+			{
+				EmissionRateOverTime = 50
 			};
 		}
 
