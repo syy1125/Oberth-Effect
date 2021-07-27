@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Utils;
 using Unity.Collections;
 using Unity.Jobs;
@@ -160,11 +161,11 @@ public class ExplosionManager : MonoBehaviour
 
 				_targets[count] = target;
 
-				Bounds bounds = target.GetExplosionDamageBounds();
-				minX[count] = bounds.min.x;
-				minY[count] = bounds.min.y;
-				maxX[count] = bounds.max.x;
-				maxY[count] = bounds.max.y;
+				(Vector2 boundsMin, Vector2 boundsMax) = target.GetExplosionDamageBounds();
+				minX[count] = boundsMin.x;
+				minY[count] = boundsMin.y;
+				maxX[count] = boundsMax.x;
+				maxY[count] = boundsMax.y;
 				Vector3 localExplosionCenter = target.transform.InverseTransformPoint(center);
 				centerX[count] = localExplosionCenter.x;
 				centerY[count] = localExplosionCenter.y;

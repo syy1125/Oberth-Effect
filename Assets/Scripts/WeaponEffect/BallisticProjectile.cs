@@ -1,5 +1,8 @@
 using System;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
@@ -9,12 +12,13 @@ namespace Syy1125.OberthEffect.WeaponEffect
 public struct BallisticProjectileConfig
 {
 	public Vector2 ProjectileSize;
-	public DamageType DamageType;
 	public float Damage;
-	[Range(1, 10)]
+	public DamageType DamageType;
 	public float ArmorPierce; // Note that explosive damage will always have damage output value of 1
 	public float ExplosionRadius; // Only relevant for explosive damage
 	public float Lifetime;
+
+	public RendererSpec[] Renderers;
 }
 
 [RequireComponent(typeof(PhotonView))]
@@ -22,17 +26,18 @@ public struct BallisticProjectileConfig
 [RequireComponent(typeof(Collider2D))]
 public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
-	public Transform ProjectileVisual;
-	public BoxCollider2D ProjectileCollider; 
-		
+	public BoxCollider2D ProjectileCollider;
+
 	private BallisticProjectileConfig _config;
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
 		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
-		ProjectileVisual.localScale = new Vector3(_config.ProjectileSize.x, _config.ProjectileSize.y, 1f);
+
 		ProjectileCollider.size = _config.ProjectileSize;
+
+		RendererHelper.AttachRenderers(transform, _config.Renderers);
 	}
 
 	private void Start()

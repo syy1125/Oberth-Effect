@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.WeaponEffect
+namespace Syy1125.OberthEffect.Common.Enums
 {
 public enum DamageType
 {

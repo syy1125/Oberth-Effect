@@ -9,7 +9,7 @@ public class VehicleBlueprint
 	[Serializable]
 	public class BlockInstance
 	{
-		public string BlockID;
+		public string BlockId;
 		public int X;
 		public int Y;
 		public int Rotation;
