@@ -16,9 +16,14 @@ public static class TooltipProviderUtils
 
 		foreach (MonoBehaviour behaviour in block.GetComponents<MonoBehaviour>())
 		{
-			if (behaviour is ITooltipProvider blockTooltip)
+			if (behaviour is ITooltipProvider provider)
 			{
-				tooltips.AddLast(blockTooltip.GetTooltip());
+				string tooltip = provider.GetTooltip();
+
+				if (!string.IsNullOrWhiteSpace(tooltip))
+				{
+					tooltips.AddLast(provider.GetTooltip());
+				}
 			}
 		}
 
