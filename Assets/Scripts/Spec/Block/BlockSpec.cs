@@ -1,6 +1,7 @@
 ﻿using System;
 using Syy1125.OberthEffect.Spec.Block.Physics;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.Block.Weapon;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
@@ -16,6 +17,7 @@ public class BlockSpec
 	public PhysicsSpec Physics;
 	public CombatSpec Combat;
 	public PropulsionSpec Propulsion;
+	public TurretedWeaponSpec TurretedWeapon;
 }
 
 public class BlockSpecFactory : IObjectFactory

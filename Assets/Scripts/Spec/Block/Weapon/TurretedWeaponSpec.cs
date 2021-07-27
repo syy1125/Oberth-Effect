@@ -4,7 +4,7 @@ public class TurretedWeaponSpec
 {
 	public TurretSpec Turret;
 
-	// Choose one.
+	// Technically you could have all three, but it's recommended to choose just one.
 	public ProjectileWeaponEffectSpec ProjectileWeaponEffect;
 	public BurstBeamWeaponEffectSpec BurstBeamWeaponEffect;
 	public ContinuousBeamWeaponEffectSpec ContinuousBeamWeaponEffect;
