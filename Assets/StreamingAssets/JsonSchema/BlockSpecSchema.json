@@ -15,17 +15,22 @@
             "type": "object",
             "properties": {
                 "ShortName": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A shortened version of the block's name, used where space is limited."
                 },
                 "FullName": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The full name of the block as it appears on tooltips."
                 },
                 "Description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Additional description of the block, can be either flavour text or explanation of the block's mechanics."
                 },
                 "PreviewScale": {
                     "type": "number",
-                    "minimum": 0
+                    "minimum": 0,
+                    "default": 1,
+                    "description": "Scaling factor of the block as it shows up in preview in the block palette. Useful for fitting larger blocks inside their respective frames."
                 }
             }
         },
@@ -41,7 +46,8 @@
                         "$ref": "Vector2Schema.json"
                     },
                     "Rotation": {
-                        "type": "number"
+                        "type": "number",
+                        "description": "Rotation in degrees counterclockwise."
                     },
                     "Scale": {
                         "$ref": "Vector2Schema.json"
@@ -53,22 +59,27 @@
             "type": "object",
             "properties": {
                 "ShowInDesigner": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "If true, this block is shown in the block palette in the vehicle designer."
                 },
                 "AllowErase": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "If true, the player can erase this block. Set to false for critical blocks like the vehicle core."
                 },
                 "BoundsMin": {
-                    "$ref": "Vector2IntSchema.json"
+                    "$ref": "Vector2IntSchema.json",
+                    "description": "Inclusive minimum bounds for the block, used in checking for block overlaps."
                 },
                 "BoundsMax": {
-                    "$ref": "Vector2IntSchema.json"
+                    "$ref": "Vector2IntSchema.json",
+                    "description": "Exclusive maximum bounds for the block, used in checking for block overlaps."
                 },
                 "AttachmentPoints": {
                     "type": "array",
                     "items": {
                         "$ref": "Vector2IntSchema.json"
-                    }
+                    },
+                    "description": "List of points where this block can attach to other blocks. Two blocks are attached if and only if both of them have an attachment point in each other's bounds."
                 }
             }
         },
@@ -76,13 +87,16 @@
             "type": "object",
             "properties": {
                 "CenterOfMass": {
-                    "$ref": "Vector2Schema.json"
+                    "$ref": "Vector2Schema.json",
+                    "description": "The local position of the block's center of mass."
                 },
                 "Mass": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The mass of the block. For reference, a typical 1u x 1u block has 1 mass unit."
                 },
                 "MomentOfInertia": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The moment of inertia of this block about its center of mass."
                 },
                 "BoxCollider": {
                     "type": "object",
@@ -93,7 +107,8 @@
                         "Size": {
                             "$ref": "Vector2Schema.json"
                         }
-                    }
+                    },
+                    "description": "Specifies the shape of the box collider for this block, if it should have one."
                 },
                 "PolygonCollider": {
                     "type": "array",
@@ -107,7 +122,8 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    "description": "Specifies the shape of the polygon collider for this block, if it should have one."
                 }
             }
         },
@@ -115,13 +131,16 @@
             "type": "object",
             "properties": {
                 "MaxHealth": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The maximum health of the block, and the health that the block starts with."
                 },
                 "ArmorValue": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The armor value of this block. Should be between 1 and 10, inclusive."
                 },
                 "IntegrityScore": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Currently unused. Eventually this is planned for use in tidal force stress computations."
                 }
             }
         },
@@ -132,7 +151,8 @@
                     "type": "object",
                     "properties": {
                         "MaxForce": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "Maximum force of the engine in the up direction."
                         },
                         "MaxResourceUse": {
                             "type": "object",
@@ -140,27 +160,33 @@
                                 "^.*$": {
                                     "type": "number"
                                 }
-                            }
+                            },
+                            "description": "Maximum resource usage of the engine."
                         },
                         "IsFuelPropulsion": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Indicates whether this engine classifies as a fuel propulsion block. If so, the player can turn these blocks on and off using a keybind."
                         },
                         "MaxThrottleRate": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "Specifies the maximum rate at which the engine can increase or decrease thrust. A value of 1 indicates that in one second, the engine can increase or decrease its output by, and a value of 0.5 indicates a 50%, and so on."
                         },
                         "Particles": {
                             "type": "array",
                             "items": {
                                 "$ref": "ParticleSystemSpecSchema.json"
-                            }
+                            },
+                            "description": "Specifies the particles to be played when the engine is running."
                         }
-                    }
+                    },
+                    "description": "An engine is generally regarded as the main form of propulsion for a vehicle. They are typically powerful but requires time to increase or decrease their thrust."
                 },
                 "OmniThruster": {
                     "type": "object",
                     "properties": {
                         "MaxForce": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "The maximum force of the thruster in any particular cardinal direction."
                         },
                         "MaxResourceUse": {
                             "type": "object",
@@ -168,18 +194,22 @@
                                 "^.*$": {
                                     "type": "number"
                                 }
-                            }
+                            },
+                            "description": "Maximum resource usage when the thruster is operating at 100% in two directions."
                         },
                         "IsFuelPropulsion": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Indicates whether this thruster classifies as a fuel propulsion block. If so, the player can turn these blocks on and off using a keybind."
                         },
                         "Particles": {
                             "type": "array",
                             "items": {
                                 "$ref": "ParticleSystemSpecSchema.json"
-                            }
+                            },
+                            "description": "Specifies the particles to be played when the thruster is running. The particle emitters will be rotated appropriately for thrusting in different directions."
                         }
-                    }
+                    },
+                    "description": "An omni thruster is capable of outputting the specified amount of force in any cardinal direction."
                 }
             }
         }
