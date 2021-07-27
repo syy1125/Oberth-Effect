@@ -64,7 +64,7 @@ public class TurretedProjectileWeapon : TurretedWeapon, ITooltipProvider
 		float deviationAngle = SpreadProfile switch
 		{
 			WeaponSpreadProfile.None => 0f,
-			WeaponSpreadProfile.Gaussian => RandomNumberUtils.NextGaussian() * SpreadAngle,
+			WeaponSpreadProfile.Gaussian => MathUtils.RandomGaussian() * SpreadAngle,
 			WeaponSpreadProfile.Uniform => Random.Range(-SpreadAngle, SpreadAngle),
 			_ => throw new ArgumentOutOfRangeException()
 		};
