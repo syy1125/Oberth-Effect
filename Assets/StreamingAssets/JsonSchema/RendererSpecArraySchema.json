@@ -1,0 +1,22 @@
+﻿{
+    "$id": "RendererSpecArray",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "TextureId": {
+                "type": "string"
+            },
+            "Offset": {
+                "$ref": "Vector2Schema.json"
+            },
+            "Rotation": {
+                "type": "number",
+                "description": "Rotation in degrees counterclockwise."
+            },
+            "Scale": {
+                "$ref": "Vector2Schema.json"
+            }
+        }
+    }
+}

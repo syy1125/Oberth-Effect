@@ -1,16 +1,10 @@
 ﻿{
     "$id": "BlockSpecSchema",
     "type": "object",
-    "required": [
-        "BlockId"
-    ],
+    "required": ["BlockId"],
     "properties": {
-        "BlockId": {
-            "type": "string"
-        },
-        "Enabled": {
-            "type": "boolean"
-        },
+        "BlockId": { "type": "string" },
+        "Enabled": { "type": "boolean" },
         "Info": {
             "type": "object",
             "properties": {
@@ -34,27 +28,7 @@
                 }
             }
         },
-        "Renderers": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "TextureId": {
-                        "type": "string"
-                    },
-                    "Offset": {
-                        "$ref": "Vector2Schema.json"
-                    },
-                    "Rotation": {
-                        "type": "number",
-                        "description": "Rotation in degrees counterclockwise."
-                    },
-                    "Scale": {
-                        "$ref": "Vector2Schema.json"
-                    }
-                }
-            }
-        },
+        "Renderers": { "$ref": "RendererSpecArraySchema.json" },
         "Construction": {
             "type": "object",
             "properties": {
@@ -101,12 +75,8 @@
                 "BoxCollider": {
                     "type": "object",
                     "properties": {
-                        "Offset": {
-                            "$ref": "Vector2Schema.json"
-                        },
-                        "Size": {
-                            "$ref": "Vector2Schema.json"
-                        }
+                        "Offset": { "$ref": "Vector2Schema.json" },
+                        "ColliderSize": { "$ref": "Vector2Schema.json" }
                     },
                     "description": "Specifies the shape of the box collider for this block, if it should have one."
                 },
@@ -117,9 +87,7 @@
                         "properties": {
                             "Path": {
                                 "type": "array",
-                                "items": {
-                                    "$ref": "Vector2Schema.json"
-                                }
+                                "items": { "$ref": "Vector2Schema.json" }
                             }
                         }
                     },
@@ -136,6 +104,8 @@
                 },
                 "ArmorValue": {
                     "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
                     "description": "The armor value of this block. Should be between 1 and 10, inclusive."
                 },
                 "IntegrityScore": {
@@ -157,9 +127,7 @@
                         "MaxResourceUse": {
                             "type": "object",
                             "patternProperties": {
-                                "^.*$": {
-                                    "type": "number"
-                                }
+                                "^.*$": { "type": "number" }
                             },
                             "description": "Maximum resource usage of the engine."
                         },
@@ -173,9 +141,7 @@
                         },
                         "Particles": {
                             "type": "array",
-                            "items": {
-                                "$ref": "ParticleSystemSpecSchema.json"
-                            },
+                            "items": { "$ref": "ParticleSystemSpecSchema.json" },
                             "description": "Specifies the particles to be played when the engine is running."
                         }
                     },
@@ -191,9 +157,7 @@
                         "MaxResourceUse": {
                             "type": "object",
                             "patternProperties": {
-                                "^.*$": {
-                                    "type": "number"
-                                }
+                                "^.*$": { "type": "number" }
                             },
                             "description": "Maximum resource usage when the thruster is operating at 100% in two directions."
                         },
@@ -210,6 +174,59 @@
                         }
                     },
                     "description": "An omni thruster is capable of outputting the specified amount of force in any cardinal direction."
+                }
+            }
+        },
+        "TurretedWeapon": {
+            "type": "object",
+            "properties": {
+                "Turret": {
+                    "type": "object",
+                    "properties": {
+                        "RotationSpeed": {
+                            "type": "number",
+                            "description": "The maximum rotation speed of the turret in degrees per second."
+                        },
+                        "TurretPivotOffset": {
+                            "$ref": "Vector2Schema.json",
+                            "description": "The local position of the point that turret sub-object rotates around."
+                        },
+                        "Renderers": {
+                            "$ref": "RendererSpecArraySchema.json"
+                        }
+                    }
+                },
+                "ProjectileWeaponEffect": {
+                    "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
+                    "properties": {
+                        "ClusterCount": {
+                            "type": "integer"
+                        },
+                        "BurstCount": {
+                            "type": "integer"
+                        },
+                        "ColliderSize": {
+                            "$ref": "Vector2Schema.json"
+                        },
+                        "Speed": {
+                            "type": "number"
+                        },
+                        "MaxLifetime": {
+                            "type": "number"
+                        },
+                        "ReloadTime": {
+                            "type": "number"
+                        },
+                        "Renderers": {
+                            "$ref": "RendererSpecArraySchema.json"
+                        },
+                        "ProjectileParticles": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "ParticleSystemSpecSchema.json"
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -2,11 +2,7 @@
     "$id": "Vector2Schema",
     "type": "object",
     "properties": {
-        "X": {
-            "type": "number"
-        },
-        "Y": {
-            "type": "number"
-        }
+        "X": { "type": "number" },
+        "Y": { "type": "number" }
     }
 }

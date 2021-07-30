@@ -1,0 +1,43 @@
+﻿{
+    "$id": "BaseWeaponEffectSpecSchema",
+    "type": "object",
+    "properties": {
+        "FiringPortOffset": {
+            "$ref": "Vector2Schema.json"
+        },
+        "Damage": {
+            "type": "number"
+        },
+        "DamageType": {
+            "enum": ["Kinetic", "Energy", "Explosive"]
+        },
+        "ArmorPierce": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "ExplosionRadius": {
+            "type": "number"
+        },
+        "SpreadAngle": {
+            "type": "number"
+        },
+        "SpreadProfile": {
+            "enum": ["None", "Gaussian", "Uniform"]
+        },
+        "Recoil": {
+            "type": "number"
+        },
+        "MaxResourceUse": {
+            "patternProperties": {
+                "^.*$": { "type": "number" }
+            }
+        },
+        "FireParticles": {
+            "type": "array",
+            "items": {
+                "$ref": "ParticleSystemSpecSchema.json"
+            }
+        }
+    }
+}
