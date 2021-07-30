@@ -11,7 +11,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 [Serializable]
 public struct BallisticProjectileConfig
 {
-	public Vector2 ProjectileSize;
+	public Vector2 ColliderSize;
 	public float Damage;
 	public DamageType DamageType;
 	public float ArmorPierce; // Note that explosive damage will always have damage output value of 1
@@ -35,7 +35,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
 		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
 
-		ProjectileCollider.size = _config.ProjectileSize;
+		ProjectileCollider.size = _config.ColliderSize;
 
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
 	}

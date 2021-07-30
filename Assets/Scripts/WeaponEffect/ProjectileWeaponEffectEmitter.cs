@@ -45,7 +45,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_projectileConfig = new BallisticProjectileConfig
 		{
-			ProjectileSize = spec.Size,
+			ColliderSize = spec.ColliderSize,
 			Damage = spec.Damage,
 			DamageType = spec.DamageType,
 			ArmorPierce = spec.ArmorPierce,
@@ -112,6 +112,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					JsonUtility.ToJson(_colorContext.ColorScheme)
 				}
 			);
+			Debug.Log(projectile);
 
 			var projectileBody = projectile.GetComponent<Rigidbody2D>();
 			projectileBody.velocity =
