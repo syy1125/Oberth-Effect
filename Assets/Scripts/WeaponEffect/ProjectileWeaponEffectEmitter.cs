@@ -103,7 +103,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		for (int i = 0; i < _clusterCount; i++)
 		{
-			float deviationAngleRad = WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle) * Mathf.Deg2Rad;
+			float deviationAngle = WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle) * Mathf.Deg2Rad;
 			GameObject projectile = PhotonNetwork.Instantiate(
 				"Weapon Projectile", position, rotation,
 				data: new object[]
@@ -112,12 +112,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					JsonUtility.ToJson(_colorContext.ColorScheme)
 				}
 			);
-			Debug.Log(projectile);
 
 			var projectileBody = projectile.GetComponent<Rigidbody2D>();
 			projectileBody.velocity =
 				_body.GetPointVelocity(position)
-				+ (Vector2) firingPort.TransformVector(Mathf.Sin(deviationAngleRad), Mathf.Cos(deviationAngleRad), 0f)
+				+ (Vector2) firingPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f)
 				* _projectileSpeed;
 		}
 

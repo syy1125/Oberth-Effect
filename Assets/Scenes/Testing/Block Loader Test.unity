@@ -192,6 +192,9 @@ GameObject:
   - component: {fileID: 1173200134}
   - component: {fileID: 1173200132}
   - component: {fileID: 1173200133}
+  - component: {fileID: 1173200135}
+  - component: {fileID: 1173200136}
+  - component: {fileID: 1173200137}
   m_Layer: 0
   m_Name: Test
   m_TagString: Untagged
@@ -225,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14330a099a844a1680035a9c67592859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BlockId: OberthEffect/IonOmniThruster
+  BlockId: OberthEffect/SimpleCannonTurret
   Parent: {fileID: 1173200131}
   RootPosition: {x: 0, y: 0}
   Rotation: 0
@@ -253,6 +256,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc96aa50eed4029b40d9f244d12b322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1173200135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173200130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b27a8f23e81d53845b4c80dac3b9e3de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1173200136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173200130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!50 &1173200137
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173200130}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1777178233
 GameObject:
   m_ObjectHideFlags: 0
