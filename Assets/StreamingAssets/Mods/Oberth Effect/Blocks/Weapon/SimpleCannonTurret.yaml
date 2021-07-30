@@ -1,0 +1,52 @@
+﻿BlockId: OberthEffect/SimpleCannonTurret
+Enabled: true
+Info:
+  ShortName: Cannon
+  FullName: Simple Cannon Turret
+Renderers:
+  - TextureId: OberthEffect/Square
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 2
+  MomentOfInertia: 0.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 150
+  ArmorValue: 8
+TurretedWeapon:
+  Turret:
+    RotationSpeed: 180
+    Renderers:
+      - TextureId: OberthEffect/CannonTurret
+        Scale: { X: 1.2, Y: 1.2 }
+  ProjectileWeaponEffect:
+    FiringPortOffset: { X: 0, Y: 0.6 }
+    Damage: 150
+    DamageType: Kinetic
+    ArmorPierce: 5
+    SpreadAngle: 2
+    SpreadProfile: None
+    Recoil: 50
+    MaxResourceUse:
+      OberthEffect/Energy: 50
+    ColliderSize: { X: 0.1, Y: 0.2 }
+    Speed: 20
+    MaxLifetime: 2
+    ReloadTime: 1
+    Renderers:
+      - TextureId: OberthEffect/Square
+        Scale: { X: 0.1, Y: 0.2 }
+    
+    

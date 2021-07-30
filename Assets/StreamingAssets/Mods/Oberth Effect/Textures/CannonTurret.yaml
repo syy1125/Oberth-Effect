@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/CannonTurret
+ImagePath: ./CannonTurret.png
+PixelsPerUnit: 200
+ApplyVehicleColors: true
