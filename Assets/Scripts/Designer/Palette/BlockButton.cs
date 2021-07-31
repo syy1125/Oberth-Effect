@@ -15,10 +15,16 @@ namespace Syy1125.OberthEffect.Designer.Palette
 [RequireComponent(typeof(Tooltip))]
 public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-	public ColorBlock Colors;
+	[Header("References")]
 	public RawImage PreviewImage;
 	public Camera BlockCamera;
 	public Text BlockName;
+
+	[Header("Config")]
+	public Color NormalColor;
+	public Color HoverColor;
+	public Color SelectedColor;
+	public float FadeDuration;
 
 	[UnityLayer]
 	public int BlockRenderLayer;
@@ -44,7 +50,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	private void OnEnable()
 	{
-		_image.CrossFadeColor(Colors.normalColor, 0, true, true);
+		_image.CrossFadeColor(NormalColor, 0, true, true);
 	}
 
 	private void Start()
@@ -89,33 +95,43 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	private void SelectBlock()
 	{
 		_controller.SelectBlock(_blockId);
-		_image.CrossFadeColor(Colors.selectedColor, Colors.fadeDuration, true, true);
+		_image.CrossFadeColor(SelectedColor, FadeDuration, true, true);
 	}
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		_hover = true;
+
 		if (!_selected)
 		{
-			_image.CrossFadeColor(Colors.highlightedColor, Colors.fadeDuration, true, true);
+			_image.CrossFadeColor(HoverColor, FadeDuration, true, true);
 		}
 	}
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
 		_hover = false;
+
 		if (!_selected)
 		{
-			_image.CrossFadeColor(Colors.normalColor, Colors.fadeDuration, true, true);
+			_image.CrossFadeColor(NormalColor, FadeDuration, true, true);
 		}
+	}
+
+	public void OnSelect()
+	{
+		_selected = true;
+
+		_image.CrossFadeColor(SelectedColor, FadeDuration, true, true);
 	}
 
 	public void OnDeselect()
 	{
 		_selected = false;
+
 		if (!_hover)
 		{
-			_image.CrossFadeColor(Colors.normalColor, Colors.fadeDuration, true, true);
+			_image.CrossFadeColor(NormalColor, FadeDuration, true, true);
 		}
 	}
 

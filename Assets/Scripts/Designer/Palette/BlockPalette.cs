@@ -21,6 +21,7 @@ public class BlockPalette : MonoBehaviour
 	public InputActionReference EraserAction;
 
 	private Dictionary<string, BlockButton> _buttons;
+	private BlockButton _selectedBlockButton;
 	public IPaletteSelection Selection { get; private set; }
 
 	private void Awake()
@@ -66,22 +67,36 @@ public class BlockPalette : MonoBehaviour
 	public void SelectBlock(string blockId)
 	{
 		Selection = new BlockSelection(blockId);
+
+		if (_selectedBlockButton != null)
+		{
+			_selectedBlockButton.OnDeselect();
+		}
+
+		_selectedBlockButton = _buttons[blockId];
+		_selectedBlockButton.OnSelect();
 	}
 
 	private void SelectCursor(InputAction.CallbackContext context)
 	{
 		Selection = CursorSelection.Instance;
+
+		if (_selectedBlockButton != null)
+		{
+			_selectedBlockButton.OnDeselect();
+			_selectedBlockButton = null;
+		}
 	}
 
 	private void SelectEraser(InputAction.CallbackContext context)
 	{
 		Selection = EraserSelection.Instance;
-	}
 
-	public GameObject GetSelectedBlock()
-	{
-		// TODO
-		return null;
+		if (_selectedBlockButton != null)
+		{
+			_selectedBlockButton.OnDeselect();
+			_selectedBlockButton = null;
+		}
 	}
 }
 }
