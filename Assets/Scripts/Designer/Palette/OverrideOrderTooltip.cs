@@ -14,7 +14,7 @@ public class OverrideOrderTooltip : MonoBehaviour, ITooltipProvider
 	public string GetTooltip()
 	{
 		return new StringBuilder()
-			.Append("<color=\"#8080ff\">")
+			.Append("<color=\"#2222ff\">")
 			.Append("Mod: ")
 			.Append(string.Join(" > ", OverrideOrder))
 			.Append("</color>")
