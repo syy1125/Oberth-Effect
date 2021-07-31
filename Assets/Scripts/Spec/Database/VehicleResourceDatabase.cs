@@ -42,7 +42,7 @@ public class VehicleResourceDatabase : MonoBehaviour
 		return dict
 			.Where(entry => HasResource(entry.Key))
 			.Select(entry => new Tuple<VehicleResourceSpec, float>(GetResourceSpec(entry.Key).Spec, entry.Value))
-			.Select(entry => entry.Item1.WrapColorTag($"{entry.Item2:0.#} {entry.Item1.DisplayColor}"));
+			.Select(entry => entry.Item1.WrapColorTag($"{entry.Item2:0.#} {entry.Item1.DisplayName}"));
 	}
 }
 }
