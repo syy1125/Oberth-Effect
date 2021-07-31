@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
@@ -13,7 +13,7 @@ using UnityEngine.EventSystems;
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 [RequireComponent(typeof(BlockCore))]
-public class TurretedBeamWeapon : TurretedWeapon, ITooltipProvider
+public class TurretedBeamWeapon : AbstractTurretedWeapon, ITooltipProvider
 {
 	[Header("Beam Weapon Config")]
 	public GameObject EffectRenderer;

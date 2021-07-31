@@ -1,172 +1,150 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public abstract class TurretedWeapon : MonoBehaviour, IResourceConsumerBlock, IWeaponSystem
+public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlock
 {
-	[Header("References")]
-	public Transform Turret;
-	public Transform FiringPort;
+	private BlockCore _core;
 
-	[Header("Weapon Config")]
-	public float RotateSpeed;
-	public float SpreadAngle = 0f;
-	public WeaponSpreadProfile SpreadProfile;
-	public bool UseRecoil;
-	public float ClusterRecoil;
+	// From spec
+	private float _rotationSpeed;
+	private Transform _turretTransform;
+	private List<IWeaponEffectEmitter> _weaponEmitters;
 
-	public float ReloadTime; // Does NOT adjust for burst time
-	public Dictionary<string, float> ReloadResourceUse;
-
-	protected ColorContext ColorContext;
-	protected Rigidbody2D Body;
-
-	protected bool Firing { get; private set; }
-	protected float ResourceSatisfactionLevel { get; private set; }
-
-	private BlockCore _block;
-	private bool _isMine;
+	// State
+	private bool _firing;
 	private Vector2? _aimPoint;
-	private float _angle;
-	private float _reloadProgress;
+	private float _turretAngle;
+	private Dictionary<string, float> _resourceRequests;
 
-	#region Unity Lifecycle
-
-	protected virtual void Awake()
+	private void Awake()
 	{
-		ColorContext = GetComponentInParent<ColorContext>();
-		Body = GetComponentInParent<Rigidbody2D>();
-		_block = GetComponent<BlockCore>();
+		_core = GetComponent<BlockCore>();
+
+		_weaponEmitters = new List<IWeaponEffectEmitter>();
+		_resourceRequests = new Dictionary<string, float>();
 	}
 
 	private void OnEnable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
 		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
 	}
 
-	protected virtual void Start()
+	public void LoadSpec(TurretedWeaponSpec spec)
 	{
-		_reloadProgress = ReloadTime;
-		_aimPoint = null;
-		_angle = 0;
-		ApplyTurretRotation();
+		_rotationSpeed = spec.Turret.RotationSpeed;
 
-		var photonView = GetComponentInParent<PhotonView>();
-		_isMine = photonView == null || photonView.IsMine;
+		var turretObject = new GameObject("Turret");
+		_turretTransform = turretObject.transform;
+		_turretTransform.SetParent(transform);
+		_turretTransform.localScale = Vector3.one;
+		_turretTransform.localPosition = new Vector3(
+			spec.Turret.TurretPivotOffset.x, spec.Turret.TurretPivotOffset.y, -1f
+		);
+
+		RendererHelper.AttachRenderers(_turretTransform, spec.Turret.Renderers);
+
+		if (spec.ProjectileWeaponEffect != null)
+		{
+			var weaponEffectObject = new GameObject("ProjectileWeaponEffect");
+
+			var weaponEffectTransform = weaponEffectObject.transform;
+			weaponEffectTransform.SetParent(_turretTransform);
+			weaponEffectTransform.localPosition = spec.ProjectileWeaponEffect.FiringPortOffset;
+			weaponEffectTransform.localRotation = Quaternion.identity;
+
+			var weaponEmitter = weaponEffectObject.AddComponent<ProjectileWeaponEffectEmitter>();
+			weaponEmitter.LoadSpec(spec.ProjectileWeaponEffect);
+			_weaponEmitters.Add(weaponEmitter);
+		}
+	}
+
+	private void Start()
+	{
+		_turretAngle = 0;
+		ApplyTurretRotation();
 	}
 
 	private void OnDisable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
 		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
 	}
 
-	#endregion
+	public int GetOwnerId() => _core.OwnerId;
 
-	#region Block Functionality
+	public void SetAimPoint(Vector2? aimPoint) => _aimPoint = aimPoint;
 
-	public virtual IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
+	public void SetFiring(bool firing)
 	{
-		return _reloadProgress >= ReloadTime ? null : ReloadResourceUse;
+		_firing = firing;
+	}
+
+	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
+	{
+		_resourceRequests.Clear();
+		DictionaryUtils.SumDictionaries(
+			_weaponEmitters
+				.Select(emitter => emitter.GetResourceConsumptionRateRequest())
+				.Where(dict => dict != null),
+			_resourceRequests
+		);
+		return _resourceRequests;
 	}
 
 	public void SatisfyResourceRequestAtLevel(float level)
 	{
-		ResourceSatisfactionLevel = level;
-	}
-
-	public int GetOwnerId() => _block.OwnerId;
-
-	public void SetAimPoint(Vector2? aimPoint)
-	{
-		_aimPoint = aimPoint;
-	}
-
-	public void SetFiring(bool firing)
-	{
-		Firing = firing;
+		foreach (IWeaponEffectEmitter emitter in _weaponEmitters)
+		{
+			emitter.SatisfyResourceRequestAtLevel(level);
+		}
 	}
 
 	private void FixedUpdate()
 	{
-		RotateTurret();
+		UpdateTurretRotationState();
+		ApplyTurretRotation();
 
-		if (_isMine)
+		foreach (IWeaponEffectEmitter emitter in _weaponEmitters)
 		{
-			FireFixedUpdate();
-		}
-		else
-		{
-			VisualFixedUpdate();
+			emitter.EmitterFixedUpdate(_firing, _core.IsMine);
 		}
 	}
 
-	protected virtual void FireFixedUpdate()
-	{
-		if (Firing && _reloadProgress >= ReloadTime)
-		{
-			_reloadProgress -= ReloadTime;
-
-			Fire();
-		}
-
-		if (_reloadProgress < ReloadTime)
-		{
-			_reloadProgress += Time.fixedDeltaTime * ResourceSatisfactionLevel;
-		}
-	}
-
-	protected virtual void VisualFixedUpdate()
-	{}
-
-	private void RotateTurret()
+	private void UpdateTurretRotationState()
 	{
 		float targetAngle = _aimPoint == null
 			? 0f
-			: Vector3.SignedAngle(
-				Vector3.up, transform.InverseTransformPoint(_aimPoint.Value), Vector3.forward
-			);
-
-		_angle = Mathf.MoveTowardsAngle(_angle, targetAngle, RotateSpeed * Time.fixedDeltaTime);
-
-		ApplyTurretRotation();
+			: Vector3.SignedAngle(Vector3.up, transform.InverseTransformDirection(_aimPoint.Value), Vector3.forward);
+		_turretAngle = Mathf.MoveTowardsAngle(_turretAngle, targetAngle, _rotationSpeed * Time.fixedDeltaTime);
 	}
 
 	private void ApplyTurretRotation()
 	{
-		Turret.localRotation = Quaternion.AngleAxis(_angle, Vector3.forward);
+		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
-	protected abstract void Fire();
-
-	#endregion
-
-	#region User Interface
+	public Dictionary<DamageType, float> GetDamageRatePotential()
+	{
+		throw new NotImplementedException();
+	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		return ReloadResourceUse;
+		throw new NotImplementedException();
 	}
-
-	public abstract Dictionary<DamageType, float> GetDamageRatePotential();
-
-	#endregion
 }
 }
