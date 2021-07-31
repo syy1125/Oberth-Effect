@@ -15,12 +15,5 @@ public class ModLoaderTest : MonoBehaviour
 			ModLoader.LoadAllEnabledContent();
 		}
 	}
-
-	private void Start()
-	{
-		Debug.Log(VehicleResourceDatabase.Instance.HasResource("OberthEffect/Fuel"));
-		Debug.Log(VehicleResourceDatabase.Instance.HasResource("OberthEffect/Energy"));
-		Debug.Log(VehicleResourceDatabase.Instance.HasResource("Blah"));
-	}
 }
 }

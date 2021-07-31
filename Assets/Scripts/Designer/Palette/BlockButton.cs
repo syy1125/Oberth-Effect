@@ -1,12 +1,14 @@
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
+using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Designer
+namespace Syy1125.OberthEffect.Designer.Palette
 {
 [RequireComponent(typeof(Button))]
 [RequireComponent(typeof(Image))]
@@ -21,6 +23,8 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	[UnityLayer]
 	public int BlockRenderLayer;
 
+	private string _blockId;
+
 	private BlockPalette _controller;
 	private Image _image;
 	private Tooltip _tooltip;
@@ -28,7 +32,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	private RenderTexture _rt;
 
-	private bool Selected => _controller.SelectedIndex == transform.GetSiblingIndex();
+	private bool _selected;
 
 	private void Awake()
 	{
@@ -54,39 +58,44 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	}
 
 
-	public void DisplayBlock(GameObject block)
+	public void DisplayBlock(SpecInstance<BlockSpec> instance)
 	{
-		GameObject instance = Instantiate(block, BlockCamera.transform);
+		_blockId = instance.Spec.BlockId;
+		gameObject.name = _blockId;
 
-		BlockInfo info = block.GetComponent<BlockInfo>();
-		BlockName.text = info.ShortName;
+		BlockName.text = instance.Spec.Info.ShortName;
 
-		Vector3 instancePosition = instance.transform.position;
-		instancePosition.z = 0;
-		instance.transform.position = instancePosition;
+		GameObject previewObject = BlockBuilder.BuildFromSpec(instance.Spec, BlockCamera.transform, Vector2Int.zero, 0);
 
-		Vector3 instanceScale = instance.transform.lossyScale;
-		instance.transform.localScale = new Vector3(
-			0.8f * info.PreviewScale / instanceScale.x, 0.8f * info.PreviewScale / instanceScale.y, 1f
+		var previewTransform = previewObject.transform;
+		Vector3 previewPosition = previewTransform.position;
+		previewPosition.z = 0;
+		previewObject.transform.position = previewPosition;
+		Vector3 previewScale = previewTransform.lossyScale;
+		previewTransform.localScale = new Vector3(
+			0.8f * instance.Spec.Info.PreviewScale / previewScale.x,
+			0.8f * instance.Spec.Info.PreviewScale / previewScale.y,
+			1f
 		);
 
-		LayerUtils.SetLayerRecursively(instance, BlockRenderLayer);
+		previewObject.AddComponent<OverrideOrderTooltip>().OverrideOrder = instance.OverrideOrder;
 
-		string tooltip = TooltipProviderUtils.CombineTooltips(block);
+		LayerUtils.SetLayerRecursively(previewObject, BlockRenderLayer);
 
+		string tooltip = TooltipProviderUtils.CombineTooltips(previewObject);
 		_tooltip.SetTooltip(tooltip);
 	}
 
 	private void SelectBlock()
 	{
-		_controller.SelectBlockIndex(transform.GetSiblingIndex());
+		_controller.SelectBlock(_blockId);
 		_image.CrossFadeColor(Colors.selectedColor, Colors.fadeDuration, true, true);
 	}
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		_hover = true;
-		if (!Selected)
+		if (!_selected)
 		{
 			_image.CrossFadeColor(Colors.highlightedColor, Colors.fadeDuration, true, true);
 		}
@@ -95,7 +104,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	public void OnPointerExit(PointerEventData eventData)
 	{
 		_hover = false;
-		if (!Selected)
+		if (!_selected)
 		{
 			_image.CrossFadeColor(Colors.normalColor, Colors.fadeDuration, true, true);
 		}
@@ -103,6 +112,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	public void OnDeselect()
 	{
+		_selected = false;
 		if (!_hover)
 		{
 			_image.CrossFadeColor(Colors.normalColor, Colors.fadeDuration, true, true);
