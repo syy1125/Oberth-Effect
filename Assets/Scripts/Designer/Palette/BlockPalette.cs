@@ -4,6 +4,7 @@ using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -22,7 +23,12 @@ public class BlockPalette : MonoBehaviour
 
 	private Dictionary<string, BlockButton> _buttons;
 	private BlockButton _selectedBlockButton;
-	public IPaletteSelection Selection { get; private set; }
+	public IPaletteSelection CurrentSelection { get; private set; }
+	private IPaletteSelection _storedSelection; // Persists selection over enable/disable
+
+	public delegate void SelectionChangeEvent();
+
+	public SelectionChangeEvent OnSelectionChanged;
 
 	private void Awake()
 	{
@@ -35,6 +41,25 @@ public class BlockPalette : MonoBehaviour
 		EraserAction.action.Enable();
 		CursorAction.action.performed += SelectCursor;
 		EraserAction.action.performed += SelectEraser;
+
+		switch (_storedSelection)
+		{
+			case BlockSelection blockSelection:
+				SelectBlock(blockSelection.BlockId);
+				break;
+			case CursorSelection _:
+				SelectCursor(new InputAction.CallbackContext());
+				break;
+			case EraserSelection _:
+				SelectCursor(new InputAction.CallbackContext());
+				break;
+			case null:
+				break;
+			default:
+				Debug.LogError($"Invalid stored selection {_storedSelection}");
+				SelectCursor(new InputAction.CallbackContext());
+				break;
+		}
 	}
 
 	private void Start()
@@ -51,11 +76,12 @@ public class BlockPalette : MonoBehaviour
 			_buttons.Add(instance.Spec.BlockId, button);
 		}
 
-		Selection = CursorSelection.Instance;
+		SelectCursor(new InputAction.CallbackContext());
 	}
 
 	private void OnDisable()
 	{
+		_storedSelection = CurrentSelection;
 		SelectCursor(new InputAction.CallbackContext());
 
 		CursorAction.action.performed -= SelectCursor;
@@ -66,37 +92,41 @@ public class BlockPalette : MonoBehaviour
 
 	public void SelectBlock(string blockId)
 	{
-		Selection = new BlockSelection(blockId);
-
-		if (_selectedBlockButton != null)
-		{
-			_selectedBlockButton.OnDeselect();
-		}
-
-		_selectedBlockButton = _buttons[blockId];
-		_selectedBlockButton.OnSelect();
+		SetSelection(new BlockSelection(blockId));
 	}
 
 	private void SelectCursor(InputAction.CallbackContext context)
 	{
-		Selection = CursorSelection.Instance;
-
-		if (_selectedBlockButton != null)
-		{
-			_selectedBlockButton.OnDeselect();
-			_selectedBlockButton = null;
-		}
+		SetSelection(CursorSelection.Instance);
 	}
 
 	private void SelectEraser(InputAction.CallbackContext context)
 	{
-		Selection = EraserSelection.Instance;
+		SetSelection(EraserSelection.Instance);
+	}
+
+	private void SetSelection(IPaletteSelection selection)
+	{
+		if (CurrentSelection != null && CurrentSelection.Equals(selection)) return;
+
+		CurrentSelection = selection;
 
 		if (_selectedBlockButton != null)
 		{
 			_selectedBlockButton.OnDeselect();
+		}
+
+		if (selection is BlockSelection blockSelection)
+		{
+			_selectedBlockButton = _buttons[blockSelection.BlockId];
+			_selectedBlockButton.OnSelect();
+		}
+		else
+		{
 			_selectedBlockButton = null;
 		}
+		
+		OnSelectionChanged?.Invoke();
 	}
 }
 }

@@ -12,11 +12,6 @@ public class EraserSelection : IPaletteSelection
 	private EraserSelection()
 	{}
 
-	public void HandleClick(VehicleBuilder builder, Vector2Int position, int rotation)
-	{
-		throw new System.NotImplementedException();
-	}
-
 	public bool Equals(IPaletteSelection other)
 	{
 		// Singleton behaviour

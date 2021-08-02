@@ -12,11 +12,6 @@ public class CursorSelection : IPaletteSelection
 	private CursorSelection()
 	{}
 
-	public void HandleClick(VehicleBuilder builder, Vector2Int position, int rotation)
-	{
-		// Clicking with a cursor does nothing
-	}
-
 	public bool Equals(IPaletteSelection other)
 	{
 		// Singleton behaviour

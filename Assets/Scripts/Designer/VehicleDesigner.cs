@@ -68,9 +68,9 @@ public class VehicleDesigner : MonoBehaviour
 	private GameObject _paletteActionPreview;
 
 	// Change detection
-	private bool _prevHover;
+	private bool _prevHovering;
 	private bool _paletteSelectionChanged;
-	private Vector2Int? _prevHoverLocation;
+	private Vector2Int? _prevHoverPosition;
 	private Vector2Int? _prevTooltipLocation;
 	private bool _prevDragging;
 	private Vector2Int? _prevClick;
@@ -79,7 +79,7 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int? _clickLocation;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
-	public Vector2Int HoverLocationInt { get; private set; }
+	public Vector2Int HoverPositionInt { get; private set; }
 	private Vector2Int? _tooltipLocation;
 
 	private HashSet<Vector2Int> _conflicts;
@@ -107,6 +107,8 @@ public class VehicleDesigner : MonoBehaviour
 		RotateAction.action.performed += HandleRotate;
 		DebugAction.action.performed += HandleDebug;
 
+		Palette.OnSelectionChanged += OnPaletteSelectionChanged;
+
 		UpdateCursor();
 	}
 
@@ -125,6 +127,8 @@ public class VehicleDesigner : MonoBehaviour
 		RotateAction.action.performed -= HandleRotate;
 		DebugAction.action.performed -= HandleDebug;
 		DisableActions();
+
+		Palette.OnSelectionChanged -= OnPaletteSelectionChanged;
 
 		CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Default;
 	}
@@ -162,6 +166,15 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
+	#region Event Handlers
+
+	private void OnPaletteSelectionChanged()
+	{
+		_paletteSelectionChanged = true;
+	}
+
+	#endregion
+
 	#region Update
 
 	private void Update()
@@ -173,8 +186,8 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (
 			_paletteSelectionChanged
-			|| HoverLocationInt != _prevHoverLocation
-			|| AreaMask.Hover != _prevHover
+			|| HoverPositionInt != _prevHoverPosition
+			|| AreaMask.Hovering != _prevHovering
 			|| Dragging != _prevDragging
 		)
 		{
@@ -202,9 +215,9 @@ public class VehicleDesigner : MonoBehaviour
 		UpdateDragPosition();
 
 		_prevDragging = Dragging;
-		_prevHover = AreaMask.Hover;
+		_prevHovering = AreaMask.Hovering;
 		_paletteSelectionChanged = false;
-		_prevHoverLocation = HoverLocationInt;
+		_prevHoverPosition = HoverPositionInt;
 		_prevTooltipLocation = _tooltipLocation;
 		_prevClick = _clickLocation;
 	}
@@ -214,12 +227,12 @@ public class VehicleDesigner : MonoBehaviour
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 		Vector3 localPosition = transform.InverseTransformPoint(worldPosition);
-		HoverLocationInt = Vector2Int.RoundToInt(localPosition);
+		HoverPositionInt = Vector2Int.RoundToInt(localPosition);
 	}
 
 	private void UpdateDragState()
 	{
-		bool dragging = AreaMask.Hover && DragAction.action.ReadValue<float>() > 0.5f;
+		bool dragging = AreaMask.Hovering && DragAction.action.ReadValue<float>() > 0.5f;
 
 		if (dragging && !_prevDragging)
 		{
@@ -236,7 +249,7 @@ public class VehicleDesigner : MonoBehaviour
 		var scroll = ScrollAction.action.ReadValue<float>();
 		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-		if (AreaMask.Hover && Mathf.Abs(scroll) > Mathf.Epsilon)
+		if (AreaMask.Hovering && Mathf.Abs(scroll) > Mathf.Epsilon)
 		{
 			Vector3 oldLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
 
@@ -252,11 +265,11 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateClick()
 	{
-		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging && AreaMask.Hover;
+		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging && AreaMask.Hovering;
 
 		if (click)
 		{
-			_clickLocation = HoverLocationInt;
+			_clickLocation = HoverPositionInt;
 		}
 		else
 		{
@@ -273,6 +286,7 @@ public class VehicleDesigner : MonoBehaviour
 				if (_paletteActionPreview != null)
 				{
 					Destroy(_paletteActionPreview);
+					_paletteActionPreview = null;
 				}
 
 				break;
@@ -286,9 +300,9 @@ public class VehicleDesigner : MonoBehaviour
 					}
 
 					_paletteActionPreview = BlockBuilder.BuildFromSpec(
-						blockSelection.BlockSpec, transform, HoverLocationInt, _rotation
+						blockSelection.BlockSpec, transform, HoverPositionInt, _rotation
 					);
-					_paletteActionPreview.SetActive(AreaMask.Hover && !Dragging);
+					_paletteActionPreview.SetActive(AreaMask.Hovering && !Dragging);
 
 					foreach (SpriteRenderer sprite in _paletteActionPreview.GetComponentsInChildren<SpriteRenderer>())
 					{
@@ -299,12 +313,12 @@ public class VehicleDesigner : MonoBehaviour
 				}
 				else
 				{
-					_paletteActionPreview.transform.localPosition = new Vector3(HoverLocationInt.x, HoverLocationInt.y);
+					_paletteActionPreview.transform.localPosition = new Vector3(HoverPositionInt.x, HoverPositionInt.y);
 					_paletteActionPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(_rotation);
 
-					if (AreaMask.Hover != _prevHover || Dragging != _prevDragging)
+					if (AreaMask.Hovering != _prevHovering || Dragging != _prevDragging)
 					{
-						_paletteActionPreview.SetActive(AreaMask.Hover && !Dragging);
+						_paletteActionPreview.SetActive(AreaMask.Hovering && !Dragging);
 					}
 				}
 
@@ -337,7 +351,7 @@ public class VehicleDesigner : MonoBehaviour
 			case BlockSelection blockSelection:
 				try
 				{
-					Builder.AddBlock(blockSelection.BlockSpec, HoverLocationInt, _rotation);
+					Builder.AddBlock(blockSelection.BlockSpec, HoverPositionInt, _rotation);
 					UpdateDisconnections();
 				}
 				catch (DuplicateBlockError error)
@@ -349,7 +363,7 @@ public class VehicleDesigner : MonoBehaviour
 			case EraserSelection _:
 				try
 				{
-					Builder.RemoveBlock(HoverLocationInt);
+					Builder.RemoveBlock(HoverPositionInt);
 					UpdateDisconnections();
 				}
 				catch (EmptyBlockError)
@@ -370,7 +384,7 @@ public class VehicleDesigner : MonoBehaviour
 		if (Palette.CurrentSelection is BlockSelection blockSelection)
 		{
 			_conflicts = new HashSet<Vector2Int>(
-				Builder.GetConflicts(blockSelection.BlockSpec, HoverLocationInt, _rotation)
+				Builder.GetConflicts(blockSelection.BlockSpec, HoverPositionInt, _rotation)
 			);
 		}
 		else
@@ -383,9 +397,9 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateTooltip()
 	{
-		if (AreaMask.Hover && Palette.CurrentSelection is CursorSelection && !Dragging)
+		if (AreaMask.Hovering && Palette.CurrentSelection is CursorSelection && !Dragging)
 		{
-			_tooltipLocation = HoverLocationInt;
+			_tooltipLocation = HoverPositionInt;
 		}
 		else
 		{
@@ -547,11 +561,11 @@ public class VehicleDesigner : MonoBehaviour
 	private void HandleDebug(InputAction.CallbackContext context)
 	{
 		// Debug.Log($"Palette selection index {Palette.SelectedIndex}");
-		VehicleBlueprint.BlockInstance hoverBlock = Builder.GetBlockInstanceAt(HoverLocationInt);
+		VehicleBlueprint.BlockInstance hoverBlock = Builder.GetBlockInstanceAt(HoverPositionInt);
 		Debug.Log(
 			hoverBlock == null
-				? $"Hovering at {HoverLocationInt} over null"
-				: $"Hovering at {HoverLocationInt} over {hoverBlock.BlockId} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
+				? $"Hovering at {HoverPositionInt} over null"
+				: $"Hovering at {HoverPositionInt} over {hoverBlock.BlockId} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
 		);
 	}
 
