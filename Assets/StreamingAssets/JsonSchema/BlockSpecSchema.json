@@ -76,7 +76,7 @@
                     "type": "object",
                     "properties": {
                         "Offset": { "$ref": "Vector2Schema.json" },
-                        "ColliderSize": { "$ref": "Vector2Schema.json" }
+                        "Size": { "$ref": "Vector2Schema.json" }
                     },
                     "description": "Specifies the shape of the box collider for this block, if it should have one."
                 },
@@ -111,6 +111,26 @@
                 "IntegrityScore": {
                     "type": "number",
                     "description": "Currently unused. Eventually this is planned for use in tidal force stress computations."
+                }
+            }
+        },
+        "ControlCore": {
+            "type": "object"
+        },
+        "Resource": {
+            "type": "object",
+            "properties": {
+                "StorageCapacity": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.*$": { "type": "number" }
+                    }
+                },
+                "FreeGenerator": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.*$": { "type": "number" }
+                    }
                 }
             }
         },
