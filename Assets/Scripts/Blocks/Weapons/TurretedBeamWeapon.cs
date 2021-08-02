@@ -209,7 +209,7 @@ public class TurretedBeamWeapon : AbstractTurretedWeapon, ITooltipProvider
 		);
 	}
 
-	public override Dictionary<DamageType, float> GetDamageRatePotential()
+	public override Dictionary<DamageType, float> GetMaxFirepower()
 	{
 		return new Dictionary<DamageType, float>
 		{

@@ -20,6 +20,7 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 	private float _rotationSpeed;
 	private Transform _turretTransform;
 	private List<IWeaponEffectEmitter> _weaponEmitters;
+	private Dictionary<DamageType, float> _firepower;
 
 	// State
 	private bool _firing;
@@ -137,9 +138,18 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
-	public Dictionary<DamageType, float> GetDamageRatePotential()
+	public Dictionary<DamageType, float> GetMaxFirepower()
 	{
-		throw new NotImplementedException();
+		if (_firepower == null)
+		{
+			_firepower = new Dictionary<DamageType, float>();
+			DictionaryUtils.SumDictionaries(
+				_weaponEmitters.Select(emitter => emitter.GetMaxFirepower()),
+				_firepower
+			);
+		}
+
+		return _firepower;
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()

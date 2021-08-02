@@ -1,15 +1,17 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -32,14 +34,14 @@ public struct VehicleAnalysisResult
 	public float PropulsionCw;
 
 	// Resource
-	public Dictionary<VehicleResource, float> MaxResourceStorage;
-	public Dictionary<VehicleResource, float> MaxResourceGeneration;
-	public Dictionary<VehicleResource, float> MaxResourceConsumption;
-	public Dictionary<VehicleResource, float> MaxPropulsionResourceUse;
-	public Dictionary<VehicleResource, float> MaxWeaponResourceUse;
+	public Dictionary<string, float> MaxResourceStorage;
+	public Dictionary<string, float> MaxResourceGeneration;
+	public Dictionary<string, float> MaxResourceConsumption;
+	public Dictionary<string, float> MaxPropulsionResourceUse;
+	public Dictionary<string, float> MaxWeaponResourceUse;
 
 	// Firepower
-	public Dictionary<DamageType, float> MaxDamageRatePotential;
+	public Dictionary<DamageType, float> MaxFirepower;
 }
 
 public class VehicleAnalyzer : MonoBehaviour
@@ -138,12 +140,12 @@ public class VehicleAnalyzer : MonoBehaviour
 			PropulsionDown = 0f,
 			PropulsionLeft = 0f,
 			PropulsionRight = 0f,
-			MaxResourceStorage = new Dictionary<VehicleResource, float>(),
-			MaxResourceGeneration = new Dictionary<VehicleResource, float>(),
-			MaxResourceConsumption = new Dictionary<VehicleResource, float>(),
-			MaxPropulsionResourceUse = new Dictionary<VehicleResource, float>(),
-			MaxWeaponResourceUse = new Dictionary<VehicleResource, float>(),
-			MaxDamageRatePotential = new Dictionary<DamageType, float>()
+			MaxResourceStorage = new Dictionary<string, float>(),
+			MaxResourceGeneration = new Dictionary<string, float>(),
+			MaxResourceConsumption = new Dictionary<string, float>(),
+			MaxPropulsionResourceUse = new Dictionary<string, float>(),
+			MaxWeaponResourceUse = new Dictionary<string, float>(),
+			MaxFirepower = new Dictionary<DamageType, float>()
 		};
 
 		long timestamp = Stopwatch.GetTimestamp();
@@ -199,10 +201,11 @@ public class VehicleAnalyzer : MonoBehaviour
 
 		Vector2 rootLocation = new Vector2(block.X, block.Y);
 
-		BlockInfo info = blockObject.GetComponent<BlockInfo>();
-		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
-		_result.Mass += info.Mass;
-		_result.CenterOfMass += info.Mass * blockCenter;
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
+		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+
+		_result.Mass += spec.Physics.Mass;
+		_result.CenterOfMass += spec.Physics.Mass * blockCenter;
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
@@ -213,7 +216,7 @@ public class VehicleAnalyzer : MonoBehaviour
 
 			if (behaviour is ResourceStorageBlock storage)
 			{
-				DictionaryUtils.AddDictionary(storage.ResourceCapacityDict, _result.MaxResourceStorage);
+				DictionaryUtils.AddDictionary(storage.GetCapacity(), _result.MaxResourceStorage);
 			}
 
 			if (behaviour is IPropulsionBlock propulsion)
@@ -240,9 +243,7 @@ public class VehicleAnalyzer : MonoBehaviour
 				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxWeaponResourceUse);
 				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
 
-				DictionaryUtils.AddDictionary(
-					weaponSystem.GetDamageRatePotential(), _result.MaxDamageRatePotential
-				);
+				DictionaryUtils.AddDictionary(weaponSystem.GetMaxFirepower(), _result.MaxFirepower);
 			}
 		}
 	}
@@ -252,10 +253,11 @@ public class VehicleAnalyzer : MonoBehaviour
 		GameObject blockObject = Builder.GetBlockObject(block);
 
 		Vector2 rootLocation = new Vector2(block.X, block.Y);
-		BlockInfo info = blockObject.GetComponent<BlockInfo>();
-		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
+		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
 
-		_result.MomentOfInertia += info.MomentOfInertia + info.Mass * (blockCenter - _result.CenterOfMass).sqrMagnitude;
+		_result.MomentOfInertia += spec.Physics.MomentOfInertia
+		                           + spec.Physics.Mass * (blockCenter - _result.CenterOfMass).sqrMagnitude;
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
@@ -353,9 +355,10 @@ public class VehicleAnalyzer : MonoBehaviour
 			"\n",
 			"<b>Resources</b>",
 			"  Max storage",
-			"    " + string.Join(", ", _result.MaxResourceStorage.Select(FormatResourceEntry)),
+			"    " + string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceStorage)),
 			"  Max resource generation",
-			"    " + string.Join(", ", _result.MaxResourceGeneration.Select(FormatResourceRateEntry)),
+			"    "
+			+ string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceGeneration)),
 			"  Max resource consumption",
 			FormatResourceUseRate("    ", "Total", _result.MaxResourceConsumption),
 			FormatResourceUseRate("    ", "Propulsion", _result.MaxPropulsionResourceUse),
@@ -413,14 +416,14 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void DisplayFirepowerResults()
 	{
-		_result.MaxDamageRatePotential.TryGetValue(DamageType.Kinetic, out float kineticDamage);
-		_result.MaxDamageRatePotential.TryGetValue(DamageType.Energy, out float energyDamage);
-		_result.MaxDamageRatePotential.TryGetValue(DamageType.Explosive, out float explosiveDamage);
+		_result.MaxFirepower.TryGetValue(DamageType.Kinetic, out float kineticDamage);
+		_result.MaxFirepower.TryGetValue(DamageType.Energy, out float energyDamage);
+		_result.MaxFirepower.TryGetValue(DamageType.Explosive, out float explosiveDamage);
 		FirepowerOutput.text = string.Join(
 			"\n",
 			"<b>Firepower</b>",
 			"  Theoretical maximum DPS",
-			$"    Total {_result.MaxDamageRatePotential.Values.Sum():#,0.#}",
+			$"    Total {_result.MaxFirepower.Values.Sum():#,0.#}",
 			$"    Kinetic {kineticDamage:#,0.#}",
 			$"    Energy {energyDamage:#,0.#}",
 			$"    Explosive {explosiveDamage:#,0.#}"
@@ -444,28 +447,26 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	#region String Formatting
 
-	private static string FormatResourceEntry(KeyValuePair<VehicleResource, float> entry)
+	private static string FormatResourceUseRate(string indent, string label, Dictionary<string, float> useRate)
 	{
-		return
-			$"<color=\"#{ColorUtility.ToHtmlStringRGB(entry.Key.DisplayColor)}\">{entry.Value:0.#} {entry.Key.DisplayName}</color>";
-	}
+		StringBuilder builder = new StringBuilder();
 
-	private static string FormatResourceRateEntry(KeyValuePair<VehicleResource, float> entry)
-	{
-		return
-			$"<color=\"#{ColorUtility.ToHtmlStringRGB(entry.Key.DisplayColor)}\">{entry.Value:0.#} {entry.Key.DisplayName}</color>/s";
-	}
+		builder.Append(indent);
+		builder.Append(label);
 
-	private static string FormatResourceUseRate(string indent, string label, Dictionary<VehicleResource, float> useRate)
-	{
 		if (useRate.Count == 0)
 		{
-			return indent + label + " N/A";
+			builder.Append("N/A");
 		}
 		else
 		{
-			return indent + label + "\n" + indent + "  " + string.Join(", ", useRate.Select(FormatResourceRateEntry));
+			builder.AppendLine()
+				.Append(indent)
+				.Append("  ")
+				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(useRate)));
 		}
+
+		return builder.ToString();
 	}
 
 	#endregion

@@ -163,7 +163,7 @@ public abstract class AbstractTurretedWeapon : MonoBehaviour, IResourceConsumerB
 		return ReloadResourceUse;
 	}
 
-	public abstract Dictionary<DamageType, float> GetDamageRatePotential();
+	public abstract Dictionary<DamageType, float> GetMaxFirepower();
 
 	#endregion
 }

@@ -72,6 +72,14 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_resourceSatisfaction = level;
 	}
 
+	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
+	{
+		return new Dictionary<DamageType, float>
+		{
+			{ _projectileConfig.DamageType, _projectileConfig.Damage * _clusterCount * _burstCount / _reloadTime }
+		};
+	}
+
 	public void EmitterFixedUpdate(bool firing, bool isMine)
 	{
 		if (isMine)

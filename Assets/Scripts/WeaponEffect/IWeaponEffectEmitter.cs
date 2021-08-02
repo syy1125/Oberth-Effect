@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Syy1125.OberthEffect.Common.Enums;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
@@ -9,5 +10,6 @@ public interface IWeaponEffectEmitter
 	void EmitterFixedUpdate(bool firing, bool isMine);
 	IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 	void SatisfyResourceRequestAtLevel(float level);
+	IReadOnlyDictionary<DamageType, float> GetMaxFirepower();
 }
 }
