@@ -16,6 +16,11 @@
                     <option name="path" value="Assets/StreamingAssets/Mods/*/Blocks/**/*.yaml" />
                     <option name="mappingKind" value="Pattern" />
                   </Item>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Blocks/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>

@@ -13,14 +13,18 @@ public interface IResourceStorageBlockRegistry : IBlockRegistry<ResourceStorageB
 
 public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 {
-	[NonSerialized]
-	public Dictionary<string, float> ResourceCapacity;
+	private Dictionary<string, float> _capacity;
 
 	private void OnEnable()
 	{
 		ExecuteEvents.ExecuteHierarchy<IResourceStorageBlockRegistry>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
+	}
+
+	public void LoadSpec(Dictionary<string, float> spec)
+	{
+		_capacity = spec;
 	}
 
 	private void OnDisable()
@@ -30,12 +34,17 @@ public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 		);
 	}
 
+	public IReadOnlyDictionary<string, float> GetCapacity()
+	{
+		return _capacity;
+	}
+
 	public string GetTooltip()
 	{
 		return "Resource storage capacity\n"
 		       + string.Join(
 			       "\n",
-			       VehicleResourceDatabase.Instance.FormatResourceDict(ResourceCapacity)
+			       VehicleResourceDatabase.Instance.FormatResourceDict(_capacity)
 				       .Select(line => $"  {line}")
 		       );
 	}

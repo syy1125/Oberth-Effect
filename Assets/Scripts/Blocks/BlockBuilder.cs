@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Blocks.Propulsion;
+using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Spec.Block;
@@ -48,13 +49,25 @@ public static class BlockBuilder
 		var blockHealth = blockObject.AddComponent<BlockHealth>();
 		blockHealth.LoadSpec(blockSpec);
 
-		if (blockSpec.Propulsion.Engine != null)
+		if (blockSpec.Resource?.StorageCapacity != null)
+		{
+			var resourceStorage = blockObject.AddComponent<ResourceStorageBlock>();
+			resourceStorage.LoadSpec(blockSpec.Resource.StorageCapacity);
+		}
+
+		if (blockSpec.Resource?.FreeGenerator != null)
+		{
+			var freeGenerator = blockObject.AddComponent<FreeResourceGeneratorBlock>();
+			freeGenerator.LoadSpec(blockSpec.Resource?.FreeGenerator);
+		}
+
+		if (blockSpec.Propulsion?.Engine != null)
 		{
 			var linearEngine = blockObject.AddComponent<LinearEngine>();
 			linearEngine.LoadSpec(blockSpec.Propulsion.Engine);
 		}
 
-		if (blockSpec.Propulsion.OmniThruster != null)
+		if (blockSpec.Propulsion?.OmniThruster != null)
 		{
 			var omniThruster = blockObject.AddComponent<OmniThruster>();
 			omniThruster.LoadSpec(blockSpec.Propulsion.OmniThruster);

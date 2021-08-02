@@ -358,7 +358,7 @@ public static class ModLoader
 				}
 			}
 
-			if (instance.Spec.Propulsion.Engine != null)
+			if (instance.Spec.Propulsion?.Engine != null)
 			{
 				foreach (string resourceId in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
 				{
@@ -374,7 +374,7 @@ public static class ModLoader
 				}
 			}
 
-			if (instance.Spec.Propulsion.OmniThruster != null)
+			if (instance.Spec.Propulsion?.OmniThruster != null)
 			{
 				foreach (string resourceId in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
 				{
