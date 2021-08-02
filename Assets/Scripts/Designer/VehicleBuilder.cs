@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
@@ -41,7 +42,7 @@ public class VehicleBuilder : MonoBehaviour
 
 	public void InitVehicle()
 	{
-		AddBlock(ControlCoreBlock, Vector2Int.zero, 0);
+		// AddBlock(ControlCoreBlock, Vector2Int.zero, 0);
 	}
 
 	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance, GameObject blockPrefab)
@@ -57,30 +58,27 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Add(instance, blockObject);
 	}
 
-	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockInfo info, Vector2Int rootLocation, int rotation)
+	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockSpec spec, Vector2Int rootLocation, int rotation)
 	{
-		foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+		foreach (Vector3Int localPosition in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax)
+			.AllPositionsWithin)
 		{
 			yield return rootLocation + TransformUtils.RotatePoint(localPosition, rotation);
 		}
 	}
 
-	public List<Vector2Int> GetConflicts(GameObject blockPrefab, Vector2Int rootLocation, int rotation)
+	public List<Vector2Int> GetConflicts(BlockSpec spec, Vector2Int rootLocation, int rotation)
 	{
-		var info = blockPrefab.GetComponent<BlockInfo>();
-
-		return AllPositionsOccupiedBy(info, rootLocation, rotation)
+		return AllPositionsOccupiedBy(spec, rootLocation, rotation)
 			.Where(position => _posToBlock.ContainsKey(position))
 			.ToList();
 	}
 
-	public void AddBlock(GameObject blockPrefab, Vector2Int rootLocation, int rotation)
+	public void AddBlock(BlockSpec spec, Vector2Int rootPosition, int rotation)
 	{
-		var info = blockPrefab.GetComponent<BlockInfo>();
-
 		var positions = new List<Vector2Int>();
 
-		foreach (Vector2Int globalPosition in AllPositionsOccupiedBy(info, rootLocation, rotation))
+		foreach (Vector2Int globalPosition in AllPositionsOccupiedBy(spec, rootPosition, rotation))
 		{
 			if (_posToBlock.ContainsKey(globalPosition))
 			{
@@ -92,9 +90,9 @@ public class VehicleBuilder : MonoBehaviour
 
 		var instance = new VehicleBlueprint.BlockInstance
 		{
-			BlockID = info.BlockID,
-			X = rootLocation.x,
-			Y = rootLocation.y,
+			BlockId = spec.BlockId,
+			X = rootPosition.x,
+			Y = rootPosition.y,
 			Rotation = rotation
 		};
 
@@ -106,40 +104,40 @@ public class VehicleBuilder : MonoBehaviour
 
 		_blockToPos.Add(instance, positions.ToArray());
 
-		SpawnBlockGameObject(instance, blockPrefab);
+		// SpawnBlockGameObject(instance, blockPrefab);
 
 		UpdateConnectedBlocks();
 	}
 
 	public void RemoveBlock(Vector2Int location)
 	{
-		if (!_posToBlock.TryGetValue(location, out VehicleBlueprint.BlockInstance instance))
-		{
-			throw new EmptyBlockError();
-		}
-
-		GameObject blockTemplate = BlockDatabase.Instance.GetBlock(instance.BlockID);
-		if (!blockTemplate.GetComponent<BlockInfo>().AllowErase)
-		{
-			throw new BlockNotErasable();
-		}
-
-		Vector2Int[] positions = _blockToPos[instance];
-
-		foreach (Vector2Int position in positions)
-		{
-			_posToBlock.Remove(position);
-		}
-
-		_blockToPos.Remove(instance);
-
-		Blueprint.Blocks.Remove(instance);
-
-		GameObject go = _blockToObject[instance];
-		Destroy(go);
-		_blockToObject.Remove(instance);
-
-		UpdateConnectedBlocks();
+		// if (!_posToBlock.TryGetValue(location, out VehicleBlueprint.BlockInstance instance))
+		// {
+		// 	throw new EmptyBlockError();
+		// }
+		//
+		// GameObject blockTemplate = BlockDatabase.Instance.GetBlock(instance.BlockId);
+		// if (!blockTemplate.GetComponent<BlockInfo>().AllowErase)
+		// {
+		// 	throw new BlockNotErasable();
+		// }
+		//
+		// Vector2Int[] positions = _blockToPos[instance];
+		//
+		// foreach (Vector2Int position in positions)
+		// {
+		// 	_posToBlock.Remove(position);
+		// }
+		//
+		// _blockToPos.Remove(instance);
+		//
+		// Blueprint.Blocks.Remove(instance);
+		//
+		// GameObject go = _blockToObject[instance];
+		// Destroy(go);
+		// _blockToObject.Remove(instance);
+		//
+		// UpdateConnectedBlocks();
 	}
 
 	#region Query Methods
@@ -172,12 +170,13 @@ public class VehicleBuilder : MonoBehaviour
 
 	private static IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
-		GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);
-		foreach (Vector2Int attachmentPoint in blockPrefab.GetComponent<BlockInfo>().AttachmentPoints)
-		{
-			yield return new Vector2Int(instance.X, instance.Y)
-			             + TransformUtils.RotatePoint(attachmentPoint, instance.Rotation);
-		}
+		// GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockId);
+		// foreach (Vector2Int attachmentPoint in blockPrefab.GetComponent<BlockInfo>().AttachmentPoints)
+		// {
+		// 	yield return new Vector2Int(instance.X, instance.Y)
+		// 	             + TransformUtils.RotatePoint(attachmentPoint, instance.Rotation);
+		// }
+		yield break;
 	}
 
 	private void UpdateConnectedBlocks()
@@ -275,26 +274,26 @@ public class VehicleBuilder : MonoBehaviour
 	{
 		ClearAll();
 
-		foreach (VehicleBlueprint.BlockInstance instance in Blueprint.Blocks)
-		{
-			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockID);
-
-			var info = blockPrefab.GetComponent<BlockInfo>();
-
-			var positions = new List<Vector2Int>();
-
-			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
-			{
-				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
-				                            + TransformUtils.RotatePoint(localPosition, instance.Rotation);
-				positions.Add(globalPosition);
-				_posToBlock.Add(globalPosition, instance);
-			}
-
-			_blockToPos.Add(instance, positions.ToArray());
-
-			SpawnBlockGameObject(instance, blockPrefab);
-		}
+		// foreach (VehicleBlueprint.BlockInstance instance in Blueprint.Blocks)
+		// {
+		// 	GameObject blockPrefab = BlockDatabase.Instance.GetBlock(instance.BlockId);
+		//
+		// 	var info = blockPrefab.GetComponent<BlockInfo>();
+		//
+		// 	var positions = new List<Vector2Int>();
+		//
+		// 	foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+		// 	{
+		// 		Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
+		// 		                            + TransformUtils.RotatePoint(localPosition, instance.Rotation);
+		// 		positions.Add(globalPosition);
+		// 		_posToBlock.Add(globalPosition, instance);
+		// 	}
+		//
+		// 	_blockToPos.Add(instance, positions.ToArray());
+		//
+		// 	SpawnBlockGameObject(instance, blockPrefab);
+		// }
 
 		UpdateConnectedBlocks();
 	}

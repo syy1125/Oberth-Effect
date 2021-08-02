@@ -4,6 +4,8 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Designer.Config;
+using Syy1125.OberthEffect.Designer.Palette;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -63,9 +65,11 @@ public class VehicleDesigner : MonoBehaviour
 
 	private int _rotation;
 
-	private GameObject _preview;
+	private GameObject _paletteActionPreview;
+
+	// Change detection
 	private bool _prevHover;
-	private int _prevIndex;
+	private bool _paletteSelectionChanged;
 	private Vector2Int? _prevHoverLocation;
 	private Vector2Int? _prevTooltipLocation;
 	private bool _prevDragging;
@@ -75,7 +79,7 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int? _clickLocation;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
-	public Vector2Int HoverLocation { get; private set; }
+	public Vector2Int HoverLocationInt { get; private set; }
 	private Vector2Int? _tooltipLocation;
 
 	private HashSet<Vector2Int> _conflicts;
@@ -168,8 +172,8 @@ public class VehicleDesigner : MonoBehaviour
 		UpdateClick();
 
 		if (
-			Palette.SelectedIndex != _prevIndex
-			|| HoverLocation != _prevHoverLocation
+			_paletteSelectionChanged
+			|| HoverLocationInt != _prevHoverLocation
 			|| AreaMask.Hover != _prevHover
 			|| Dragging != _prevDragging
 		)
@@ -179,7 +183,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdateTooltip();
 		}
 
-		if (Dragging != _prevDragging || Palette.SelectedIndex != _prevIndex)
+		if (Dragging != _prevDragging || _paletteSelectionChanged)
 		{
 			UpdateCursor();
 		}
@@ -199,8 +203,8 @@ public class VehicleDesigner : MonoBehaviour
 
 		_prevDragging = Dragging;
 		_prevHover = AreaMask.Hover;
-		_prevIndex = Palette.SelectedIndex;
-		_prevHoverLocation = HoverLocation;
+		_paletteSelectionChanged = false;
+		_prevHoverLocation = HoverLocationInt;
 		_prevTooltipLocation = _tooltipLocation;
 		_prevClick = _clickLocation;
 	}
@@ -210,7 +214,7 @@ public class VehicleDesigner : MonoBehaviour
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 		Vector3 localPosition = transform.InverseTransformPoint(worldPosition);
-		HoverLocation = Vector2Int.RoundToInt(localPosition);
+		HoverLocationInt = Vector2Int.RoundToInt(localPosition);
 	}
 
 	private void UpdateDragState()
@@ -252,7 +256,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (click)
 		{
-			_clickLocation = HoverLocation;
+			_clickLocation = HoverLocationInt;
 		}
 		else
 		{
@@ -262,40 +266,49 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdatePreview()
 	{
-		if (Palette.SelectedIndex < 0)
+		switch (Palette.CurrentSelection)
 		{
-			if (_preview != null)
-			{
-				Destroy(_preview);
-			}
-		}
-		else
-		{
-			if (Palette.SelectedIndex != _prevIndex)
-			{
-				if (_preview != null)
+			case CursorSelection _:
+			case EraserSelection _:
+				if (_paletteActionPreview != null)
 				{
-					Destroy(_preview);
+					Destroy(_paletteActionPreview);
 				}
 
-				_preview = Instantiate(Palette.GetSelectedBlock(), transform);
-				_preview.transform.rotation = transform.rotation * TransformUtils.GetPhysicalRotation(_rotation);
-				_preview.SetActive(AreaMask.Hover);
+				break;
 
-				foreach (SpriteRenderer sprite in _preview.GetComponentsInChildren<SpriteRenderer>())
+			case BlockSelection blockSelection:
+				if (_paletteSelectionChanged)
 				{
-					Color c = sprite.color;
-					c.a *= 0.5f;
-					sprite.color = c;
+					if (_paletteActionPreview != null)
+					{
+						Destroy(_paletteActionPreview);
+					}
+
+					_paletteActionPreview = BlockBuilder.BuildFromSpec(
+						blockSelection.BlockSpec, transform, HoverLocationInt, _rotation
+					);
+					_paletteActionPreview.SetActive(AreaMask.Hover && !Dragging);
+
+					foreach (SpriteRenderer sprite in _paletteActionPreview.GetComponentsInChildren<SpriteRenderer>())
+					{
+						Color c = sprite.color;
+						c.a *= 0.5f;
+						sprite.color = c;
+					}
 				}
-			}
+				else
+				{
+					_paletteActionPreview.transform.localPosition = new Vector3(HoverLocationInt.x, HoverLocationInt.y);
+					_paletteActionPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(_rotation);
 
-			_preview.transform.localPosition = new Vector3(HoverLocation.x, HoverLocation.y);
+					if (AreaMask.Hover != _prevHover || Dragging != _prevDragging)
+					{
+						_paletteActionPreview.SetActive(AreaMask.Hover && !Dragging);
+					}
+				}
 
-			if (AreaMask.Hover != _prevHover || Dragging != _prevDragging)
-			{
-				_preview.SetActive(AreaMask.Hover && !Dragging);
-			}
+				break;
 		}
 	}
 
@@ -305,7 +318,7 @@ public class VehicleDesigner : MonoBehaviour
 		{
 			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Drag;
 		}
-		else if (Palette.SelectedIndex == BlockPalette.ERASE_INDEX)
+		else if (Palette.CurrentSelection is EraserSelection)
 		{
 			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Eraser;
 		}
@@ -319,58 +332,60 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (_clickLocation == null) return;
 
-		if (Palette.SelectedIndex >= 0)
+		switch (Palette.CurrentSelection)
 		{
-			GameObject block = Palette.GetSelectedBlock();
+			case BlockSelection blockSelection:
+				try
+				{
+					Builder.AddBlock(blockSelection.BlockSpec, HoverLocationInt, _rotation);
+					UpdateDisconnections();
+				}
+				catch (DuplicateBlockError error)
+				{
+					// TODO
+				}
 
-			try
-			{
-				Builder.AddBlock(block, HoverLocation, _rotation);
-				UpdateDisconnections();
-			}
-			catch (DuplicateBlockError error)
-			{
-				// TODO
-			}
-		}
-		else
-		{
-			switch (Palette.SelectedIndex)
-			{
-				case BlockPalette.ERASE_INDEX:
-					try
-					{
-						Builder.RemoveBlock(HoverLocation);
-						UpdateDisconnections();
-					}
-					catch (EmptyBlockError)
-					{
-						// TODO
-					}
-					catch (BlockNotErasable)
-					{
-						// TODO
-					}
+				break;
+			case EraserSelection _:
+				try
+				{
+					Builder.RemoveBlock(HoverLocationInt);
+					UpdateDisconnections();
+				}
+				catch (EmptyBlockError)
+				{
+					// TODO
+				}
+				catch (BlockNotErasable)
+				{
+					// TODO
+				}
 
-					break;
-			}
+				break;
 		}
 	}
 
 	private void UpdateConflicts()
 	{
-		GameObject block = Palette.GetSelectedBlock();
-		_conflicts = block == null
-			? new HashSet<Vector2Int>()
-			: new HashSet<Vector2Int>(Builder.GetConflicts(block, HoverLocation, _rotation));
+		if (Palette.CurrentSelection is BlockSelection blockSelection)
+		{
+			_conflicts = new HashSet<Vector2Int>(
+				Builder.GetConflicts(blockSelection.BlockSpec, HoverLocationInt, _rotation)
+			);
+		}
+		else
+		{
+			_conflicts = new HashSet<Vector2Int>();
+		}
+
 		_warningChanged = true;
 	}
 
 	private void UpdateTooltip()
 	{
-		if (AreaMask.Hover && Palette.SelectedIndex == BlockPalette.CURSOR_INDEX && !Dragging)
+		if (AreaMask.Hover && Palette.CurrentSelection is CursorSelection && !Dragging)
 		{
-			_tooltipLocation = HoverLocation;
+			_tooltipLocation = HoverLocationInt;
 		}
 		else
 		{
@@ -494,9 +509,9 @@ public class VehicleDesigner : MonoBehaviour
 			_rotation = (_rotation + 3) % 4;
 		}
 
-		if (_preview != null)
+		if (_paletteActionPreview != null)
 		{
-			_preview.transform.rotation = Quaternion.AngleAxis(_rotation * 90f, Vector3.forward);
+			_paletteActionPreview.transform.rotation = Quaternion.AngleAxis(_rotation * 90f, Vector3.forward);
 		}
 	}
 
@@ -531,12 +546,12 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void HandleDebug(InputAction.CallbackContext context)
 	{
-		Debug.Log($"Palette selection index {Palette.SelectedIndex}");
-		VehicleBlueprint.BlockInstance hoverBlock = Builder.GetBlockInstanceAt(HoverLocation);
+		// Debug.Log($"Palette selection index {Palette.SelectedIndex}");
+		VehicleBlueprint.BlockInstance hoverBlock = Builder.GetBlockInstanceAt(HoverLocationInt);
 		Debug.Log(
 			hoverBlock == null
-				? $"Hovering at {HoverLocation} over null"
-				: $"Hovering at {HoverLocation} over {hoverBlock.BlockID} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
+				? $"Hovering at {HoverLocationInt} over null"
+				: $"Hovering at {HoverLocationInt} over {hoverBlock.BlockId} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
 		);
 	}
 
