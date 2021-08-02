@@ -5,16 +5,16 @@ namespace Syy1125.OberthEffect.Designer
 {
 public class DesignerAreaMask : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-	public bool Hover { get; private set; }
+	public bool Hovering { get; private set; }
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		Hover = true;
+		Hovering = true;
 	}
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		Hover = false;
+		Hovering = false;
 	}
 }
 }

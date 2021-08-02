@@ -179,7 +179,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Update()
 	{
-		UpdateHover();
+		UpdateMousePosition();
 		UpdateDragState();
 		UpdateScroll();
 		UpdateClick();
@@ -222,7 +222,7 @@ public class VehicleDesigner : MonoBehaviour
 		_prevClick = _clickLocation;
 	}
 
-	private void UpdateHover()
+	private void UpdateMousePosition()
 	{
 		Vector2 mousePosition = Mouse.current.position.ReadValue();
 		Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);

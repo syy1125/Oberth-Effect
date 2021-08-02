@@ -12,13 +12,13 @@ public class DesignerCursorTexture : MonoBehaviour
 		Eraser
 	}
 
-	[HideInInspector]
-	public CursorStatus TargetStatus;
 
 	[Header("Cursor Textures")]
 	public Texture2D GrabTexture;
-
 	public Texture2D EraserTexture;
+
+	[NonSerialized]
+	public CursorStatus TargetStatus;
 	private CursorStatus _status;
 
 	private void LateUpdate()

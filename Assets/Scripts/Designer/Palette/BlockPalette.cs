@@ -68,6 +68,8 @@ public class BlockPalette : MonoBehaviour
 
 		foreach (SpecInstance<BlockSpec> instance in BlockDatabase.Instance.ListBlocks())
 		{
+			if (!instance.Spec.Construction.ShowInDesigner) continue;
+
 			GameObject buttonObject = Instantiate(BlockButtonPrefab, t);
 			BlockButton button = buttonObject.GetComponent<BlockButton>();
 
@@ -125,7 +127,7 @@ public class BlockPalette : MonoBehaviour
 		{
 			_selectedBlockButton = null;
 		}
-		
+
 		OnSelectionChanged?.Invoke();
 	}
 }
