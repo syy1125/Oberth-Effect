@@ -72,7 +72,7 @@ public class TurretedProjectileWeapon : AbstractTurretedWeapon, ITooltipProvider
 		return deviationAngle;
 	}
 
-	public override Dictionary<DamageType, float> GetMaxFirepower()
+	public override IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
 		return new Dictionary<DamageType, float>
 		{

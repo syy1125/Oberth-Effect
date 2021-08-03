@@ -7,6 +7,7 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 {
 	public int ClusterCount = 1;
 	public int BurstCount = 1;
+	public float BurstInterval;
 
 	public Vector2 ColliderSize;
 	public float Speed;

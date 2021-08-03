@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
@@ -12,7 +13,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlock
+public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlock, ITooltipProvider
 {
 	private BlockCore _core;
 
@@ -138,7 +139,7 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
-	public Dictionary<DamageType, float> GetMaxFirepower()
+	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
 		if (_firepower == null)
 		{
@@ -155,6 +156,27 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
 		throw new NotImplementedException();
+	}
+
+	public string GetTooltip()
+	{
+		StringBuilder builder = new StringBuilder();
+
+		builder
+			.AppendLine("Turreted Weapon")
+			.AppendLine("  Turret")
+			.AppendLine($"    Rotation speed {_rotationSpeed}°/s");
+
+		foreach (IWeaponEffectEmitter emitter in _weaponEmitters)
+		{
+			builder.Append(emitter.GetEmitterTooltip());
+		}
+
+		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
+		float maxDps = firepower.Values.Sum();
+		builder.AppendLine($"  Theoretical maximum DPS {maxDps:F1}");
+
+		return builder.ToString();
 	}
 }
 }

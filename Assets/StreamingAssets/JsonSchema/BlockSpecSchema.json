@@ -225,6 +225,9 @@
                         "BurstCount": {
                             "type": "integer"
                         },
+                        "BurstInterval": {
+                            "type": "number"
+                        },
                         "ColliderSize": {
                             "$ref": "Vector2Schema.json"
                         },

@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -14,6 +18,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private int _clusterCount;
 	private int _burstCount;
+	private float _burstInterval;
+
 	private float _spreadAngle;
 	private WeaponSpreadProfile _spreadProfile;
 	private float _projectileSpeed;
@@ -36,6 +42,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	{
 		_clusterCount = spec.ClusterCount;
 		_burstCount = spec.BurstCount;
+		_burstInterval = spec.BurstInterval;
+
 		_spreadAngle = spec.SpreadAngle;
 		_spreadProfile = spec.SpreadProfile;
 		_projectileSpeed = spec.Speed;
@@ -78,6 +86,66 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		{
 			{ _projectileConfig.DamageType, _projectileConfig.Damage * _clusterCount * _burstCount / _reloadTime }
 		};
+	}
+
+	public string GetEmitterTooltip()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder
+			.AppendLine("  Projectile")
+			.AppendLine(
+				_projectileConfig.DamageType == DamageType.Explosive
+					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {_projectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
+					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
+			)
+			.AppendLine($"    Speed {_projectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
+			.AppendLine(
+				$"    Max range {_projectileSpeed * _projectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
+			);
+
+		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
+		builder.AppendLine(
+			_reloadResourceUse.Count > 0
+				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}"
+				: $"    Reload time {_reloadTime}"
+		);
+
+		if (_clusterCount > 1)
+		{
+			builder.AppendLine(
+				_burstCount > 1
+					? $"    {_clusterCount} shots per cluster, {_burstCount} clusters per burst, {_burstInterval}s between clusters in burst"
+					: $"    {_clusterCount} shots per cluster"
+			);
+		}
+		else if (_burstCount > 1)
+		{
+			builder.AppendLine($"    {_burstCount} shots per burst, {_burstInterval}s between shots in burst");
+		}
+
+		switch (_spreadProfile)
+		{
+			case WeaponSpreadProfile.None:
+				break;
+			case WeaponSpreadProfile.Gaussian:
+				builder.AppendLine($"    Gaussian spread ±{_spreadAngle}°");
+				break;
+			case WeaponSpreadProfile.Uniform:
+				builder.AppendLine($"    Uniform spread ±{_spreadAngle}°");
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
+
+		if (_recoil > Mathf.Epsilon)
+		{
+			string shotOrCluster = _clusterCount > 1 ? "cluster" : "shot";
+			builder.AppendLine(
+				$"    Recoil {_recoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN per {shotOrCluster}"
+			);
+		}
+
+		return builder.ToString();
 	}
 
 	public void EmitterFixedUpdate(bool firing, bool isMine)
