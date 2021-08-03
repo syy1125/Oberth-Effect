@@ -141,7 +141,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		{
 			string shotOrCluster = _clusterCount > 1 ? "cluster" : "shot";
 			builder.AppendLine(
-				$"    Recoil {_recoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN per {shotOrCluster}"
+				$"    Recoil {_recoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kNs per {shotOrCluster}"
 			);
 		}
 
