@@ -52,6 +52,7 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 
 		var particles = particleHolder.AddComponent<ParticleSystem>();
 		particles.LoadSpec(spec);
+		particles.Stop();
 		return particles;
 	}
 

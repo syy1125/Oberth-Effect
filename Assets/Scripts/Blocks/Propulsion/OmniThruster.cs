@@ -32,11 +32,14 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 
 			_verticalParticleRoot = new GameObject("VerticalParticles").transform;
 			_verticalParticleRoot.SetParent(transform);
+			_verticalParticleRoot.localPosition = Vector3.zero;
+			_verticalParticleRoot.localRotation = Quaternion.identity;
 			_verticalParticles = new ParticleSystem[particleCount];
 
 			_horizontalParticleRoot = new GameObject("HorizontalParticles").transform;
 			_horizontalParticleRoot.SetParent(transform);
-			_horizontalParticleRoot.rotation = Quaternion.AngleAxis(90f, Vector3.forward);
+			_horizontalParticleRoot.localPosition = Vector3.zero;
+			_horizontalParticleRoot.localRotation = Quaternion.AngleAxis(90f, Vector3.forward);
 			_horizontalParticles = new ParticleSystem[particleCount];
 
 			_maxParticleSpeeds = new float[particleCount];
