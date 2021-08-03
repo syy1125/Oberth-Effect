@@ -90,7 +90,7 @@ public class BlockHealthBarControl : MonoBehaviour
 		foreach (GameObject block in _target.GetAllBlocks())
 		{
 			GameObject healthBar = Instantiate(HealthBarPrefab, t);
-			healthBar.GetComponent<BlockHealthBar>().Target = block.GetComponent<BlockCore>();
+			healthBar.GetComponent<BlockHealthBar>().Target = block.GetComponent<BlockHealth>();
 
 			_healthBars.Add(new Tuple<GameObject, GameObject>(block, healthBar));
 		}
@@ -118,7 +118,7 @@ public class BlockHealthBarControl : MonoBehaviour
 			case HealthBarDisplayMode.IfDamaged:
 				foreach ((GameObject block, GameObject healthBar) in _healthBars)
 				{
-					healthBar.SetActive(block.activeSelf && block.GetComponent<BlockCore>().IsDamaged);
+					healthBar.SetActive(block.activeSelf && block.GetComponent<BlockHealth>().IsDamaged);
 				}
 
 				break;
@@ -133,7 +133,7 @@ public class BlockHealthBarControl : MonoBehaviour
 				foreach ((GameObject block, GameObject healthBar) in _healthBars)
 				{
 					healthBar.SetActive(
-						block == _hoverBlock && block.activeSelf && block.GetComponent<BlockCore>().IsDamaged
+						block == _hoverBlock && block.activeSelf && block.GetComponent<BlockHealth>().IsDamaged
 					);
 				}
 

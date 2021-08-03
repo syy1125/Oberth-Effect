@@ -10,11 +10,18 @@ public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>, IEventSystemHan
 
 public class BlockCore : MonoBehaviour
 {
-	public int OwnerId { get; set; }
 	public bool IsMine { get; private set; }
-	public string BlockId { get; set; }
-	public Vector2Int RootPosition { get; set; }
-	public int Rotation { get; set; }
+
+	[NonSerialized]
+	public int OwnerId;
+	[NonSerialized]
+	public string BlockId;
+	[NonSerialized]
+	public Vector2Int RootPosition;
+	[NonSerialized]
+	public int Rotation;
+	[NonSerialized]
+	public Vector2 CenterOfMassPosition;
 
 	private void Awake()
 	{

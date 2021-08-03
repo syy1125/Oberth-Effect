@@ -126,9 +126,9 @@ public class DesignerConfig : MonoBehaviour
 
 	private void HandleSelect(InputAction.CallbackContext context)
 	{
-		if (AreaMask.Hover && Builder.HasBlockAt(Designer.HoverLocation))
+		if (AreaMask.Hovering && Builder.HasBlockAt(Designer.HoverPositionInt))
 		{
-			_selectedLocation = Designer.HoverLocation;
+			_selectedLocation = Designer.HoverPositionInt;
 			ShowBlockConfig();
 		}
 	}
@@ -176,32 +176,32 @@ public class DesignerConfig : MonoBehaviour
 
 	private void ShowBlockConfig()
 	{
-		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
-
-		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
-
-		StatusText.text = string.Join(
-			"\n",
-			$"Configuring {blockObject.GetComponent<BlockInfo>().FullName}",
-			"Press 'Q' to show vehicle config"
-		);
-
-		SetVehicleConfigEnabled(false);
-
-		LinearEngine engine = blockObject.GetComponent<LinearEngine>();
-		SetEngineConfigEnabled(engine != null);
-		if (engine != null) UpdateEngineConfigElements(engine);
-
-		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
-
-		BoundsInt blockBounds = TransformUtils.TransformBounds(
-			blockObject.GetComponent<BlockInfo>().Bounds,
-			new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
-		);
-		SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
-		SelectionIndicator.localScale = blockBounds.size;
-		SelectionIndicator.gameObject.SetActive(true);
+		// Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+		//
+		// VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		// GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+		//
+		// StatusText.text = string.Join(
+		// 	"\n",
+		// 	$"Configuring {blockObject.GetComponent<BlockCore>().Spec.Info.FullName}",
+		// 	"Press 'Q' to show vehicle config"
+		// );
+		//
+		// SetVehicleConfigEnabled(false);
+		//
+		// LinearEngine engine = blockObject.GetComponent<LinearEngine>();
+		// SetEngineConfigEnabled(engine != null);
+		// if (engine != null) UpdateEngineConfigElements(engine);
+		//
+		// LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
+		//
+		// BoundsInt blockBounds = TransformUtils.TransformBounds(
+		// 	blockObject.GetComponent<BlockCore>().Spec.Info,
+		// 	new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
+		// );
+		// SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
+		// SelectionIndicator.localScale = blockBounds.size;
+		// SelectionIndicator.gameObject.SetActive(true);
 	}
 
 	private void SetVehicleConfigEnabled(bool configEnabled)

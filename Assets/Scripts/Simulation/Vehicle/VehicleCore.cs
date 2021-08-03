@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -52,33 +54,32 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		// Instantiate blocks
 		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
 		{
-			GameObject blockPrefab = BlockDatabase.Instance.GetBlock(block.BlockID);
-
-			if (blockPrefab == null)
+			if (!BlockDatabase.Instance.HasBlock(block.BlockId))
 			{
-				Debug.LogError($"Failed to load block by ID: {block.BlockID}");
+				Debug.LogError($"Failed to load block by ID: {block.BlockId}");
 				continue;
 			}
 
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
 			var rootLocation = new Vector2(block.X, block.Y);
 			var rootLocationInt = new Vector2Int(block.X, block.Y);
 
-			GameObject blockObject = Instantiate(blockPrefab, transform);
-			blockObject.transform.localPosition = rootLocation;
-			blockObject.transform.localRotation = TransformUtils.GetPhysicalRotation(block.Rotation);
+			GameObject blockObject = BlockBuilder.BuildFromSpec(spec, transform, rootLocationInt, block.Rotation);
 
-			BlockInfo info = blockPrefab.GetComponent<BlockInfo>();
-			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
-			totalMass += info.Mass;
-			centerOfMass += info.Mass * blockCenter;
-			momentOfInertiaData.AddLast(new Tuple<Vector2, float, float>(blockCenter, info.Mass, info.MomentOfInertia));
+			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+			totalMass += spec.Physics.Mass;
+			centerOfMass += spec.Physics.Mass * blockCenter;
+			momentOfInertiaData.AddLast(
+				new Tuple<Vector2, float, float>(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia)
+			);
 
 			var blockCore = blockObject.GetComponent<BlockCore>();
 			blockCore.OwnerId = photonView.OwnerActorNr;
-			blockCore.RootLocation = rootLocationInt;
-			blockCore.Rotation = block.Rotation;
 
-			foreach (Vector3Int localPosition in info.Bounds.allPositionsWithin)
+			foreach (
+				Vector3Int localPosition
+				in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin
+			)
 			{
 				_posToBlock.Add(
 					rootLocationInt + TransformUtils.RotatePoint(localPosition, block.Rotation), blockObject
@@ -142,18 +143,22 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		// When the vehicle is loading, ignore everything as the calculation will be done by the loading routine.
 		if (!_loaded) return;
 
-		BlockInfo info = blockCore.GetComponent<BlockInfo>();
+		BlockCore core = blockCore.GetComponent<BlockCore>();
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(core.BlockId).Spec;
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
-		AddMass(blockCenter, info.Mass, info.MomentOfInertia);
+		AddMass(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia);
 	}
 
 	public void UnregisterBlock(BlockCore blockCore)
 	{
 		if (!_loaded) return;
 
-		BlockInfo info = blockCore.GetComponent<BlockInfo>();
+		BlockCore core = blockCore.GetComponent<BlockCore>();
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(core.BlockId).Spec;
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
-		AddMass(blockCenter, -info.Mass, -info.MomentOfInertia);
+		// Remove the block by adding negative mass
+		// TODO: Work out the physics to verify that this actually works
+		AddMass(blockCenter, -spec.Physics.Mass, -spec.Physics.MomentOfInertia);
 	}
 
 	private void AddMass(Vector2 position, float mass, float moment)
@@ -174,7 +179,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 
 	public void OnBlockDestroyedByDamage(BlockCore blockCore)
 	{
-		photonView.RPC("DisableBlock", RpcTarget.AllBuffered, blockCore.RootLocation.x, blockCore.RootLocation.y);
+		photonView.RPC("DisableBlock", RpcTarget.AllBuffered, blockCore.RootPosition.x, blockCore.RootPosition.y);
 	}
 
 	[PunRPC]

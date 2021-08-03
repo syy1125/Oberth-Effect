@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,9 +7,18 @@ namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
 public class BlockHealthBar : MonoBehaviour
 {
-	public BlockCore Target;
+	public BlockHealth Target;
 	public Image HealthBar;
 	public Gradient ColorGradient;
+
+	private BlockCore _blockCore;
+	private VehicleCore _vehicleCore;
+
+	private void Start()
+	{
+		_blockCore = Target.GetComponent<BlockCore>();
+		_vehicleCore = Target.GetComponentInParent<VehicleCore>();
+	}
 
 	private void LateUpdate()
 	{
@@ -16,7 +26,7 @@ public class BlockHealthBar : MonoBehaviour
 		HealthBar.fillAmount = healthFraction;
 		HealthBar.color = ColorGradient.Evaluate(healthFraction);
 
-		Vector3 targetPosition = Target.transform.parent.TransformPoint(Target.CenterOfMassPosition);
+		Vector3 targetPosition = _vehicleCore.transform.TransformPoint(_blockCore.CenterOfMassPosition);
 		targetPosition.z = transform.position.z;
 		transform.position = targetPosition;
 	}

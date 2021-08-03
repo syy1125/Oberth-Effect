@@ -42,6 +42,8 @@ public static class BlockBuilder
 		blockCore.BlockId = blockSpec.BlockId;
 		blockCore.RootPosition = rootPosition;
 		blockCore.Rotation = rotation;
+		blockCore.CenterOfMassPosition =
+			rootPosition + TransformUtils.RotatePoint(blockSpec.Physics.CenterOfMass, rotation);
 
 		var blockInfo = blockObject.AddComponent<BlockInfoTooltip>();
 		blockInfo.LoadSpec(blockSpec);

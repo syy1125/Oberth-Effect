@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface
@@ -10,26 +11,34 @@ public class ResourceDisplay : MonoBehaviour
 {
 	public GameObject ResourceRowPrefab;
 
-	public VehicleResource[] DisplayResources;
+	public string[] DisplayResources;
 
-	[HideInInspector]
+	[NonSerialized]
 	public VehicleResourceManager ResourceManager;
 
-	private Dictionary<VehicleResource, ResourceDisplayRow> _rows;
+	private Dictionary<string, ResourceDisplayRow> _rows;
 
 	private void Awake()
 	{
-		_rows = new Dictionary<VehicleResource, ResourceDisplayRow>();
+		_rows = new Dictionary<string, ResourceDisplayRow>();
 
-		foreach (VehicleResource resource in DisplayResources)
+		foreach (string resourceId in DisplayResources)
 		{
+			if (!VehicleResourceDatabase.Instance.HasResource(resourceId))
+			{
+				Debug.LogError($"Resource {resourceId} does not exist");
+				continue;
+			}
+
 			var row = Instantiate(ResourceRowPrefab, transform).GetComponent<ResourceDisplayRow>();
+			var spec = VehicleResourceDatabase.Instance.GetResourceSpec(resourceId).Spec;
 
-			row.ShortName.text = resource.ShortName;
-			row.ShortName.color = resource.DisplayColor;
-			row.FillBar.color = resource.DisplayColor;
+			row.ShortName.text = spec.DisplayName;
+			ColorUtility.TryParseHtmlString(spec.DisplayColor, out Color displayColor);
+			row.ShortName.color = displayColor;
+			row.FillBar.color = displayColor;
 
-			_rows.Add(resource, row);
+			_rows.Add(resourceId, row);
 		}
 	}
 
@@ -37,7 +46,7 @@ public class ResourceDisplay : MonoBehaviour
 	{
 		if (ResourceManager != null)
 		{
-			foreach (KeyValuePair<VehicleResource, ResourceDisplayRow> entry in _rows)
+			foreach (KeyValuePair<string, ResourceDisplayRow> entry in _rows)
 			{
 				ResourceDisplayRow row = entry.Value;
 				Tuple<float, float, float> resourceStatus = ResourceManager.GetResourceStatus(entry.Key);

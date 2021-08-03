@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
@@ -22,14 +21,14 @@ public class VehicleResourceManager :
 
 	private List<ResourceStorageBlock> _storageBlocks;
 	private bool _storageChanged;
-	private Dictionary<VehicleResource, float> _resourceCapacities;
+	private Dictionary<string, float> _resourceCapacities;
 
 	private List<IResourceGeneratorBlock> _generatorBlocks;
-	private Dictionary<VehicleResource, float> _currentResources;
+	private Dictionary<string, float> _currentResources;
 
 	private List<IResourceConsumerBlock> _consumerBlocks;
-	private Dictionary<VehicleResource, float> _resourceRequestRate;
-	private Dictionary<VehicleResource, float> _resourceSatisfaction;
+	private Dictionary<string, float> _resourceRequestRate;
+	private Dictionary<string, float> _resourceSatisfaction;
 
 	private void Awake()
 	{
@@ -37,14 +36,14 @@ public class VehicleResourceManager :
 
 		_storageBlocks = new List<ResourceStorageBlock>();
 		_storageChanged = false;
-		_resourceCapacities = new Dictionary<VehicleResource, float>();
+		_resourceCapacities = new Dictionary<string, float>();
 
 		_generatorBlocks = new List<IResourceGeneratorBlock>();
-		_currentResources = new Dictionary<VehicleResource, float>();
+		_currentResources = new Dictionary<string, float>();
 
 		_consumerBlocks = new List<IResourceConsumerBlock>();
-		_resourceRequestRate = new Dictionary<VehicleResource, float>();
-		_resourceSatisfaction = new Dictionary<VehicleResource, float>();
+		_resourceRequestRate = new Dictionary<string, float>();
+		_resourceSatisfaction = new Dictionary<string, float>();
 	}
 
 	private void Start()
@@ -127,7 +126,7 @@ public class VehicleResourceManager :
 	{
 		_resourceCapacities.Clear();
 		DictionaryUtils.SumDictionaries(
-			_storageBlocks.Select(block => block.ResourceCapacityDict),
+			_storageBlocks.Select(block => block.GetCapacity()),
 			_resourceCapacities
 		);
 
@@ -151,7 +150,7 @@ public class VehicleResourceManager :
 
 	private void ClampCurrentResources()
 	{
-		foreach (VehicleResource resource in _currentResources.Keys.ToArray())
+		foreach (string resource in _currentResources.Keys.ToArray())
 		{
 			if (_resourceCapacities.TryGetValue(resource, out float capacity))
 			{
@@ -175,7 +174,7 @@ public class VehicleResourceManager :
 		);
 
 		_resourceSatisfaction.Clear();
-		foreach (KeyValuePair<VehicleResource, float> pair in _resourceRequestRate)
+		foreach (KeyValuePair<string, float> pair in _resourceRequestRate)
 		{
 			_resourceSatisfaction.Add(
 				pair.Key,
@@ -190,7 +189,7 @@ public class VehicleResourceManager :
 	{
 		foreach (IResourceConsumerBlock consumer in _consumerBlocks)
 		{
-			IDictionary<VehicleResource, float> request = consumer.GetResourceConsumptionRateRequest();
+			IReadOnlyDictionary<string, float> request = consumer.GetResourceConsumptionRateRequest();
 			if (request == null) continue;
 
 			float satisfactionLevel = Mathf.Min(
@@ -202,7 +201,7 @@ public class VehicleResourceManager :
 
 			if (consumeResources && satisfactionLevel > 0f)
 			{
-				foreach (KeyValuePair<VehicleResource, float> pair in request)
+				foreach (KeyValuePair<string, float> pair in request)
 				{
 					_currentResources[pair.Key] -= pair.Value * satisfactionLevel * Time.fixedDeltaTime;
 				}
@@ -221,9 +220,9 @@ public class VehicleResourceManager :
 		if (stream.IsWriting)
 		{
 			stream.SendNext(_resourceSatisfaction.Count);
-			foreach (KeyValuePair<VehicleResource, float> pair in _resourceSatisfaction)
+			foreach (KeyValuePair<string, float> pair in _resourceSatisfaction)
 			{
-				stream.SendNext(pair.Key.Id);
+				stream.SendNext(pair.Key);
 				stream.SendNext(pair.Value);
 			}
 		}
@@ -235,7 +234,7 @@ public class VehicleResourceManager :
 			{
 				string resourceId = (string) stream.ReceiveNext();
 				float satisfaction = (float) stream.ReceiveNext();
-				_resourceSatisfaction.Add(VehicleResourceDatabase.Instance.GetResource(resourceId), satisfaction);
+				_resourceSatisfaction.Add(resourceId, satisfaction);
 			}
 		}
 	}
@@ -245,11 +244,11 @@ public class VehicleResourceManager :
 	private void FillStorage()
 	{
 		UpdateStorage();
-		_currentResources = new Dictionary<VehicleResource, float>(_resourceCapacities);
+		_currentResources = new Dictionary<string, float>(_resourceCapacities);
 	}
 
 	// Returns tuple (current, capacity, satisfaction), or null if the vehicle is not capable of holding the specified resource
-	public Tuple<float, float, float> GetResourceStatus(VehicleResource resource)
+	public Tuple<float, float, float> GetResourceStatus(string resource)
 	{
 		if (_resourceCapacities.TryGetValue(resource, out float capacity))
 		{

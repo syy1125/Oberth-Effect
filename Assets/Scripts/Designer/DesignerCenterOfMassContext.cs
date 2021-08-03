@@ -1,5 +1,7 @@
 ﻿using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
@@ -17,13 +19,12 @@ public class DesignerCenterOfMassContext : CenterOfMassContext
 
 		foreach (VehicleBlueprint.BlockInstance block in Designer.Blueprint.Blocks)
 		{
-			GameObject blockObject = Builder.GetBlockObject(block);
-			Vector2 rootLocation = new Vector2(block.X, block.Y);
-			BlockInfo info = blockObject.GetComponent<BlockInfo>();
-			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(info.CenterOfMass, block.Rotation);
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
+			Vector2 rootPosition = new Vector2(block.X, block.Y);
+			Vector2 blockCenter = rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
 
-			mass += info.Mass;
-			centerOfMass += info.Mass * blockCenter;
+			mass += spec.Physics.Mass;
+			centerOfMass += spec.Physics.Mass * blockCenter;
 		}
 
 		return mass > Mathf.Epsilon ? centerOfMass / mass : Vector2.zero;

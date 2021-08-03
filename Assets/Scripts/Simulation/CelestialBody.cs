@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
@@ -63,9 +65,9 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public bool IsMine => true;
 	public int OwnerId => photonView.OwnerActorNr;
 
-	public Bounds GetExplosionDamageBounds()
+	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
-		return new Bounds();
+		return new Tuple<Vector2, Vector2>(Vector2.zero, Vector2.zero);
 	}
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
