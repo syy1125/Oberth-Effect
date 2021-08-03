@@ -1,6 +1,6 @@
 ﻿BlockId: OberthEffect/SmallFuelEngine
 Enabled: true
-Info: 
+Info:
   ShortName: Fuel Engine
   FullName: Small Fuen Engine
 Renderers:
@@ -11,8 +11,6 @@ Construction:
   BoundsMin: { X: 0, Y: 0 }
   BoundsMax: { X: 1, Y: 1 }
   AttachmentPoints:
-    - { X: -1, Y: 0 }
-    - { X: 1, Y: 0 }
     - { X: 0, Y: 1 }
 Physics:
   CenterOfMass: { X: 0, Y: 0 }
