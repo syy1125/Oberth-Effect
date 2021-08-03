@@ -8,10 +8,14 @@ namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
 public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 {
-	private Transform _verticalParticleRoot;
-	private ParticleSystem[] _verticalParticles;
-	private Transform _horizontalParticleRoot;
-	private ParticleSystem[] _horizontalParticles;
+	private Transform _upParticleRoot;
+	private ParticleSystem[] _upParticles;
+	private Transform _downParticleRoot;
+	private ParticleSystem[] _downParticles;
+	private Transform _leftParticleRoot;
+	private ParticleSystem[] _leftParticles;
+	private Transform _rightParticleRoot;
+	private ParticleSystem[] _rightParticles;
 	private float[] _maxParticleSpeeds;
 
 	private Vector2 _forwardBackResponse;
@@ -29,27 +33,39 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 		{
 			int particleCount = spec.Particles.Length;
 
-			_verticalParticleRoot = new GameObject("VerticalParticles").transform;
-			_verticalParticleRoot.SetParent(transform);
-			_verticalParticleRoot.localPosition = Vector3.zero;
-			_verticalParticleRoot.localRotation = Quaternion.identity;
-			_verticalParticles = new ParticleSystem[particleCount];
-
-			_horizontalParticleRoot = new GameObject("HorizontalParticles").transform;
-			_horizontalParticleRoot.SetParent(transform);
-			_horizontalParticleRoot.localPosition = Vector3.zero;
-			_horizontalParticleRoot.localRotation = Quaternion.AngleAxis(90f, Vector3.forward);
-			_horizontalParticles = new ParticleSystem[particleCount];
+			_upParticleRoot = CreateParticleParent("UpParticles", 0f);
+			_upParticles = new ParticleSystem[particleCount];
+			_downParticleRoot = CreateParticleParent("DownParticles", 180f);
+			_downParticles = new ParticleSystem[particleCount];
+			_leftParticleRoot = CreateParticleParent("LeftParticles", 90f);
+			_leftParticles = new ParticleSystem[particleCount];
+			_rightParticleRoot = CreateParticleParent("RightParticles", -90f);
+			_rightParticles = new ParticleSystem[particleCount];
 
 			_maxParticleSpeeds = new float[particleCount];
 
 			for (int i = 0; i < particleCount; i++)
 			{
-				_verticalParticles[i] = CreateParticleSystem(_verticalParticleRoot, spec.Particles[i]);
-				_horizontalParticles[i] = CreateParticleSystem(_horizontalParticleRoot, spec.Particles[i]);
-				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
+				ParticleSystemSpec particleSpec = spec.Particles[i];
+
+				_upParticles[i] = CreateParticleSystem(_upParticleRoot, particleSpec);
+				_downParticles[i] = CreateParticleSystem(_downParticleRoot, particleSpec);
+				_leftParticles[i] = CreateParticleSystem(_leftParticleRoot, particleSpec);
+				_rightParticles[i] = CreateParticleSystem(_rightParticleRoot, particleSpec);
+
+				_maxParticleSpeeds[i] = particleSpec.MaxSpeed;
 			}
 		}
+	}
+
+	private Transform CreateParticleParent(string objectName, float rotation)
+	{
+		var objectTransform = new GameObject(objectName).transform;
+		objectTransform.SetParent(transform);
+		objectTransform.localPosition = Vector3.zero;
+		objectTransform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
+
+		return objectTransform;
 	}
 
 	protected override void Start()
@@ -64,21 +80,20 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 			CalculateResponse(localRight, out _forwardBackResponse.x, out _strafeResponse.x, out _rotateResponse.x);
 			CalculateResponse(localUp, out _forwardBackResponse.y, out _strafeResponse.y, out _rotateResponse.y);
 
-			if (_horizontalParticles != null)
-			{
-				foreach (ParticleSystem particle in _horizontalParticles)
-				{
-					particle.Play();
-				}
-			}
+			StartParticleSystems(_upParticles);
+			StartParticleSystems(_downParticles);
+			StartParticleSystems(_leftParticles);
+			StartParticleSystems(_rightParticles);
+		}
+	}
 
-			if (_verticalParticles != null)
-			{
-				foreach (ParticleSystem particle in _verticalParticles)
-				{
-					particle.Play();
-				}
-			}
+	private static void StartParticleSystems(ParticleSystem[] particleSystems)
+	{
+		if (particleSystems == null) return;
+
+		foreach (ParticleSystem particle in particleSystems)
+		{
+			particle.Play();
 		}
 	}
 
@@ -116,36 +131,40 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 			Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
 		}
 
-		if (_horizontalParticleRoot != null && _horizontalParticles != null)
+		if (overallResponse.x > 0)
 		{
-			_horizontalParticleRoot.localRotation = Quaternion.AngleAxis(
-				overallResponse.x > 0 ? -90f : 90f, Vector3.forward
-			);
-
-			for (int i = 0; i < _horizontalParticles.Length; i++)
-			{
-				ParticleSystem.MainModule main = _horizontalParticles[i].main;
-				main.startSpeedMultiplier = overallResponse.x * _maxParticleSpeeds[i];
-				var startColor = main.startColor.color;
-				startColor.a = Mathf.Abs(overallResponse.x);
-				main.startColor = startColor;
-			}
+			SetParticlesStrength(_leftParticles, 0f);
+			SetParticlesStrength(_rightParticles, overallResponse.x);
+		}
+		else
+		{
+			SetParticlesStrength(_leftParticles, -overallResponse.x);
+			SetParticlesStrength(_rightParticles, 0f);
 		}
 
-		if (_verticalParticleRoot != null && _verticalParticles != null)
+		if (overallResponse.y > 0)
 		{
-			_verticalParticleRoot.localRotation = Quaternion.AngleAxis(
-				overallResponse.y > 0 ? 0f : 180f, Vector3.forward
-			);
+			SetParticlesStrength(_upParticles, overallResponse.y);
+			SetParticlesStrength(_downParticles, 0f);
+		}
+		else
+		{
+			SetParticlesStrength(_upParticles, 0f);
+			SetParticlesStrength(_downParticles, -overallResponse.y);
+		}
+	}
 
-			for (int i = 0; i < _verticalParticles.Length; i++)
-			{
-				ParticleSystem.MainModule main = _verticalParticles[i].main;
-				main.startSpeedMultiplier = overallResponse.y * _maxParticleSpeeds[i];
-				var startColor = main.startColor.color;
-				startColor.a = Mathf.Abs(overallResponse.y);
-				main.startColor = startColor;
-			}
+	private void SetParticlesStrength(ParticleSystem[] particles, float strength)
+	{
+		if (particles == null) return;
+
+		for (int i = 0; i < particles.Length; i++)
+		{
+			var main = particles[i].main;
+			main.startSpeedMultiplier = strength * _maxParticleSpeeds[i];
+			var startColor = main.startColor.color;
+			startColor.a = strength;
+			main.startColor = startColor;
 		}
 	}
 
