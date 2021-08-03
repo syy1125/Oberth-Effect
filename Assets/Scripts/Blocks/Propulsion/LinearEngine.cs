@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;

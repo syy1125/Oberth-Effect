@@ -5,7 +5,6 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Designer.Palette;
-using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;

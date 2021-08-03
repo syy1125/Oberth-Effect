@@ -1,5 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Common.ColorScheme;
+﻿using Syy1125.OberthEffect.Common.ColorScheme;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons

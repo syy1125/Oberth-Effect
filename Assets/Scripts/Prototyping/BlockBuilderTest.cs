@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;

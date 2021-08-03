@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Syy1125.OberthEffect.Designer.Palette
+﻿namespace Syy1125.OberthEffect.Designer.Palette
 {
 public class EraserSelection : IPaletteSelection
 {

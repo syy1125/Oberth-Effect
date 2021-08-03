@@ -1,5 +1,4 @@
 ﻿using Syy1125.OberthEffect.Spec;
-using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Prototyping

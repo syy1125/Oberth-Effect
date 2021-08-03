@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
