@@ -570,9 +570,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourceRowPrefab: {fileID: 8614274826923011954, guid: ac320ab289d14b44b95ffa73d1793854, type: 3}
   DisplayResources:
-  - {fileID: 11400000, guid: 61bcf486e7a4df04c8cbdfef9eb420b6, type: 2}
-  - {fileID: 11400000, guid: 531995062e1f8474784b72696da7efdf, type: 2}
-  ResourceManager: {fileID: 0}
+  - OberthEffect/Energy
+  - OberthEffect/Fuel
 --- !u!1 &4738797861739433897
 GameObject:
   m_ObjectHideFlags: 0
