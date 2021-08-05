@@ -155,7 +155,16 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		throw new NotImplementedException();
+		if (_maxResourceUseRate == null)
+		{
+			_maxResourceUseRate = new Dictionary<string, float>();
+
+			DictionaryUtils.SumDictionaries(
+				_weaponEmitters.Select(emitter => emitter.GetMaxResourceUseRate()), _maxResourceUseRate
+			);
+		}
+
+		return _maxResourceUseRate;
 	}
 
 	public string GetTooltip()

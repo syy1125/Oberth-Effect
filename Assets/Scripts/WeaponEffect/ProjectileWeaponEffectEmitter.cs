@@ -88,6 +88,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		};
 	}
 
+	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
+	{
+		return _reloadResourceUse;
+	}
+
 	public string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
