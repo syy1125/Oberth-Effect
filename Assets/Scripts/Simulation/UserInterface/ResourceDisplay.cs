@@ -32,7 +32,7 @@ public class ResourceDisplay : MonoBehaviour
 			var row = Instantiate(ResourceRowPrefab, transform).GetComponent<ResourceDisplayRow>();
 			var spec = VehicleResourceDatabase.Instance.GetResourceSpec(resourceId).Spec;
 
-			row.ShortName.text = spec.DisplayName;
+			row.ShortName.text = spec.ShortName;
 			ColorUtility.TryParseHtmlString(spec.DisplayColor, out Color displayColor);
 			row.ShortName.color = displayColor;
 			row.FillBar.color = displayColor;
