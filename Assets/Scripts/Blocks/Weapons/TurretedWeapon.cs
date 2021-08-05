@@ -130,7 +130,7 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 	{
 		float targetAngle = _aimPoint == null
 			? 0f
-			: Vector3.SignedAngle(Vector3.up, transform.InverseTransformDirection(_aimPoint.Value), Vector3.forward);
+			: Vector3.SignedAngle(Vector3.up, transform.InverseTransformPoint(_aimPoint.Value), Vector3.forward);
 		_turretAngle = Mathf.MoveTowardsAngle(_turretAngle, targetAngle, _rotationSpeed * Time.fixedDeltaTime);
 	}
 
