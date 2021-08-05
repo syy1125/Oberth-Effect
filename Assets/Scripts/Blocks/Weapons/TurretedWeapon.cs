@@ -21,7 +21,10 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 	private float _rotationSpeed;
 	private Transform _turretTransform;
 	private List<IWeaponEffectEmitter> _weaponEmitters;
+
+	// Cache
 	private Dictionary<DamageType, float> _firepower;
+	private Dictionary<string, float> _maxResourceUseRate;
 
 	// State
 	private bool _firing;
@@ -40,6 +43,9 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 	private void OnEnable()
 	{
 		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
+		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
 	}
@@ -84,11 +90,17 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
 	}
 
 	public int GetOwnerId() => _core.OwnerId;
 
-	public void SetAimPoint(Vector2? aimPoint) => _aimPoint = aimPoint;
+	public void SetAimPoint(Vector2? aimPoint)
+	{
+		_aimPoint = aimPoint;
+	}
 
 	public void SetFiring(bool firing)
 	{
@@ -183,7 +195,7 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 
 		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
 		float maxDps = firepower.Values.Sum();
-		builder.AppendLine($"  Theoretical maximum DPS {maxDps:F1}");
+		builder.Append($"  Theoretical maximum DPS {maxDps:F1}");
 
 		return builder.ToString();
 	}
