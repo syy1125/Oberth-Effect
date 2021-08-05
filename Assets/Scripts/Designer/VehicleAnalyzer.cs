@@ -456,7 +456,7 @@ public class VehicleAnalyzer : MonoBehaviour
 
 		if (useRate.Count == 0)
 		{
-			builder.Append("N/A");
+			builder.Append(" N/A");
 		}
 		else
 		{
