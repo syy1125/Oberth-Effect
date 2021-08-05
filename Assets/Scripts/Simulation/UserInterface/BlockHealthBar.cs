@@ -11,11 +11,15 @@ public class BlockHealthBar : MonoBehaviour
 	public Image HealthBar;
 	public Gradient ColorGradient;
 
+	private Camera _mainCamera;
+	private RectTransform _parentTransform;
 	private BlockCore _blockCore;
 	private VehicleCore _vehicleCore;
 
 	private void Start()
 	{
+		_mainCamera = Camera.main;
+		_parentTransform = transform.parent.GetComponent<RectTransform>();
 		_blockCore = Target.GetComponent<BlockCore>();
 		_vehicleCore = Target.GetComponentInParent<VehicleCore>();
 	}
@@ -27,8 +31,18 @@ public class BlockHealthBar : MonoBehaviour
 		HealthBar.color = ColorGradient.Evaluate(healthFraction);
 
 		Vector3 targetPosition = _vehicleCore.transform.TransformPoint(_blockCore.CenterOfMassPosition);
-		targetPosition.z = transform.position.z;
-		transform.position = targetPosition;
+		Vector2 screenPosition = _mainCamera.WorldToScreenPoint(targetPosition);
+
+		if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+			_parentTransform, screenPosition, null, out Vector2 localPoint
+		))
+		{
+			transform.localPosition = localPoint;
+		}
+		else
+		{
+			Debug.LogError("Failed to calculate local position for health bar!");
+		}
 	}
 }
 }
