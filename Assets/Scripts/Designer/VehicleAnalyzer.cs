@@ -46,11 +46,14 @@ public struct VehicleAnalysisResult
 
 public class VehicleAnalyzer : MonoBehaviour
 {
+	#region Unity Fields
+
 	[Header("References")]
 	public VehicleDesigner Designer;
 	public VehicleBuilder Builder;
+	public BlockIndicators Indicators;
 
-	[Header("Output")]
+	[Header("Vehicle Output")]
 	public RectTransform OutputParent;
 	[Space]
 	public Text StatusOutput;
@@ -72,6 +75,11 @@ public class VehicleAnalyzer : MonoBehaviour
 	public Text RotationCwOutput;
 	[Space]
 	public Text FirepowerOutput;
+
+	[Header("Block Analysis")]
+	public GameObject SelectionIndicator;
+
+	#endregion
 
 	private VehicleAnalysisResult _result;
 	private Coroutine _analysisCoroutine;
@@ -107,6 +115,8 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 
 		CenterOfMassIndicator.SetActive(false);
+		SelectionIndicator.SetActive(false);
+		Indicators.SetAttachmentPoints(null, null, null);
 	}
 
 	public void StartAnalysis()
@@ -194,6 +204,8 @@ public class VehicleAnalyzer : MonoBehaviour
 
 		DisplayResults();
 	}
+
+	#region Analyze Vehicle
 
 	private void AnalyzeBlockFirstPass(VehicleBlueprint.BlockInstance block)
 	{
@@ -323,6 +335,10 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 	}
 
+	#endregion
+
+	#region Output Display
+
 	private void DisplayResults()
 	{
 		DisplayPhysicsResults();
@@ -431,6 +447,8 @@ public class VehicleAnalyzer : MonoBehaviour
 		FirepowerOutput.gameObject.SetActive(true);
 	}
 
+	#endregion
+
 	private void SetForceMode()
 	{
 		_accelerationMode = false;
@@ -444,6 +462,74 @@ public class VehicleAnalyzer : MonoBehaviour
 		PlayerPrefs.SetInt(PropertyKeys.ANALYSIS_USE_ACC_MODE, 1);
 		DisplayPropulsionResults();
 	}
+
+	#region Analyze Block
+
+	public void SetTargetBlockPosition(Vector2Int position)
+	{
+		if (Builder.HasBlockAt(position))
+		{
+			VehicleBlueprint.BlockInstance instance = Builder.GetBlockInstanceAt(position);
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
+			Vector2Int rootPosition = new Vector2Int(instance.X, instance.Y);
+
+			BoundsInt blockBounds = TransformUtils.TransformBounds(
+				new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),
+				rootPosition, instance.Rotation
+			);
+			SelectionIndicator.transform.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
+			SelectionIndicator.transform.localScale = blockBounds.size;
+			SelectionIndicator.SetActive(true);
+
+			List<Vector2Int> attachedBlocks = new List<Vector2Int>();
+			List<Vector2Int> closedAttachPoints = new List<Vector2Int>();
+			List<Vector2Int> openAttachPoints = new List<Vector2Int>();
+
+			foreach (Vector2Int attachmentPoint in VehicleBuilder.GetAttachmentPoints(instance))
+			{
+				if (Builder.HasBlockAt(attachmentPoint))
+				{
+					// The block is attached in this direction if we can form a two-way attachment
+					bool attached = false;
+					foreach (Vector2Int reverseAttachPoint in VehicleBuilder.GetAttachmentPoints(
+						Builder.GetBlockInstanceAt(attachmentPoint)
+					))
+					{
+						if (
+							Builder.HasBlockAt(reverseAttachPoint)
+							&& Builder.GetBlockInstanceAt(reverseAttachPoint) == instance
+						)
+						{
+							attached = true;
+							break;
+						}
+					}
+
+					if (attached)
+					{
+						attachedBlocks.Add(attachmentPoint);
+					}
+					else
+					{
+						closedAttachPoints.Add(attachmentPoint);
+					}
+				}
+				else
+				{
+					openAttachPoints.Add(attachmentPoint);
+				}
+			}
+
+			Indicators.SetAttachmentPoints(attachedBlocks, closedAttachPoints, openAttachPoints);
+		}
+		else
+		{
+			SelectionIndicator.SetActive(false);
+			Indicators.SetAttachmentPoints(null, null, null);
+		}
+	}
+
+	#endregion
 
 	#region String Formatting
 

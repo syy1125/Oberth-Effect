@@ -171,7 +171,8 @@ public class VehicleBuilder : MonoBehaviour
 
 	#region Attachment Handling
 
-	private static IEnumerable<Vector2Int> AttachmentPoints(VehicleBlueprint.BlockInstance instance)
+	// Enumerates the block's attachment points in vehicle space
+	public static IEnumerable<Vector2Int> GetAttachmentPoints(VehicleBlueprint.BlockInstance instance)
 	{
 		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
 
@@ -193,7 +194,7 @@ public class VehicleBuilder : MonoBehaviour
 
 			_connectedBlocks.Add(instance);
 
-			foreach (Vector2Int attachmentPoint in AttachmentPoints(instance))
+			foreach (Vector2Int attachmentPoint in GetAttachmentPoints(instance))
 			{
 				if (_posToBlock.TryGetValue(attachmentPoint, out VehicleBlueprint.BlockInstance adjacentInstance))
 				{
@@ -211,7 +212,7 @@ public class VehicleBuilder : MonoBehaviour
 		// A block is connected if it "connects back" to one of the originator's positions
 		bool IsConnected(VehicleBlueprint.BlockInstance fromInstance, VehicleBlueprint.BlockInstance toInstance)
 		{
-			foreach (Vector2Int attachmentPoint in AttachmentPoints(fromInstance))
+			foreach (Vector2Int attachmentPoint in GetAttachmentPoints(fromInstance))
 			{
 				if (
 					_posToBlock.TryGetValue(attachmentPoint, out VehicleBlueprint.BlockInstance targetInstance)

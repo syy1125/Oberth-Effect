@@ -25,7 +25,7 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("Components")]
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
-	public DesignerVisualIndicators Visuals;
+	public BlockIndicators Indicators;
 	public DesignerConfig Config;
 	public DesignerCursorTexture CursorTexture;
 	public VehicleAnalyzer Analyzer;
@@ -70,7 +70,7 @@ public class VehicleDesigner : MonoBehaviour
 	private Vector2Int? _prevClick;
 
 	private float _zoomScale;
-	private Vector2Int? _clickLocation;
+	private Vector2Int? _clickPosition;
 	private Vector3? _dragHandle;
 	private bool Dragging => _dragHandle != null;
 	public Vector2Int HoverPositionInt { get; private set; }
@@ -185,7 +185,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdateCursor();
 		}
 
-		if (_clickLocation != _prevClick)
+		if (_clickPosition != _prevClick)
 		{
 			UpdatePaletteUse();
 		}
@@ -197,7 +197,7 @@ public class VehicleDesigner : MonoBehaviour
 		_paletteSelectionChanged = false;
 		_prevHoverPosition = HoverPositionInt;
 		_prevTooltipLocation = _tooltipLocation;
-		_prevClick = _clickLocation;
+		_prevClick = _clickPosition;
 	}
 
 	private void UpdateMousePosition()
@@ -247,11 +247,11 @@ public class VehicleDesigner : MonoBehaviour
 
 		if (click)
 		{
-			_clickLocation = HoverPositionInt;
+			_clickPosition = HoverPositionInt;
 		}
 		else
 		{
-			_clickLocation = null;
+			_clickPosition = null;
 		}
 	}
 
@@ -322,38 +322,47 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdatePaletteUse()
 	{
-		if (_clickLocation == null) return;
+		if (_clickPosition == null) return;
+		Vector2Int position = _clickPosition.Value;
 
-		switch (Palette.CurrentSelection)
+		if (Palette.isActiveAndEnabled)
 		{
-			case BlockSelection blockSelection:
-				try
-				{
-					Builder.AddBlock(blockSelection.BlockSpec, HoverPositionInt, _rotation);
-					UpdateDisconnections();
-				}
-				catch (DuplicateBlockError error)
-				{
-					// TODO
-				}
+			switch (Palette.CurrentSelection)
+			{
+				case BlockSelection blockSelection:
+					try
+					{
+						Builder.AddBlock(blockSelection.BlockSpec, position, _rotation);
+						UpdateDisconnections();
+					}
+					catch (DuplicateBlockError error)
+					{
+						// TODO
+					}
 
-				break;
-			case EraserSelection _:
-				try
-				{
-					Builder.RemoveBlock(HoverPositionInt);
-					UpdateDisconnections();
-				}
-				catch (EmptyBlockError)
-				{
-					// TODO
-				}
-				catch (BlockNotErasable)
-				{
-					// TODO
-				}
+					break;
+				case EraserSelection _:
+					try
+					{
+						Builder.RemoveBlock(position);
+						UpdateDisconnections();
+					}
+					catch (EmptyBlockError)
+					{
+						// TODO
+					}
+					catch (BlockNotErasable)
+					{
+						// TODO
+					}
 
-				break;
+					break;
+			}
+		}
+
+		if (Analyzer.isActiveAndEnabled)
+		{
+			Analyzer.SetTargetBlockPosition(position);
 		}
 	}
 
@@ -361,13 +370,13 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (Palette.CurrentSelection is BlockSelection blockSelection)
 		{
-			Visuals.SetConflicts(
+			Indicators.SetConflicts(
 				Builder.GetConflicts(blockSelection.BlockSpec, HoverPositionInt, _rotation)
 			);
 		}
 		else
 		{
-			Visuals.SetConflicts(null);
+			Indicators.SetConflicts(null);
 		}
 	}
 
@@ -399,7 +408,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateDisconnections()
 	{
-		Visuals.SetDisconnections(Builder.GetDisconnectedPositions());
+		Indicators.SetDisconnections(Builder.GetDisconnectedPositions());
 	}
 
 	private void UpdateDragPosition()

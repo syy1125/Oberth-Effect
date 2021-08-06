@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer
 {
-public class DesignerVisualIndicators : MonoBehaviour
+public class BlockIndicators : MonoBehaviour
 {
 	public Sprite DisconnectSprite;
 	public Color DisconnectColor = Color.yellow;
@@ -14,8 +14,24 @@ public class DesignerVisualIndicators : MonoBehaviour
 	public Color ConflictColor = Color.red;
 	public Material ConflictMaterial;
 
+	public Sprite AttachedBlockSprite;
+	public Color AttachedBlockColor = Color.green;
+	public Material AttachedBlockMaterial;
+
+	public Sprite ClosedAttachPointSprite;
+	public Color ClosedAttachPointColor = Color.gray;
+	public Material ClosedAttachPointMaterial;
+
+	public Sprite OpenAttachPointSprite;
+	public Color OpenAttachPointColor = Color.white;
+	public Material OpenAttachPointMaterial;
+
+
 	private HashSet<Vector2Int> _conflicts;
 	private HashSet<Vector2Int> _disconnects;
+	private HashSet<Vector2Int> _attachedBlocks;
+	private HashSet<Vector2Int> _closedAttachPoints;
+	private HashSet<Vector2Int> _openAttachPoints;
 	private Dictionary<Vector2Int, GameObject> _visualObjects;
 	private bool _changed;
 
@@ -23,6 +39,9 @@ public class DesignerVisualIndicators : MonoBehaviour
 	{
 		_conflicts = new HashSet<Vector2Int>();
 		_disconnects = new HashSet<Vector2Int>();
+		_attachedBlocks = new HashSet<Vector2Int>();
+		_closedAttachPoints = new HashSet<Vector2Int>();
+		_openAttachPoints = new HashSet<Vector2Int>();
 
 		_visualObjects = new Dictionary<Vector2Int, GameObject>();
 		_changed = false;
@@ -30,25 +49,54 @@ public class DesignerVisualIndicators : MonoBehaviour
 
 	public void SetConflicts(IEnumerable<Vector2Int> conflicts)
 	{
-		HashSet<Vector2Int> newConflicts =
-			conflicts == null ? new HashSet<Vector2Int>() : new HashSet<Vector2Int>(conflicts);
-
-		if (!newConflicts.SetEquals(_conflicts))
+		if (UpdateSet(_conflicts, conflicts))
 		{
-			_conflicts = newConflicts;
 			_changed = true;
 		}
 	}
 
 	public void SetDisconnections(IEnumerable<Vector2Int> disconnects)
 	{
-		HashSet<Vector2Int> newDisconnects =
-			disconnects == null ? new HashSet<Vector2Int>() : new HashSet<Vector2Int>(disconnects);
-
-		if (!newDisconnects.SetEquals(_disconnects))
+		if (UpdateSet(_disconnects, disconnects))
 		{
-			_disconnects = newDisconnects;
 			_changed = true;
+		}
+	}
+
+	public void SetAttachmentPoints(
+		IEnumerable<Vector2Int> attachedBlocks, IEnumerable<Vector2Int> closedAttachPoints,
+		IEnumerable<Vector2Int> openAttachPoints
+	)
+	{
+		if (UpdateSet(_attachedBlocks, attachedBlocks))
+		{
+			_changed = true;
+		}
+
+		if (UpdateSet(_closedAttachPoints, closedAttachPoints))
+		{
+			_changed = true;
+		}
+
+		if (UpdateSet(_openAttachPoints, openAttachPoints))
+		{
+			_changed = true;
+		}
+	}
+
+	private static bool UpdateSet<T>(ISet<T> current, IEnumerable<T> future)
+	{
+		HashSet<T> newSet = future == null ? new HashSet<T>() : new HashSet<T>(future);
+
+		if (!current.SetEquals(newSet))
+		{
+			current.Clear();
+			current.UnionWith(newSet);
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
@@ -66,6 +114,33 @@ public class DesignerVisualIndicators : MonoBehaviour
 		if (!_changed) return;
 
 		var colorQueue = new Queue<IndicatorItem>();
+		colorQueue.Enqueue(
+			new IndicatorItem
+			{
+				Positions = new HashSet<Vector2Int>(_attachedBlocks),
+				Sprite = AttachedBlockSprite,
+				Color = AttachedBlockColor,
+				Material = AttachedBlockMaterial
+			}
+		);
+		colorQueue.Enqueue(
+			new IndicatorItem
+			{
+				Positions = new HashSet<Vector2Int>(_closedAttachPoints),
+				Sprite = ClosedAttachPointSprite,
+				Color = ClosedAttachPointColor,
+				Material = ClosedAttachPointMaterial
+			}
+		);
+		colorQueue.Enqueue(
+			new IndicatorItem
+			{
+				Positions = new HashSet<Vector2Int>(_openAttachPoints),
+				Sprite = OpenAttachPointSprite,
+				Color = OpenAttachPointColor,
+				Material = OpenAttachPointMaterial
+			}
+		);
 		colorQueue.Enqueue(
 			new IndicatorItem
 			{
