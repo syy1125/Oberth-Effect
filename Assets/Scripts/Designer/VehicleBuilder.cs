@@ -236,7 +236,7 @@ public class VehicleBuilder : MonoBehaviour
 		}
 	}
 
-	public IEnumerable<Vector2Int> GetDisconnectedPositions()
+	public List<Vector2Int> GetDisconnectedPositions()
 	{
 		var disconnected = new List<Vector2Int>();
 

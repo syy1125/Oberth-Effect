@@ -19,18 +19,13 @@ public class VehicleDesigner : MonoBehaviour
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
 
-	[Header("Block Notifications")]
-	public GameObject BlockWarningPrefab;
-	public Transform BlockWarningParent;
-
-	public Color WarningColor = Color.yellow;
-	public Color ErrorColor = Color.red;
-
+	[Header("Config")]
 	public float BlockTooltipDelay = 0.2f;
 
 	[Header("Components")]
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
+	public DesignerVisualIndicators Visuals;
 	public DesignerConfig Config;
 	public DesignerCursorTexture CursorTexture;
 	public VehicleAnalyzer Analyzer;
@@ -81,21 +76,11 @@ public class VehicleDesigner : MonoBehaviour
 	public Vector2Int HoverPositionInt { get; private set; }
 	private Vector2Int? _tooltipLocation;
 
-	private HashSet<Vector2Int> _conflicts;
-	private HashSet<Vector2Int> _disconnections;
-	private Dictionary<Vector2Int, GameObject> _warningObjects;
-	private bool _warningChanged;
-
 	#endregion
 
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
-
-		_conflicts = new HashSet<Vector2Int>();
-		_disconnections = new HashSet<Vector2Int>();
-		_warningObjects = new Dictionary<Vector2Int, GameObject>();
-		_warningChanged = false;
 	}
 
 	#region Enable and Disable
@@ -203,12 +188,6 @@ public class VehicleDesigner : MonoBehaviour
 		if (_clickLocation != _prevClick)
 		{
 			UpdatePaletteUse();
-		}
-
-		if (_warningChanged)
-		{
-			UpdateBlockWarnings();
-			_warningChanged = false;
 		}
 
 		UpdateDragPosition();
@@ -382,16 +361,14 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		if (Palette.CurrentSelection is BlockSelection blockSelection)
 		{
-			_conflicts = new HashSet<Vector2Int>(
+			Visuals.SetConflicts(
 				Builder.GetConflicts(blockSelection.BlockSpec, HoverPositionInt, _rotation)
 			);
 		}
 		else
 		{
-			_conflicts = new HashSet<Vector2Int>();
+			Visuals.SetConflicts(null);
 		}
-
-		_warningChanged = true;
 	}
 
 	private void UpdateTooltip()
@@ -422,54 +399,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateDisconnections()
 	{
-		_disconnections = new HashSet<Vector2Int>(Builder.GetDisconnectedPositions());
-		_warningChanged = true;
-	}
-
-	private void UpdateBlockWarnings()
-	{
-		var newDisconnections = new HashSet<Vector2Int>(_disconnections);
-		var newConflicts = new HashSet<Vector2Int>(_conflicts);
-
-		foreach (KeyValuePair<Vector2Int, GameObject> pair in _warningObjects.ToArray())
-		{
-			bool isConflict = newConflicts.Remove(pair.Key);
-			bool isDisconnected = newDisconnections.Remove(pair.Key);
-
-			if (isConflict)
-			{
-				pair.Value.GetComponent<SpriteRenderer>().color = ErrorColor;
-			}
-			else if (isDisconnected)
-			{
-				pair.Value.GetComponent<SpriteRenderer>().color = WarningColor;
-			}
-			else
-			{
-				Destroy(pair.Value);
-				_warningObjects.Remove(pair.Key);
-			}
-		}
-
-		foreach (Vector2Int conflict in newConflicts)
-		{
-			GameObject go = Instantiate(BlockWarningPrefab, BlockWarningParent);
-			go.transform.localPosition = new Vector3(conflict.x, conflict.y);
-			go.GetComponent<SpriteRenderer>().color = ErrorColor;
-
-			_warningObjects.Add(conflict, go);
-
-			newDisconnections.Remove(conflict);
-		}
-
-		foreach (Vector2Int disconnection in newDisconnections)
-		{
-			GameObject go = Instantiate(BlockWarningPrefab, BlockWarningParent);
-			go.transform.localPosition = new Vector3(disconnection.x, disconnection.y);
-			go.GetComponent<SpriteRenderer>().color = WarningColor;
-
-			_warningObjects.Add(disconnection, go);
-		}
+		Visuals.SetDisconnections(Builder.GetDisconnectedPositions());
 	}
 
 	private void UpdateDragPosition()
@@ -534,7 +464,7 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		var messages = new List<string>();
 
-		if (_disconnections.Count > 0)
+		if (Builder.GetDisconnectedPositions().Count > 0)
 		{
 			messages.Add("Some blocks are disconnected");
 		}
