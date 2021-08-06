@@ -24,6 +24,11 @@ public struct BlockBounds
 		Size = max - min;
 	}
 
+	public BoundsInt ToBoundsInt()
+	{
+		return new BoundsInt(new Vector3Int(Min.x, Min.y, 0), new Vector3Int(Size.x, Size.y, 1));
+	}
+
 	public IEnumerable<Vector2Int> AllPositionsWithin
 	{
 		get

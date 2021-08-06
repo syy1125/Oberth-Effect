@@ -4,6 +4,8 @@ using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.UserInterface;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -176,32 +178,34 @@ public class DesignerConfig : MonoBehaviour
 
 	private void ShowBlockConfig()
 	{
-		// Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
-		//
-		// VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		// GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
-		//
-		// StatusText.text = string.Join(
-		// 	"\n",
-		// 	$"Configuring {blockObject.GetComponent<BlockCore>().Spec.Info.FullName}",
-		// 	"Press 'Q' to show vehicle config"
-		// );
-		//
-		// SetVehicleConfigEnabled(false);
-		//
-		// LinearEngine engine = blockObject.GetComponent<LinearEngine>();
-		// SetEngineConfigEnabled(engine != null);
-		// if (engine != null) UpdateEngineConfigElements(engine);
-		//
-		// LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
-		//
-		// BoundsInt blockBounds = TransformUtils.TransformBounds(
-		// 	blockObject.GetComponent<BlockCore>().Spec.Info,
-		// 	new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
-		// );
-		// SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
-		// SelectionIndicator.localScale = blockBounds.size;
-		// SelectionIndicator.gameObject.SetActive(true);
+		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+		BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+
+		StatusText.text = string.Join(
+			"\n",
+			$"Configuring {blockSpec.Info.FullName}",
+			"Press 'Q' to show vehicle config"
+		);
+
+		SetVehicleConfigEnabled(false);
+
+		LinearEngine engine = blockObject.GetComponent<LinearEngine>();
+		SetEngineConfigEnabled(engine != null);
+		if (engine != null) UpdateEngineConfigElements(engine);
+
+		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
+
+		BoundsInt blockBounds = TransformUtils.TransformBounds(
+			new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax).ToBoundsInt(),
+			new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
+		);
+
+		SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
+		SelectionIndicator.localScale = blockBounds.size;
+		SelectionIndicator.gameObject.SetActive(true);
 	}
 
 	private void SetVehicleConfigEnabled(bool configEnabled)
