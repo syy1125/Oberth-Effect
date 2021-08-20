@@ -96,16 +96,17 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
+		
 		builder
 			.AppendLine("  Projectile")
 			.AppendLine(
 				_projectileConfig.DamageType == DamageType.Explosive
-					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {_projectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
+					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {_projectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
 					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine($"    Speed {_projectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
 			.AppendLine(
-				$"    Max range {_projectileSpeed * _projectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
+				$"    Expected max range {_projectileSpeed * _projectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
 			);
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));

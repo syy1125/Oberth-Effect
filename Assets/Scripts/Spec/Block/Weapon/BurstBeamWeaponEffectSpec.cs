@@ -12,9 +12,9 @@ public class BurstBeamWeaponEffectSpec : AbstractWeaponEffectSpec
 	/// If false, uses time-based duration behaviour. <code>BeamDurationSeconds</code> is used and <code>BeamDurationTicks</code> is ignored.
 	/// </summary>
 	public bool PreciseDuration;
-
-	public int BeamDurationTicks;
-	public float BeamDurationSeconds;
+	public int DurationTicks;
+	public float DurationSeconds;
+	public float MaxRange;
 
 	public float BeamWidth;
 	public string BeamColor;
