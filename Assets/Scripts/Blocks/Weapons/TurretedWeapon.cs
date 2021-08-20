@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
@@ -12,7 +14,9 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlock, ITooltipProvider
+public class TurretedWeapon :
+	MonoBehaviour,
+	IWeaponSystem, IWeaponEffectRpcRelay, IResourceConsumerBlock, ITooltipProvider
 {
 	private BlockCore _core;
 
@@ -150,6 +154,50 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
+	public void InvokeWeaponEffectRpc(
+		IWeaponEffectEmitter self, string methodName, RpcTarget target, params object[] parameters
+	)
+	{
+		int index = _weaponEmitters.IndexOf(self);
+		if (index < 0)
+		{
+			Debug.LogError($"Failed to find index of {self} in weapon emitter list");
+		}
+
+		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
+			gameObject, null,
+			(handler, _) => handler.InvokeBlockRpc(
+				_core.RootPosition, typeof(TurretedWeapon), "ReceiveBlockRpc", target,
+				index, methodName, parameters
+			)
+		);
+	}
+
+	public void ReceiveBlockRpc(int index, string methodName, object[] parameters)
+	{
+		if (index < 0 || index >= _weaponEmitters.Count)
+		{
+			Debug.LogError($"Weapon emitter index {index} outside permitted range");
+			return;
+		}
+
+
+		IWeaponEffectEmitter emitter = _weaponEmitters[index];
+		var method = emitter.GetType().GetMethod(
+			methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+		);
+
+		if (method == null)
+		{
+			Debug.LogError($"Method {methodName} does not exist for {emitter.GetType()}");
+			return;
+		}
+
+		method.Invoke(emitter, parameters);
+	}
+
+	#region Info
+
 	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
 		if (_firepower == null)
@@ -198,5 +246,7 @@ public class TurretedWeapon : MonoBehaviour, IWeaponSystem, IResourceConsumerBlo
 
 		return builder.ToString();
 	}
+
+	#endregion
 }
 }
