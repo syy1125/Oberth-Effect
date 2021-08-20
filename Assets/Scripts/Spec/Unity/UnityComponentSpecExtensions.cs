@@ -48,29 +48,13 @@ public static class UnityComponentSpecExtensions
 		main.startLifetime = spec.Lifetime;
 
 		var colorContext = particles.GetComponentInParent<ColorContext>();
-
-		switch (spec.Color.ToLower())
+		if (colorContext.ColorScheme.ResolveColor(spec.Color, out Color startColor))
 		{
-			case "primary":
-				main.startColor = colorContext.ColorScheme.PrimaryColor;
-				break;
-			case "secondary":
-				main.startColor = colorContext.ColorScheme.SecondaryColor;
-				break;
-			case "tertiary":
-				main.startColor = colorContext.ColorScheme.TertiaryColor;
-				break;
-			default:
-				if (ColorUtility.TryParseHtmlString(spec.Color, out Color startColor))
-				{
-					main.startColor = startColor;
-				}
-				else
-				{
-					Debug.LogError($"Failed to parse particle color {spec.Color}");
-				}
-
-				break;
+			main.startColor = startColor;
+		}
+		else
+		{
+			Debug.LogError($"Failed to parse particle color {spec.Color}");
 		}
 
 		var emission = particles.emission;

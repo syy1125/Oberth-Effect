@@ -44,5 +44,23 @@ public struct ColorScheme
 		prefColor.a = 1f;
 		return prefColor;
 	}
+
+	public bool ResolveColor(string colorString, out Color color)
+	{
+		switch (colorString.ToLower())
+		{
+			case "primary":
+				color = PrimaryColor;
+				return true;
+			case "secondary":
+				color = SecondaryColor;
+				return true;
+			case "tertiary":
+				color = TertiaryColor;
+				return true;
+			default:
+				return ColorUtility.TryParseHtmlString(colorString, out color);
+		}
+	}
 }
 }
