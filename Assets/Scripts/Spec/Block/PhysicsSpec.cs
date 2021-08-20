@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Syy1125.OberthEffect.Spec.Block.Physics;
+using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec.Block.Physics
+namespace Syy1125.OberthEffect.Spec.Block
 {
 public struct PhysicsSpec
 {
