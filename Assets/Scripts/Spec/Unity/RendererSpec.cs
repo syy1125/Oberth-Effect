@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec.Block
+namespace Syy1125.OberthEffect.Spec.Unity
 {
 [Serializable]
 public struct RendererSpec

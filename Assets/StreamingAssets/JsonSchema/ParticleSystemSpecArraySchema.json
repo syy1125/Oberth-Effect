@@ -10,6 +10,10 @@
             "Direction": {
                 "$ref": "Vector2Schema.json"
             },
+            "SpreadAngle": {
+                "type": "number",
+                "description": "Half-angle of the particle spread."
+            },
             "Size": {
                 "type": "number"
             },

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec.Block.Physics
+namespace Syy1125.OberthEffect.Spec.Unity
 {
 public class PolygonColliderPathSpec
 {
