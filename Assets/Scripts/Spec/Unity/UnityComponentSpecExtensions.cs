@@ -46,6 +46,7 @@ public static class UnityComponentSpecExtensions
 		var main = particles.main;
 		main.startSize = spec.Size;
 		main.startLifetime = spec.Lifetime;
+		main.playOnAwake = false;
 
 		var colorContext = particles.GetComponentInParent<ColorContext>();
 		if (colorContext.ColorScheme.ResolveColor(spec.Color, out Color startColor))
