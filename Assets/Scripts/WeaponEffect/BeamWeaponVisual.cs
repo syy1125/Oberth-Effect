@@ -62,7 +62,7 @@ public class BeamWeaponVisual : MonoBehaviour
 				_firing = true;
 				_line.enabled = true;
 			}
-			
+
 			localEnd.z = -1;
 			_line.SetPositions(new[] { Vector3.back, localEnd });
 		}
@@ -91,7 +91,7 @@ public class BeamWeaponVisual : MonoBehaviour
 					}
 				}
 
-				_hitParticleParentTransform.position = localEnd;
+				_hitParticleParentTransform.localPosition = localEnd;
 				_hitParticleParentTransform.rotation = Quaternion.LookRotation(Vector3.forward, -normal);
 			}
 			else
