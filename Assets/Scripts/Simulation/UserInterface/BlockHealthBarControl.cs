@@ -85,11 +85,9 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private void SpawnHealthBars()
 	{
-		Transform t = transform;
-
 		foreach (GameObject block in _target.GetAllBlocks())
 		{
-			GameObject healthBar = Instantiate(HealthBarPrefab, t);
+			GameObject healthBar = Instantiate(HealthBarPrefab, transform);
 			healthBar.GetComponent<BlockHealthBar>().Target = block.GetComponent<BlockHealth>();
 
 			_healthBars.Add(new Tuple<GameObject, GameObject>(block, healthBar));

@@ -168,17 +168,13 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		if (_beamTicksRemaining-- > 0)
 		{
-			var weaponTransform = transform;
-			Vector3 start = weaponTransform.position;
-			Vector3 up = weaponTransform.up;
-
-			Vector3 end = start + up * _beamConfig.MaxRange;
+			Vector3 start = transform.position;
+			Vector3 end = transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange, 0f));
 			Vector3? normal = null;
-			int count = Physics2D.Raycast(start, up, _raycastFilter, _raycastHits, _beamConfig.MaxRange);
+			int count = Physics2D.Raycast(start, transform.up, _raycastFilter, _raycastHits, _beamConfig.MaxRange);
 
 			if (count > 0)
 			{
-				Debug.Log($"Visual raycast hit {count} targets");
 				_raycastHits.Sort(0, count, _hitComparer);
 
 				for (int i = 0; i < count; i++)

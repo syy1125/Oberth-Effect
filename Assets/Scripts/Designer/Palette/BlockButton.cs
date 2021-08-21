@@ -76,7 +76,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		var previewTransform = previewObject.transform;
 		Vector3 previewPosition = previewTransform.position;
 		previewPosition.z = 0;
-		previewObject.transform.position = previewPosition;
+		previewTransform.position = previewPosition;
 		Vector3 previewScale = previewTransform.lossyScale;
 		previewTransform.localScale = new Vector3(
 			0.8f * instance.Spec.Info.PreviewScale / previewScale.x,

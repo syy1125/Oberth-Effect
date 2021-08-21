@@ -62,13 +62,11 @@ public class BlockPalette : MonoBehaviour
 
 	private void Start()
 	{
-		Transform t = transform;
-
 		foreach (SpecInstance<BlockSpec> instance in BlockDatabase.Instance.ListBlocks())
 		{
 			if (!instance.Spec.Construction.ShowInDesigner) continue;
 
-			GameObject buttonObject = Instantiate(BlockButtonPrefab, t);
+			GameObject buttonObject = Instantiate(BlockButtonPrefab, transform);
 			BlockButton button = buttonObject.GetComponent<BlockButton>();
 
 			button.DisplayBlock(instance);

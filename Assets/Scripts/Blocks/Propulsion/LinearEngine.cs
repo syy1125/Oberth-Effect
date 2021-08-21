@@ -39,11 +39,10 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		{
 			_particles = new ParticleSystem[spec.Particles.Length];
 			_maxParticleSpeeds = new float[spec.Particles.Length];
-			Transform engineTransform = transform;
 
 			for (var i = 0; i < spec.Particles.Length; i++)
 			{
-				_particles[i] = CreateParticleSystem(engineTransform, spec.Particles[i]);
+				_particles[i] = CreateParticleSystem(transform, spec.Particles[i]);
 				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
 			}
 		}
