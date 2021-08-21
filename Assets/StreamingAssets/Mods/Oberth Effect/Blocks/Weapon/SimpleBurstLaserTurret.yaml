@@ -1,0 +1,53 @@
+﻿BlockId: OberthEffect/SimpleBurstLaserTurret
+Enabled: true
+Info:
+  ShortName: Burst Laser
+  FullName: Simple Burst Laser Turret
+Renderers:
+  - TextureId: OberthEffect/Square
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 2
+  MomentOfInertia: 0.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 150
+  ArmorValue: 8
+TurretedWeapon:
+  Turret:
+    RotationSpeed: 180
+    Renderers:
+      - TextureId: OberthEffect/BeamTurret
+        Offset: { X: 0, Y: 0.2 }
+  BurstBeamWeaponEffect:
+    FiringPortOffset: { X: 0, Y: 0.6 }
+    Damage: 200
+    DamageType: Energy
+    ArmorPierce: 4
+    MaxResourceUse:
+      OberthEffect/Energy: 80
+    ReloadTime: 2.5
+    PreciseDuration: false
+    DurationSeconds: 0.5
+    MaxRange: 25
+    BeamWidth: 0.1
+    BeamColor: tertiary
+    HitParticles:
+      - Direction: { X: 0, Y: -1 }
+        Size: 0.1
+        MaxSpeed: 1.5
+        Lifetime: 0.2
+        EmissionRateOverTime: 100
+        Color: tertiary

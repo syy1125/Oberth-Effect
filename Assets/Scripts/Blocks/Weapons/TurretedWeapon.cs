@@ -71,15 +71,31 @@ public class TurretedWeapon :
 		{
 			var weaponEffectObject = new GameObject("ProjectileWeaponEffect");
 
-			var weaponEffectTransform = weaponEffectObject.transform;
-			weaponEffectTransform.SetParent(_turretTransform);
-			weaponEffectTransform.localPosition = spec.ProjectileWeaponEffect.FiringPortOffset;
-			weaponEffectTransform.localRotation = Quaternion.identity;
+			SetWeaponEffectTransform(weaponEffectObject, spec.ProjectileWeaponEffect);
 
 			var weaponEmitter = weaponEffectObject.AddComponent<ProjectileWeaponEffectEmitter>();
 			weaponEmitter.LoadSpec(spec.ProjectileWeaponEffect);
 			_weaponEmitters.Add(weaponEmitter);
 		}
+
+		if (spec.BurstBeamWeaponEffect != null)
+		{
+			var weaponEffectObject = new GameObject("BurstBeamWeaponEffect");
+
+			SetWeaponEffectTransform(weaponEffectObject, spec.BurstBeamWeaponEffect);
+
+			var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
+			weaponEmitter.LoadSpec(spec.BurstBeamWeaponEffect);
+			_weaponEmitters.Add(weaponEmitter);
+		}
+	}
+
+	private void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec)
+	{
+		var weaponEffectTransform = weaponEffectObject.transform;
+		weaponEffectTransform.SetParent(_turretTransform);
+		weaponEffectTransform.localPosition = spec.FiringPortOffset;
+		weaponEffectTransform.localRotation = Quaternion.identity;
 	}
 
 	private void Start()
@@ -97,8 +113,6 @@ public class TurretedWeapon :
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
 	}
-
-	public int GetOwnerId() => _core.OwnerId;
 
 	public void SetAimPoint(Vector2? aimPoint)
 	{

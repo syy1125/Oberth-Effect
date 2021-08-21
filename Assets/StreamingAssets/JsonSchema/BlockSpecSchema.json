@@ -42,11 +42,11 @@
                 },
                 "BoundsMin": {
                     "$ref": "Vector2IntSchema.json",
-                    "description": "Inclusive minimum bounds for the block, used in checking for block overlaps."
+                    "description": "Inclusive minimum bounds for the block, used in checking for block connections and overlaps."
                 },
                 "BoundsMax": {
                     "$ref": "Vector2IntSchema.json",
-                    "description": "Exclusive maximum bounds for the block, used in checking for block overlaps."
+                    "description": "Exclusive maximum bounds for the block, used in checking for block connections and overlaps."
                 },
                 "AttachmentPoints": {
                     "type": "array",
@@ -160,8 +160,7 @@
                             "description": "Specifies the maximum rate at which the engine can increase or decrease thrust. A value of 1 indicates that in one second, the engine can increase or decrease its output by, and a value of 0.5 indicates a 50%, and so on."
                         },
                         "Particles": {
-                            "type": "array",
-                            "items": { "$ref": "ParticleSystemSpecSchema.json" },
+                            "$ref": "ParticleSystemSpecArraySchema.json",
                             "description": "Specifies the particles to be played when the engine is running."
                         }
                     },
@@ -186,10 +185,7 @@
                             "description": "Indicates whether this thruster classifies as a fuel propulsion block. If so, the player can turn these blocks on and off using a keybind."
                         },
                         "Particles": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "ParticleSystemSpecSchema.json"
-                            },
+                            "$ref": "ParticleSystemSpecArraySchema.json",
                             "description": "Specifies the particles to be played when the thruster is running. The particle emitters will be rotated appropriately for thrusting in different directions."
                         }
                     },
@@ -220,34 +216,78 @@
                     "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
                     "properties": {
                         "ClusterCount": {
-                            "type": "integer"
+                            "type": "integer",
+                            "description": "The number of shots fired simultaneously in a cluster.",
+                            "default": 1
                         },
                         "BurstCount": {
-                            "type": "integer"
+                            "type": "integer",
+                            "description": "The number of shots or clusters fired by a trigger pull.",
+                            "default": 1
                         },
                         "BurstInterval": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "The interval, in seconds, between shots in a burst."
                         },
                         "ColliderSize": {
-                            "$ref": "Vector2Schema.json"
+                            "$ref": "Vector2Schema.json",
+                            "description": "The size of the projectile's collider."
                         },
                         "Speed": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "The speed of the projectile, in game units per second."
                         },
                         "MaxLifetime": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "Maximum lifetime, in seconds, of the projectile."
                         },
                         "ReloadTime": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "Time in seconds to reload this weapon"
                         },
                         "Renderers": {
-                            "$ref": "RendererSpecArraySchema.json"
+                            "$ref": "RendererSpecArraySchema.json",
+                            "description": "Renderers for the projectile."
                         },
                         "ProjectileParticles": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "ParticleSystemSpecSchema.json"
-                            }
+                            "$ref": "ParticleSystemSpecArraySchema.json"
+                        }
+                    }
+                },
+                "BurstBeamWeaponEffect": {
+                    "description": "Specifies a burst-fired beam weapon. Damage is interpreted as the damage the weapon should do in one burst.",
+                    "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
+                    "properties": {
+                        "ReloadTime": {
+                            "type": "number",
+                            "description": "Time in seconds to reload this weapon"
+                        },
+                        "PreciseDuration": {
+                            "type": "boolean",
+                            "description": "If true, duration is measured in ticks rather than seconds."
+                        },
+                        "DurationTicks": {
+                            "type": "integer",
+                            "description": "Duration of the beam in ticks. Only applicable if PreciseDuration is true."
+                        },
+                        "DurationSeconds": {
+                            "type": "number",
+                            "description": "Duration of the beam in seconds. Only applicable if PreciseDuration is false."
+                        },
+                        "MaxRange": {
+                            "type": "number",
+                            "description": "Maximum range where the beam can do damage."
+                        },
+                        "BeamWidth": {
+                            "type": "number",
+                            "description": "The width of the beam's visual effect. Does not affect logical behaviour."
+                        },
+                        "BeamColor": {
+                            "type": "string",
+                            "description": "The color of the beam. Can be specified as a color scheme color."
+                        },
+                        "HitParticles": {
+                            "$ref": "ParticleSystemSpecArraySchema.json"
                         }
                     }
                 }

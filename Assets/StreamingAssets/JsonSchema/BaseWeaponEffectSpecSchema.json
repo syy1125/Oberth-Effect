@@ -6,7 +6,8 @@
             "$ref": "Vector2Schema.json"
         },
         "Damage": {
-            "type": "number"
+            "type": "number",
+            "description": "The amount of damage this weapon does. This value may be interpreted differently depending on the weapon."
         },
         "DamageType": {
             "enum": ["Kinetic", "Energy", "Explosive"]
@@ -34,10 +35,7 @@
             }
         },
         "FireParticles": {
-            "type": "array",
-            "items": {
-                "$ref": "ParticleSystemSpecSchema.json"
-            }
+            "$ref": "ParticleSystemSpecArraySchema.json"
         }
     }
 }
