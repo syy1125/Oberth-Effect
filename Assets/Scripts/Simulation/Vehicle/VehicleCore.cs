@@ -73,9 +73,6 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 				new Tuple<Vector2, float, float>(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia)
 			);
 
-			var blockCore = blockObject.GetComponent<BlockCore>();
-			blockCore.OwnerId = photonView.OwnerActorNr;
-
 			foreach (
 				Vector3Int localPosition
 				in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin

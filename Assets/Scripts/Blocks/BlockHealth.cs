@@ -1,4 +1,5 @@
 ﻿using System;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.WeaponEffect;
@@ -26,9 +27,10 @@ public interface IBlockLifecycleListener : IEventSystemHandler
 public class BlockHealth : MonoBehaviour, IDamageable
 {
 	private BlockCore _core;
+	private OwnerContext _ownerContext;
 
 	public bool IsMine => _core.IsMine;
-	public int OwnerId => _core.OwnerId;
+	public int OwnerId => _ownerContext.OwnerId;
 
 	private float _maxHealth;
 	private float _armor;
@@ -43,6 +45,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private void Awake()
 	{
 		_core = GetComponent<BlockCore>();
+		_ownerContext = GetComponentInParent<OwnerContext>();
 	}
 
 	public void LoadSpec(BlockSpec spec)

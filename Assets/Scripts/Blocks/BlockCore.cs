@@ -13,8 +13,6 @@ public class BlockCore : MonoBehaviour
 	public bool IsMine { get; private set; }
 
 	[NonSerialized]
-	public int OwnerId;
-	[NonSerialized]
 	public string BlockId;
 	[NonSerialized]
 	public Vector2Int RootPosition;
