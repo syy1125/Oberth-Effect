@@ -197,6 +197,7 @@ public class BlockIndicators : MonoBehaviour
 
 				visualTransform.SetParent(transform);
 				visualTransform.localPosition = new Vector3(position.x, position.y);
+				visualTransform.localScale = Vector3.one;
 
 				var spriteRenderer = visualObject.AddComponent<SpriteRenderer>();
 				spriteRenderer.sprite = item.Sprite;
