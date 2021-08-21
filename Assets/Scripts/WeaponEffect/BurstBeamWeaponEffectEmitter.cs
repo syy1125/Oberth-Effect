@@ -168,7 +168,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 			if (count > 0)
 			{
-				_raycastHits.Sort(0, count, Comparer<RaycastHit2D>.Default);
+				_raycastHits.Sort(0, count, RaycastHitComparer.Default);
 
 				for (int i = 0; i < count; i++)
 				{

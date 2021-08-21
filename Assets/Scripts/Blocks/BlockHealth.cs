@@ -137,7 +137,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 
 		if (count > 0)
 		{
-			_beamRaycastHits.Sort(0, count, Comparer<RaycastHit2D>.Default);
+			_beamRaycastHits.Sort(0, count, RaycastHitComparer.Default);
 
 			for (int i = 0; i < count; i++)
 			{
