@@ -20,7 +20,7 @@ public class BeamWeaponVisual : MonoBehaviour
 		_line.startColor = beamColor;
 		_line.endColor = beamColor;
 		_line.widthCurve = AnimationCurve.Constant(0f, 1f, beamWidth);
-		_line.useWorldSpace = true;
+		_line.useWorldSpace = false;
 		_line.enabled = false;
 		_line.sharedMaterial = TextureDatabase.Instance.DefaultLineMaterial;
 
@@ -53,7 +53,7 @@ public class BeamWeaponVisual : MonoBehaviour
 		}
 	}
 
-	public void UpdateState(bool firing, Vector3 worldStart, Vector3 worldEnd, Vector3? hitNormal)
+	public void UpdateState(bool firing, Vector3 localEnd, Vector3? hitNormal)
 	{
 		if (firing)
 		{
@@ -62,10 +62,9 @@ public class BeamWeaponVisual : MonoBehaviour
 				_firing = true;
 				_line.enabled = true;
 			}
-
-			worldStart.z = -1;
-			worldEnd.z = -1;
-			_line.SetPositions(new[] { worldStart, worldEnd });
+			
+			localEnd.z = -1;
+			_line.SetPositions(new[] { Vector3.back, localEnd });
 		}
 		else
 		{
@@ -92,7 +91,7 @@ public class BeamWeaponVisual : MonoBehaviour
 					}
 				}
 
-				_hitParticleParentTransform.position = worldEnd;
+				_hitParticleParentTransform.position = localEnd;
 				_hitParticleParentTransform.rotation = Quaternion.LookRotation(Vector3.forward, -normal);
 			}
 			else

@@ -168,10 +168,11 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		if (_beamTicksRemaining-- > 0)
 		{
-			Vector3 start = transform.position;
-			Vector3 end = transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange, 0f));
+			Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange, 0f));
 			Vector3? normal = null;
-			int count = Physics2D.Raycast(start, transform.up, _raycastFilter, _raycastHits, _beamConfig.MaxRange);
+			int count = Physics2D.Raycast(
+				transform.position, transform.up, _raycastFilter, _raycastHits, _beamConfig.MaxRange
+			);
 
 			if (count > 0)
 			{
@@ -184,18 +185,18 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 					if (target != null && target.OwnerId != _ownerContext.OwnerId)
 					{
-						end = hit.point;
+						worldEnd = hit.point;
 						normal = hit.normal;
 						break;
 					}
 				}
 			}
 
-			_visual.UpdateState(true, start, end, normal);
+			_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
 		}
 		else
 		{
-			_visual.UpdateState(false, Vector3.zero, Vector3.zero, null);
+			_visual.UpdateState(false, Vector3.zero, null);
 		}
 	}
 
