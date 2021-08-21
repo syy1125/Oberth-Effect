@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -42,6 +45,9 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private Vector2 _boundsMin;
 	private Vector2 _boundsMax;
 
+	private ContactFilter2D _beamRaycastFilter;
+	private List<RaycastHit2D> _beamRaycastHits;
+
 	private void Awake()
 	{
 		_core = GetComponent<BlockCore>();
@@ -59,6 +65,13 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private void Start()
 	{
 		_health = _maxHealth;
+
+		_beamRaycastFilter = new ContactFilter2D
+		{
+			layerMask = WeaponConstants.HIT_LAYER_MASK,
+			useLayerMask = true
+		};
+		_beamRaycastHits = new List<RaycastHit2D>();
 	}
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
@@ -66,7 +79,9 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		return new Tuple<Vector2, Vector2>(_boundsMin, _boundsMax);
 	}
 
-	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
+	public void TakeDamage(
+		DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted
+	)
 	{
 		float damageModifier = Mathf.Min(armorPierce / _armor, 1f);
 		Debug.Assert(damageModifier > Mathf.Epsilon, "Damage modifier should not be zero");
@@ -93,6 +108,49 @@ public class BlockHealth : MonoBehaviour, IDamageable
 				gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(_core)
 			);
 			// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore
+		}
+	}
+
+	public void RequestBeamDamage(
+		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+	)
+	{
+		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
+			gameObject, null,
+			(relay, _) => relay.InvokeBlockRpc(
+				_core.RootPosition, typeof(BlockHealth), nameof(TakeBeamDamageRpc), RpcTarget.All,
+				damageType, damage, armorPierce, ownerId, beamStart, beamEnd
+			)
+		);
+	}
+
+	public void TakeBeamDamageRpc(
+		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 hitPosition, Vector2 beamEnd
+	)
+	{
+		if (!IsMine) return;
+
+		Vector2 beamDirection = beamEnd - hitPosition;
+		int count = Physics2D.Raycast(
+			hitPosition, beamDirection, _beamRaycastFilter, _beamRaycastHits, beamDirection.magnitude
+		);
+
+		if (count > 0)
+		{
+			_beamRaycastHits.Sort(0, count, Comparer<RaycastHit2D>.Default);
+
+			for (int i = 0; i < count; i++)
+			{
+				RaycastHit2D hit = _beamRaycastHits[i];
+				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
+
+				// Only do damage calculations for blocks we own
+				if (target == null || target.OwnerId == ownerId || !target.IsMine) continue;
+
+				target.TakeDamage(damageType, ref damage, armorPierce, out bool damageExhausted);
+
+				if (damageExhausted) break;
+			}
 		}
 	}
 }

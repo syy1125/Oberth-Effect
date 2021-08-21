@@ -181,7 +181,7 @@ public class TurretedWeapon :
 		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
 			gameObject, null,
 			(handler, _) => handler.InvokeBlockRpc(
-				_core.RootPosition, typeof(TurretedWeapon), "ReceiveBlockRpc", target,
+				_core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveBlockRpc), target,
 				index, methodName, parameters
 			)
 		);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
@@ -14,9 +15,6 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 {
-	// Layer 6 = vehicle block, layer 7 = celestial body, layer 8 = vehicle shield
-	private const int HIT_LAYER_MASK = 0b111000000;
-
 	private OwnerContext _ownerContext;
 	private ColorContext _colorContext;
 
@@ -33,7 +31,6 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private ContactFilter2D _raycastFilter;
 	private List<RaycastHit2D> _raycastHits;
-	private Comparer<RaycastHit2D> _hitComparer;
 
 	private BeamWeaponVisual _visual;
 
@@ -53,7 +50,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_beamConfig = new BeamTickConfig
 		{
-			Damage = spec.Damage / _durationTicks,
+			DamagePerTick = spec.Damage / _durationTicks,
 			DamageType = spec.DamageType,
 			ArmorPierce = spec.ArmorPierce,
 			ExplosionRadius = spec.ExplosionRadius,
@@ -80,16 +77,10 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_raycastFilter = new ContactFilter2D
 		{
-			layerMask = HIT_LAYER_MASK,
+			layerMask = WeaponConstants.HIT_LAYER_MASK,
 			useLayerMask = true
 		};
 		_raycastHits = new List<RaycastHit2D>();
-		_hitComparer = Comparer<RaycastHit2D>.Create(CompareRaycastHitDistance);
-	}
-
-	private static int CompareRaycastHitDistance(RaycastHit2D left, RaycastHit2D right)
-	{
-		return left.distance.CompareTo(right.distance);
 	}
 
 	private void Start()
@@ -111,7 +102,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	{
 		return new Dictionary<DamageType, float>
 		{
-			{ _beamConfig.DamageType, _beamConfig.Damage * _durationTicks / _reloadTime }
+			{ _beamConfig.DamageType, _beamConfig.DamagePerTick * _durationTicks / _reloadTime }
 		};
 	}
 
@@ -128,8 +119,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			.AppendLine("  Burst Beam")
 			.AppendLine(
 				_beamConfig.DamageType == DamageType.Explosive
-					? $"    {_beamConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, {_beamConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
-					: $"    {_beamConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, <color=\"lightblue\">{_beamConfig.ArmorPierce:0.#} AP</color>"
+					? $"    {_beamConfig.DamagePerTick:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, {_beamConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
+					: $"    {_beamConfig.DamagePerTick:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, <color=\"lightblue\">{_beamConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine($"    Max range {_beamConfig.MaxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m");
 
@@ -155,7 +146,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				ExecuteEvents.ExecuteHierarchy<IWeaponEffectRpcRelay>(
 					gameObject, null,
 					(relay, _) => relay.InvokeWeaponEffectRpc(
-						this, "SetBeamTicksRemaining", RpcTarget.Others, _durationTicks
+						this, nameof(SetBeamTicksRemaining), RpcTarget.Others, _durationTicks
 					)
 				);
 			}
@@ -170,13 +161,14 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		{
 			Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange, 0f));
 			Vector3? normal = null;
+			IDamageable hitTarget = null;
 			int count = Physics2D.Raycast(
 				transform.position, transform.up, _raycastFilter, _raycastHits, _beamConfig.MaxRange
 			);
 
 			if (count > 0)
 			{
-				_raycastHits.Sort(0, count, _hitComparer);
+				_raycastHits.Sort(0, count, Comparer<RaycastHit2D>.Default);
 
 				for (int i = 0; i < count; i++)
 				{
@@ -185,6 +177,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 					if (target != null && target.OwnerId != _ownerContext.OwnerId)
 					{
+						hitTarget = target;
 						worldEnd = hit.point;
 						normal = hit.normal;
 						break;
@@ -193,6 +186,28 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			}
 
 			_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
+
+			if (isMine && hitTarget != null)
+			{
+				switch (_beamConfig.DamageType)
+				{
+					case DamageType.Kinetic:
+					case DamageType.Energy:
+						hitTarget.RequestBeamDamage(
+							_beamConfig.DamageType, _beamConfig.DamagePerTick, _beamConfig.ArmorPierce,
+							_ownerContext.OwnerId,
+							transform.position, transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange))
+						);
+						break;
+					case DamageType.Explosive:
+						ExplosionManager.Instance.CreateExplosionAt(
+							worldEnd, _beamConfig.ExplosionRadius, _beamConfig.DamagePerTick
+						);
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
 		}
 		else
 		{

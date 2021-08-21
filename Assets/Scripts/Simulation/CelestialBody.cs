@@ -70,9 +70,16 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 		return new Tuple<Vector2, Vector2>(Vector2.zero, Vector2.zero);
 	}
 
-	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
+	public void TakeDamage(
+		DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted
+	)
 	{
 		damageExhausted = true;
 	}
+
+	public void RequestBeamDamage(
+		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+	)
+	{}
 }
 }

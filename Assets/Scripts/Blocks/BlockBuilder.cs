@@ -16,6 +16,7 @@ public static class BlockBuilder
 	public static GameObject BuildFromSpec(BlockSpec blockSpec, Transform parent, Vector2Int rootPosition, int rotation)
 	{
 		var blockObject = new GameObject(blockSpec.Info.FullName);
+
 		Transform blockTransform = blockObject.transform;
 		blockTransform.SetParent(parent);
 		blockTransform.localPosition = new Vector3(rootPosition.x, rootPosition.y, 0f);
@@ -83,6 +84,8 @@ public static class BlockBuilder
 
 		var blockDescription = blockObject.AddComponent<BlockDescription>();
 		blockDescription.LoadSpec(blockSpec);
+
+		LayerUtils.SetLayerRecursively(blockObject, 6, 0b111000000);
 
 		return blockObject;
 	}
