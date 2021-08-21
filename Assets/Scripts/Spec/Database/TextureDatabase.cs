@@ -14,6 +14,7 @@ public class TextureDatabase : MonoBehaviour
 
 	public Material VehicleBlockMaterial;
 	public Material DefaultParticleMaterial;
+	public Material DefaultLineMaterial;
 
 	private void Awake()
 	{
