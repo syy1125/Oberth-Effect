@@ -505,7 +505,7 @@ public class VehicleDesigner : MonoBehaviour
 		Debug.Log(
 			hoverBlock == null
 				? $"Hovering at {HoverPositionInt} over null"
-				: $"Hovering at {HoverPositionInt} over {hoverBlock.BlockId} at ({hoverBlock.X}, {hoverBlock.Y}) with rotation {hoverBlock.Rotation}"
+				: $"Hovering at {HoverPositionInt} over {hoverBlock.BlockId} at ({hoverBlock.Position}) with rotation {hoverBlock.Rotation}"
 		);
 	}
 

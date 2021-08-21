@@ -33,7 +33,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string) instantiationData[0]);
+		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string)instantiationData[0]);
 	}
 
 	private void Start()
@@ -52,21 +52,21 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
 
 		// Instantiate blocks
-		foreach (VehicleBlueprint.BlockInstance block in blueprint.Blocks)
+		foreach (VehicleBlueprint.BlockInstance blockInstance in blueprint.Blocks)
 		{
-			if (!BlockDatabase.Instance.HasBlock(block.BlockId))
+			if (!BlockDatabase.Instance.HasBlock(blockInstance.BlockId))
 			{
-				Debug.LogError($"Failed to load block by ID: {block.BlockId}");
+				Debug.LogError($"Failed to load block by ID: {blockInstance.BlockId}");
 				continue;
 			}
 
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
-			var rootLocation = new Vector2(block.X, block.Y);
-			var rootLocationInt = new Vector2Int(block.X, block.Y);
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
 
-			GameObject blockObject = BlockBuilder.BuildFromSpec(spec, transform, rootLocationInt, block.Rotation);
-
-			Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+			GameObject blockObject = BlockBuilder.BuildFromSpec(
+				spec, transform, blockInstance.Position, blockInstance.Rotation
+			);
+			Vector2 blockCenter = blockInstance.Position
+			                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 			totalMass += spec.Physics.Mass;
 			centerOfMass += spec.Physics.Mass * blockCenter;
 			momentOfInertiaData.AddLast(
@@ -79,11 +79,12 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 			)
 			{
 				_posToBlock.Add(
-					rootLocationInt + TransformUtils.RotatePoint(localPosition, block.Rotation), blockObject
+					blockInstance.Position + TransformUtils.RotatePoint(localPosition, blockInstance.Rotation),
+					blockObject
 				);
 			}
 
-			blocks.Add(new Tuple<VehicleBlueprint.BlockInstance, GameObject>(block, blockObject));
+			blocks.Add(new Tuple<VehicleBlueprint.BlockInstance, GameObject>(blockInstance, blockObject));
 		}
 
 		// Physics computation
@@ -103,7 +104,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		_body.centerOfMass = centerOfMass;
 		_body.inertia = momentOfInertia;
 
-		transform.position -= (Vector3) centerOfMass;
+		transform.position -= (Vector3)centerOfMass;
 
 		// Load config
 		foreach (Tuple<VehicleBlueprint.BlockInstance, GameObject> tuple in blocks)

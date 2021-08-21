@@ -207,14 +207,13 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	#region Analyze Vehicle
 
-	private void AnalyzeBlockFirstPass(VehicleBlueprint.BlockInstance block)
+	private void AnalyzeBlockFirstPass(VehicleBlueprint.BlockInstance blockInstance)
 	{
-		GameObject blockObject = Builder.GetBlockObject(block);
-
-		Vector2 rootLocation = new Vector2(block.X, block.Y);
+		GameObject blockObject = Builder.GetBlockObject(blockInstance);
 
 		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
-		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+		Vector2 blockCenter = blockInstance.Position
+		                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
 		_result.Mass += spec.Physics.Mass;
 		_result.CenterOfMass += spec.Physics.Mass * blockCenter;
@@ -237,16 +236,16 @@ public class VehicleAnalyzer : MonoBehaviour
 				DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
 
 				_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
 				);
 				_result.PropulsionDown += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
 				);
 				_result.PropulsionLeft += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
 				);
 				_result.PropulsionRight += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+					CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
 				);
 			}
 
@@ -260,13 +259,13 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 	}
 
-	private void AnalyzeBlockSecondPass(VehicleBlueprint.BlockInstance block)
+	private void AnalyzeBlockSecondPass(VehicleBlueprint.BlockInstance blockInstance)
 	{
-		GameObject blockObject = Builder.GetBlockObject(block);
+		GameObject blockObject = Builder.GetBlockObject(blockInstance);
 
-		Vector2 rootLocation = new Vector2(block.X, block.Y);
 		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
-		Vector2 blockCenter = rootLocation + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+		Vector2 blockCenter = blockInstance.Position
+		                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
 		_result.MomentOfInertia += spec.Physics.MomentOfInertia
 		                           + spec.Physics.Mass * (blockCenter - _result.CenterOfMass).sqrMagnitude;
@@ -275,20 +274,22 @@ public class VehicleAnalyzer : MonoBehaviour
 		{
 			if (behaviour is IPropulsionBlock propulsion)
 			{
-				Vector2 forceOrigin =
-					rootLocation + TransformUtils.RotatePoint(propulsion.GetPropulsionForceOrigin(), block.Rotation);
+				Vector2 forceOrigin = blockInstance.Position
+				                      + TransformUtils.RotatePoint(
+					                      propulsion.GetPropulsionForceOrigin(), blockInstance.Rotation
+				                      );
 
 				if (forceOrigin.x > Mathf.Epsilon)
 				{
 					_result.PropulsionCcw +=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
 						);
 					_result.PropulsionCw +=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
 						);
 				}
 				else if (forceOrigin.x < -Mathf.Epsilon)
@@ -296,12 +297,12 @@ public class VehicleAnalyzer : MonoBehaviour
 					_result.PropulsionCcw -=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
 						);
 					_result.PropulsionCw -=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
 						);
 				}
 
@@ -310,12 +311,12 @@ public class VehicleAnalyzer : MonoBehaviour
 					_result.PropulsionCcw +=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
 						);
 					_result.PropulsionCw +=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
 						);
 				}
 				else if (forceOrigin.y < -Mathf.Epsilon)
@@ -323,12 +324,12 @@ public class VehicleAnalyzer : MonoBehaviour
 					_result.PropulsionCcw -=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
 						);
 					_result.PropulsionCw -=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
-							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, block.Rotation)
+							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
 						);
 				}
 			}
@@ -469,13 +470,12 @@ public class VehicleAnalyzer : MonoBehaviour
 	{
 		if (Builder.HasBlockAt(position))
 		{
-			VehicleBlueprint.BlockInstance instance = Builder.GetBlockInstanceAt(position);
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
-			Vector2Int rootPosition = new Vector2Int(instance.X, instance.Y);
+			VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(position);
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
 
 			BoundsInt blockBounds = TransformUtils.TransformBounds(
 				new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),
-				rootPosition, instance.Rotation
+				blockInstance.Position, blockInstance.Rotation
 			);
 			SelectionIndicator.transform.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
 			SelectionIndicator.transform.localScale = blockBounds.size;
@@ -485,7 +485,7 @@ public class VehicleAnalyzer : MonoBehaviour
 			List<Vector2Int> closedAttachPoints = new List<Vector2Int>();
 			List<Vector2Int> openAttachPoints = new List<Vector2Int>();
 
-			foreach (Vector2Int attachmentPoint in VehicleBuilder.GetAttachmentPoints(instance))
+			foreach (Vector2Int attachmentPoint in VehicleBuilder.GetAttachmentPoints(blockInstance))
 			{
 				if (Builder.HasBlockAt(attachmentPoint))
 				{
@@ -497,7 +497,7 @@ public class VehicleAnalyzer : MonoBehaviour
 					{
 						if (
 							Builder.HasBlockAt(reverseAttachPoint)
-							&& Builder.GetBlockInstanceAt(reverseAttachPoint) == instance
+							&& Builder.GetBlockInstanceAt(reverseAttachPoint) == blockInstance
 						)
 						{
 							attached = true;

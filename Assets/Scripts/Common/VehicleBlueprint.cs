@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common
 {
@@ -10,8 +11,7 @@ public class VehicleBlueprint
 	public class BlockInstance
 	{
 		public string BlockId;
-		public int X;
-		public int Y;
+		public Vector2Int Position;
 		public int Rotation;
 		public string Config;
 	}

@@ -16,11 +16,11 @@ public class DesignerCenterOfMassContext : CenterOfMassContext
 		Vector2 centerOfMass = Vector2.zero;
 		float mass = 0f;
 
-		foreach (VehicleBlueprint.BlockInstance block in Designer.Blueprint.Blocks)
+		foreach (VehicleBlueprint.BlockInstance blockInstance in Designer.Blueprint.Blocks)
 		{
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
-			Vector2 rootPosition = new Vector2(block.X, block.Y);
-			Vector2 blockCenter = rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, block.Rotation);
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			Vector2 rootPosition = blockInstance.Position;
+			Vector2 blockCenter = rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
 			mass += spec.Physics.Mass;
 			centerOfMass += spec.Physics.Mass * blockCenter;

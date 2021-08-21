@@ -200,7 +200,7 @@ public class DesignerConfig : MonoBehaviour
 
 		BoundsInt blockBounds = TransformUtils.TransformBounds(
 			new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax).ToBoundsInt(),
-			new Vector2Int(blockInstance.X, blockInstance.Y), blockInstance.Rotation
+			blockInstance.Position, blockInstance.Rotation
 		);
 
 		SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);

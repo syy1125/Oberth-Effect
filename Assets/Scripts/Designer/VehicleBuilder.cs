@@ -47,18 +47,18 @@ public class VehicleBuilder : MonoBehaviour
 		AddBlock(BlockDatabase.Instance.GetSpecInstance("OberthEffect/ControlCore").Spec, Vector2Int.zero, 0);
 	}
 
-	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance instance)
+	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance blockInstance)
 	{
 		GameObject blockObject = BlockBuilder.BuildFromSpec(
-			BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec, transform,
-			new Vector2Int(instance.X, instance.Y), instance.Rotation
+			BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec, transform,
+			blockInstance.Position, blockInstance.Rotation
 		);
 
 		blockObject.layer = gameObject.layer;
 
-		BlockConfigHelper.SyncConfig(instance, blockObject);
+		BlockConfigHelper.SyncConfig(blockInstance, blockObject);
 
-		_blockToObject.Add(instance, blockObject);
+		_blockToObject.Add(blockInstance, blockObject);
 	}
 
 	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockSpec spec, Vector2Int rootLocation, int rotation)
@@ -94,8 +94,7 @@ public class VehicleBuilder : MonoBehaviour
 		var instance = new VehicleBlueprint.BlockInstance
 		{
 			BlockId = spec.BlockId,
-			X = rootPosition.x,
-			Y = rootPosition.y,
+			Position = rootPosition,
 			Rotation = rotation
 		};
 
@@ -172,14 +171,13 @@ public class VehicleBuilder : MonoBehaviour
 	#region Attachment Handling
 
 	// Enumerates the block's attachment points in vehicle space
-	public static IEnumerable<Vector2Int> GetAttachmentPoints(VehicleBlueprint.BlockInstance instance)
+	public static IEnumerable<Vector2Int> GetAttachmentPoints(VehicleBlueprint.BlockInstance blockInstance)
 	{
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
 
 		foreach (Vector2Int attachmentPoint in spec.Construction.AttachmentPoints)
 		{
-			yield return new Vector2Int(instance.X, instance.Y)
-			             + TransformUtils.RotatePoint(attachmentPoint, instance.Rotation);
+			yield return blockInstance.Position + TransformUtils.RotatePoint(attachmentPoint, blockInstance.Rotation);
 		}
 	}
 
@@ -278,9 +276,9 @@ public class VehicleBuilder : MonoBehaviour
 	{
 		ClearAll();
 
-		foreach (VehicleBlueprint.BlockInstance instance in Blueprint.Blocks)
+		foreach (VehicleBlueprint.BlockInstance blockInstance in Blueprint.Blocks)
 		{
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
+			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
 
 			var positions = new List<Vector2Int>();
 
@@ -288,15 +286,15 @@ public class VehicleBuilder : MonoBehaviour
 				spec.Construction.BoundsMin, spec.Construction.BoundsMax
 			).AllPositionsWithin)
 			{
-				Vector2Int globalPosition = new Vector2Int(instance.X, instance.Y)
-				                            + TransformUtils.RotatePoint(localPosition, instance.Rotation);
+				Vector2Int globalPosition = blockInstance.Position
+				                            + TransformUtils.RotatePoint(localPosition, blockInstance.Rotation);
 				positions.Add(globalPosition);
-				_posToBlock.Add(globalPosition, instance);
+				_posToBlock.Add(globalPosition, blockInstance);
 			}
 
-			_blockToPos.Add(instance, positions.ToArray());
+			_blockToPos.Add(blockInstance, positions.ToArray());
 
-			SpawnBlockGameObject(instance);
+			SpawnBlockGameObject(blockInstance);
 		}
 
 		UpdateConnectedBlocks();
