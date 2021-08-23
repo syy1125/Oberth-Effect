@@ -57,13 +57,11 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		{
 			PhotonNetwork.ConnectUsingSettings();
 			StatusIndicator.text = "Connecting...";
-			CreateRoomButton.interactable = false;
 		}
 		else if (PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InLobby)
 		{
 			PhotonNetwork.JoinLobby();
 			StatusIndicator.text = "Connecting...";
-			CreateRoomButton.interactable = false;
 		}
 
 		_selectedRoom = null;
@@ -77,6 +75,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			PhotonNetwork.JoinLobby();
 			StatusIndicator.text = "Connecting...";
 		}
+
+		UpdateControls();
 	}
 
 	public override void OnDisable()
@@ -89,7 +89,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		_rooms.Clear();
 		RenderRoomList();
-		CreateRoomButton.interactable = true;
+		UpdateControls();
 	}
 
 	public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -204,16 +204,24 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		bool hasName = !string.IsNullOrWhiteSpace(PhotonNetwork.NickName);
 
-		CreateRoomButton.interactable = hasName;
-		CreateRoomTooltip.SetTooltip(hasName ? null : "You must enter a player name first.");
-
-		JoinRoomButton.interactable = _selectedRoom != null && hasName;
-		JoinRoomTooltip.SetTooltip(
-			_selectedRoom == null
-				? "First select a room to join."
+		CreateRoomButton.interactable = PhotonNetwork.InLobby && hasName;
+		CreateRoomTooltip.SetTooltip(
+			!PhotonNetwork.InLobby
+				? "Still connecting!"
 				: !hasName
 					? "You must enter a player name first."
 					: null
+		);
+
+		JoinRoomButton.interactable = PhotonNetwork.InLobby && hasName && _selectedRoom != null;
+		JoinRoomTooltip.SetTooltip(
+			!PhotonNetwork.InLobby
+				? "Still connecting!"
+				: !hasName
+					? "You must enter a player name first."
+					: _selectedRoom == null
+						? "First select a room to join."
+						: null
 		);
 	}
 
