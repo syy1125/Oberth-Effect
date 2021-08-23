@@ -1,6 +1,4 @@
 ﻿using Syy1125.OberthEffect.Common.ColorScheme;
-using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.UserInterface;
@@ -416,7 +415,7 @@ public class VehicleDesigner : MonoBehaviour
 		if (_dragHandle != null)
 		{
 			var dragHandlePosition = _dragHandle.Value;
-			
+
 			Vector3 mousePosition = GetLocalMousePosition();
 			transform.position += transform.TransformVector(mousePosition - dragHandlePosition);
 		}

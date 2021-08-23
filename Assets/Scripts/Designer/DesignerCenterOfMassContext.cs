@@ -20,7 +20,8 @@ public class DesignerCenterOfMassContext : CenterOfMassContext
 		{
 			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
 			Vector2 rootPosition = blockInstance.Position;
-			Vector2 blockCenter = rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
+			Vector2 blockCenter =
+				rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
 			mass += spec.Physics.Mass;
 			centerOfMass += spec.Physics.Mass * blockCenter;

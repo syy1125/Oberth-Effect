@@ -1,5 +1,4 @@
-﻿using Syy1125.OberthEffect.Spec.Block.Propulsion;
-using Syy1125.OberthEffect.Spec.Unity;
+﻿using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block.Weapon

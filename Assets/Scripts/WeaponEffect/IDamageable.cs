@@ -25,6 +25,8 @@ public interface IDamageable
 	/// Requests that the target do beam damage calculations on the proper server.
 	/// Typically this involves sending an RPC to the owner so that it can do the correct damage calculations.
 	/// </summary>
-	void RequestBeamDamage(DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd);
+	void RequestBeamDamage(
+		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+	);
 }
 }

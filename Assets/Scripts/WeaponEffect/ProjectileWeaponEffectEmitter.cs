@@ -96,7 +96,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
-		
+
 		builder
 			.AppendLine("  Projectile")
 			.AppendLine(

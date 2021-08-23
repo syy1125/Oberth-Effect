@@ -33,7 +33,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string)instantiationData[0]);
+		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string) instantiationData[0]);
 	}
 
 	private void Start()
@@ -104,7 +104,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		_body.centerOfMass = centerOfMass;
 		_body.inertia = momentOfInertia;
 
-		transform.position -= (Vector3)centerOfMass;
+		transform.position -= (Vector3) centerOfMass;
 
 		// Load config
 		foreach (Tuple<VehicleBlueprint.BlockInstance, GameObject> tuple in blocks)
