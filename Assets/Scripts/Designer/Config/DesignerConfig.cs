@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
+using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
@@ -38,6 +41,9 @@ public class DesignerConfig : MonoBehaviour
 	public Toggle EngineTranslationToggle;
 	public Toggle EngineRotationToggle;
 
+	[Header("Weapon Config")]
+	public SwitchSelect WeaponGroupSelect;
+
 	private VehicleBlueprint Blueprint => Designer.Blueprint;
 
 	private ColorContext _context;
@@ -56,6 +62,7 @@ public class DesignerConfig : MonoBehaviour
 		EnableActions();
 		AttachVehicleConfigListeners();
 		AttachEngineConfigListeners();
+		AttachWeaponConfigListeners();
 
 		_selectedLocation = null;
 		ShowVehicleConfig();
@@ -84,9 +91,15 @@ public class DesignerConfig : MonoBehaviour
 		EngineRotationToggle.onValueChanged.AddListener(SetEngineRespondToRotation);
 	}
 
+	private void AttachWeaponConfigListeners()
+	{
+		WeaponGroupSelect.OnValueChanged.AddListener(SetTurretedWeaponBindingGroup);
+	}
+
 	private void Start()
 	{
 		ControlModeSelect.SetOptions(Enum.GetNames(typeof(VehicleControlMode)));
+		WeaponGroupSelect.SetOptions(new[] { "Manual 1", "Manual 2", "Auto-Track", "CIWS" });
 	}
 
 	private void OnDisable()
@@ -94,6 +107,7 @@ public class DesignerConfig : MonoBehaviour
 		DisableActions();
 		DetachVehicleConfigListeners();
 		DetachEngineConfigListeners();
+		DetachWeaponConfigListeners();
 
 		_selectedLocation = null;
 		SelectionIndicator.gameObject.SetActive(false);
@@ -120,6 +134,11 @@ public class DesignerConfig : MonoBehaviour
 	{
 		EngineTranslationToggle.onValueChanged.RemoveListener(SetEngineRespondToTranslation);
 		EngineRotationToggle.onValueChanged.RemoveListener(SetEngineRespondToRotation);
+	}
+
+	private void DetachWeaponConfigListeners()
+	{
+		WeaponGroupSelect.OnValueChanged.RemoveListener(SetTurretedWeaponBindingGroup);
 	}
 
 	#endregion
@@ -170,6 +189,7 @@ public class DesignerConfig : MonoBehaviour
 
 		SetVehicleConfigEnabled(true);
 		SetEngineConfigEnabled(false);
+		SetWeaponConfigEnabled(false);
 
 		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
 
@@ -195,6 +215,10 @@ public class DesignerConfig : MonoBehaviour
 		LinearEngine engine = blockObject.GetComponent<LinearEngine>();
 		SetEngineConfigEnabled(engine != null);
 		if (engine != null) UpdateEngineConfigElements(engine);
+
+		TurretedWeapon turretedWeapon = blockObject.GetComponent<TurretedWeapon>();
+		SetWeaponConfigEnabled(turretedWeapon != null);
+		if (turretedWeapon != null) UpdateTurretedWeaponConfigElements(turretedWeapon);
 
 		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
 
@@ -223,12 +247,26 @@ public class DesignerConfig : MonoBehaviour
 		EngineRotationToggle.gameObject.SetActive(configEnabled);
 	}
 
+	private void SetWeaponConfigEnabled(bool configEnabled)
+	{
+		WeaponGroupSelect.gameObject.SetActive(configEnabled);
+	}
+
 	private void UpdateEngineConfigElements(LinearEngine engine)
 	{
 		_updatingElements = true;
 
 		EngineTranslationToggle.isOn = engine.RespondToTranslation;
 		EngineRotationToggle.isOn = engine.RespondToRotation;
+
+		_updatingElements = false;
+	}
+
+	private void UpdateTurretedWeaponConfigElements(TurretedWeapon turretedWeapon)
+	{
+		_updatingElements = true;
+
+		WeaponGroupSelect.Value = (int) turretedWeapon.WeaponBinding;
 
 		_updatingElements = false;
 	}
@@ -292,30 +330,43 @@ public class DesignerConfig : MonoBehaviour
 
 	#endregion
 
+	private void UpdateBlockConfig<T>(Action<T> action) where T : Component
+	{
+		if (_updatingElements) return;
+		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
+		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+
+		var component = blockObject.GetComponent<T>();
+		if (component != null)
+		{
+			action(component);
+			BlockConfigHelper.SaveConfig(blockInstance, blockObject);
+		}
+	}
+
 	#region Engine Config Event Listeners
 
 	private void SetEngineRespondToTranslation(bool engineTranslation)
 	{
-		if (_updatingElements) return;
-		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
-
-		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
-
-		blockObject.GetComponent<LinearEngine>().RespondToTranslation = engineTranslation;
-		BlockConfigHelper.SaveConfig(blockInstance, blockObject);
+		UpdateBlockConfig<LinearEngine>(linearEngine => linearEngine.RespondToTranslation = engineTranslation);
 	}
 
 	private void SetEngineRespondToRotation(bool engineRotation)
 	{
-		if (_updatingElements) return;
-		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+		UpdateBlockConfig<LinearEngine>(linearEngine => linearEngine.RespondToRotation = engineRotation);
+	}
 
-		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
+	#endregion
 
-		blockObject.GetComponent<LinearEngine>().RespondToRotation = engineRotation;
-		BlockConfigHelper.SaveConfig(blockInstance, blockObject);
+	#region Weapon Config Event Listeners
+
+	private void SetTurretedWeaponBindingGroup(int bindingGroupIndex)
+	{
+		UpdateBlockConfig<TurretedWeapon>(
+			turretedWeapon => turretedWeapon.WeaponBinding = (WeaponBindingGroup) bindingGroupIndex
+		);
 	}
 
 	#endregion

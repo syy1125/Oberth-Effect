@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
@@ -16,8 +18,10 @@ namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public class TurretedWeapon :
 	MonoBehaviour,
-	IWeaponSystem, IWeaponEffectRpcRelay, IResourceConsumerBlock, ITooltipProvider
+	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, ITooltipProvider
 {
+	public const string CONFIG_KEY = "TurretedWeapon";
+
 	private BlockCore _core;
 
 	// From spec
@@ -28,6 +32,9 @@ public class TurretedWeapon :
 	// Cache
 	private Dictionary<DamageType, float> _firepower;
 	private Dictionary<string, float> _maxResourceUseRate;
+
+	// Config
+	public WeaponBindingGroup WeaponBinding { get; set; }
 
 	// State
 	private bool _firing;
@@ -112,6 +119,30 @@ public class TurretedWeapon :
 		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+	}
+
+	public JObject ExportConfig()
+	{
+		return new JObject
+		{
+			{ "WeaponBinding", new JValue(WeaponBinding.ToString()) }
+		};
+	}
+
+	public void InitDefaultConfig()
+	{
+		WeaponBinding = WeaponBindingGroup.Manual1;
+	}
+
+	public void ImportConfig(JObject config)
+	{
+		if (
+			config.ContainsKey("WeaponBinding")
+			&& Enum.TryParse(config.Value<string>("WeaponBinding"), out WeaponBindingGroup weaponBinding)
+		)
+		{
+			WeaponBinding = weaponBinding;
+		}
 	}
 
 	public void SetAimPoint(Vector2? aimPoint)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Weapons;
+using Syy1125.OberthEffect.Common.Enums;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,11 +9,12 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable
 {
-	public InputActionReference FireAction;
+	public InputActionReference FireAction1;
+	public InputActionReference FireAction2;
 
 	private Camera _mainCamera;
 	private List<IWeaponSystem> _weapons;
-	private Vector2 _aimPoint;
+	private Vector2 _mouseAimPoint;
 
 	private void Awake()
 	{
@@ -22,12 +24,14 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private void OnEnable()
 	{
-		FireAction.action.Enable();
+		FireAction1.action.Enable();
+		FireAction2.action.Enable();
 	}
 
 	private void OnDisable()
 	{
-		FireAction.action.Disable();
+		FireAction1.action.Disable();
+		FireAction2.action.Disable();
 	}
 
 	#region Weapon Registry
@@ -50,22 +54,35 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private void FixedUpdate()
 	{
-		if (photonView.IsMine)
+		bool isMine = photonView.IsMine;
+		bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
+		bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
+
+		if (isMine)
 		{
-			_aimPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+			_mouseAimPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		}
 
 		foreach (IWeaponSystem weapon in _weapons)
 		{
-			weapon.SetAimPoint(_aimPoint);
-		}
-
-		if (photonView.IsMine)
-		{
-			bool firing = FireAction.action.ReadValue<float>() > 0.5f;
-			foreach (IWeaponSystem weapon in _weapons)
+			switch (weapon.WeaponBinding)
 			{
-				weapon.SetFiring(firing);
+				case WeaponBindingGroup.Manual1:
+					weapon.SetAimPoint(_mouseAimPoint);
+					if (isMine)
+					{
+						weapon.SetFiring(firing1);
+					}
+
+					break;
+				case WeaponBindingGroup.Manual2:
+					weapon.SetAimPoint(_mouseAimPoint);
+					if (isMine)
+					{
+						weapon.SetFiring(firing2);
+					}
+
+					break;
 			}
 		}
 	}
@@ -74,11 +91,11 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		if (stream.IsWriting)
 		{
-			stream.SendNext(_aimPoint);
+			stream.SendNext(_mouseAimPoint);
 		}
 		else
 		{
-			_aimPoint = (Vector2) stream.ReceiveNext();
+			_mouseAimPoint = (Vector2) stream.ReceiveNext();
 		}
 	}
 }

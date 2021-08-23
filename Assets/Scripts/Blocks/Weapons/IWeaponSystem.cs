@@ -11,6 +11,7 @@ public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>, IEventSy
 public interface IWeaponSystem
 {
 	Transform transform { get; }
+	public WeaponBindingGroup WeaponBinding { get; }
 
 	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);
