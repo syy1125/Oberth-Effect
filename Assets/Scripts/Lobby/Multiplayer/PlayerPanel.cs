@@ -1,3 +1,4 @@
+using System.Text;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Utils;
@@ -27,12 +28,15 @@ public class PlayerPanel : MonoBehaviour
 
 	public void UpdateProps(Hashtable props)
 	{
-		if (props.ContainsKey(PropertyKeys.VEHICLE_NAME))
+		bool vehicleChanged = props.ContainsKey(PropertyKeys.VEHICLE_NAME);
+		bool readyChanged = props.ContainsKey(PropertyKeys.READY);
+
+		if (vehicleChanged)
 		{
 			UpdateVehicleDisplay();
 		}
 
-		if (props.ContainsKey(PropertyKeys.READY))
+		if (vehicleChanged || readyChanged)
 		{
 			UpdateReadyDisplay();
 		}
@@ -49,7 +53,11 @@ public class PlayerPanel : MonoBehaviour
 	{
 		bool ready = PhotonHelper.IsPlayerReady(_player);
 
-		PlayerName.text = ready ? _player.NickName : $"{_player.NickName} (Not Ready)";
+		StringBuilder playerNameBuilder = new StringBuilder(_player.NickName);
+		if (_player.IsMasterClient) playerNameBuilder.Append(" (Host)");
+		if (!ready) playerNameBuilder.Append(" (Not Ready)");
+		PlayerName.text = playerNameBuilder.ToString();
+
 		ReadyDisplay.CrossFadeColor(
 			ready ? ReadyColor : Color.white,
 			FadeDuration, true, true
