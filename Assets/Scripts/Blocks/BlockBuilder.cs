@@ -82,6 +82,12 @@ public static class BlockBuilder
 			turretedWeapon.LoadSpec(blockSpec.TurretedWeapon);
 		}
 
+		if (blockSpec.Volatile != null)
+		{
+			var volatileBlock = blockObject.AddComponent<VolatileBlock>();
+			volatileBlock.LoadSpec(blockSpec.Volatile);
+		}
+
 		var blockDescription = blockObject.AddComponent<BlockDescription>();
 		blockDescription.LoadSpec(blockSpec);
 

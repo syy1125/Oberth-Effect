@@ -22,6 +22,8 @@ public class BlockSpec
 	public ResourceSpec Resource;
 	public PropulsionSpec Propulsion;
 	public TurretedWeaponSpec TurretedWeapon;
+
+	public VolatileSpec Volatile;
 }
 
 public class BlockSpecFactory : IObjectFactory
