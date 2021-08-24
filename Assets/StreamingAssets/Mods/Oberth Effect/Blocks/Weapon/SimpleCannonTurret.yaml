@@ -3,6 +3,9 @@ Enabled: true
 Info:
   ShortName: Cannon
   FullName: Simple Cannon Turret
+  Description: |
+    An auto-cannon turret that fires high damage kinetic projectiles at your enemies (or allies, I won't judge).
+    Some reports claim that recoil from the cannons is a viable form of propulsion, though the manufacturer guarantees that such reports are unsubstantiated.
 Renderers:
   - TextureId: OberthEffect/Square
 Construction:
@@ -38,7 +41,7 @@ TurretedWeapon:
     ArmorPierce: 5
     SpreadAngle: 2
     SpreadProfile: None
-    Recoil: 50
+    Recoil: 10
     MaxResourceUse:
       OberthEffect/Energy: 50
     ColliderSize: { X: 0.1, Y: 0.2 }

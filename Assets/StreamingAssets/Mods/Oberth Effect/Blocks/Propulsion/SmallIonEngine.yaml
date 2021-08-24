@@ -3,6 +3,11 @@ Enabled: true
 Info:
   ShortName: Ion Engine
   FullName: Small Ion Engine
+  Description: |
+    Ion engines expel light atoms accelerated to extreme speeds to create thrust.
+    Integrated tanks carry enough reaction mass to last for days, making the propellant supply practically infinite for most purposes. 
+    Th energy needed to accelerate propellant is rather high for the thrust it generates, though.
+    Like all engines, the ion engine needs time to ramp up its thrust, making it unsuitable for maneuvering.
 Renderers:
   - TextureId: OberthEffect/SmallIonEngine
 Construction:

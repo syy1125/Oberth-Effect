@@ -3,6 +3,7 @@ Enabled: true
 Info:
   ShortName: Ion Thruster
   FullName: Omni-Directional Ion Thruster
+  Description: An omni-directional thruster, meant for rotation control and fine maneuvers.
 Renderers:
   - TextureId: OberthEffect/OmniThruster
 Construction:

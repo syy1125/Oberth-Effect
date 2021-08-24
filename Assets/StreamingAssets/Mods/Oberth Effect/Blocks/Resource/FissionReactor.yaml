@@ -4,6 +4,9 @@ Info:
   ShortName: Fission Reactor
   FullName: Nuclear Fission Generator
   PreviewScale: 0.3
+  Description: >
+    A simple fission reactor.
+    It is bulky, but decades of safety research meant that the reactor can safely shut down even in the case of a catastrophic failure.
 Renderers:
   - TextureId: OberthEffect/FissionReactor
 Construction:
@@ -31,9 +34,9 @@ Physics:
   BoxCollider:
     Offset: { X: 0, Y: 0 }
     Size: { X: 3, Y: 3 }
-Combat: 
+Combat:
   MaxHealth: 500
   ArmorValue: 2
-Resource: 
-  FreeGenerator: 
+Resource:
+  FreeGenerator:
     OberthEffect/Energy: 500

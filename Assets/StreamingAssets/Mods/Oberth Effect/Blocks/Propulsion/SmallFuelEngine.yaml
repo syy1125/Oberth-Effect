@@ -2,7 +2,11 @@
 Enabled: true
 Info:
   ShortName: Fuel Engine
-  FullName: Small Fuen Engine
+  FullName: Small Fuel Engine
+  Description: |
+    A fuel-guzzling engine that uses chemical reaction to generate thrust.
+    The thrust force generated is much higher than its ion-based counterparts, but fuel supply often can only last a short time before running out.
+    Like all engines, the fuel engine needs time to ramp up its thrust, making it unsuitable for maneuvering.
 Renderers:
   - TextureId: OberthEffect/SmallFuelEngine
 Construction:

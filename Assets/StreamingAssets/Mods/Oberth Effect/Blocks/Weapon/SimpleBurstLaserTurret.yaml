@@ -3,6 +3,10 @@ Enabled: true
 Info:
   ShortName: Burst Laser
   FullName: Simple Burst Laser Turret
+  Description: |
+    Laser weaponry uses high energy collimated light to melt and damage components on enemy crafts.
+    The simple burst laser turret is a variant mot suited for beginner use, having balanced properties that makes it suited for a variety of roles.
+    <i>Bzzzt!</i>
 Renderers:
   - TextureId: OberthEffect/Square
 Construction:
