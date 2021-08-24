@@ -112,7 +112,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(
 			_reloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}"
+				? $"    Reload time {_reloadTime}s, reload cost per second {reloadCost}"
 				: $"    Reload time {_reloadTime}"
 		);
 

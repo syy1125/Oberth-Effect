@@ -18,9 +18,16 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private OwnerContext _ownerContext;
 	private ColorContext _colorContext;
 
+	private bool _preciseDuration;
 	private int _durationTicks;
+	private float _durationSeconds;
 	private float _reloadTime;
-	private BeamTickConfig _beamConfig;
+
+	private float _totalDamage;
+	private DamageType _damageType;
+	private float _armorPierce;
+	private float _explosionRadius;
+	private float _maxRange;
 
 	private Dictionary<string, float> _reloadResourceUse;
 
@@ -28,6 +35,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private float _resourceSatisfaction;
 
 	private int _beamTicksRemaining;
+	private float _beamSecondsRemaining;
 
 	private ContactFilter2D _raycastFilter;
 	private List<RaycastHit2D> _raycastHits;
@@ -42,20 +50,17 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void LoadSpec(BurstBeamWeaponEffectSpec spec)
 	{
-		_durationTicks = spec.PreciseDuration
-			? spec.DurationTicks
-			: Mathf.RoundToInt(spec.DurationSeconds / Time.fixedDeltaTime);
+		_preciseDuration = spec.PreciseDuration;
+		_durationTicks = spec.DurationTicks;
+		_durationSeconds = spec.DurationSeconds;
 
 		_reloadTime = spec.ReloadTime;
 
-		_beamConfig = new BeamTickConfig
-		{
-			DamagePerTick = spec.Damage / _durationTicks,
-			DamageType = spec.DamageType,
-			ArmorPierce = spec.ArmorPierce,
-			ExplosionRadius = spec.ExplosionRadius,
-			MaxRange = spec.MaxRange
-		};
+		_totalDamage = spec.Damage;
+		_damageType = spec.DamageType;
+		_armorPierce = spec.ArmorPierce;
+		_explosionRadius = spec.ExplosionRadius;
+		_maxRange = spec.MaxRange;
 
 		float beamWidth = spec.BeamWidth;
 		if (!_colorContext.ColorScheme.ResolveColor(spec.BeamColor, out Color beamColor))
@@ -102,7 +107,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	{
 		return new Dictionary<DamageType, float>
 		{
-			{ _beamConfig.DamageType, _beamConfig.DamagePerTick * _durationTicks / _reloadTime }
+			{ _damageType, _totalDamage / _reloadTime }
 		};
 	}
 
@@ -117,17 +122,20 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		builder
 			.AppendLine("  Burst Beam")
+			.Append($"    {_totalDamage:F0} {DamageTypeUtils.GetColoredText(_damageType)} damage over ")
+			.Append(_preciseDuration ? $"{_durationTicks} tick(s)" : $"{_durationSeconds} second(s)")
+			.Append(", ")
 			.AppendLine(
-				_beamConfig.DamageType == DamageType.Explosive
-					? $"    {_beamConfig.DamagePerTick:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, {_beamConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
-					: $"    {_beamConfig.DamagePerTick:F0} {DamageTypeUtils.GetColoredText(_beamConfig.DamageType)} damage, <color=\"lightblue\">{_beamConfig.ArmorPierce:0.#} AP</color>"
+				_damageType == DamageType.Explosive
+					? $"{_explosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
+					: $"<color=\"lightblue\">{_armorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Max range {_beamConfig.MaxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m");
+			.AppendLine($"    Max range {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m");
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(
 			_reloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}"
+				? $"    Reload time {_reloadTime}s, reload cost per second {reloadCost}"
 				: $"    Reload time {_reloadTime}"
 		);
 
@@ -142,11 +150,11 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			{
 				_reloadProgress -= _reloadTime;
 
-				_beamTicksRemaining = _durationTicks;
+				StartBeamDuration();
 				ExecuteEvents.ExecuteHierarchy<IWeaponEffectRpcRelay>(
 					gameObject, null,
 					(relay, _) => relay.InvokeWeaponEffectRpc(
-						this, nameof(SetBeamTicksRemaining), RpcTarget.Others, _durationTicks
+						this, nameof(StartBeamDuration), RpcTarget.Others
 					)
 				);
 			}
@@ -157,67 +165,100 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			}
 		}
 
-		if (_beamTicksRemaining-- > 0)
+		if (_preciseDuration)
 		{
-			Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange, 0f));
-			Vector3? normal = null;
-			IDamageable hitTarget = null;
-			int count = Physics2D.Raycast(
-				transform.position, transform.up, _raycastFilter, _raycastHits, _beamConfig.MaxRange
-			);
-
-			if (count > 0)
+			if (Time.fixedDeltaTime < Mathf.Epsilon)
 			{
-				_raycastHits.Sort(0, count, RaycastHitComparer.Default);
-
-				for (int i = 0; i < count; i++)
-				{
-					RaycastHit2D hit = _raycastHits[i];
-					IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
-
-					if (target != null && target.OwnerId != _ownerContext.OwnerId)
-					{
-						hitTarget = target;
-						worldEnd = hit.point;
-						normal = hit.normal;
-						break;
-					}
-				}
+				FireBeamTick(isMine, 0f);
 			}
 
-			_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
-
-			if (isMine && hitTarget != null)
+			if (_beamTicksRemaining-- > 0)
 			{
-				switch (_beamConfig.DamageType)
-				{
-					case DamageType.Kinetic:
-					case DamageType.Energy:
-						hitTarget.RequestBeamDamage(
-							_beamConfig.DamageType, _beamConfig.DamagePerTick, _beamConfig.ArmorPierce,
-							_ownerContext.OwnerId,
-							transform.position, transform.TransformPoint(new Vector3(0f, _beamConfig.MaxRange))
-						);
-						break;
-					case DamageType.Explosive:
-						ExplosionManager.Instance.CreateExplosionAt(
-							worldEnd, _beamConfig.ExplosionRadius, _beamConfig.DamagePerTick
-						);
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+				FireBeamTick(isMine, _totalDamage / _durationTicks);
+			}
+			else
+			{
+				_visual.UpdateState(false, Vector3.zero, null);
 			}
 		}
 		else
 		{
-			_visual.UpdateState(false, Vector3.zero, null);
+			float deltaTime = Time.fixedDeltaTime;
+
+			if (_beamSecondsRemaining > deltaTime)
+			{
+				FireBeamTick(isMine, _totalDamage * deltaTime / _durationSeconds);
+				_beamSecondsRemaining -= deltaTime;
+			}
+			else if (_beamSecondsRemaining > 0f)
+			{
+				FireBeamTick(isMine, _totalDamage * _beamSecondsRemaining / _durationSeconds);
+				_beamSecondsRemaining = 0f;
+			}
+			else
+			{
+				_visual.UpdateState(false, Vector3.zero, null);
+			}
 		}
 	}
 
-	public void SetBeamTicksRemaining(int ticks)
+	private void FireBeamTick(bool isMine, float damageThisTick)
 	{
-		_beamTicksRemaining = ticks;
+		Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, _maxRange, 0f));
+		Vector3? normal = null;
+		IDamageable hitTarget = null;
+		int count = Physics2D.Raycast(
+			transform.position, transform.up, _raycastFilter, _raycastHits, _maxRange
+		);
+
+		if (count > 0)
+		{
+			_raycastHits.Sort(0, count, RaycastHitComparer.Default);
+
+			for (int i = 0; i < count; i++)
+			{
+				RaycastHit2D hit = _raycastHits[i];
+				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
+
+				if (target != null && target.OwnerId != _ownerContext.OwnerId)
+				{
+					hitTarget = target;
+					worldEnd = hit.point;
+					normal = hit.normal;
+					break;
+				}
+			}
+		}
+
+		_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
+
+		if (isMine && damageThisTick > Mathf.Epsilon && hitTarget != null)
+		{
+			switch (_damageType)
+			{
+				case DamageType.Kinetic:
+				case DamageType.Energy:
+					hitTarget.RequestBeamDamage(
+						_damageType, damageThisTick, _armorPierce,
+						_ownerContext.OwnerId,
+						transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
+					);
+					break;
+				case DamageType.Explosive:
+					ExplosionManager.Instance.CreateExplosionAt(
+						worldEnd, _explosionRadius, damageThisTick
+					);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	public void StartBeamDuration()
+	{
+		if (_preciseDuration) _beamTicksRemaining = _durationTicks;
+		else _beamSecondsRemaining = _durationSeconds;
 	}
 }
 }
