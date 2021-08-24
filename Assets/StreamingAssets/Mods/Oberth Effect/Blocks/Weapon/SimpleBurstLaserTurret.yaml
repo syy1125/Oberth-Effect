@@ -40,7 +40,7 @@ TurretedWeapon:
       OberthEffect/Energy: 80
     ReloadTime: 2.5
     PreciseDuration: false
-    DurationSeconds: 0.5
+    DurationSeconds: 0.8
     MaxRange: 25
     BeamWidth: 0.1
     BeamColor: tertiary
