@@ -9,17 +9,17 @@ public static class ExplosionUtils
 {
 	public static Tuple<float, float> CombineExplosions(IEnumerable<Tuple<float, float>> explosions)
 	{
-		float damage = 0f, radius = 0f;
+		float radius = 0f, damage = 0f;
 
-		foreach ((float explosionDamage, float explosionRadius) in explosions)
+		foreach ((float explosionRadius, float explosionDamage) in explosions)
 		{
-			damage += explosionDamage;
 			radius += Mathf.Pow(explosionRadius, 3f);
+			damage += explosionDamage;
 		}
 
-		if (damage > Mathf.Epsilon && radius > Mathf.Epsilon)
+		if (radius > Mathf.Epsilon && damage > Mathf.Epsilon)
 		{
-			return new Tuple<float, float>(damage, Mathf.Pow(radius, 1f / 3f));
+			return new Tuple<float, float>(Mathf.Pow(radius, 1f / 3f), damage);
 		}
 		else
 		{
