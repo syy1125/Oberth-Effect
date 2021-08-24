@@ -14,6 +14,8 @@ Integrating the equation above over the entire explosion radius, we can see that
 
 `19 pi R^2 d / 100`
 
+When combining explosions, damage is simply added together, and radius follows the cubic root of the cubic sum of individual radii.
+
 ## Code
 
 The `d` factor should be calculated from known quantities, total damage and desired radius.
