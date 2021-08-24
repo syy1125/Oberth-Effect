@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
@@ -135,8 +136,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(
 			_reloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost per second {reloadCost}"
-				: $"    Reload time {_reloadTime}"
+				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
+				: $"    Reload time {_reloadTime}s"
 		);
 
 		return builder.ToString();

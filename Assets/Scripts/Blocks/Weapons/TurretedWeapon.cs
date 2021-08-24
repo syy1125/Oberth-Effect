@@ -8,6 +8,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
@@ -286,8 +287,17 @@ public class TurretedWeapon :
 		}
 
 		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
+		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
 		float maxDps = firepower.Values.Sum();
-		builder.Append($"  Theoretical maximum DPS {maxDps:F1}");
+
+		builder.AppendLine($"  Theoretical maximum DPS {maxDps:F1}");
+
+		Dictionary<string, float> resourcePerFirepower =
+			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);
+		string resourceCostPerFirepower = string.Join(
+			", ", VehicleResourceDatabase.Instance.FormatResourceDict(resourcePerFirepower)
+		);
+		builder.Append($"  Resource cost per unit firepower {resourceCostPerFirepower}");
 
 		return builder.ToString();
 	}
