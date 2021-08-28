@@ -13,6 +13,7 @@ public interface IFusionGeneratorRegistry : IBlockRegistry<FusionGenerator>, IEv
 public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 {
 	private Dictionary<string, float> _generationRate;
+	private Dictionary<string, float> _empty = new Dictionary<string, float>();
 	private bool _active;
 	private List<SpriteRenderer> _activeRenderers;
 
@@ -56,7 +57,7 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 
 	public IReadOnlyDictionary<string, float> GetGenerationRate()
 	{
-		return _active ? _generationRate : null;
+		return _active ? _generationRate : _empty;
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxGenerationRate()
