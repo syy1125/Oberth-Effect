@@ -53,6 +53,7 @@ public class VehicleResourceManager :
 		_resourceSatisfaction = new Dictionary<string, float>();
 
 		_fusionGenerators = new List<FusionGenerator>();
+		_fusionActive = true;
 	}
 
 	private void OnEnable()
@@ -292,6 +293,13 @@ public class VehicleResourceManager :
 	{
 		UpdateStorage();
 		_currentResources = new Dictionary<string, float>(_resourceCapacities);
+	}
+
+	public struct ResourceStatus
+	{
+		public float CurrentAmount;
+		public float StorageCapacity;
+		public float Satisfaction;
 	}
 
 	// Returns tuple (current, capacity, satisfaction), or null if the vehicle is not capable of holding the specified resource

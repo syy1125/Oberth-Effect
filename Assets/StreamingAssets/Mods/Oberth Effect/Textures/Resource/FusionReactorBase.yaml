@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/FusionReactorBase
+ImagePath: ./FusionReactorBase.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

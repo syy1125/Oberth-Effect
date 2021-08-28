@@ -1,0 +1,45 @@
+﻿BlockId: OberthEffect/FusionReactor
+Enabled: true
+Info:
+  ShortName: Fusion Reactor
+  FullName: Toroidal Nuclar Fusion Reactor
+  Description: >
+    A high-performance fusion reactor. Though more powerful than fission reactors,
+    the fusion reactor can explode violently if containment is breached by, for instance, enemy fire.
+
+    To combat this issue, fusion reactors can be shut down to prevent explosions in case of a containment failure,
+    though of course the reactor would not output any power when shut down.
+Renderers:
+  - TextureId: OberthEffect/FusionReactorBase
+    Offset: { X: 0.5, Y: 0.5 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 2, Y: 2 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: -1, Y: 1 }
+    - { X: 2, Y: 0 }
+    - { X: 2, Y: 1 }
+    - { X: 0, Y: -1 }
+    - { X: 1, Y: -1 }
+    - { X: 0, Y: 2 }
+    - { X: 1, Y: 2 }
+Physics:
+  CenterOfMass: { X: 0.5, Y: 0.5 }
+  Mass: 10
+  MomentOfInertia: 6.66667
+  BoxCollider:
+    Offset: { X: 0.5, Y: 0.5 }
+    Size: { X: 2, Y: 2 }
+Combat:
+  MaxHealth: 200
+  ArmorValue: 2
+Resource:
+  FusionGenerator:
+    GenerationRate:
+      OberthEffect/Energy: 500
+    ActivationRenderers:
+      - TextureId: OberthEffect/FusionReactorRing
+        Offset: { X: 0.5, Y: 0.5 }

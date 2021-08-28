@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -15,7 +14,7 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	private Dictionary<string, float> _generationRate;
 	private Dictionary<string, float> _empty = new Dictionary<string, float>();
 	private bool _active;
-	private List<SpriteRenderer> _activeRenderers;
+	private List<SpriteRenderer> _activationRenderers;
 
 	private void OnEnable()
 	{
@@ -30,7 +29,10 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	public void LoadSpec(FusionGeneratorSpec spec)
 	{
 		_generationRate = spec.GenerationRate;
-		_activeRenderers = RendererHelper.AttachRenderers(transform, spec.ActiveRenderers);
+		if (spec.ActivationRenderers != null)
+		{
+			_activationRenderers = RendererHelper.AttachRenderers(transform, spec.ActivationRenderers);
+		}
 	}
 
 	private void OnDisable()
@@ -46,7 +48,7 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	public void SetFusionActive(bool active)
 	{
 		_active = active;
-		foreach (SpriteRenderer spriteRenderer in _activeRenderers)
+		foreach (SpriteRenderer spriteRenderer in _activationRenderers)
 		{
 			spriteRenderer.enabled = _active;
 		}
