@@ -327,17 +327,30 @@ public static class ModLoader
 		IDeserializer deserializer, IEnumerable<GameSpecDocument> documents
 	)
 	{
-		return documents
-			.Select(
-				document => new SpecInstance<T>
-				{
-					Spec = deserializer.Deserialize<T>(
-						new YamlStreamParserAdapter(document.SpecDocument.RootNode)
-					),
-					OverrideOrder = document.OverrideOrder
-				}
-			)
-			.ToList();
+		List<SpecInstance<T>> instances = new List<SpecInstance<T>>();
+
+		foreach (GameSpecDocument document in documents)
+		{
+			try
+			{
+				var spec = deserializer.Deserialize<T>(new YamlStreamParserAdapter(document.SpecDocument.RootNode));
+				instances.Add(
+					new SpecInstance<T>
+					{
+						Spec = spec,
+						OverrideOrder = document.OverrideOrder
+					}
+				);
+			}
+			catch (YamlException e)
+			{
+				Debug.LogError(
+					$"Deserialization error {e.Message} when deserializing document\n{document.SpecDocument}"
+				);
+			}
+		}
+
+		return instances;
 	}
 
 	private static void ValidateData()
