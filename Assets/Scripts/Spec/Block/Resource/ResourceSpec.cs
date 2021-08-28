@@ -6,5 +6,6 @@ public class ResourceSpec
 {
 	public Dictionary<string, float> StorageCapacity;
 	public Dictionary<string, float> FreeGenerator;
+	public FusionGeneratorSpec FusionGenerator;
 }
 }
