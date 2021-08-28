@@ -48,7 +48,7 @@ public class ResourceDisplay : MonoBehaviour
 			foreach (KeyValuePair<string, ResourceDisplayRow> entry in _rows)
 			{
 				ResourceDisplayRow row = entry.Value;
-				Tuple<float, float, float> resourceStatus = ResourceManager.GetResourceStatus(entry.Key);
+				var resourceStatus = ResourceManager.GetResourceStatus(entry.Key);
 
 				if (resourceStatus == null)
 				{
@@ -58,10 +58,10 @@ public class ResourceDisplay : MonoBehaviour
 				}
 				else
 				{
-					float fillAmount = resourceStatus.Item1 / resourceStatus.Item2;
+					float fillAmount = resourceStatus.CurrentAmount / resourceStatus.StorageCapacity;
 					row.FillBar.fillAmount = fillAmount;
 					row.FillPercent.text = $"{fillAmount * 100:F1}%";
-					row.WarningIcon.SetActive(!Mathf.Approximately(resourceStatus.Item3, 1f));
+					row.WarningIcon.SetActive(!Mathf.Approximately(resourceStatus.Satisfaction, 1f));
 				}
 			}
 		}
