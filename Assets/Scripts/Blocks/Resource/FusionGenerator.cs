@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	private Dictionary<string, float> _generationRate;
 	private Dictionary<string, float> _empty = new Dictionary<string, float>();
 	private bool _active;
-	private List<SpriteRenderer> _activationRenderers;
+	private Transform _activeRenderersParent;
 
 	private void OnEnable()
 	{
@@ -29,9 +30,16 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	public void LoadSpec(FusionGeneratorSpec spec)
 	{
 		_generationRate = spec.GenerationRate;
+
 		if (spec.ActivationRenderers != null)
 		{
-			_activationRenderers = RendererHelper.AttachRenderers(transform, spec.ActivationRenderers);
+			_activeRenderersParent = new GameObject("ActiveRenderers").transform;
+			_activeRenderersParent.SetParent(transform);
+			_activeRenderersParent.localPosition = Vector3.back;
+			_activeRenderersParent.localRotation = Quaternion.identity;
+			_activeRenderersParent.localScale = Vector3.one;
+
+			RendererHelper.AttachRenderers(_activeRenderersParent, spec.ActivationRenderers);
 		}
 	}
 
@@ -48,10 +56,7 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	public void SetFusionActive(bool active)
 	{
 		_active = active;
-		foreach (SpriteRenderer spriteRenderer in _activationRenderers)
-		{
-			spriteRenderer.enabled = _active;
-		}
+		_activeRenderersParent.gameObject.SetActive(_active);
 
 		var volatileBlock = GetComponent<VolatileBlock>();
 		if (volatileBlock != null) volatileBlock.enabled = _active;

@@ -6,10 +6,8 @@ namespace Syy1125.OberthEffect.Spec.Unity
 {
 public static class RendererHelper
 {
-	public static List<SpriteRenderer> AttachRenderers(Transform parent, IEnumerable<RendererSpec> renderers)
+	public static void AttachRenderers(Transform parent, IEnumerable<RendererSpec> renderers)
 	{
-		List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
-
 		foreach (RendererSpec rendererSpec in renderers)
 		{
 			if (!TextureDatabase.Instance.HasTexture(rendererSpec.TextureId)) continue;
@@ -22,10 +20,7 @@ public static class RendererHelper
 
 			var spriteRenderer = rendererObject.AddComponent<SpriteRenderer>();
 			spriteRenderer.LoadSpec(rendererSpec);
-			spriteRenderers.Add(spriteRenderer);
 		}
-
-		return spriteRenderers;
 	}
 }
 }
