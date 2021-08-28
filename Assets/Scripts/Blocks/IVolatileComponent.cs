@@ -2,7 +2,7 @@
 {
 public interface IVolatileComponent
 {
-	float GetMaxExplosionStrength();
-	float GetCurrentExplosionStrength();
+	float GetRadiusMultiplier();
+	float GetDamageMultiplier();
 }
 }

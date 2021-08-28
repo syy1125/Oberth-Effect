@@ -9,30 +9,44 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 {
 	private bool _alwaysExplode;
 	private Vector2 _explosionOffset;
-	private float _constantRadius;
-	private float _constantDamage;
+	private float _maxRadius;
+	private float _maxDamage;
 
 	public void LoadSpec(VolatileSpec spec)
 	{
 		_alwaysExplode = spec.AlwaysExplode;
 		_explosionOffset = spec.ExplosionOffset;
-		_constantRadius = spec.ConstantRadius;
-		_constantDamage = spec.ConstantDamage;
+		_maxRadius = spec.MaxRadius;
+		_maxDamage = spec.MaxDamage;
 	}
 
 	public void OnDestroyedByDamage()
 	{
-		Debug.Log($"Block \"{gameObject}\" is exploding for {_constantDamage} damage.");
+		float radius = _maxRadius;
+		float damage = _maxDamage;
+
+		foreach (var component in GetComponents<Component>())
+		{
+			if (component is IVolatileComponent volatileComponent)
+			{
+				radius *= volatileComponent.GetRadiusMultiplier();
+				damage *= volatileComponent.GetDamageMultiplier();
+			}
+		}
+
+		if (Mathf.Approximately(radius, 0f) || Mathf.Approximately(damage, 0f)) return;
+
+		Debug.Log($"Block \"{gameObject}\" is exploding for {damage} damage in {radius} game unit radius.");
 		ExplosionManager.Instance.CreateExplosionAt(
-			transform.TransformPoint(_explosionOffset), _constantRadius, _constantDamage
+			transform.TransformPoint(_explosionOffset), radius, damage
 		);
 	}
 
 	public string GetTooltip()
 	{
 		return _alwaysExplode
-			? $"<color=\"red\">Volatile</color>: Explodes for {_constantDamage:F0} damage in a {_constantRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed."
-			: $"<color=\"orange\">Sometimes volatile</color>: Can explode for up to {_constantDamage:F0} damage in a {_constantRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed.";
+			? $"<color=\"red\">Volatile</color>: Explodes for {_maxDamage:F0} damage in a {_maxRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed."
+			: $"<color=\"orange\">Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {_maxRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed.";
 	}
 }
 }

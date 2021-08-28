@@ -10,7 +10,7 @@ namespace Syy1125.OberthEffect.Blocks.Resource
 public interface IFusionGeneratorRegistry : IBlockRegistry<FusionGenerator>, IEventSystemHandler
 {}
 
-public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
+public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatileComponent
 {
 	private Dictionary<string, float> _generationRate;
 	private Dictionary<string, float> _empty = new Dictionary<string, float>();
@@ -57,9 +57,16 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock
 	{
 		_active = active;
 		_activeRenderersParent.gameObject.SetActive(_active);
+	}
 
-		var volatileBlock = GetComponent<VolatileBlock>();
-		if (volatileBlock != null) volatileBlock.enabled = _active;
+	public float GetRadiusMultiplier()
+	{
+		return _active ? 1f : 0f;
+	}
+
+	public float GetDamageMultiplier()
+	{
+		return _active ? 1f : 0f;
 	}
 
 	public IReadOnlyDictionary<string, float> GetGenerationRate()

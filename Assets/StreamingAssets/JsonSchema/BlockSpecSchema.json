@@ -300,6 +300,27 @@
                     }
                 }
             }
+        },
+        "Volatile": {
+            "type": "object",
+            "properties": {
+                "AlwaysExplode": {
+                    "type": "boolean",
+                    "description": "Informative only. Describes if the block will always explode at the described strength."
+                },
+                "ExplosionOffset": {
+                    "$ref": "Vector2Schema.json",
+                    "description": "Center of the explosion in local space."
+                },
+                "MaxRadius": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "MaxDamage": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            }
         }
     }
 }
