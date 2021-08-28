@@ -19,12 +19,6 @@
                 "Description": {
                     "type": "string",
                     "description": "Additional description of the block, can be either flavour text or explanation of the block's mechanics."
-                },
-                "PreviewScale": {
-                    "type": "number",
-                    "minimum": 0,
-                    "default": 1,
-                    "description": "Scaling factor of the block as it shows up in preview in the block palette. Useful for fitting larger blocks inside their respective frames."
                 }
             }
         },
@@ -130,6 +124,20 @@
                     "type": "object",
                     "patternProperties": {
                         "^.*$": { "type": "number" }
+                    }
+                },
+                "FusionGenerator": {
+                    "type": "object",
+                    "properties": {
+                        "GenerationRate": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^.*$": { "type": "number" }
+                            }
+                        },
+                        "ActivationRenderers": {
+                            "$ref": "RendererSpecArraySchema.json"
+                        }
                     }
                 }
             }

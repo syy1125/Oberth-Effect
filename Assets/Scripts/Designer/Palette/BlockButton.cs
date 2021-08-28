@@ -1,4 +1,5 @@
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Spec;
@@ -77,11 +78,22 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		Vector3 previewPosition = previewTransform.position;
 		previewPosition.z = 0;
 		previewTransform.position = previewPosition;
+
 		Vector3 previewScale = previewTransform.lossyScale;
+		BlockBounds bounds = new BlockBounds(
+			instance.Spec.Construction.BoundsMin, instance.Spec.Construction.BoundsMax
+		);
+		float blockSize = Mathf.Max(bounds.Size.x, bounds.Size.y);
 		previewTransform.localScale = new Vector3(
-			0.8f * instance.Spec.Info.PreviewScale / previewScale.x,
-			0.8f * instance.Spec.Info.PreviewScale / previewScale.y,
+			0.8f / blockSize / previewScale.x,
+			0.8f / blockSize / previewScale.y,
 			1f
+		);
+		
+		// Transform.Translate does not seem to work properly when localScale was just updated. 
+		previewTransform.Translate(
+			previewTransform.TransformVector(new Vector3(0.5f, 0.5f) - (Vector3) bounds.Center), 
+			Space.World
 		);
 
 		previewObject.AddComponent<OverrideOrderTooltip>().OverrideOrder = instance.OverrideOrder;

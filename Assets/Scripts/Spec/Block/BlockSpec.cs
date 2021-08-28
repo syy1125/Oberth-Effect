@@ -37,14 +37,7 @@ public class BlockSpecFactory : IObjectFactory
 
 	public object Create(Type type)
 	{
-		if (type == typeof(InfoSpec))
-		{
-			return new InfoSpec
-			{
-				PreviewScale = 1
-			};
-		}
-		else if (type == typeof(RendererSpec))
+		if (type == typeof(RendererSpec))
 		{
 			return new RendererSpec
 			{

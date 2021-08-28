@@ -3,7 +3,6 @@ Enabled: true
 Info:
   ShortName: Fission Reactor
   FullName: Nuclear Fission Generator
-  PreviewScale: 0.3
   Description: >
     A simple fission reactor.
     It is bulky, but decades of safety research meant that the reactor can safely shut down even in the case of a catastrophic failure.
