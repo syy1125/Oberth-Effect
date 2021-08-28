@@ -60,8 +60,14 @@ public static class BlockBuilder
 
 		if (blockSpec.Resource?.FreeGenerator != null)
 		{
-			var freeGenerator = blockObject.AddComponent<FreeResourceGeneratorBlock>();
-			freeGenerator.LoadSpec(blockSpec.Resource?.FreeGenerator);
+			var freeGenerator = blockObject.AddComponent<FreeResourceGenerator>();
+			freeGenerator.LoadSpec(blockSpec.Resource.FreeGenerator);
+		}
+
+		if (blockSpec.Resource?.FusionGenerator != null)
+		{
+			var fusionGenerator = blockObject.AddComponent<FusionGenerator>();
+			fusionGenerator.LoadSpec(blockSpec.Resource.FusionGenerator);
 		}
 
 		if (blockSpec.Propulsion?.Engine != null)

@@ -39,6 +39,8 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private float _armor;
 
 	private float _health;
+	// Tracks destruction state to prevent destruction effects from being triggered multiple times.
+	private bool _destroyed;
 	public float HealthFraction => Mathf.Clamp01(_health / _maxHealth);
 	public bool IsDamaged => _maxHealth - _health > Mathf.Epsilon;
 
@@ -52,6 +54,11 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	{
 		_core = GetComponent<BlockCore>();
 		_ownerContext = GetComponentInParent<OwnerContext>();
+	}
+
+	private void OnEnable()
+	{
+		_destroyed = false;
 	}
 
 	public void LoadSpec(BlockSpec spec)
@@ -101,13 +108,18 @@ public class BlockHealth : MonoBehaviour, IDamageable
 			damage -= effectiveHealth;
 			damageExhausted = false;
 
-			ExecuteEvents.Execute<IBlockDestructionEffect>(
-				gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
-			);
-			ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
-				gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(_core)
-			);
-			// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore
+			if (!_destroyed)
+			{
+				_destroyed = true;
+
+				ExecuteEvents.Execute<IBlockDestructionEffect>(
+					gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
+				);
+				ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
+					gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(_core)
+				);
+				// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore}
+			}
 		}
 	}
 

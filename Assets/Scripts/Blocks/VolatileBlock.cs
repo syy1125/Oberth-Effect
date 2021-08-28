@@ -22,6 +22,7 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 	public void OnDestroyedByDamage()
 	{
+		Debug.Log($"Block \"{gameObject}\" is exploding for {_constantDamage} damage.");
 		ExplosionManager.Instance.CreateExplosionAt(
 			transform.TransformPoint(_explosionOffset), _constantRadius, _constantDamage
 		);

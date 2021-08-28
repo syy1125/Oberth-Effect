@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public class FreeResourceGeneratorBlock : MonoBehaviour, IResourceGeneratorBlock, ITooltipProvider
+public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ITooltipProvider
 {
 	private Dictionary<string, float> _generationRate;
 

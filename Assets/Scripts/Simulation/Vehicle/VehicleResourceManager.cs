@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
@@ -15,8 +16,11 @@ public class VehicleResourceManager :
 	IPunObservable,
 	IResourceStorageBlockRegistry,
 	IResourceGeneratorBlockRegistry,
-	IResourceConsumerBlockRegistry
+	IResourceConsumerBlockRegistry,
+	IFusionGeneratorRegistry
 {
+	public InputActionReference ToggleFusionAction;
+
 	private VehicleCore _core;
 
 	private List<ResourceStorageBlock> _storageBlocks;
@@ -29,6 +33,9 @@ public class VehicleResourceManager :
 	private List<IResourceConsumerBlock> _consumerBlocks;
 	private Dictionary<string, float> _resourceRequestRate;
 	private Dictionary<string, float> _resourceSatisfaction;
+
+	private List<FusionGenerator> _fusionGenerators;
+	private bool _fusionActive;
 
 	private void Awake()
 	{
@@ -44,11 +51,23 @@ public class VehicleResourceManager :
 		_consumerBlocks = new List<IResourceConsumerBlock>();
 		_resourceRequestRate = new Dictionary<string, float>();
 		_resourceSatisfaction = new Dictionary<string, float>();
+
+		_fusionGenerators = new List<FusionGenerator>();
+	}
+
+	private void OnEnable()
+	{
+		ToggleFusionAction.action.Enable();
 	}
 
 	private void Start()
 	{
 		_core.AfterLoad(FillStorage);
+	}
+
+	private void OnDisable()
+	{
+		ToggleFusionAction.action.Disable();
 	}
 
 	#region Resource Block Access
@@ -97,6 +116,34 @@ public class VehicleResourceManager :
 		if (!success)
 		{
 			Debug.LogError($"Failed to remove resource consumer block {block}");
+		}
+	}
+
+	public void RegisterBlock(FusionGenerator block)
+	{
+		_fusionGenerators.Add(block);
+		block.SetFusionActive(_fusionActive);
+	}
+
+	public void UnregisterBlock(FusionGenerator block)
+	{
+		bool success = _fusionGenerators.Remove(block);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove fusion generator {block}");
+		}
+	}
+
+	#endregion
+
+	#region Input Handlers
+
+	private void HandleToggleFusion(InputAction.CallbackContext context)
+	{
+		_fusionActive = !_fusionActive;
+		foreach (FusionGenerator generator in _fusionGenerators)
+		{
+			generator.SetFusionActive(_fusionActive);
 		}
 	}
 
