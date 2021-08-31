@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a855bc7aa10129c49bc594bae495dcac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ToggleFusionAction: {fileID: 7902095982474355681, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!114 &8509090524700470639
 MonoBehaviour:
   m_ObjectHideFlags: 0
