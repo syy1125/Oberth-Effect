@@ -41,6 +41,10 @@ public class DesignerConfig : MonoBehaviour
 	public Toggle EngineTranslationToggle;
 	public Toggle EngineRotationToggle;
 
+	[Header("Thruster Config")]
+	public Toggle ThrusterTranslationToggle;
+	public Toggle ThrusterRotationToggle;
+
 	[Header("Weapon Config")]
 	public SwitchSelect WeaponGroupSelect;
 
@@ -61,8 +65,7 @@ public class DesignerConfig : MonoBehaviour
 	{
 		EnableActions();
 		AttachVehicleConfigListeners();
-		AttachEngineConfigListeners();
-		AttachWeaponConfigListeners();
+		AttachBlockConfigListeners();
 
 		_selectedLocation = null;
 		ShowVehicleConfig();
@@ -85,14 +88,14 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.AddListener(SetTertiaryColor);
 	}
 
-	private void AttachEngineConfigListeners()
+	private void AttachBlockConfigListeners()
 	{
 		EngineTranslationToggle.onValueChanged.AddListener(SetEngineRespondToTranslation);
 		EngineRotationToggle.onValueChanged.AddListener(SetEngineRespondToRotation);
-	}
 
-	private void AttachWeaponConfigListeners()
-	{
+		ThrusterTranslationToggle.onValueChanged.AddListener(SetThrusterRespondToTranslation);
+		ThrusterRotationToggle.onValueChanged.AddListener(SetThrusterRespondToRotation);
+
 		WeaponGroupSelect.OnValueChanged.AddListener(SetTurretedWeaponBindingGroup);
 	}
 
@@ -106,8 +109,7 @@ public class DesignerConfig : MonoBehaviour
 	{
 		DisableActions();
 		DetachVehicleConfigListeners();
-		DetachEngineConfigListeners();
-		DetachWeaponConfigListeners();
+		DetachBlockConfigListeners();
 
 		_selectedLocation = null;
 		SelectionIndicator.gameObject.SetActive(false);
@@ -130,14 +132,14 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.RemoveListener(SetTertiaryColor);
 	}
 
-	private void DetachEngineConfigListeners()
+	private void DetachBlockConfigListeners()
 	{
 		EngineTranslationToggle.onValueChanged.RemoveListener(SetEngineRespondToTranslation);
 		EngineRotationToggle.onValueChanged.RemoveListener(SetEngineRespondToRotation);
-	}
 
-	private void DetachWeaponConfigListeners()
-	{
+		ThrusterTranslationToggle.onValueChanged.RemoveListener(SetThrusterRespondToTranslation);
+		ThrusterRotationToggle.onValueChanged.RemoveListener(SetThrusterRespondToRotation);
+
 		WeaponGroupSelect.OnValueChanged.RemoveListener(SetTurretedWeaponBindingGroup);
 	}
 
@@ -216,6 +218,10 @@ public class DesignerConfig : MonoBehaviour
 		SetEngineConfigEnabled(engine != null);
 		if (engine != null) UpdateEngineConfigElements(engine);
 
+		OmniThruster omniThruster = blockObject.GetComponent<OmniThruster>();
+		SetThrusterConfigEnabled(omniThruster != null);
+		if (omniThruster != null) UpdateOmniThrusterConfigElements(omniThruster);
+
 		TurretedWeapon turretedWeapon = blockObject.GetComponent<TurretedWeapon>();
 		SetWeaponConfigEnabled(turretedWeapon != null);
 		if (turretedWeapon != null) UpdateTurretedWeaponConfigElements(turretedWeapon);
@@ -232,6 +238,8 @@ public class DesignerConfig : MonoBehaviour
 		SelectionIndicator.gameObject.SetActive(true);
 	}
 
+	#region Config Display
+
 	private void SetVehicleConfigEnabled(bool configEnabled)
 	{
 		ControlModeSelect.gameObject.SetActive(configEnabled);
@@ -247,11 +255,6 @@ public class DesignerConfig : MonoBehaviour
 		EngineRotationToggle.gameObject.SetActive(configEnabled);
 	}
 
-	private void SetWeaponConfigEnabled(bool configEnabled)
-	{
-		WeaponGroupSelect.gameObject.SetActive(configEnabled);
-	}
-
 	private void UpdateEngineConfigElements(LinearEngine engine)
 	{
 		_updatingElements = true;
@@ -262,6 +265,27 @@ public class DesignerConfig : MonoBehaviour
 		_updatingElements = false;
 	}
 
+	private void SetThrusterConfigEnabled(bool configEnabled)
+	{
+		ThrusterTranslationToggle.gameObject.SetActive(configEnabled);
+		ThrusterRotationToggle.gameObject.SetActive(configEnabled);
+	}
+
+	private void UpdateOmniThrusterConfigElements(OmniThruster omniThruster)
+	{
+		_updatingElements = true;
+
+		ThrusterTranslationToggle.isOn = omniThruster.RespondToTranslation;
+		ThrusterRotationToggle.isOn = omniThruster.RespondToRotation;
+
+		_updatingElements = false;
+	}
+
+	private void SetWeaponConfigEnabled(bool configEnabled)
+	{
+		WeaponGroupSelect.gameObject.SetActive(configEnabled);
+	}
+
 	private void UpdateTurretedWeaponConfigElements(TurretedWeapon turretedWeapon)
 	{
 		_updatingElements = true;
@@ -270,6 +294,8 @@ public class DesignerConfig : MonoBehaviour
 
 		_updatingElements = false;
 	}
+
+	#endregion
 
 	#region Vehicle Config Event Listeners
 
@@ -346,7 +372,7 @@ public class DesignerConfig : MonoBehaviour
 		}
 	}
 
-	#region Engine Config Event Listeners
+	#region Block Config Event Listeners
 
 	private void SetEngineRespondToTranslation(bool engineTranslation)
 	{
@@ -358,9 +384,15 @@ public class DesignerConfig : MonoBehaviour
 		UpdateBlockConfig<LinearEngine>(linearEngine => linearEngine.RespondToRotation = engineRotation);
 	}
 
-	#endregion
+	private void SetThrusterRespondToTranslation(bool thrusterTranslation)
+	{
+		UpdateBlockConfig<OmniThruster>(omniThruster => omniThruster.RespondToTranslation = thrusterTranslation);
+	}
 
-	#region Weapon Config Event Listeners
+	private void SetThrusterRespondToRotation(bool thrusterRotation)
+	{
+		UpdateBlockConfig<OmniThruster>(omniThruster => omniThruster.RespondToRotation = thrusterRotation);
+	}
 
 	private void SetTurretedWeaponBindingGroup(int bindingGroupIndex)
 	{

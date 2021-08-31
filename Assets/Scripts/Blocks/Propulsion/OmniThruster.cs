@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Database;
@@ -7,8 +9,15 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
+public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigComponent
 {
+	public const string CONFIG_KEY = "OmniThruster";
+
+	[NonSerialized]
+	public bool RespondToTranslation;
+	[NonSerialized]
+	public bool RespondToRotation;
+
 	private Transform _upParticleRoot;
 	private ParticleSystem[] _upParticles;
 	private Transform _downParticleRoot;
@@ -98,11 +107,48 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider
 		}
 	}
 
+	public JObject ExportConfig()
+	{
+		return new JObject
+		{
+			{ "RespondToTranslation", new JValue(RespondToTranslation) },
+			{ "RespondToRotation", new JValue(RespondToRotation) }
+		};
+	}
+
+	public void InitDefaultConfig()
+	{
+		RespondToTranslation = true;
+		RespondToRotation = true;
+	}
+
+	public void ImportConfig(JObject config)
+	{
+		if (config.ContainsKey("RespondToTranslation"))
+		{
+			RespondToTranslation = config["RespondToTranslation"].Value<bool>();
+		}
+
+		if (config.ContainsKey("RespondToRotation"))
+		{
+			RespondToRotation = config["RespondToRotation"].Value<bool>();
+		}
+	}
+
 	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
-		Vector2 rawResponse = _forwardBackResponse * translateCommand.y
-		                      + _strafeResponse * translateCommand.x
-		                      + _rotateResponse * rotateCommand;
+		Vector2 rawResponse = Vector2.zero;
+		
+		if (RespondToTranslation)
+		{
+			rawResponse += _forwardBackResponse * translateCommand.y + _strafeResponse * translateCommand.x;
+		}
+
+		if (RespondToRotation)
+		{
+			rawResponse += _rotateResponse * rotateCommand;
+		}
+		
 		_response = new Vector2(
 			Mathf.Clamp(rawResponse.x, -1f, 1f),
 			Mathf.Clamp(rawResponse.y, -1f, 1f)
