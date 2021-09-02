@@ -396,18 +396,10 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Move",
+                    "name": "Pan",
                     "type": "Value",
                     "id": "3d58a2d9-2e1e-4f58-9c0f-aff97a115f75",
                     "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "Click",
-                    "type": "PassThrough",
-                    "id": "ae0c2b32-1a17-4c55-92e2-8a816c6d32f7",
-                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
@@ -424,6 +416,14 @@
                     "type": "Value",
                     "id": "4fdc603a-ab79-4038-bf36-2c3e78e72295",
                     "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Place Block",
+                    "type": "PassThrough",
+                    "id": "ae0c2b32-1a17-4c55-92e2-8a816c6d32f7",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
@@ -509,17 +509,6 @@
                 },
                 {
                     "name": "",
-                    "id": "fdfc6b15-a1af-4041-8cea-7818f9ad4b52",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Drag",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "b592a347-682e-49c3-afe5-9d81fd130b48",
                     "path": "<Pointer>/delta",
                     "interactions": "",
@@ -536,7 +525,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "Pan",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -547,7 +536,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "Pan",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -558,7 +547,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "Pan",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -569,7 +558,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "Pan",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -580,7 +569,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "Pan",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -591,7 +580,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Click",
+                    "action": "Place Block",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -602,18 +591,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Click",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cb563e06-e63e-43ab-9c4d-53abb9e9969b",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "Scale(factor=0.01)",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Zoom",
+                    "action": "Place Block",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -680,6 +658,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Debug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fdfc6b15-a1af-4041-8cea-7818f9ad4b52",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Drag",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cb563e06-e63e-43ab-9c4d-53abb9e9969b",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.01)",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

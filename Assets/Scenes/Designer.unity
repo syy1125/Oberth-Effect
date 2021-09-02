@@ -9730,6 +9730,7 @@ GameObject:
   - component: {fileID: 1543857977}
   - component: {fileID: 1543857979}
   - component: {fileID: 1543857978}
+  - component: {fileID: 1543857982}
   - component: {fileID: 1543857980}
   - component: {fileID: 1543857981}
   m_Layer: 0
@@ -9771,6 +9772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AreaMask: {fileID: 140859144}
   BlockTooltipDelay: 0.4
+  VehicleMove: {fileID: 1543857982}
   Palette: {fileID: 860709245}
   Builder: {fileID: 1599521575}
   Indicators: {fileID: 1286245955}
@@ -9779,9 +9781,6 @@ MonoBehaviour:
   Analyzer: {fileID: 135774809}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ClickAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  ScrollAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   DebugAction: {fileID: 2021502119364431650, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!156049354 &1543857979
 Grid:
@@ -9824,6 +9823,22 @@ MonoBehaviour:
   Body: {fileID: 0}
   Designer: {fileID: 1543857978}
   Builder: {fileID: 1599521575}
+--- !u!114 &1543857982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543857976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 092b5c68e76c4d6aba0baa33b5bb5587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AreaMask: {fileID: 140859144}
+  PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ZoomAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!1 &1555553495 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 355799197082249561, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}

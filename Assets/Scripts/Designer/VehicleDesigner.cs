@@ -22,6 +22,7 @@ public class VehicleDesigner : MonoBehaviour
 	public float BlockTooltipDelay = 0.2f;
 
 	[Header("Components")]
+	public DesignerVehicleMove VehicleMove;
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
 	public BlockIndicators Indicators;
@@ -31,13 +32,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
-
 	public InputActionReference ClickAction;
-	public InputActionReference ScrollAction;
-
-	public InputActionReference PanAction;
-	public InputActionReference DragAction;
-
 	public InputActionReference DebugAction;
 
 	#endregion
@@ -68,10 +63,7 @@ public class VehicleDesigner : MonoBehaviour
 	private bool _prevDragging;
 	private Vector2Int? _prevClick;
 
-	private float _zoomScale;
 	private Vector2Int? _clickPosition;
-	private Vector3? _dragHandle;
-	private bool Dragging => _dragHandle != null;
 	public Vector2Int HoverPositionInt { get; private set; }
 	private Vector2Int? _tooltipLocation;
 
@@ -99,9 +91,6 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		RotateAction.action.Enable();
 		ClickAction.action.Enable();
-		ScrollAction.action.Enable();
-		PanAction.action.Enable();
-		DragAction.action.Enable();
 		DebugAction.action.Enable();
 	}
 
@@ -120,9 +109,6 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		RotateAction.action.Disable();
 		ClickAction.action.Disable();
-		ScrollAction.action.Disable();
-		PanAction.action.Disable();
-		DragAction.action.Disable();
 		DebugAction.action.Disable();
 	}
 
@@ -132,9 +118,6 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
-
-		_zoomScale = 1;
-		transform.localScale = Vector3.one * _zoomScale;
 
 		if (VehicleSelection.SerializedVehicle != null)
 		{
@@ -163,15 +146,13 @@ public class VehicleDesigner : MonoBehaviour
 	private void Update()
 	{
 		UpdateMousePosition();
-		UpdateDragState();
-		UpdateScroll();
 		UpdateClick();
 
 		if (
 			_paletteSelectionChanged
 			|| HoverPositionInt != _prevHoverPosition
 			|| AreaMask.Hovering != _prevHovering
-			|| Dragging != _prevDragging
+			|| VehicleMove.Dragging != _prevDragging
 		)
 		{
 			UpdatePreview();
@@ -179,7 +160,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdateTooltip();
 		}
 
-		if (Dragging != _prevDragging || _paletteSelectionChanged)
+		if (VehicleMove.Dragging != _prevDragging || _paletteSelectionChanged)
 		{
 			UpdateCursor();
 		}
@@ -189,9 +170,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdatePaletteUse();
 		}
 
-		UpdateDragPosition();
-
-		_prevDragging = Dragging;
+		_prevDragging = VehicleMove.Dragging;
 		_prevHovering = AreaMask.Hovering;
 		_paletteSelectionChanged = false;
 		_prevHoverPosition = HoverPositionInt;
@@ -207,42 +186,9 @@ public class VehicleDesigner : MonoBehaviour
 		HoverPositionInt = Vector2Int.RoundToInt(localPosition);
 	}
 
-	private void UpdateDragState()
-	{
-		bool dragging = AreaMask.Hovering && DragAction.action.ReadValue<float>() > 0.5f;
-
-		if (dragging && !_prevDragging)
-		{
-			_dragHandle = GetLocalMousePosition();
-		}
-		else if (!dragging)
-		{
-			_dragHandle = null;
-		}
-	}
-
-	private void UpdateScroll()
-	{
-		var scroll = ScrollAction.action.ReadValue<float>();
-		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-
-		if (AreaMask.Hovering && Mathf.Abs(scroll) > Mathf.Epsilon)
-		{
-			Vector3 oldLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
-
-			_zoomScale = Mathf.Clamp(_zoomScale * Mathf.Exp(scroll / 10f), 0.1f, 10f);
-			transform.localScale = Vector3.one * _zoomScale;
-
-			Vector3 newLocalPosition = transform.InverseTransformPoint(mouseWorldPosition);
-			Vector3 worldDelta = transform.TransformVector(newLocalPosition - oldLocalPosition);
-
-			transform.position += worldDelta;
-		}
-	}
-
 	private void UpdateClick()
 	{
-		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !Dragging && AreaMask.Hovering;
+		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !VehicleMove.Dragging && AreaMask.Hovering;
 
 		if (click)
 		{
@@ -279,7 +225,7 @@ public class VehicleDesigner : MonoBehaviour
 					_paletteActionPreview = BlockBuilder.BuildFromSpec(
 						blockSelection.BlockSpec, transform, HoverPositionInt, _rotation
 					);
-					_paletteActionPreview.SetActive(AreaMask.Hovering && !Dragging);
+					_paletteActionPreview.SetActive(AreaMask.Hovering && !VehicleMove.Dragging);
 
 					foreach (SpriteRenderer sprite in _paletteActionPreview.GetComponentsInChildren<SpriteRenderer>())
 					{
@@ -293,9 +239,9 @@ public class VehicleDesigner : MonoBehaviour
 					_paletteActionPreview.transform.localPosition = new Vector3(HoverPositionInt.x, HoverPositionInt.y);
 					_paletteActionPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(_rotation);
 
-					if (AreaMask.Hovering != _prevHovering || Dragging != _prevDragging)
+					if (AreaMask.Hovering != _prevHovering || VehicleMove.Dragging != _prevDragging)
 					{
-						_paletteActionPreview.SetActive(AreaMask.Hovering && !Dragging);
+						_paletteActionPreview.SetActive(AreaMask.Hovering && !VehicleMove.Dragging);
 					}
 				}
 
@@ -305,7 +251,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateCursor()
 	{
-		if (Dragging)
+		if (VehicleMove.Dragging)
 		{
 			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Drag;
 		}
@@ -381,7 +327,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateTooltip()
 	{
-		if (AreaMask.Hovering && Palette.CurrentSelection is CursorSelection && !Dragging)
+		if (AreaMask.Hovering && Palette.CurrentSelection is CursorSelection && !VehicleMove.Dragging)
 		{
 			_tooltipLocation = HoverPositionInt;
 		}
@@ -408,21 +354,6 @@ public class VehicleDesigner : MonoBehaviour
 	private void UpdateDisconnections()
 	{
 		Indicators.SetDisconnections(Builder.GetDisconnectedPositions());
-	}
-
-	private void UpdateDragPosition()
-	{
-		if (_dragHandle != null)
-		{
-			var dragHandlePosition = _dragHandle.Value;
-
-			Vector3 mousePosition = GetLocalMousePosition();
-			transform.position += transform.TransformVector(mousePosition - dragHandlePosition);
-		}
-		else
-		{
-			transform.Translate(Time.deltaTime * -4f * (Vector3) PanAction.action.ReadValue<Vector2>(), Space.Self);
-		}
 	}
 
 	#endregion
