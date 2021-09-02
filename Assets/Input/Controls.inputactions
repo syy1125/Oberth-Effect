@@ -420,7 +420,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Place Block",
+                    "name": "Use Palette",
                     "type": "PassThrough",
                     "id": "ae0c2b32-1a17-4c55-92e2-8a816c6d32f7",
                     "expectedControlType": "Button",
@@ -580,7 +580,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Place Block",
+                    "action": "Use Palette",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -591,7 +591,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Place Block",
+                    "action": "Use Palette",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
