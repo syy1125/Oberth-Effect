@@ -4,6 +4,8 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Designer.Palette;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +19,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
+	public SpriteRenderer EraserIndicator;
 
 	[Header("Config")]
 	public float BlockTooltipDelay = 0.2f;
@@ -118,6 +121,7 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
+		EraserIndicator.gameObject.SetActive(false);
 
 		if (VehicleSelection.SerializedVehicle != null)
 		{
@@ -205,6 +209,16 @@ public class VehicleDesigner : MonoBehaviour
 		switch (Palette.CurrentSelection)
 		{
 			case CursorSelection _:
+				if (_paletteActionPreview != null)
+				{
+					Destroy(_paletteActionPreview);
+					_paletteActionPreview = null;
+				}
+
+				EraserIndicator.gameObject.SetActive(false);
+
+				break;
+
 			case EraserSelection _:
 				if (_paletteActionPreview != null)
 				{
@@ -212,8 +226,26 @@ public class VehicleDesigner : MonoBehaviour
 					_paletteActionPreview = null;
 				}
 
-				break;
+				VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(HoverPositionInt);
+				if (blockInstance != null)
+				{
+					BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+					BlockBounds blockBounds = new BlockBounds(
+						blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax
+					);
 
+					Vector2 center = blockInstance.Position + blockBounds.Center - new Vector2(0.5f, 0.5f);
+					EraserIndicator.transform.localPosition = center;
+					EraserIndicator.size = blockBounds.Size;
+
+					EraserIndicator.gameObject.SetActive(true);
+				}
+				else
+				{
+					EraserIndicator.gameObject.SetActive(false);
+				}
+
+				break;
 			case BlockSelection blockSelection:
 				if (_paletteSelectionChanged)
 				{
@@ -244,6 +276,8 @@ public class VehicleDesigner : MonoBehaviour
 						_paletteActionPreview.SetActive(AreaMask.Hovering && !GridMove.Dragging);
 					}
 				}
+
+				EraserIndicator.gameObject.SetActive(false);
 
 				break;
 		}
@@ -291,6 +325,7 @@ public class VehicleDesigner : MonoBehaviour
 					{
 						Builder.RemoveBlock(position);
 						UpdateDisconnections();
+						EraserIndicator.gameObject.SetActive(false);
 					}
 					catch (EmptyBlockError)
 					{
