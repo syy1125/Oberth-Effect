@@ -22,7 +22,7 @@ public class VehicleDesigner : MonoBehaviour
 	public float BlockTooltipDelay = 0.2f;
 
 	[Header("Components")]
-	public DesignerVehicleMove VehicleMove;
+	public DesignerGridMove GridMove;
 	public BlockPalette Palette;
 	public VehicleBuilder Builder;
 	public BlockIndicators Indicators;
@@ -152,7 +152,7 @@ public class VehicleDesigner : MonoBehaviour
 			_paletteSelectionChanged
 			|| HoverPositionInt != _prevHoverPosition
 			|| AreaMask.Hovering != _prevHovering
-			|| VehicleMove.Dragging != _prevDragging
+			|| GridMove.Dragging != _prevDragging
 		)
 		{
 			UpdatePreview();
@@ -160,7 +160,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdateTooltip();
 		}
 
-		if (VehicleMove.Dragging != _prevDragging || _paletteSelectionChanged)
+		if (GridMove.Dragging != _prevDragging || _paletteSelectionChanged)
 		{
 			UpdateCursor();
 		}
@@ -170,7 +170,7 @@ public class VehicleDesigner : MonoBehaviour
 			UpdatePaletteUse();
 		}
 
-		_prevDragging = VehicleMove.Dragging;
+		_prevDragging = GridMove.Dragging;
 		_prevHovering = AreaMask.Hovering;
 		_paletteSelectionChanged = false;
 		_prevHoverPosition = HoverPositionInt;
@@ -188,7 +188,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateClick()
 	{
-		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !VehicleMove.Dragging && AreaMask.Hovering;
+		bool click = ClickAction.action.ReadValue<float>() > 0.5f && !GridMove.Dragging && AreaMask.Hovering;
 
 		if (click)
 		{
@@ -225,7 +225,7 @@ public class VehicleDesigner : MonoBehaviour
 					_paletteActionPreview = BlockBuilder.BuildFromSpec(
 						blockSelection.BlockSpec, transform, HoverPositionInt, _rotation
 					);
-					_paletteActionPreview.SetActive(AreaMask.Hovering && !VehicleMove.Dragging);
+					_paletteActionPreview.SetActive(AreaMask.Hovering && !GridMove.Dragging);
 
 					foreach (SpriteRenderer sprite in _paletteActionPreview.GetComponentsInChildren<SpriteRenderer>())
 					{
@@ -239,9 +239,9 @@ public class VehicleDesigner : MonoBehaviour
 					_paletteActionPreview.transform.localPosition = new Vector3(HoverPositionInt.x, HoverPositionInt.y);
 					_paletteActionPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(_rotation);
 
-					if (AreaMask.Hovering != _prevHovering || VehicleMove.Dragging != _prevDragging)
+					if (AreaMask.Hovering != _prevHovering || GridMove.Dragging != _prevDragging)
 					{
-						_paletteActionPreview.SetActive(AreaMask.Hovering && !VehicleMove.Dragging);
+						_paletteActionPreview.SetActive(AreaMask.Hovering && !GridMove.Dragging);
 					}
 				}
 
@@ -251,7 +251,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateCursor()
 	{
-		if (VehicleMove.Dragging)
+		if (GridMove.Dragging)
 		{
 			CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Drag;
 		}
@@ -327,7 +327,7 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void UpdateTooltip()
 	{
-		if (AreaMask.Hovering && Palette.CurrentSelection is CursorSelection && !VehicleMove.Dragging)
+		if (AreaMask.Hovering && Palette.CurrentSelection is CursorSelection && !GridMove.Dragging)
 		{
 			_tooltipLocation = HoverPositionInt;
 		}

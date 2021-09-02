@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Designer
 {
-public class DesignerVehicleMove : MonoBehaviour
+public class DesignerGridMove : MonoBehaviour
 {
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
