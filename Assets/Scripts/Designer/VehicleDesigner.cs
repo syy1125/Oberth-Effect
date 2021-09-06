@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Designer.Palette;
 using UnityEngine;
@@ -16,9 +14,6 @@ public class VehicleDesigner : MonoBehaviour
 
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
-
-	[Header("Config")]
-	public float BlockTooltipDelay = 0.2f;
 
 	[Header("Components")]
 	public DesignerGridMove GridMove;
