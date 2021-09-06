@@ -86,7 +86,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Toggle Fusion Reactors",
+                    "name": "Toggle Volatile Reactors",
                     "type": "Button",
                     "id": "50096128-dd23-4d9e-bec3-c85a24a1b17a",
                     "expectedControlType": "Button",
@@ -377,7 +377,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Toggle Fusion Reactors",
+                    "action": "Toggle Volatile Reactors",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
