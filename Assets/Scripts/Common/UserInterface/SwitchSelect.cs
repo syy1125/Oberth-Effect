@@ -79,6 +79,12 @@ public class SwitchSelect : MonoBehaviour
 		OnValueChanged.Invoke(Value);
 	}
 
+	public void SetInteractable(bool interactable)
+	{
+		Left.interactable = interactable;
+		Right.interactable = interactable;
+	}
+
 	public void SetOptions(string[] options)
 	{
 		Options = options;
