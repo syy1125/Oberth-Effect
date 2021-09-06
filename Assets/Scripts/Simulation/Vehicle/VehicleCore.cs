@@ -13,11 +13,14 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
-public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBlockCoreRegistry, IBlockLifecycleListener
+public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBlockCoreRegistry, IBlockLifecycleListener,
+	IControlCoreRegistry
 {
 	private Rigidbody2D _body;
 
 	private Dictionary<Vector2Int, GameObject> _posToBlock;
+
+	private List<ControlCore> _controlCores;
 
 	private bool _loaded;
 	private UnityEvent _loadEvent;
@@ -28,6 +31,7 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 		_body = GetComponent<Rigidbody2D>();
 
 		_posToBlock = new Dictionary<Vector2Int, GameObject>();
+		_controlCores = new List<ControlCore>();
 	}
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -187,6 +191,25 @@ public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBloc
 	}
 
 	#endregion
+
+	public void RegisterBlock(ControlCore block)
+	{
+		_controlCores.Add(block);
+	}
+
+	public void UnregisterBlock(ControlCore block)
+	{
+		bool success = _controlCores.Remove(block);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove control core block {block}");
+		}
+
+		if (_controlCores.Count <= 0)
+		{
+			Debug.Log($"{gameObject}: All control cores destroyed");
+		}
+	}
 
 	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;
 

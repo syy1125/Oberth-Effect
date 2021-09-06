@@ -52,6 +52,11 @@ public static class BlockBuilder
 		var blockHealth = blockObject.AddComponent<BlockHealth>();
 		blockHealth.LoadSpec(blockSpec);
 
+		if (blockSpec.ControlCore != null)
+		{
+			blockObject.AddComponent<ControlCore>();
+		}
+
 		if (blockSpec.Resource?.StorageCapacity != null)
 		{
 			var resourceStorage = blockObject.AddComponent<ResourceStorageBlock>();
