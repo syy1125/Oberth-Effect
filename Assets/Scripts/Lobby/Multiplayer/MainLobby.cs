@@ -4,6 +4,7 @@ using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
@@ -257,8 +258,12 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			new RoomOptions
 			{
 				CustomRoomProperties = new Hashtable
-					{ { PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" } },
-				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME }
+				{
+					{ PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" },
+					{ PropertyKeys.GAME_MODE, (int) GameMode.Assault },
+					{ PropertyKeys.FRIENDLY_FIRE_MODE, (int) FriendlyFireMode.Team }
+				},
+				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME, PropertyKeys.GAME_MODE }
 			}
 		);
 	}

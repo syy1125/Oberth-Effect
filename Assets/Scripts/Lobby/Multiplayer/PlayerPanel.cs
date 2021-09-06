@@ -29,7 +29,7 @@ public class PlayerPanel : MonoBehaviour
 	public void UpdateProps(Hashtable props)
 	{
 		bool vehicleChanged = props.ContainsKey(PropertyKeys.VEHICLE_NAME);
-		bool readyChanged = props.ContainsKey(PropertyKeys.READY);
+		bool readyChanged = props.ContainsKey(PropertyKeys.PLAYER_READY);
 
 		if (vehicleChanged)
 		{

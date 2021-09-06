@@ -9,7 +9,7 @@ public static class PhotonHelper
 	public static void ClearPhotonPlayerProperties()
 	{
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PropertyKeys.VEHICLE_NAME, null }, { PropertyKeys.READY, false } }
+			new Hashtable { { PropertyKeys.VEHICLE_NAME, null }, { PropertyKeys.PLAYER_READY, false } }
 		);
 	}
 
@@ -18,7 +18,7 @@ public static class PhotonHelper
 		return player.IsMasterClient
 			? player.CustomProperties.TryGetValue(PropertyKeys.VEHICLE_NAME, out object vehicleName)
 			  && vehicleName != null
-			: player.CustomProperties.TryGetValue(PropertyKeys.READY, out object ready)
+			: player.CustomProperties.TryGetValue(PropertyKeys.PLAYER_READY, out object ready)
 			  && (bool) ready;
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
@@ -30,6 +32,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public VehicleList VehicleList;
 
 	public Button SelectVehicleButton;
+
+	[Space]
+	public SwitchSelect GameModeSelect;
+
+	[Space]
 	public Button ReadyButton;
 	public Tooltip ReadyTooltip;
 	public Button StartGameButton;
@@ -40,7 +47,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private SortedDictionary<int, GameObject> _playerPanels;
 	private string _selectedVehicleName;
-	private bool _ready;
 
 	private void Awake()
 	{
@@ -61,7 +67,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
-		_ready = false;
+		GameModeSelect.SetOptions(EnumUtils.FormatNames(typeof(GameMode)));
+		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
+
 		SelectVehicleButton.interactable = true;
 		ReadyButton.interactable = false;
 		ReadyTooltip.enabled = true;
@@ -96,6 +104,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
+		GameModeSelect.OnValueChanged.RemoveListener(SetGameMode);
+
 		SelectVehicleButton.onClick.RemoveListener(OpenVehicleSelection);
 		ReadyButton.onClick.RemoveListener(ToggleReady);
 		StartGameButton.onClick.RemoveListener(StartGame);
@@ -108,11 +118,21 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		_playerPanels.Clear();
 	}
 
+	#region Photon Callbacks
+
 	public override void OnRoomPropertiesUpdate(Hashtable nextProps)
 	{
 		if (nextProps.ContainsKey(PropertyKeys.ROOM_NAME))
 		{
 			RoomName.text = RoomNameInput.text = (string) nextProps[PropertyKeys.ROOM_NAME];
+		}
+
+		if (nextProps.ContainsKey(PropertyKeys.GAME_MODE))
+		{
+			if (!PhotonNetwork.LocalPlayer.IsMasterClient)
+			{
+				UpdateClientControls();
+			}
 		}
 	}
 
@@ -121,6 +141,27 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		PhotonNetwork.CurrentRoom.SetCustomProperties(
 			new Hashtable { { PropertyKeys.ROOM_NAME, roomName } }
 		);
+	}
+
+	private void SetGameMode(int gameMode)
+	{
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable { { PropertyKeys.GAME_MODE, gameMode } }
+		);
+		UnreadyPlayers();
+	}
+
+	private static void UnreadyPlayers()
+	{
+		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+		{
+			if (!player.IsMasterClient)
+			{
+				player.SetCustomProperties(
+					new Hashtable { { PropertyKeys.PLAYER_READY, false } }
+				);
+			}
+		}
 	}
 
 	public override void OnPlayerEnteredRoom(Player player)
@@ -159,12 +200,22 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		{
 			UpdateMasterControls();
 		}
+		else
+		{
+			UpdateClientControls();
+		}
 	}
+
+	#endregion
+
+	#region Update Controls
 
 	private void UseMasterControls()
 	{
 		RoomName.gameObject.SetActive(false);
 		RoomNameInput.gameObject.SetActive(true);
+
+		GameModeSelect.SetInteractable(true);
 
 		ReadyButton.gameObject.SetActive(false);
 		StartGameButton.gameObject.SetActive(true);
@@ -175,26 +226,36 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomName.gameObject.SetActive(true);
 		RoomNameInput.gameObject.SetActive(false);
 
+		GameModeSelect.SetInteractable(false);
+
 		ReadyButton.gameObject.SetActive(true);
 		StartGameButton.gameObject.SetActive(false);
 	}
 
 	private void UpdateMasterControls()
 	{
-		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
-
 		SelectVehicleButton.interactable = true;
+
+		GameModeSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+
+		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
 		StartGameButton.interactable = allReady;
 		StartGameTooltip.enabled = !allReady;
 	}
 
 	private void UpdateClientControls()
 	{
-		SelectVehicleButton.interactable = !_ready;
+		bool ready = PhotonHelper.IsPlayerReady(PhotonNetwork.LocalPlayer);
+		SelectVehicleButton.interactable = !ready;
+
+		GameModeSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+
 		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
-		ReadyButton.GetComponentInChildren<Text>().text = _ready ? "Unready" : "Ready";
+		ReadyButton.GetComponentInChildren<Text>().text = ready ? "Unready" : "Ready";
 		ReadyTooltip.enabled = VehicleSelection.SerializedVehicle == null;
 	}
+
+	#endregion
 
 	private void OpenVehicleSelection()
 	{
@@ -233,10 +294,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void ToggleReady()
 	{
-		_ready = !_ready;
-		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.READY, _ready } });
-
-		UpdateClientControls();
+		bool ready = PhotonHelper.IsPlayerReady(PhotonNetwork.LocalPlayer);
+		PhotonNetwork.LocalPlayer.SetCustomProperties(
+			new Hashtable { { PropertyKeys.PLAYER_READY, !ready } },
+			new Hashtable { { PropertyKeys.PLAYER_READY, ready } }
+		);
 	}
 
 	public void LeaveRoom()
