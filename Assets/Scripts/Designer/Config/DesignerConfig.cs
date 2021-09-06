@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Weapons;
@@ -145,10 +144,18 @@ public class DesignerConfig : MonoBehaviour
 
 	private void HandleSelect(InputAction.CallbackContext context)
 	{
-		if (AreaMask.Hovering && Builder.HasBlockAt(Designer.HoverPositionInt))
+		if (AreaMask.Hovering)
 		{
-			_selectedLocation = Designer.HoverPositionInt;
-			ShowBlockConfig();
+			if (Builder.HasBlockAt(Designer.HoverPositionInt))
+			{
+				_selectedLocation = Designer.HoverPositionInt;
+				ShowBlockConfig();
+			}
+			else
+			{
+				_selectedLocation = null;
+				ShowVehicleConfig();
+			}
 		}
 	}
 
