@@ -13,6 +13,8 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
@@ -52,6 +54,10 @@ public class VehicleAnalyzer : MonoBehaviour
 	public VehicleDesigner Designer;
 	public VehicleBuilder Builder;
 	public BlockIndicators Indicators;
+	public DesignerAreaMask AreaMask;
+
+	[Header("Input")]
+	public InputActionReference SelectBlockAction;
 
 	[Header("Vehicle Output")]
 	public RectTransform OutputParent;
@@ -93,6 +99,8 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void OnEnable()
 	{
+		SelectBlockAction.action.performed += HandleClick;
+
 		ForceModeButton.onClick.AddListener(SetForceMode);
 		AccelerationModeButton.onClick.AddListener(SetAccelerationMode);
 		StartAnalysis();
@@ -106,6 +114,8 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void OnDisable()
 	{
+		SelectBlockAction.action.performed -= HandleClick;
+
 		ForceModeButton.onClick.RemoveListener(SetForceMode);
 		AccelerationModeButton.onClick.RemoveListener(SetAccelerationMode);
 
@@ -466,7 +476,15 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	#region Analyze Block
 
-	public void SetTargetBlockPosition(Vector2Int position)
+	private void HandleClick(InputAction.CallbackContext context)
+	{
+		if (context.interaction is TapInteraction && AreaMask.Hovering)
+		{
+			SetTargetBlockPosition(Designer.HoverPositionInt);
+		}
+	}
+
+	private void SetTargetBlockPosition(Vector2Int position)
 	{
 		if (Builder.HasBlockAt(position))
 		{

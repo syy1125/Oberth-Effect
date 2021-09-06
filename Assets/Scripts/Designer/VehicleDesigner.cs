@@ -29,6 +29,8 @@ public class VehicleDesigner : MonoBehaviour
 	public VehicleAnalyzer Analyzer;
 
 	[Header("Input Actions")]
+	public InputActionAsset InputActions;
+	public string DesignerActionMapName;
 	public InputActionReference DebugAction;
 
 	#endregion
@@ -68,7 +70,8 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnEnable()
 	{
-		DebugAction.action.Enable();
+		InputActions.FindActionMap(DesignerActionMapName, true).Enable();
+
 		DebugAction.action.performed += HandleDebug;
 
 		UpdateCursor();
@@ -77,7 +80,8 @@ public class VehicleDesigner : MonoBehaviour
 	private void OnDisable()
 	{
 		DebugAction.action.performed -= HandleDebug;
-		DebugAction.action.Disable();
+
+		InputActions.FindActionMap(DesignerActionMapName, true).Disable();
 
 		CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Default;
 	}

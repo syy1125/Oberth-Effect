@@ -388,14 +388,6 @@
             "id": "1097402c-c5f8-4c99-b98d-2791a7fce1a6",
             "actions": [
                 {
-                    "name": "Help",
-                    "type": "Button",
-                    "id": "185adcd9-d521-4dea-b352-d5c159fb2628",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Pan",
                     "type": "Value",
                     "id": "3d58a2d9-2e1e-4f58-9c0f-aff97a115f75",
@@ -465,7 +457,7 @@
                     "id": "e90c5747-acde-4016-a7f4-2801ce5d4465",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Tap"
                 },
                 {
                     "name": "Deselect Block",
@@ -603,17 +595,6 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Cursor",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8fdc07e4-c8e6-4a23-b09a-394e70f98345",
-                    "path": "<Keyboard>/f1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Help",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -773,6 +754,14 @@
                     "name": "Menu",
                     "type": "Button",
                     "id": "01c8ca68-1b67-40bd-bd4b-e2ead73a77e8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Help",
+                    "type": "Button",
+                    "id": "64d7a808-3441-4075-8d64-fddfa9a1e0ef",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -1205,6 +1194,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "be8d15e3-2340-40a4-bf08-fa05a89d9a2b",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Help",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -24,20 +24,6 @@ public class DesignerGridMove : MonoBehaviour
 		_mainCamera = Camera.main;
 	}
 
-	private void OnEnable()
-	{
-		PanAction.action.Enable();
-		DragAction.action.Enable();
-		ZoomAction.action.Enable();
-	}
-
-	private void OnDisable()
-	{
-		PanAction.action.Disable();
-		DragAction.action.Disable();
-		ZoomAction.action.Disable();
-	}
-
 	public Vector2 GetLocalMousePosition()
 	{
 		return transform.InverseTransformPoint(

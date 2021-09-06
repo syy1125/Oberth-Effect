@@ -43,9 +43,7 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	private void OnEnable()
 	{
-		RotateAction.action.Enable();
 		RotateAction.action.performed += HandleRotate;
-		UsePaletteAction.action.Enable();
 
 		Palette.OnSelectionChanged += OnPaletteSelectionChanged;
 
@@ -63,8 +61,6 @@ public class DesignerPaletteUse : MonoBehaviour
 	private void OnDisable()
 	{
 		RotateAction.action.performed -= HandleRotate;
-		RotateAction.action.Disable();
-		UsePaletteAction.action.Disable();
 
 		Palette.OnSelectionChanged -= OnPaletteSelectionChanged;
 	}

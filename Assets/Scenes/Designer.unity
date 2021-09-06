@@ -982,6 +982,8 @@ MonoBehaviour:
   Designer: {fileID: 1543857978}
   Builder: {fileID: 1599521575}
   Indicators: {fileID: 1286245955}
+  AreaMask: {fileID: 140859144}
+  SelectBlockAction: {fileID: 6555300659516732026, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   OutputParent: {fileID: 344598103}
   StatusOutput: {fileID: 1160463455}
   PhysicsOutput: {fileID: 2060839463}
@@ -2231,7 +2233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MenuAction: {fileID: -5594253008046837943, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  HelpAction: {fileID: -4216587520235264204, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  HelpAction: {fileID: -232718271166268664, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   Designer: {fileID: 1543857978}
   Backdrop: {fileID: 431343212}
   BaseMenu: {fileID: 1680178968}
@@ -2240,30 +2242,6 @@ MonoBehaviour:
   OnMenuOpen:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1543857978}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 860709245}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1299714563}
         m_TargetAssemblyTypeName: Syy1125.OberthEffect.Common.UserInterface.TooltipControl,
           Common
@@ -2277,9 +2255,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnMenuClosed:
-    m_PersistentCalls:
-      m_Calls:
       - m_Target: {fileID: 1543857978}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
@@ -2290,9 +2265,12 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 860709245}
+  OnMenuClosed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1543857978}
         m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -4645,7 +4623,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -4681,7 +4659,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -9802,6 +9780,8 @@ MonoBehaviour:
   Config: {fileID: 782769141}
   CursorTexture: {fileID: 1543857980}
   Analyzer: {fileID: 135774809}
+  InputActions: {fileID: -944628639613478452, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  DesignerActionMapName: Designer
   DebugAction: {fileID: 2021502119364431650, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!156049354 &1543857979
 Grid:
@@ -13405,7 +13385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -13441,7 +13421,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -14204,7 +14184,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -14240,7 +14220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 640825888031912444, guid: b880b3e21ff196244ac1604805cd2e4f, type: 3}
       propertyPath: m_AnchoredPosition.y

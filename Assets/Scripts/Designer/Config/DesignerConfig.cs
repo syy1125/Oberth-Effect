@@ -73,8 +73,6 @@ public class DesignerConfig : MonoBehaviour
 
 	private void EnableActions()
 	{
-		SelectBlockAction.action.Enable();
-		DeselectAction.action.Enable();
 		SelectBlockAction.action.performed += HandleSelect;
 		DeselectAction.action.performed += HandleDeselect;
 	}
@@ -119,8 +117,6 @@ public class DesignerConfig : MonoBehaviour
 	{
 		SelectBlockAction.action.performed -= HandleSelect;
 		DeselectAction.action.performed -= HandleDeselect;
-		SelectBlockAction.action.Disable();
-		DeselectAction.action.Disable();
 	}
 
 	private void DetachVehicleConfigListeners()
