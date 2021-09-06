@@ -6536,7 +6536,7 @@ GameObject:
   - component: {fileID: 860709247}
   - component: {fileID: 860709246}
   m_Layer: 5
-  m_Name: Content
+  m_Name: Palette Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9733,6 +9733,7 @@ GameObject:
   - component: {fileID: 1543857979}
   - component: {fileID: 1543857978}
   - component: {fileID: 1543857982}
+  - component: {fileID: 1543857983}
   - component: {fileID: 1543857980}
   - component: {fileID: 1543857981}
   m_Layer: 0
@@ -9840,6 +9841,24 @@ MonoBehaviour:
   PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ZoomAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+--- !u!114 &1543857983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543857976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e91bfbe91e43bbb19e82b50502fa6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Designer: {fileID: 1543857978}
+  Builder: {fileID: 1599521575}
+  PaletteUse: {fileID: 860709247}
+  GridMove: {fileID: 1543857982}
+  AreaMask: {fileID: 140859144}
+  BlockTooltipDelay: 0.5
 --- !u!1 &1555553495 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 355799197082249561, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}

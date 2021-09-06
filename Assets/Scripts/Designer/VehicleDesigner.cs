@@ -35,31 +35,11 @@ public class VehicleDesigner : MonoBehaviour
 
 	#endregion
 
-	#region Public Properties
-
-	public VehicleBlueprint Blueprint { get; private set; }
-
-	#endregion
-
-	#region Private Components
-
 	private Camera _mainCamera;
-
-	#endregion
-
-	#region Private States
-
-	// Change detection
-	private bool _prevHovering;
-	private Vector2Int? _prevHoverPosition;
-	private Vector2Int? _prevTooltipLocation;
-	private bool _prevDragging;
+	public VehicleBlueprint Blueprint { get; private set; }
 
 	public Vector2 HoverPosition { get; private set; }
 	public Vector2Int HoverPositionInt { get; private set; }
-	private Vector2Int? _tooltipLocation;
-
-	#endregion
 
 	private void Awake()
 	{
@@ -112,20 +92,6 @@ public class VehicleDesigner : MonoBehaviour
 	{
 		UpdateMousePosition();
 		UpdateCursor();
-
-		if (
-			HoverPositionInt != _prevHoverPosition
-			|| AreaMask.Hovering != _prevHovering
-			|| GridMove.Dragging != _prevDragging
-		)
-		{
-			UpdateTooltip();
-		}
-
-		_prevDragging = GridMove.Dragging;
-		_prevHovering = AreaMask.Hovering;
-		_prevHoverPosition = HoverPositionInt;
-		_prevTooltipLocation = _tooltipLocation;
 	}
 
 	private void UpdateMousePosition()
@@ -152,50 +118,7 @@ public class VehicleDesigner : MonoBehaviour
 		}
 	}
 
-	private void UpdateTooltip()
-	{
-		if (AreaMask.Hovering && PaletteUse.CurrentSelection is CursorSelection && !GridMove.Dragging)
-		{
-			_tooltipLocation = HoverPositionInt;
-		}
-		else
-		{
-			_tooltipLocation = null;
-		}
-
-		if (_tooltipLocation != _prevTooltipLocation)
-		{
-			if (_prevTooltipLocation != null)
-			{
-				CancelInvoke(nameof(ShowBlockTooltip));
-				HideTooltip();
-			}
-
-			if (_tooltipLocation != null)
-			{
-				Invoke(nameof(ShowBlockTooltip), BlockTooltipDelay);
-			}
-		}
-	}
-
 	#endregion
-
-	private void ShowBlockTooltip()
-	{
-		if (!isActiveAndEnabled) return;
-		if (_tooltipLocation == null || TooltipControl.Instance == null) return;
-		GameObject go = Builder.GetBlockObjectAt(_tooltipLocation.Value);
-		if (go == null) return;
-
-		TooltipControl.Instance.SetTooltip(TooltipProviderUtils.CombineTooltips(go));
-	}
-
-	private void HideTooltip()
-	{
-		if (TooltipControl.Instance == null) return;
-
-		TooltipControl.Instance.SetTooltip(null);
-	}
 
 	public List<string> GetVehicleErrors()
 	{

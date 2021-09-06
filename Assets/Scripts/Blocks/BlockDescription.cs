@@ -9,7 +9,7 @@ public class BlockDescription : MonoBehaviour, ITooltipProvider
 
 	public void LoadSpec(BlockSpec spec)
 	{
-		_description = spec.Info.Description;
+		_description = spec.Info.Description?.Trim();
 	}
 
 	public string GetTooltip()
