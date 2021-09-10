@@ -45,7 +45,6 @@ public class SimulationMenu : MonoBehaviourPunCallbacks
 
 	public override void OnLeftRoom()
 	{
-		PhotonHelper.ClearPhotonPlayerProperties();
 		SceneManager.LoadScene(ReturnScene);
 	}
 }

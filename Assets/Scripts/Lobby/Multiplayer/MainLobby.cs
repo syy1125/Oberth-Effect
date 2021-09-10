@@ -89,6 +89,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	public override void OnJoinedLobby()
 	{
 		_rooms.Clear();
+		PhotonHelper.ClearPhotonPlayerProperties();
+
 		RenderRoomList();
 		UpdateControls();
 	}

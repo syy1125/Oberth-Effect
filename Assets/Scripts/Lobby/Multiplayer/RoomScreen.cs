@@ -310,8 +310,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		VehicleSelection.SerializedVehicle = null;
 
-		PhotonHelper.ClearPhotonPlayerProperties();
-
 		gameObject.SetActive(false);
 		LobbyScreen.SetActive(true);
 	}
