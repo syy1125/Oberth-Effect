@@ -2085,6 +2085,12 @@ MonoBehaviour:
   BaseMenu: {fileID: 1680178968}
   Notification: {fileID: 1169963775}
   HelpScreen: {fileID: 490843313}
+  TestDriveScene:
+    sceneAsset: {fileID: 102900000, guid: 5d4fb7245d9a8304b84d56ef2fd63b8f, type: 3}
+    scenePath: Assets/Scenes/Test Drive Room.unity
+  MainMenuScene:
+    sceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
+    scenePath: Assets/Scenes/Main Menu.unity
   OnMenuOpen:
     m_PersistentCalls:
       m_Calls:

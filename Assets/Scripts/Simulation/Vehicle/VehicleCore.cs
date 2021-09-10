@@ -13,8 +13,9 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
-public class VehicleCore : MonoBehaviourPun, IPunInstantiateMagicCallback, IBlockCoreRegistry, IBlockLifecycleListener,
-	IControlCoreRegistry
+public class VehicleCore :
+	MonoBehaviourPun, IPunInstantiateMagicCallback,
+	IBlockCoreRegistry, IBlockLifecycleListener, IControlCoreRegistry
 {
 	private Rigidbody2D _body;
 

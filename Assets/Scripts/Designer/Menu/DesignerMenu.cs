@@ -21,6 +21,9 @@ public class DesignerMenu : MonoBehaviour
 	public NotificationDialog Notification;
 	public GameObject HelpScreen;
 
+	public SceneReference TestDriveScene;
+	public SceneReference MainMenuScene;
+
 	[Header("Events")]
 	public UnityEvent OnMenuOpen;
 	public UnityEvent OnMenuClosed;
@@ -155,12 +158,12 @@ public class DesignerMenu : MonoBehaviour
 	public void ToTestDrive()
 	{
 		VehicleSelection.SerializedVehicle = Designer.ExportVehicle();
-		SceneManager.LoadScene("Scenes/Test Drive Room");
+		SceneManager.LoadScene(TestDriveScene);
 	}
 
 	public void ToMainMenu()
 	{
-		SceneManager.LoadScene("Scenes/Main Menu");
+		SceneManager.LoadScene(MainMenuScene);
 	}
 }
 }
