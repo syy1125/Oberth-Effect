@@ -185,7 +185,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab83c95b618b44d449b38130751571dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Mass: 5
+  GravitationalParameter: 0
+  ParentBody: {fileID: 0}
+  Eccentricity: 0
+  SemiLatusRectum: 0
+  ArgumentOfPeriapsis: 0
+  TrueAnomalyAtEpoch: 0
 --- !u!114 &652958441
 MonoBehaviour:
   m_ObjectHideFlags: 0
