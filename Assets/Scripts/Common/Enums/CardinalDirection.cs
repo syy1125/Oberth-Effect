@@ -1,4 +1,4 @@
-﻿namespace Syy1125.OberthEffect.Common
+﻿namespace Syy1125.OberthEffect.Common.Enums
 {
 public enum CardinalDirection
 {
