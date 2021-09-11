@@ -134,6 +134,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 				UpdateClientControls();
 			}
 		}
+
+		if (nextProps.ContainsKey(PropertyKeys.TEAM_COLORS))
+		{
+			UpdatePlayerColors();
+		}
 	}
 
 	private void SetRoomName(string roomName)
@@ -190,11 +195,16 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		Destroy(_playerPanels[player.ActorNumber]);
 		_playerPanels.Remove(player.ActorNumber);
+		
+		foreach (GameObject panel in _playerPanels.Values)
+		{
+			panel.GetComponent<PlayerPanel>().UpdateKickButton();
+		}
 	}
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable props)
 	{
-		_playerPanels[targetPlayer.ActorNumber].GetComponent<PlayerPanel>().UpdateProps(props);
+		_playerPanels[targetPlayer.ActorNumber].GetComponent<PlayerPanel>().UpdatePlayerProps(props);
 
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
@@ -256,6 +266,14 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	}
 
 	#endregion
+
+	private void UpdatePlayerColors()
+	{
+		foreach (GameObject panel in _playerPanels.Values)
+		{
+			panel.GetComponent<PlayerPanel>().UpdateNameDisplay();
+		}
+	}
 
 	private void OpenVehicleSelection()
 	{

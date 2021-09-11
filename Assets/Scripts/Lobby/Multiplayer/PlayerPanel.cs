@@ -1,5 +1,7 @@
+using System;
 using System.Text;
 using ExitGames.Client.Photon;
+using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
@@ -12,6 +14,8 @@ public class PlayerPanel : MonoBehaviour
 	public Text PlayerName;
 	public Text PlayerStatus;
 
+	public Button KickButton;
+
 	public Image ReadyDisplay;
 	public Color ReadyColor;
 	public float FadeDuration;
@@ -22,23 +26,30 @@ public class PlayerPanel : MonoBehaviour
 	{
 		_player = player;
 
-		UpdateReadyDisplay();
+		UpdateNameDisplay();
 		UpdateVehicleDisplay();
+		UpdateKickButton();
 	}
 
-	public void UpdateProps(Hashtable props)
+	private void Start()
+	{
+		KickButton.onClick.AddListener(KickPlayer);
+	}
+
+	public void UpdatePlayerProps(Hashtable props)
 	{
 		bool vehicleChanged = props.ContainsKey(PropertyKeys.VEHICLE_NAME);
 		bool readyChanged = props.ContainsKey(PropertyKeys.PLAYER_READY);
+		bool teamChanged = props.ContainsKey(PropertyKeys.TEAM_INDEX);
 
 		if (vehicleChanged)
 		{
 			UpdateVehicleDisplay();
 		}
 
-		if (vehicleChanged || readyChanged)
+		if (vehicleChanged || readyChanged || teamChanged)
 		{
-			UpdateReadyDisplay();
+			UpdateNameDisplay();
 		}
 	}
 
@@ -49,7 +60,7 @@ public class PlayerPanel : MonoBehaviour
 		PlayerStatus.text = vehicleName == null ? "Pondering what to use" : (string) vehicleName;
 	}
 
-	private void UpdateReadyDisplay()
+	public void UpdateNameDisplay()
 	{
 		bool ready = PhotonHelper.IsPlayerReady(_player);
 
@@ -58,10 +69,22 @@ public class PlayerPanel : MonoBehaviour
 		if (!ready) playerNameBuilder.Append(" (Not Ready)");
 		PlayerName.text = playerNameBuilder.ToString();
 
+		PlayerName.color = PhotonHelper.GetPlayerTeamColor(_player);
+
 		ReadyDisplay.CrossFadeColor(
 			ready ? ReadyColor : Color.white,
 			FadeDuration, true, true
 		);
+	}
+
+	public void UpdateKickButton()
+	{
+		KickButton.gameObject.SetActive(PhotonNetwork.LocalPlayer.IsMasterClient && !_player.IsLocal);
+	}
+
+	private void KickPlayer()
+	{
+		PhotonNetwork.CloseConnection(_player);
 	}
 }
 }

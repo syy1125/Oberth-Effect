@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.UserInterface;
@@ -10,6 +11,7 @@ using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
@@ -30,6 +32,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	[Header("Room Screen")]
 	public GameObject RoomScreen;
 
+	private Random _rng;
+
 	private Dictionary<string, RoomInfo> _rooms;
 	private Dictionary<string, GameObject> _roomPanels;
 	private string _selectedRoom;
@@ -37,6 +41,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	private void Awake()
 	{
 		PhotonNetwork.AutomaticallySyncScene = true;
+
+		_rng = new Random();
 
 		_rooms = new Dictionary<string, RoomInfo>();
 		_roomPanels = new Dictionary<string, GameObject>();
@@ -89,7 +95,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	public override void OnJoinedLobby()
 	{
 		_rooms.Clear();
-		PhotonHelper.ClearPhotonPlayerProperties();
+		PhotonHelper.ResetPhotonPlayerProperties();
 
 		RenderRoomList();
 		UpdateControls();
@@ -263,7 +269,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 				{
 					{ PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" },
 					{ PropertyKeys.GAME_MODE, (int) GameMode.Assault },
-					{ PropertyKeys.FRIENDLY_FIRE_MODE, (int) FriendlyFireMode.Team }
+					{ PropertyKeys.FRIENDLY_FIRE_MODE, (int) FriendlyFireMode.Team },
+					{ PropertyKeys.TEAM_COLORS, new[] { "FF0000", "0000FF" } }
 				},
 				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME, PropertyKeys.GAME_MODE }
 			}
@@ -277,8 +284,50 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	public override void OnJoinedRoom()
 	{
+		GameMode roomGameMode = (GameMode) (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		if (roomGameMode.IsTeamMode())
+		{
+			BalancedJoinTeam();
+		}
+
 		gameObject.SetActive(false);
 		RoomScreen.SetActive(true);
+	}
+
+	private void BalancedJoinTeam()
+	{
+		List<int> playerCount = new List<int>();
+		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+		{
+			int teamIndex = (int) player.CustomProperties[PropertyKeys.TEAM_INDEX];
+			if (teamIndex < 0) continue;
+
+			while (teamIndex >= playerCount.Count)
+			{
+				playerCount.Add(0);
+			}
+
+			playerCount[teamIndex]++;
+		}
+
+		if (playerCount.Count == 0)
+		{
+			PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, 0 } });
+			return;
+		}
+
+		int minCount = playerCount.Min();
+		List<int> joinTeams = new List<int>();
+		for (int i = 0; i < playerCount.Count; i++)
+		{
+			if (playerCount[i] == minCount)
+			{
+				joinTeams.Add(i);
+			}
+		}
+
+		int joinTeam = joinTeams[_rng.Next(joinTeams.Count)];
+		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, joinTeam } });
 	}
 
 	public void ToMainMenu()

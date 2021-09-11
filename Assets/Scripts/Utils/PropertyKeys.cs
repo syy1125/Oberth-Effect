@@ -16,9 +16,11 @@ public static class PropertyKeys
 	public const string ROOM_NAME = "n";
 	public const string GAME_MODE = "gm";
 	public const string FRIENDLY_FIRE_MODE = "ff";
+	public const string TEAM_COLORS = "tc";
 
 	// Photon player custom properties
 	public const string VEHICLE_NAME = "vn";
 	public const string PLAYER_READY = "r";
+	public const string TEAM_INDEX = "t";
 }
 }

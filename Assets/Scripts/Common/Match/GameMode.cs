@@ -19,5 +19,15 @@ public static class GameModeExtensions
 			_ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
 		};
 	}
+
+	public static bool IsTeamMode(this GameMode mode)
+	{
+		return mode switch
+		{
+			GameMode.Assault => true,
+			GameMode.TeamDeathmatch => true,
+			_ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+		};
+	}
 }
 }
