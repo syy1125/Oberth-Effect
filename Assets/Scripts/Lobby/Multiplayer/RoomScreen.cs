@@ -195,9 +195,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		Destroy(_playerPanels[player.ActorNumber]);
 		_playerPanels.Remove(player.ActorNumber);
-		
+
 		foreach (GameObject panel in _playerPanels.Values)
 		{
+			panel.GetComponent<PlayerPanel>().UpdateNameDisplay();
 			panel.GetComponent<PlayerPanel>().UpdateKickButton();
 		}
 	}
