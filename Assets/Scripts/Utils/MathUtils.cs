@@ -7,6 +7,11 @@ namespace Syy1125.OberthEffect.Utils
 {
 public static class MathUtils
 {
+	public static float Atanh(float value)
+	{
+		return Mathf.Log((1 + value) / (1 - value)) / 2;
+	}
+	
 	public static float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
 	{
 		return Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(oldMin, oldMax, value));
