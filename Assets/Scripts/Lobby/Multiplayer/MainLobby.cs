@@ -296,17 +296,17 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	private void BalancedJoinTeam()
 	{
+		int teamCount = ((string[]) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.TEAM_COLORS]).Length;
 		List<int> playerCount = new List<int>();
+		for (int i = 0; i < teamCount; i++)
+		{
+			playerCount.Add(0);
+		}
+
 		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
 		{
 			int teamIndex = (int) player.CustomProperties[PropertyKeys.TEAM_INDEX];
-			if (teamIndex < 0) continue;
-
-			while (teamIndex >= playerCount.Count)
-			{
-				playerCount.Add(0);
-			}
-
+			if (teamIndex < 0 || teamIndex >= teamCount) continue;
 			playerCount[teamIndex]++;
 		}
 
