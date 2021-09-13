@@ -10,8 +10,8 @@ using UnityEngine.InputSystem;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropulsionBlockRegistry,
-	IPunInstantiateMagicCallback
+public class VehicleThrusterControl : MonoBehaviourPun,
+	IPunObservable, IPunInstantiateMagicCallback, IPropulsionBlockRegistry, IVehicleDeathListener
 {
 	#region Unity Fields
 
@@ -97,6 +97,19 @@ public class VehicleThrusterControl : MonoBehaviourPun, IPunObservable, IPropuls
 		CycleControlModeAction.action.Disable();
 		ToggleFuelPropulsionAction.action.performed -= ToggleFuelPropulsion;
 		ToggleFuelPropulsionAction.action.Disable();
+	}
+
+	#endregion
+
+	#region Vehicle Lifecycle
+
+	public void OnVehicleDeath()
+	{
+		_translateCommand = Vector2.zero;
+		_rotateCommand = 0f;
+		SendCommands();
+
+		enabled = false;
 	}
 
 	#endregion

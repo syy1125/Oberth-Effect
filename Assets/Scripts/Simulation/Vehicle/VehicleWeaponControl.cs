@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
-public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable
+public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
 {
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;
@@ -32,6 +32,16 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		FireAction1.action.Disable();
 		FireAction2.action.Disable();
+	}
+
+	public void OnVehicleDeath()
+	{
+		foreach (IWeaponSystem weapon in _weapons)
+		{
+			weapon.SetFiring(false);
+		}
+
+		enabled = false;
 	}
 
 	#region Weapon Registry

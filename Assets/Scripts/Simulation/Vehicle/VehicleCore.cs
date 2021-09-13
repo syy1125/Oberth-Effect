@@ -8,9 +8,15 @@ using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
+public interface IVehicleDeathListener : IEventSystemHandler
+{
+	void OnVehicleDeath();
+}
+
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
 public class VehicleCore :
@@ -224,7 +230,11 @@ public class VehicleCore :
 
 		if (_controlCores.Count <= 0)
 		{
-			Debug.Log($"{gameObject}: All control cores destroyed");
+			Debug.Log($"{gameObject}: All control cores destroyed. Disabling controls.");
+			enabled = false;
+			ExecuteEvents.Execute<IVehicleDeathListener>(
+				gameObject, null, (handler, _) => handler.OnVehicleDeath()
+			);
 		}
 	}
 
