@@ -14,6 +14,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public VehicleInfoDisplay InfoDisplay;
 	public ResourceDisplay ResourceDisplay;
 	public BlockHealthBarControl HealthBarControl;
+	public Radar Radar;
 
 	public GameObject VehiclePrefab;
 
@@ -35,6 +36,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		InfoDisplay.ThrusterControl = vehicle.GetComponent<VehicleThrusterControl>();
 		ResourceDisplay.ResourceManager = vehicle.GetComponent<VehicleResourceManager>();
 		HealthBarControl.SetTarget(vehicle.GetComponent<VehicleCore>());
+		Radar.OwnVehicle = vehicle.GetComponent<Rigidbody2D>();
 	}
 }
 }

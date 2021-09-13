@@ -17,6 +17,8 @@ public class VehicleCore :
 	MonoBehaviourPun, IPunInstantiateMagicCallback,
 	IBlockCoreRegistry, IBlockLifecycleListener, IControlCoreRegistry
 {
+	public static List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
+
 	private Rigidbody2D _body;
 
 	private Dictionary<Vector2Int, GameObject> _posToBlock;
@@ -41,11 +43,25 @@ public class VehicleCore :
 		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string) instantiationData[0]);
 	}
 
+	private void OnEnable()
+	{
+		ActiveVehicles.Add(this);
+	}
+
 	private void Start()
 	{
 		if (_blueprint != null)
 		{
 			LoadVehicle(_blueprint);
+		}
+	}
+
+	private void OnDisable()
+	{
+		bool success = ActiveVehicles.Remove(this);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 		}
 	}
 
