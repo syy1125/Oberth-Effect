@@ -287,7 +287,14 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		GameMode roomGameMode = (GameMode) (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
 		if (roomGameMode.IsTeamMode())
 		{
-			BalancedJoinTeam();
+			if (PhotonNetwork.LocalPlayer.IsMasterClient)
+			{
+				PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, 0 } });
+			}
+			else
+			{
+				BalancedJoinTeam();
+			}
 		}
 
 		gameObject.SetActive(false);
