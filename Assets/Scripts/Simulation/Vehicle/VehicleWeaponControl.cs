@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
-public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
+public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable
 {
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;

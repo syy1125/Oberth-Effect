@@ -11,16 +11,13 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviourPun,
-	IPunObservable, IPunInstantiateMagicCallback, IPropulsionBlockRegistry, IVehicleDeathListener
+	IPunObservable, IPunInstantiateMagicCallback, IPropulsionBlockRegistry
 {
 	#region Unity Fields
 
 	[Header("Input")]
 	public InputActionReference MoveAction;
 	public InputActionReference StrafeAction;
-	public InputActionReference InertiaDampenerAction;
-	public InputActionReference CycleControlModeAction;
-	public InputActionReference ToggleFuelPropulsionAction;
 
 	[Header("PID")]
 	public float RotateResponse;
@@ -32,18 +29,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	#endregion
 
-	#region Public Read State
-
-	public bool InertiaDampenerActive { get; private set; }
-	public UnityEvent InertiaDampenerChanged;
-
-	public VehicleControlMode ControlMode { get; private set; }
-	public UnityEvent ControlModeChanged;
-
-	public bool FuelPropulsionActive { get; private set; }
-	public UnityEvent FuelPropulsionActiveChanged;
-
-	#endregion
+	private PlayerControlConfig _controlConfig;
 
 	private List<IPropulsionBlock> _propulsionBlocks;
 
@@ -71,19 +57,13 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		MoveAction.action.Enable();
 		StrafeAction.action.Enable();
-
-		InertiaDampenerAction.action.Enable();
-		InertiaDampenerAction.action.performed += ToggleInertiaDampener;
-		CycleControlModeAction.action.Enable();
-		CycleControlModeAction.action.performed += CycleControlMode;
-		ToggleFuelPropulsionAction.action.Enable();
-		ToggleFuelPropulsionAction.action.performed += ToggleFuelPropulsion;
 	}
 
-	private void Start()
+	public void SetPlayerControlConfig(PlayerControlConfig controlConfig)
 	{
-		InertiaDampenerActive = false;
-		InertiaDampenerChanged.Invoke();
+		_controlConfig = controlConfig;
+		_controlConfig.ControlModeChanged.AddListener(OnControlModeChanged);
+		_controlConfig.FuelPropulsionActiveChanged.AddListener(OnFuelPropulsionActiveChanged);
 	}
 
 	private void OnDisable()
@@ -91,17 +71,11 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		MoveAction.action.Disable();
 		StrafeAction.action.Disable();
 
-		InertiaDampenerAction.action.performed -= ToggleInertiaDampener;
-		InertiaDampenerAction.action.Disable();
-		CycleControlModeAction.action.performed -= CycleControlMode;
-		CycleControlModeAction.action.Disable();
-		ToggleFuelPropulsionAction.action.performed -= ToggleFuelPropulsion;
-		ToggleFuelPropulsionAction.action.Disable();
+		_controlConfig.ControlModeChanged.RemoveListener(OnControlModeChanged);
+		_controlConfig.FuelPropulsionActiveChanged.RemoveListener(OnFuelPropulsionActiveChanged);
 	}
 
 	#endregion
-
-	#region Vehicle Lifecycle
 
 	public void OnVehicleDeath()
 	{
@@ -112,14 +86,12 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		enabled = false;
 	}
 
-	#endregion
-
 	#region Propulsion Registry
 
 	public void RegisterBlock(IPropulsionBlock block)
 	{
 		_propulsionBlocks.Add(block);
-		block.SetFuelPropulsionActive(FuelPropulsionActive);
+		block.SetFuelPropulsionActive(_controlConfig.FuelPropulsionActive);
 	}
 
 	public void UnregisterBlock(IPropulsionBlock block)
@@ -139,7 +111,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		if (photonView.IsMine)
 		{
-			switch (ControlMode)
+			switch (_controlConfig.ControlMode)
 			{
 				case VehicleControlMode.Mouse:
 					UpdateMouseModeCommands();
@@ -151,7 +123,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 					throw new ArgumentOutOfRangeException();
 			}
 
-			if (InertiaDampenerActive)
+			if (_controlConfig.InertiaDampenerActive)
 			{
 				ApplyInertiaDampener();
 			}
@@ -210,7 +182,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		}
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
-			_rotateCommand = _body.angularVelocity;
+			_rotateCommand = _body.angularVelocity * RotateDerivativeTime;
 		}
 	}
 
@@ -252,9 +224,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		VehicleBlueprint blueprint =
 			JsonUtility.FromJson<VehicleBlueprint>((string) info.photonView.InstantiationData[0]);
-
-		ControlMode = blueprint.DefaultControlMode;
-		ControlModeChanged.Invoke();
 	}
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -273,42 +242,19 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	#endregion
 
-	#region Input Handlers
-
-	private void ToggleInertiaDampener(InputAction.CallbackContext context)
+	private void OnControlModeChanged()
 	{
-		InertiaDampenerActive = !InertiaDampenerActive;
-		InertiaDampenerChanged.Invoke();
-	}
-
-	private void CycleControlMode(InputAction.CallbackContext context)
-	{
-		ControlMode = ControlMode switch
-		{
-			VehicleControlMode.Mouse => VehicleControlMode.Cruise,
-			VehicleControlMode.Cruise => VehicleControlMode.Mouse,
-			_ => throw new ArgumentOutOfRangeException()
-		};
-
 		// Clear state associated with any particular control mode
 		_angleHistory.Clear();
 		_integral = 0f;
-
-		ControlModeChanged.Invoke();
 	}
 
-	private void ToggleFuelPropulsion(InputAction.CallbackContext context)
+	private void OnFuelPropulsionActiveChanged()
 	{
-		FuelPropulsionActive = !FuelPropulsionActive;
-
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			block.SetFuelPropulsionActive(FuelPropulsionActive);
+			block.SetFuelPropulsionActive(_controlConfig.FuelPropulsionActive);
 		}
-
-		FuelPropulsionActiveChanged.Invoke();
 	}
-
-	#endregion
 }
 }

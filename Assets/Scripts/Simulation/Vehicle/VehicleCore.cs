@@ -12,18 +12,15 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
-public interface IVehicleDeathListener : IEventSystemHandler
-{
-	void OnVehicleDeath();
-}
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
 public class VehicleCore :
 	MonoBehaviourPun, IPunInstantiateMagicCallback,
 	IBlockCoreRegistry, IBlockLifecycleListener, IControlCoreRegistry
 {
-	public static List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
+	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
+
+	public UnityEvent OnVehicleDeath;
 
 	private Rigidbody2D _body;
 
@@ -59,15 +56,6 @@ public class VehicleCore :
 		if (_blueprint != null)
 		{
 			LoadVehicle(_blueprint);
-		}
-	}
-
-	private void OnDisable()
-	{
-		bool success = ActiveVehicles.Remove(this);
-		if (!success)
-		{
-			Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 		}
 	}
 
@@ -231,10 +219,14 @@ public class VehicleCore :
 		if (_controlCores.Count <= 0)
 		{
 			Debug.Log($"{gameObject}: All control cores destroyed. Disabling controls.");
-			enabled = false;
-			ExecuteEvents.Execute<IVehicleDeathListener>(
-				gameObject, null, (handler, _) => handler.OnVehicleDeath()
-			);
+
+			success = ActiveVehicles.Remove(this);
+			if (!success)
+			{
+				Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
+			}
+
+			OnVehicleDeath.Invoke();
 		}
 	}
 

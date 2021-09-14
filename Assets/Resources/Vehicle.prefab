@@ -187,6 +187,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b65a9970128a2042bf659f657f0fb5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnVehicleDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8509090524700470639}
+        m_TargetAssemblyTypeName: Syy1125.OberthEffect.Simulation.Vehicle.VehicleThrusterControl,
+          Assembly-CSharp
+        m_MethodName: OnVehicleDeath
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1675783647980130284}
+        m_TargetAssemblyTypeName: Syy1125.OberthEffect.Simulation.Vehicle.VehicleWeaponControl,
+          Assembly-CSharp
+        m_MethodName: OnVehicleDeath
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1786932030375893110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,24 +253,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7860769b8d47fdbbddcb4422a597d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ControlConfig: {fileID: 0}
   MoveAction: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   StrafeAction: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  InertiaDampenerAction: {fileID: 7433065827582890450, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  CycleControlModeAction: {fileID: -3588560342972414599, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  ToggleFuelPropulsionAction: {fileID: 8084621224224648871, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   RotateResponse: 5
   RotateDerivativeTime: 2
   RotateIntegralTime: 1
   InertiaDampenerStrength: 1
-  InertiaDampenerChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  ControlModeChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  FuelPropulsionActiveChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1675783647980130284
 MonoBehaviour:
   m_ObjectHideFlags: 0

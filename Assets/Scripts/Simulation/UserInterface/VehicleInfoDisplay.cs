@@ -8,49 +8,8 @@ namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
 public class VehicleInfoDisplay : MonoBehaviour
 {
-	[SerializeField]
-	private VehicleThrusterControl _thrusterControl;
-
-	public VehicleThrusterControl ThrusterControl
-	{
-		get => _thrusterControl;
-		set
-		{
-			if (_thrusterControl != null)
-			{
-				DetachThrustControlListeners();
-			}
-
-			_thrusterControl = value;
-
-			if (_thrusterControl != null)
-			{
-				AttachThrustControlListeners();
-			}
-		}
-	}
-
-	[SerializeField]
-	private BlockHealthBarControl _healthBarControl;
-
-	public BlockHealthBarControl HealthBarControl
-	{
-		get => _healthBarControl;
-		set
-		{
-			if (_healthBarControl != null)
-			{
-				DetachHealthBarListeners();
-			}
-
-			_healthBarControl = value;
-
-			if (_healthBarControl != null)
-			{
-				AttachHealthBarListeners();
-			}
-		}
-	}
+	public PlayerControlConfig ControlConfig;
+	public BlockHealthBarControl HealthBarControl;
 
 	public Text InertiaDampenerDisplay;
 	public Text ControlModeDisplay;
@@ -59,15 +18,8 @@ public class VehicleInfoDisplay : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (_thrusterControl != null)
-		{
-			AttachThrustControlListeners();
-		}
-
-		if (_healthBarControl != null)
-		{
-			AttachHealthBarListeners();
-		}
+		AttachThrustControlListeners();
+		AttachHealthBarListeners();
 	}
 
 	private void Start()
@@ -77,49 +29,42 @@ public class VehicleInfoDisplay : MonoBehaviour
 
 	private void OnDisable()
 	{
-		if (_thrusterControl != null)
-		{
-			DetachThrustControlListeners();
-		}
-
-		if (_healthBarControl != null)
-		{
-			DetachHealthBarListeners();
-		}
+		DetachThrustControlListeners();
+		DetachHealthBarListeners();
 	}
 
 	private void AttachThrustControlListeners()
 	{
-		_thrusterControl.InertiaDampenerChanged.AddListener(UpdateDisplay);
-		_thrusterControl.ControlModeChanged.AddListener(UpdateDisplay);
-		_thrusterControl.FuelPropulsionActiveChanged.AddListener(UpdateDisplay);
+		ControlConfig.InertiaDampenerChanged.AddListener(UpdateDisplay);
+		ControlConfig.ControlModeChanged.AddListener(UpdateDisplay);
+		ControlConfig.FuelPropulsionActiveChanged.AddListener(UpdateDisplay);
 	}
 
 	private void DetachThrustControlListeners()
 	{
-		_thrusterControl.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
-		_thrusterControl.ControlModeChanged.RemoveListener(UpdateDisplay);
-		_thrusterControl.FuelPropulsionActiveChanged.RemoveListener(UpdateDisplay);
+		ControlConfig.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
+		ControlConfig.ControlModeChanged.RemoveListener(UpdateDisplay);
+		ControlConfig.FuelPropulsionActiveChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void AttachHealthBarListeners()
 	{
-		_healthBarControl.DisplayModeChanged.AddListener(UpdateDisplay);
+		HealthBarControl.DisplayModeChanged.AddListener(UpdateDisplay);
 	}
 
 	private void DetachHealthBarListeners()
 	{
-		_healthBarControl.DisplayModeChanged.RemoveListener(UpdateDisplay);
+		HealthBarControl.DisplayModeChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void UpdateDisplay()
 	{
-		string inertiaDampenerStatus = ThrusterControl.InertiaDampenerActive
+		string inertiaDampenerStatus = ControlConfig.InertiaDampenerActive
 			? "<color=\"cyan\">ON</color>"
 			: "<color=\"red\">OFF</color>";
 		InertiaDampenerDisplay.text = $"Inertia Dampener {inertiaDampenerStatus}";
 
-		string controlModeStatus = ThrusterControl.ControlMode switch
+		string controlModeStatus = ControlConfig.ControlMode switch
 		{
 			VehicleControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
 			VehicleControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
@@ -127,7 +72,7 @@ public class VehicleInfoDisplay : MonoBehaviour
 		};
 		ControlModeDisplay.text = $"Control Mode {controlModeStatus}";
 
-		string fuelPropulsionStatus = ThrusterControl.FuelPropulsionActive
+		string fuelPropulsionStatus = ControlConfig.FuelPropulsionActive
 			? "<color=\"cyan\">ON</color>"
 			: "<color=\"red\">OFF</color>";
 		FuelPropulsionDisplay.text = $"Fuel Thrusters {fuelPropulsionStatus}";
