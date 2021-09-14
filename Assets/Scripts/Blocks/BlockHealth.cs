@@ -44,8 +44,8 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	public float HealthFraction => Mathf.Clamp01(_health / _maxHealth);
 	public bool IsDamaged => _maxHealth - _health > Mathf.Epsilon;
 
-	private Vector2 _boundsMin;
-	private Vector2 _boundsMax;
+	private Vector2 _explosionBoundsMin;
+	private Vector2 _explosionBoundsMax;
 
 	private ContactFilter2D _beamRaycastFilter;
 	private List<RaycastHit2D> _beamRaycastHits;
@@ -65,8 +65,8 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	{
 		_maxHealth = spec.Combat.MaxHealth;
 		_armor = spec.Combat.ArmorValue;
-		_boundsMin = spec.Construction.BoundsMin;
-		_boundsMax = spec.Construction.BoundsMax;
+		_explosionBoundsMin = spec.Construction.BoundsMin - new Vector2(0.5f, 0.5f);
+		_explosionBoundsMax = spec.Construction.BoundsMax - new Vector2(0.5f, 0.5f);
 	}
 
 	private void Start()
@@ -83,7 +83,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(_boundsMin, _boundsMax);
+		return new Tuple<Vector2, Vector2>(_explosionBoundsMin, _explosionBoundsMax);
 	}
 
 	public void TakeDamage(
