@@ -807,6 +807,9 @@ MonoBehaviour:
   StartGameButton: {fileID: 1983647377}
   StartGameTooltip: {fileID: 1983647379}
   LobbyScreen: {fileID: 2143712903}
+  Maps:
+  - sceneAsset: {fileID: 102900000, guid: 8027120d6180dde499dd80587625e6e3, type: 3}
+    scenePath: Assets/Scenes/Levels/Nebula.unity
 --- !u!114 &222137034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4002,7 +4005,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000031371142}
+  m_AnchoredPosition: {x: 0, y: 0.00004076012}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1528480241

@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Multiplayer Game.unity
     guid: 81192ae983b7a754181de3a93de151be
+  - enabled: 1
+    path: Assets/Scenes/Levels/Nebula.unity
+    guid: 8027120d6180dde499dd80587625e6e3
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: efb8c4c6e890f094d814aa6a6ddeb723, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: e298538c39772834fb8154737d2c1b28, type: 2}

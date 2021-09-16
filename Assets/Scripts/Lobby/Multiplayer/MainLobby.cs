@@ -284,7 +284,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	public override void OnJoinedRoom()
 	{
-		GameMode roomGameMode = (GameMode) (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		GameMode roomGameMode = PhotonHelper.GetRoomGameMode();
+		
 		if (roomGameMode.IsTeamMode())
 		{
 			if (PhotonNetwork.LocalPlayer.IsMasterClient)

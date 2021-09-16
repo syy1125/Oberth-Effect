@@ -231,6 +231,7 @@ MonoBehaviour:
   Response: 10
   DerivativeTime: 0.8
   IntegralTime: 2
+  InitTime: 0.2
 --- !u!1 &6029063042526230675
 GameObject:
   m_ObjectHideFlags: 0

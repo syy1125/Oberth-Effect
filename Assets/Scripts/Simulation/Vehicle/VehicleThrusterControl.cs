@@ -31,7 +31,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private PlayerControlConfig _controlConfig;
 
-	private List<IPropulsionBlock> _propulsionBlocks;
+	private readonly List<IPropulsionBlock> _propulsionBlocks = new List<IPropulsionBlock>();
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -46,8 +46,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void Awake()
 	{
-		_propulsionBlocks = new List<IPropulsionBlock>();
-
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_angleHistory = new LinkedList<float>();

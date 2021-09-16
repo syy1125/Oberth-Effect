@@ -137,14 +137,14 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	}
 
 	public void TakeBeamDamageRpc(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 hitPosition, Vector2 beamEnd
+		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		if (!IsMine) return;
 
-		Vector2 beamDirection = beamEnd - hitPosition;
+		Vector2 beamDirection = beamEnd - beamStart;
 		int count = Physics2D.Raycast(
-			hitPosition, beamDirection, _beamRaycastFilter, _beamRaycastHits, beamDirection.magnitude
+			beamStart, beamDirection, _beamRaycastFilter, _beamRaycastHits, beamDirection.magnitude
 		);
 
 		if (count > 0)

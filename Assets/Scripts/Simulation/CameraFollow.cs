@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -13,15 +14,25 @@ public class CameraFollow : MonoBehaviour
 	public float DerivativeTime;
 	public float IntegralTime;
 
+	public float InitTime;
+
 	private LinkedList<Vector2> _offsetHistory;
 	private Vector2 _velocity;
 	private Vector2 _integral;
+
+	private float _initTimer;
+	private Vector2 _initVelocity;
 
 	private void Awake()
 	{
 		_offsetHistory = new LinkedList<Vector2>();
 		_velocity = Vector2.zero;
 		_integral = Vector2.zero;
+	}
+
+	public void EnterInitMode()
+	{
+		_initTimer = InitTime;
 	}
 
 	private void FixedUpdate()
@@ -33,10 +44,16 @@ public class CameraFollow : MonoBehaviour
 		Vector2 targetPosition = FollowCenterOfMass && body != null
 			? body.worldCenterOfMass
 			: new Vector2(Target.position.x, Target.position.y);
+		Vector2 currentPosition = new Vector2(transform.position.x, transform.position.y);
 
-		if (UsePid)
+		if (_initTimer > 0)
 		{
-			var currentPosition = new Vector2(transform.position.x, transform.position.y);
+			_initTimer -= Time.fixedDeltaTime;
+			Vector2 position = Vector2.SmoothDamp(currentPosition, targetPosition, ref _initVelocity, InitTime);
+			transform.position = new Vector3(position.x, position.y, transform.position.z);
+		}
+		else if (UsePid)
+		{
 			Vector2 offset = targetPosition - currentPosition;
 
 			Vector2 derivative = _offsetHistory.Count > 0
@@ -69,6 +86,21 @@ public class CameraFollow : MonoBehaviour
 		{
 			transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
 		}
+	}
+
+	public void ResetPosition()
+	{
+		var body = Target.GetComponent<Rigidbody2D>();
+
+		Vector2 targetPosition = FollowCenterOfMass && body != null
+			? body.worldCenterOfMass
+			: new Vector2(Target.position.x, Target.position.y);
+
+		transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
+
+		_offsetHistory.Clear();
+		_velocity = body != null ? body.velocity : Vector2.zero;
+		_integral = Vector2.zero;
 	}
 }
 }

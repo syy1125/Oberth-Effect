@@ -42,8 +42,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public Button StartGameButton;
 	public Tooltip StartGameTooltip;
 
-	[Header("Lobby Screen")]
+	[Header("References")]
 	public GameObject LobbyScreen;
+
+	[Space]
+	public SceneReference[] Maps;
 
 	private SortedDictionary<int, GameObject> _playerPanels;
 	private string _selectedVehicleName;
@@ -67,7 +70,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
-		GameModeSelect.SetOptions(EnumUtils.FormatNames(typeof(GameMode)));
+		GameModeSelect.SetOptions(new[] { "Assault" });
 		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
 
 		SelectVehicleButton.interactable = true;
@@ -333,11 +336,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LobbyScreen.SetActive(true);
 	}
 
-	private static void StartGame()
+	private void StartGame()
 	{
 		PhotonNetwork.AutomaticallySyncScene = true;
 		PhotonNetwork.CurrentRoom.IsOpen = false;
-		PhotonNetwork.LoadLevel("Scenes/Multiplayer Game");
+		PhotonNetwork.LoadLevel(Maps[0].ScenePath);
 	}
 }
 }
