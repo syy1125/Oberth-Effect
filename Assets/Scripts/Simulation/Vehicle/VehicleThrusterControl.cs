@@ -20,9 +20,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	public InputActionReference StrafeAction;
 
 	[Header("PID")]
-	public float RotateResponse;
-	public float RotateDerivativeTime;
-	public float RotateIntegralTime;
+	public PidConfig RotationPidConfig;
 
 	[Header("Config")]
 	public float InertiaDampenerStrength;
@@ -36,8 +34,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
 
-	private LinkedList<float> _angleHistory;
-	private float _integral;
+	private Pid<float> _rotationPid;
 
 	private Vector2 _translateCommand;
 	private float _rotateCommand;
@@ -48,7 +45,12 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
-		_angleHistory = new LinkedList<float>();
+		_rotationPid = new Pid<float>(
+			RotationPidConfig,
+			(a, b) => a + b,
+			(a, b) => Mathf.DeltaAngle(b, a),
+			(a, b) => a * b
+		);
 	}
 
 	private void OnEnable()
@@ -143,28 +145,9 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
 		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
 
-		float derivative = _angleHistory.Count > 0 ? (angle - _angleHistory.Last.Value) / Time.fixedDeltaTime : 0f;
-		derivative = (derivative + 540f) % 360f - 180f;
+		_rotationPid.Update(angle, Time.fixedDeltaTime);
 
-		_integral += angle;
-		_angleHistory.AddLast(angle);
-		while (_angleHistory.Count > 0 && _angleHistory.Count > RotateIntegralTime / Time.fixedDeltaTime)
-		{
-			_integral -= _angleHistory.First.Value;
-			_angleHistory.RemoveFirst();
-		}
-
-		float timeScaledIntegral = _integral * Time.fixedDeltaTime;
-
-		_rotateCommand = RotateResponse
-		                 * (
-			                 angle
-			                 + derivative * RotateDerivativeTime
-			                 + (Mathf.Abs(RotateIntegralTime) < Mathf.Epsilon
-				                 ? 0f
-				                 : timeScaledIntegral / RotateIntegralTime)
-		                 )
-		                 * Mathf.Deg2Rad;
+		_rotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
 	}
 
 	private void UpdateCruiseModeCommands()
@@ -180,7 +163,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		}
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
-			_rotateCommand = _body.angularVelocity * RotateDerivativeTime;
+			_rotateCommand = _body.angularVelocity * RotationPidConfig.DerivativeTime;
 		}
 	}
 
@@ -242,9 +225,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void OnControlModeChanged()
 	{
-		// Clear state associated with any particular control mode
-		_angleHistory.Clear();
-		_integral = 0f;
+		_rotationPid.Reset();
 	}
 
 	private void OnFuelPropulsionActiveChanged()

@@ -228,6 +228,10 @@ MonoBehaviour:
   Target: {fileID: 0}
   FollowCenterOfMass: 1
   UsePid: 1
+  PidConfig:
+    Response: 10
+    DerivativeTime: 0.8
+    IntegralTime: 2
   Response: 10
   DerivativeTime: 0.8
   IntegralTime: 2

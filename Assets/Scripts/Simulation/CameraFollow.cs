@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Runtime;
+using Syy1125.OberthEffect.Common;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation
 {
@@ -10,24 +13,24 @@ public class CameraFollow : MonoBehaviour
 	public bool FollowCenterOfMass;
 
 	public bool UsePid = true;
-	public float Response;
-	public float DerivativeTime;
-	public float IntegralTime;
+	public PidConfig PositionPidConfig;
+
+	private Pid<Vector2> _pid;
+	private Vector2 _velocity;
 
 	public float InitTime;
-
-	private LinkedList<Vector2> _offsetHistory;
-	private Vector2 _velocity;
-	private Vector2 _integral;
 
 	private float _initTimer;
 	private Vector2 _initVelocity;
 
 	private void Awake()
 	{
-		_offsetHistory = new LinkedList<Vector2>();
-		_velocity = Vector2.zero;
-		_integral = Vector2.zero;
+		_pid = new Pid<Vector2>(
+			PositionPidConfig,
+			(a, b) => a + b,
+			(a, b) => a - b,
+			(v, s) => v * s
+		);
 	}
 
 	public void EnterInitMode()
@@ -55,31 +58,8 @@ public class CameraFollow : MonoBehaviour
 		else if (UsePid)
 		{
 			Vector2 offset = targetPosition - currentPosition;
-
-			Vector2 derivative = _offsetHistory.Count > 0
-				? (offset - _offsetHistory.Last.Value) / Time.fixedDeltaTime
-				: Vector2.zero;
-
-			_offsetHistory.AddLast(offset);
-			_integral += offset;
-			while (_offsetHistory.Count > 1 && _offsetHistory.Count > IntegralTime / Time.fixedDeltaTime)
-			{
-				_integral -= _offsetHistory.First.Value;
-				_offsetHistory.RemoveFirst();
-			}
-
-			Vector2 timeScaledIntegral = _integral * Time.fixedDeltaTime;
-
-			_velocity += Response
-			             * Time.fixedDeltaTime
-			             * (
-				             offset
-				             + derivative * DerivativeTime
-				             + (Mathf.Abs(IntegralTime) < Mathf.Epsilon
-					             ? Vector2.zero
-					             : timeScaledIntegral / IntegralTime)
-			             );
-
+			_pid.Update(offset, Time.fixedDeltaTime);
+			_velocity += _pid.Output * Time.fixedDeltaTime;
 			transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
 		}
 		else
@@ -98,9 +78,8 @@ public class CameraFollow : MonoBehaviour
 
 		transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
 
-		_offsetHistory.Clear();
+		_pid.Reset();
 		_velocity = body != null ? body.velocity : Vector2.zero;
-		_integral = Vector2.zero;
 	}
 }
 }
