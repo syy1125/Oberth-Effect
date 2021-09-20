@@ -31,6 +31,7 @@ public class VehicleCore :
 	private bool _loaded;
 	private UnityEvent _loadEvent;
 	private VehicleBlueprint _blueprint;
+	private bool _dead;
 
 	private void Awake()
 	{
@@ -56,6 +57,19 @@ public class VehicleCore :
 		if (_blueprint != null)
 		{
 			LoadVehicle(_blueprint);
+		}
+	}
+
+	private void OnDisable()
+	{
+		// Clean up when leaving room
+		if (!_dead)
+		{
+			bool success = ActiveVehicles.Remove(this);
+			if (!success)
+			{
+				Debug.LogError($"Failed to remove vehicle {gameObject} from active vehicle list");
+			}
 		}
 	}
 
@@ -226,6 +240,7 @@ public class VehicleCore :
 				Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 			}
 
+			_dead = true;
 			OnVehicleDeath.Invoke();
 		}
 	}
