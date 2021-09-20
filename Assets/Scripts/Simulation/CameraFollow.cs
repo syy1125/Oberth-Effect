@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Runtime;
-using Syy1125.OberthEffect.Common;
-using TMPro.EditorUtilities;
+﻿using Syy1125.OberthEffect.Common;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation
 {

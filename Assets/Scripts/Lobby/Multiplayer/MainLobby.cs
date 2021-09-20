@@ -268,8 +268,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 				CustomRoomProperties = new Hashtable
 				{
 					{ PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" },
-					{ PropertyKeys.GAME_MODE, (int) GameMode.Assault },
-					{ PropertyKeys.FRIENDLY_FIRE_MODE, (int) FriendlyFireMode.Team },
+					{ PropertyKeys.GAME_MODE, GameMode.Assault },
+					{ PropertyKeys.FRIENDLY_FIRE_MODE, FriendlyFireMode.Team },
 					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349", "0080FF" } }
 				},
 				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME, PropertyKeys.GAME_MODE }
@@ -285,7 +285,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	public override void OnJoinedRoom()
 	{
 		GameMode roomGameMode = PhotonHelper.GetRoomGameMode();
-		
+
 		if (roomGameMode.IsTeamMode())
 		{
 			if (PhotonNetwork.LocalPlayer.IsMasterClient)

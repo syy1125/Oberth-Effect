@@ -74,7 +74,7 @@ public static class PhotonHelper
 	public static GameMode GetRoomGameMode()
 	{
 		return PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropertyKeys.GAME_MODE, out object gameMode)
-			? (GameMode) (int) gameMode
+			? (GameMode) gameMode
 			: GameMode.TestDrive;
 	}
 }
