@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
-public class Shipyard : MonoBehaviourPun, IDamageable
+public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 {
 	public int TeamIndex;
 	public float MaxHealth;
@@ -23,9 +23,6 @@ public class Shipyard : MonoBehaviourPun, IDamageable
 	private GameMode _gameMode;
 
 	public float Health { get; private set; }
-
-	private ContactFilter2D _beamRaycastFilter;
-	private List<RaycastHit2D> _beamRaycastHits;
 
 	private void Awake()
 	{
@@ -42,12 +39,16 @@ public class Shipyard : MonoBehaviourPun, IDamageable
 		_gameMode = PhotonHelper.GetRoomGameMode();
 		Health = MaxHealth;
 
-		_beamRaycastFilter = new ContactFilter2D
+		Color teamColor = PhotonHelper.GetTeamColor(TeamIndex);
+		foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
-			layerMask = WeaponConstants.HIT_LAYER_MASK,
-			useLayerMask = true
-		};
-		_beamRaycastHits = new List<RaycastHit2D>();
+			sprite.color = teamColor;
+		}
+	}
+
+	private void OnDestroy()
+	{
+		shipyards.Remove(TeamIndex);
 	}
 
 	public Transform GetBestSpawnPoint(int playerIndex)
@@ -107,12 +108,25 @@ public class Shipyard : MonoBehaviourPun, IDamageable
 		photonView.RPC(nameof(TakeBeamDamage), photonView.Owner, damageType, damage, armorPierce);
 	}
 
+	// Shipyard is stationary, no need to re-do raycast on this end.
 	[PunRPC]
 	public void TakeBeamDamage(DamageType damageType, float damage, float armorPierce)
 	{
 		// Shipyard's dead and that's the most important part. In a 2-team game that's game over.
 		// TODO in the future we could do overpenetration, especially if there are more than 2 teams.
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);
+	}
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			stream.SendNext(Health);
+		}
+		else
+		{
+			Health = (float) stream.ReceiveNext();
+		}
 	}
 }
 }
