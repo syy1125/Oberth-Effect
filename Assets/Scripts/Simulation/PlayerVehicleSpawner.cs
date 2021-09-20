@@ -58,15 +58,18 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 	private Tuple<Vector3, Quaternion> GetSpawnTransform()
 	{
+		if (PhotonNetwork.CurrentRoom == null)
+		{
+			return GetFallbackSpawnTransform();
+		}
+
 		int teamIndex = PhotonHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer);
 		Shipyard shipyard = Shipyard.GetShipyardForTeam(teamIndex);
 
 		if (shipyard == null)
 		{
 			Debug.LogError($"Failed to retrieve shipyard for team index {teamIndex}");
-			return new Tuple<Vector3, Quaternion>(
-				Vector3.right * (10 * PhotonNetwork.LocalPlayer.ActorNumber), Quaternion.identity
-			);
+			return GetFallbackSpawnTransform();
 		}
 
 		var playersOnTeam = PhotonNetwork.CurrentRoom.Players.Values
@@ -76,6 +79,13 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		Transform spawnTransform = shipyard.GetBestSpawnPoint(playersOnTeam.IndexOf(PhotonNetwork.LocalPlayer));
 		return new Tuple<Vector3, Quaternion>(spawnTransform.position, spawnTransform.rotation);
+	}
+
+	private Tuple<Vector3, Quaternion> GetFallbackSpawnTransform()
+	{
+		return new Tuple<Vector3, Quaternion>(
+			Vector3.right * (10 * PhotonNetwork.LocalPlayer.ActorNumber), Quaternion.identity
+		);
 	}
 
 	private void Start()
