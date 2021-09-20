@@ -41,12 +41,12 @@ public static class PhotonHelper
 		}
 	}
 
-	public static Color GetPlayerTeamColor(Player player)
+	public static Color GetTeamColor(int teamIndex)
 	{
-		return GetPlayerTeamColor(player, Color.white);
+		return GetTeamColor(teamIndex, Color.white);
 	}
 
-	public static Color GetPlayerTeamColor(Player player, Color fallback)
+	public static Color GetTeamColor(int teamIndex, Color fallback)
 	{
 		if (PhotonNetwork.CurrentRoom == null) return fallback;
 
@@ -54,7 +54,6 @@ public static class PhotonHelper
 		if (!gameMode.IsTeamMode()) return fallback;
 
 		string[] teamColors = (string[]) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.TEAM_COLORS];
-		int teamIndex = (int) player.CustomProperties[PropertyKeys.TEAM_INDEX];
 
 		if (teamIndex < 0 || teamIndex >= teamColors.Length) return fallback;
 		string hexColor = teamColors[teamIndex];
@@ -62,9 +61,21 @@ public static class PhotonHelper
 		return ColorUtility.TryParseHtmlString("#" + hexColor, out Color color) ? color : fallback;
 	}
 
+	public static Color GetPlayerTeamColor(Player player)
+	{
+		return GetPlayerTeamColor(player, Color.white);
+	}
+
+	public static Color GetPlayerTeamColor(Player player, Color fallback)
+	{
+		return GetTeamColor(GetPlayerTeamIndex(player), fallback);
+	}
+
 	public static GameMode GetRoomGameMode()
 	{
-		return (GameMode) (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		return PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropertyKeys.GAME_MODE, out object gameMode)
+			? (GameMode) (int) gameMode
+			: GameMode.TestDrive;
 	}
 }
 }
