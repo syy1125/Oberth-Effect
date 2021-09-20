@@ -48,11 +48,17 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	[Space]
 	public SceneReference[] Maps;
 
+	private GameMode[] _gameModes;
 	private SortedDictionary<int, GameObject> _playerPanels;
 	private string _selectedVehicleName;
 
 	private void Awake()
 	{
+		_gameModes = Enum.GetValues(typeof(GameMode))
+			.Cast<GameMode>()
+			.Where(gameMode => gameMode.EnabledForLobby())
+			.ToArray();
+
 		_playerPanels = new SortedDictionary<int, GameObject>();
 	}
 
@@ -70,7 +76,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.interactable = false;
 		LoadVehicleButton.onClick.AddListener(LoadVehicleSelection);
 
-		GameModeSelect.SetOptions(new[] { "Assault" });
+		GameModeSelect.SetOptions(_gameModes.Select(gameMode => Enum.GetName(typeof(GameMode), gameMode)).ToArray());
 		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
 
 		SelectVehicleButton.interactable = true;
@@ -151,10 +157,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		);
 	}
 
-	private void SetGameMode(int gameMode)
+	private void SetGameMode(int i)
 	{
 		PhotonNetwork.CurrentRoom.SetCustomProperties(
-			new Hashtable { { PropertyKeys.GAME_MODE, gameMode } }
+			new Hashtable { { PropertyKeys.GAME_MODE, _gameModes[i] } }
 		);
 		UnreadyPlayers();
 	}
@@ -250,7 +256,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	{
 		SelectVehicleButton.interactable = true;
 
-		GameModeSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		GameModeSelect.Value = Array.IndexOf(
+			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
+		);
 
 		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
 		StartGameButton.interactable = allReady;
@@ -262,7 +270,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		bool ready = PhotonHelper.IsPlayerReady(PhotonNetwork.LocalPlayer);
 		SelectVehicleButton.interactable = !ready;
 
-		GameModeSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		GameModeSelect.Value = Array.IndexOf(
+			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
+		);
 
 		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = ready ? "Unready" : "Ready";
