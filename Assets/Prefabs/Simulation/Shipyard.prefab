@@ -72,8 +72,8 @@ MonoBehaviour:
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillClockwise: 0
+  m_FillOrigin: 2
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!114 &1328792929484317825
@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 4881587471356918012}
   - component: {fileID: 7755410601836112887}
   - component: {fileID: 5349195863572556096}
+  - component: {fileID: 3496706749630688837}
   m_Layer: 7
   m_Name: Health Canvas
   m_TagString: Untagged
@@ -202,6 +203,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &3496706749630688837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247657403164830373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16d2e3372384db7971d385b1b67e525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1248762056458501171
 GameObject:
   m_ObjectHideFlags: 0
