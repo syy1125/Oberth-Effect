@@ -1379,6 +1379,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410b5f2c243d4a01b6e9c26e65256ea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VehiclePingPrefab: {fileID: 4625651757324952422, guid: 15a02526a384dcd449d928576a229cf9, type: 3}
   OwnVehicle: {fileID: 0}
-  Scale: 0.2
+  RadarPingPrefab: {fileID: 4625651757324952422, guid: 15a02526a384dcd449d928576a229cf9, type: 3}
+  VehiclePingSprite: {fileID: 21300000, guid: a3b0e670261bec8498d481ca5f2b43ab, type: 3}
+  ShipyardPingSprite: {fileID: 21300000, guid: 694cf3e029eef02498b46a2fff1029c5, type: 3}
+  Scale: 0.4

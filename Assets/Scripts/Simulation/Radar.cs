@@ -1,16 +1,20 @@
 ﻿using System.Collections.Generic;
 using Photon.Pun;
+using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation
 {
 public class Radar : MonoBehaviour
 {
-	public GameObject VehiclePingPrefab;
 	public Rigidbody2D OwnVehicle;
+	public GameObject RadarPingPrefab;
+	public Sprite VehiclePingSprite;
+	public Sprite ShipyardPingSprite;
 	public float Scale = 1e-3f;
 
 	private List<GameObject> _pings;
@@ -27,14 +31,33 @@ public class Radar : MonoBehaviour
 
 		foreach (VehicleCore vehicle in VehicleCore.ActiveVehicles)
 		{
+			if (vehicle == null) continue;
+
 			Vector2 relativePosition = vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass - centerOfMass;
 
 			GameObject ping = GetOrCreatePing(i);
-			
+
 			ping.transform.localPosition = relativePosition * Scale;
 			ping.transform.rotation = vehicle.transform.rotation;
+			ping.GetComponent<Image>().sprite = VehiclePingSprite;
 			ping.GetComponent<Image>().color =
 				PhotonTeamManager.GetPlayerTeamColor(vehicle.GetComponent<PhotonView>().Owner);
+
+			i++;
+		}
+
+		foreach (Shipyard shipyard in Shipyard.ActiveShipyards.Values)
+		{
+			if (shipyard == null) continue;
+
+			Vector2 relativePosition = (Vector2) shipyard.transform.position - centerOfMass;
+
+			GameObject ping = GetOrCreatePing(i);
+
+			ping.transform.localPosition = relativePosition * Scale;
+			ping.transform.rotation = Quaternion.identity;
+			ping.GetComponent<Image>().sprite = ShipyardPingSprite;
+			ping.GetComponent<Image>().color = PhotonTeamManager.GetTeamColor(shipyard.TeamIndex);
 
 			i++;
 		}
@@ -55,7 +78,7 @@ public class Radar : MonoBehaviour
 		}
 		else
 		{
-			GameObject ping = Instantiate(VehiclePingPrefab, transform);
+			GameObject ping = Instantiate(RadarPingPrefab, transform);
 			_pings.Add(ping);
 			return ping;
 		}

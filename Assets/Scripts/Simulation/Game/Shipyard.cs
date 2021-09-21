@@ -15,7 +15,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	public float MaxHealth;
 	public Transform[] SpawnPoints;
 
-	private static readonly Dictionary<int, Shipyard> shipyards = new Dictionary<int, Shipyard>();
+	public static readonly Dictionary<int, Shipyard> ActiveShipyards = new Dictionary<int, Shipyard>();
 
 	public bool IsMine => PhotonNetwork.LocalPlayer.IsMasterClient;
 	public int OwnerId => -1;
@@ -27,12 +27,12 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	private void Awake()
 	{
-		shipyards.Add(TeamIndex, this);
+		ActiveShipyards.Add(TeamIndex, this);
 	}
 
 	public static Shipyard GetShipyardForTeam(int teamIndex)
 	{
-		return shipyards.TryGetValue(teamIndex, out Shipyard shipyard) ? shipyard : null;
+		return ActiveShipyards.TryGetValue(teamIndex, out Shipyard shipyard) ? shipyard : null;
 	}
 
 	private void Start()
@@ -50,7 +50,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	private void OnDestroy()
 	{
-		shipyards.Remove(TeamIndex);
+		ActiveShipyards.Remove(TeamIndex);
 	}
 
 	public Transform GetBestSpawnPoint(int playerIndex)
