@@ -69,7 +69,7 @@ public class PlayerPanel : MonoBehaviour
 		if (!ready) playerNameBuilder.Append(" (Not Ready)");
 		PlayerName.text = playerNameBuilder.ToString();
 
-		PlayerName.color = PhotonHelper.GetPlayerTeamColor(_player);
+		PlayerName.color = PhotonTeamManager.GetPlayerTeamColor(_player);
 
 		ReadyDisplay.CrossFadeColor(
 			ready ? ReadyColor : Color.white,

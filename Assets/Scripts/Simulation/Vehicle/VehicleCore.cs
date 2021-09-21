@@ -240,9 +240,14 @@ public class VehicleCore :
 				Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 			}
 
-			_dead = true;
-			OnVehicleDeath.Invoke();
+			Die();
 		}
+	}
+
+	public void Die()
+	{
+		_dead = true;
+		OnVehicleDeath.Invoke();
 	}
 
 	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;

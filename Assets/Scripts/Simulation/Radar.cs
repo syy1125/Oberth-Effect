@@ -34,7 +34,7 @@ public class Radar : MonoBehaviour
 			ping.transform.localPosition = relativePosition * Scale;
 			ping.transform.rotation = vehicle.transform.rotation;
 			ping.GetComponent<Image>().color =
-				PhotonHelper.GetPlayerTeamColor(vehicle.GetComponent<PhotonView>().Owner);
+				PhotonTeamManager.GetPlayerTeamColor(vehicle.GetComponent<PhotonView>().Owner);
 
 			i++;
 		}

@@ -21,6 +21,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	public int OwnerId => -1;
 
 	private GameMode _gameMode;
+	private bool _damageable;
 
 	public float Health { get; private set; }
 
@@ -37,9 +38,10 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	private void Start()
 	{
 		_gameMode = PhotonHelper.GetRoomGameMode();
+		_damageable = _gameMode.CanDamageShipyards();
 		Health = MaxHealth;
 
-		Color teamColor = PhotonHelper.GetTeamColor(TeamIndex);
+		Color teamColor = PhotonTeamManager.GetTeamColor(TeamIndex);
 		foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.color = teamColor;
@@ -79,7 +81,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
-		if (!_gameMode.CanDamageShipyards())
+		if (!_damageable)
 		{
 			damageExhausted = true;
 			return;
@@ -91,13 +93,17 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 			damage = 0f;
 			damageExhausted = true;
 		}
-		else
+		else if (Health > 0f) // Shipyard isn't destroyed yet but will be by this attack
 		{
 			damage -= Health;
 			Health = 0f;
 			damageExhausted = false;
 
-			Debug.Log($"Team {TeamIndex} shipyard destroyed");
+			AbstractGameManager.GameManager.OnShipyardDestroyed(TeamIndex);
+		}
+		else
+		{
+			damageExhausted = false;
 		}
 	}
 

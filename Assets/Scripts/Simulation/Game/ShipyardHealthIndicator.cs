@@ -13,7 +13,7 @@ public class ShipyardHealthIndicator : MonoBehaviour
 	private void Awake()
 	{
 		_image = GetComponent<Image>();
-		_image.color = PhotonHelper.GetTeamColor(Shipyard.TeamIndex);
+		_image.color = PhotonTeamManager.GetTeamColor(Shipyard.TeamIndex);
 	}
 
 	private void LateUpdate()
