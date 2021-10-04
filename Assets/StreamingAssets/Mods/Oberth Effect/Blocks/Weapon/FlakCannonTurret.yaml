@@ -1,0 +1,52 @@
+﻿BlockId: OberthEffect/FlakCannonTurret
+Enabled: true
+Info:
+  ShortName: Flak
+  FullName: Flak Cannon Turret
+  Description: |
+    A rapid-fire flak cannon, good for taking out fast moving enemies or targeting sensitive components.
+Renderers:
+  - TextureId: OberthEffect/Square
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 1.5
+  MomentOfInertia: 0.25
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 150
+  ArmorValue: 8
+TurretedWeapon:
+  Turret:
+    RotationSpeed: 720
+    Renderers:
+      - TextureId: OberthEffect/CannonTurret
+        Scale: { X: 0.8, Y: 0.8 }
+  ProjectileWeaponEffect:
+    FiringPortOffset: { X: 0, Y: 0.4 }
+    Damage: 8
+    DamageType: Explosive
+    ExplosionRadius: 2
+    SpreadAngle: 5
+    SpreadProfile: Uniform
+    Recoil: 1
+    MaxResourceUse:
+      OberthEffect/Energy: 20
+    ColliderSize: { X: 0.05, Y: 0.1 }
+    Speed: 100
+    MaxLifetime: 0.3
+    ReloadTime: 0.15
+    Renderers:
+      - TextureId: OberthEffect/Square
+        Scale: { X: 0.05, Y: 0.1 }
