@@ -4,10 +4,10 @@ using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Simulation.Vehicle;
-using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -1,10 +1,10 @@
 ﻿using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Palette;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
-using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

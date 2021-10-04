@@ -4,7 +4,7 @@ using Photon.Realtime;
 using Syy1125.OberthEffect.Common.Match;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Utils
+namespace Syy1125.OberthEffect.Common.Utils
 {
 public class PhotonTeamManager
 {

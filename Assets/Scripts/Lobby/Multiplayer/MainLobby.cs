@@ -7,7 +7,7 @@ using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.UserInterface;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;

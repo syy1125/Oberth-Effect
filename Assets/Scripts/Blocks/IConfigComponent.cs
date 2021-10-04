@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

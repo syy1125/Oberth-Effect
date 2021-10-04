@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Utils
+namespace Syy1125.OberthEffect.Common.Utils
 {
 public static class ExplosionUtils
 {

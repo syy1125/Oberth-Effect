@@ -4,7 +4,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Syy1125.OberthEffect.Utils
+namespace Syy1125.OberthEffect.Common.Utils
 {
 public static class ConfigUtils
 {

@@ -2,7 +2,7 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common.Match;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation

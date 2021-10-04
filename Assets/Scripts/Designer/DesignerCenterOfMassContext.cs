@@ -1,7 +1,7 @@
 ﻿using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
-using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer

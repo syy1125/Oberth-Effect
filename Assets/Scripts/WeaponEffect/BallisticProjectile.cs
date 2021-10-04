@@ -1,8 +1,8 @@
 using System;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
-using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.Common.Utils;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
