@@ -232,6 +232,10 @@ PrefabInstance:
       propertyPath: ReturnScene.sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 8a6855e77cf8dae47a28b4c44bff7c32, type: 3}
+    - target: {fileID: 1968692965902260466, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
+      propertyPath: sceneViewId
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1976241402592522086, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -393,7 +397,7 @@ GameObject:
   - component: {fileID: 1123976268}
   - component: {fileID: 1123976267}
   m_Layer: 0
-  m_Name: Offline Room
+  m_Name: Test Drive Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
