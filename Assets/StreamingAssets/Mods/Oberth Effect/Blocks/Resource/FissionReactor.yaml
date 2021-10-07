@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/FissionReactor
 Enabled: true
+Cost: 20
 Info:
   ShortName: Fission Reactor
   FullName: Nuclear Fission Generator

@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SimpleBurstLaserTurret
 Enabled: true
+Cost: 100
 Info:
   ShortName: Burst Laser
   FullName: Simple Burst Laser Turret
@@ -39,7 +40,7 @@ TurretedWeapon:
     FiringPortOffset: { X: 0, Y: 0.6 }
     Damage: 200
     DamageType: Energy
-    ArmorPierce: 4
+    ArmorPierce: 7.5
     MaxResourceUse:
       OberthEffect/Energy: 80
     ReloadTime: 2.5

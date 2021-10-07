@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope2x1LeftBack
 Enabled: true
+Cost: 3
 Info:
   ShortName: L Slope Back
   FullName: Slope 2x1 Left Back

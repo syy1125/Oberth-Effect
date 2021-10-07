@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SmallFuelEngine
 Enabled: true
+Cost: 20
 Info:
   ShortName: Fuel Engine
   FullName: Small Fuel Engine
@@ -28,11 +29,11 @@ Combat:
   ArmorValue: 1
 Propulsion:
   Engine:
-    MaxForce: 50
+    MaxForce: 200
     MaxResourceUse:
       OberthEffect/Fuel: 50
     IsFuelPropulsion: true
-    MaxThrottleRate: 0.5
+    MaxThrottleRate: 2
     Particles:
       - Offset: { X: 0, Y: -0.2 }
         Direction: { X: 0, Y: -1 }

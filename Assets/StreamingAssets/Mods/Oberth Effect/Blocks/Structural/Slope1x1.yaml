@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope1x1
 Enabled: true
+Cost: 2
 Info:
   ShortName: Slope
   FullName: Slope 1x1

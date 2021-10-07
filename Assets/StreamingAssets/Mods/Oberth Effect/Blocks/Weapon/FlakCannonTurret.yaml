@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/FlakCannonTurret
 Enabled: true
+Cost: 80
 Info:
   ShortName: Flak
   FullName: Flak Cannon Turret

@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope2x1RightFront
 Enabled: true
+Cost: 1
 Info:
   ShortName: R Slope Front
   FullName: Slope 2x1 Right Front

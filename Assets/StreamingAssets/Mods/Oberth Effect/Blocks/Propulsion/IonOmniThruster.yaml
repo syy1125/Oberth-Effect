@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/IonOmniThruster
 Enabled: true
+Cost: 10
 Info:
   ShortName: Ion Thruster
   FullName: Omni-Directional Ion Thruster
@@ -28,7 +29,7 @@ Combat:
   ArmorValue: 1
 Propulsion:
   OmniThruster:
-    MaxForce: 2.5
+    MaxForce: 10
     MaxResourceUse:
       OberthEffect/Energy: 50
     IsFuelPropulsion: false

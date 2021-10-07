@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Block1x1Half
 Enabled: true
+Cost: 2
 Info:
   ShortName: Half Block
   FullName: Half Block 1x1

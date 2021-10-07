@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/FusionReactor
 Enabled: true
+Cost: 25
 Info:
   ShortName: Fusion Reactor
   FullName: Toroidal Nuclar Fusion Reactor

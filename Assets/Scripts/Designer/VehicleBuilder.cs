@@ -25,6 +25,8 @@ public class VehicleBuilder : MonoBehaviour
 	public VehicleDesigner Designer;
 	public GameObject ControlCoreBlock;
 
+	public int VehicleCost { get; private set; }
+
 	private VehicleBlueprint Blueprint => Designer.Blueprint;
 
 	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posToBlock;
@@ -109,6 +111,8 @@ public class VehicleBuilder : MonoBehaviour
 		SpawnBlockGameObject(instance);
 
 		UpdateConnectedBlocks();
+
+		UpdateVehicleCost();
 	}
 
 	public void RemoveBlock(Vector2Int location)
@@ -140,6 +144,8 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Remove(instance);
 
 		UpdateConnectedBlocks();
+
+		UpdateVehicleCost();
 	}
 
 	#region Query Methods
@@ -252,6 +258,11 @@ public class VehicleBuilder : MonoBehaviour
 
 	#endregion
 
+	private void UpdateVehicleCost()
+	{
+		VehicleCost = VehicleHelper.GetCost(Blueprint);
+	}
+
 	#region Administration
 
 	private void ClearAll()
@@ -298,6 +309,8 @@ public class VehicleBuilder : MonoBehaviour
 		}
 
 		UpdateConnectedBlocks();
+
+		UpdateVehicleCost();
 	}
 
 	#endregion

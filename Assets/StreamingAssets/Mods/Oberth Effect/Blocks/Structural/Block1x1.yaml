@@ -1,5 +1,6 @@
 BlockId: OberthEffect/Block1x1
 Enabled: true
+Cost: 4
 Info:
   ShortName: Block
   FullName: Block 1x1

@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SmallIonEngine
 Enabled: true
+Cost: 20
 Info:
   ShortName: Ion Engine
   FullName: Small Ion Engine
@@ -31,11 +32,11 @@ Combat:
   ArmorValue: 1
 Propulsion:
   Engine:
-    MaxForce: 10
+    MaxForce: 50
     MaxResourceUse:
       OberthEffect/Energy: 50
     IsFuelPropulsion: false
-    MaxThrottleRate: 0.5
+    MaxThrottleRate: 2
     Particles:
       - Offset: { X: 0, Y: -0.2 }
         Direction: { X: 0, Y: -1 }

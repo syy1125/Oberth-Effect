@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope2x1LeftFront
 Enabled: true
+Cost: 1
 Info:
   ShortName: L Slope Front
   FullName: Slope 2x1 Left Front
