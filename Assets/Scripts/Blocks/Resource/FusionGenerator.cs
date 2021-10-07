@@ -40,6 +40,8 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatile
 			_activeRenderersParent.localScale = Vector3.one;
 
 			RendererHelper.AttachRenderers(_activeRenderersParent, spec.ActivationRenderers);
+
+			_activeRenderersParent.gameObject.SetActive(_active);
 		}
 	}
 
@@ -56,7 +58,11 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatile
 	public void SetFusionActive(bool active)
 	{
 		_active = active;
-		_activeRenderersParent.gameObject.SetActive(_active);
+
+		if (_activeRenderersParent != null)
+		{
+			_activeRenderersParent.gameObject.SetActive(_active);
+		}
 	}
 
 	public float GetRadiusMultiplier()
