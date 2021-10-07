@@ -60,6 +60,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 				nameof(CreateExplosionAt), RpcTarget.All,
 				transform.position, _config.ExplosionRadius, _config.Damage
 			);
+			PhotonNetwork.Destroy(gameObject);
 		}
 		else
 		{

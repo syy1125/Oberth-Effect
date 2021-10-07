@@ -76,7 +76,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(new Vector2(-1f, -1f), new Vector2(1f, 1f));
+		return new Tuple<Vector2, Vector2>(new Vector2(-6f, -8f), new Vector2(6f, 8f));
 	}
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
