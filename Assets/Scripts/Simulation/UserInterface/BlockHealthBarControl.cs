@@ -96,6 +96,9 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private void Update()
 	{
+		// Handle scene unload edge case
+		if (_mainCamera == null || _target == null) return;
+
 		// If necessary, we could optimize this more, but so far it looks like this doesn't impact performance that much
 		UpdateAllHealthBars();
 	}

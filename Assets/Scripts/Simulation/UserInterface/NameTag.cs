@@ -31,6 +31,8 @@ public class NameTag : MonoBehaviour
 
 	private void Update()
 	{
+		if (Target == null) return;
+
 		if (!Target.isActiveAndEnabled)
 		{
 			Destroy(gameObject);
@@ -39,6 +41,8 @@ public class NameTag : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		if (Target == null) return;
+
 		Vector3 targetPosition = Target.GetComponent<Rigidbody2D>().worldCenterOfMass;
 		Vector2 screenPosition = _mainCamera.WorldToScreenPoint(targetPosition);
 

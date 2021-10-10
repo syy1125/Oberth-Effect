@@ -26,6 +26,8 @@ public class Radar : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		if (OwnVehicle == null) return;
+
 		int i = 0;
 		Vector2 centerOfMass = OwnVehicle.worldCenterOfMass;
 
