@@ -83,7 +83,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_raycastFilter = new ContactFilter2D
 		{
-			layerMask = WeaponConstants.HIT_LAYER_MASK,
+			layerMask = LayerConstants.DAMAGEABLE_LAYER_MASK,
 			useLayerMask = true
 		};
 		_raycastHits = new List<RaycastHit2D>();

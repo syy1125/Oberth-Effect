@@ -1,6 +1,7 @@
 ﻿using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
@@ -102,7 +103,9 @@ public static class BlockBuilder
 		var blockDescription = blockObject.AddComponent<BlockDescription>();
 		blockDescription.LoadSpec(blockSpec);
 
-		LayerUtils.SetLayerRecursively(blockObject, 6, 0b111000000);
+		LayerUtils.SetLayerRecursively(
+			blockObject, LayerConstants.VEHICLE_BLOCK_LAYER, LayerConstants.VEHICLE_LAYER_MASK
+		);
 
 		return blockObject;
 	}
