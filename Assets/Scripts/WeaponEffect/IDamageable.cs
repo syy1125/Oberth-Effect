@@ -15,6 +15,14 @@ public interface IDamageable
 	Tuple<Vector2, Vector2> GetExplosionDamageBounds();
 
 	/// <summary>
+	/// Creates a predicate for determining whether a local point is within the proper collider of the object.
+	/// </summary>
+	/// <remarks>
+	/// To future-proof this, make this function work well outside Unity's main thread. Don't call on any of unity's component system functions inside this function.
+	/// </remarks>
+	Predicate<Vector2> GetPointInBoundPredicate();
+
+	/// <summary>
 	/// Tell the target to take damage.
 	/// <br/>
 	/// Should only be called if we are responsible for calculating damage.

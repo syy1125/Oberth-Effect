@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
@@ -84,6 +85,11 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
 		return new Tuple<Vector2, Vector2>(_explosionBoundsMin, _explosionBoundsMax);
+	}
+
+	public Predicate<Vector2> GetPointInBoundPredicate()
+	{
+		return null;
 	}
 
 	public void TakeDamage(

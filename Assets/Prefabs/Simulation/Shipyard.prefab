@@ -498,6 +498,13 @@ MonoBehaviour:
   - {fileID: 3882299210785161361}
   - {fileID: 3882299210917409335}
   - {fileID: 3882299210711870751}
+  ExplosionBounds:
+  - m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 5, y: 1, z: 0}
+  - m_Center: {x: 5, y: 0, z: 0}
+    m_Extent: {x: 1, y: 8, z: 0}
+  - m_Center: {x: -5, y: 0, z: 0}
+    m_Extent: {x: 1, y: 8, z: 0}
 --- !u!1 &3882299210785161360
 GameObject:
   m_ObjectHideFlags: 0

@@ -75,9 +75,11 @@ public class ExplosionManager : MonoBehaviour
 	/// <param name="explosionCenter">The center of the circle</param>
 	/// <param name="maxRadius">The radius of the circle</param>
 	/// <param name="gridResolution">How many grid points along each axis to use</param>
+	/// <param name="containsPoint">Predicate to determine whether the point is contained within the damageable target</param>
 	/// <returns></returns>
 	public static float CalculateDamageFactor(
-		Vector2 minPos, Vector2 maxPos, Vector2 explosionCenter, float maxRadius, int gridResolution = 100
+		Vector2 minPos, Vector2 maxPos, Vector2 explosionCenter, float maxRadius,
+		int gridResolution = 100, Predicate<Vector2> containsPoint = null
 	)
 	{
 		float area = (maxPos.x - minPos.x) * (maxPos.y - minPos.y);
@@ -92,6 +94,9 @@ public class ExplosionManager : MonoBehaviour
 					Mathf.Lerp(minPos.x, maxPos.x, x / gridResolution),
 					Mathf.Lerp(minPos.y, maxPos.y, y / gridResolution)
 				);
+
+				if (containsPoint != null && !containsPoint(position)) continue;
+
 				float distance = (position - explosionCenter).magnitude;
 
 				if (distance < maxRadius)
@@ -110,24 +115,24 @@ public class ExplosionManager : MonoBehaviour
 		var targets = _colliders
 			.Take(colliderCount)
 			.Select(c => ComponentUtils.GetBehaviourInParent<IDamageable>(c.transform))
+			.Distinct()
 			.Where(target => target is { IsMine: true });
 
-		long startTime = Stopwatch.GetTimestamp();
-
 		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
-		int hitCount = 0;
+
 		foreach (IDamageable target in targets)
 		{
 			(Vector2 minPos, Vector2 maxPos) = target.GetExplosionDamageBounds();
 			Vector2 localCenter = target.transform.InverseTransformPoint(center);
-			float effectiveDamage = d * CalculateDamageFactor(minPos, maxPos, localCenter, radius);
-			target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
-			hitCount++;
-		}
 
-		long endTime = Stopwatch.GetTimestamp();
-		float time = (float) (endTime - startTime) / Stopwatch.Frequency;
-		Debug.Log($"Explosion damage has {hitCount} hit targets and damage calculation took {time * 1000}ms");
+			float effectiveDamage =
+				d
+				* CalculateDamageFactor(
+					minPos, maxPos, localCenter, radius,
+					containsPoint: target.GetPointInBoundPredicate()
+				);
+			target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
+		}
 	}
 
 	#endregion
@@ -146,7 +151,7 @@ public class ExplosionManager : MonoBehaviour
 			: Instantiate(ExplosionEffectPrefab);
 
 		effect.transform.position = position;
-		effect.transform.localScale = new Vector3(size, size, 1f);
+		effect.transform.localScale = new Vector3(size * 2, size * 2, 1f);
 		effect.SetActive(true);
 
 		SpriteRenderer sprite = effect.GetComponent<SpriteRenderer>();

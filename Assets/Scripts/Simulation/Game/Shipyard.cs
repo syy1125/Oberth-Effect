@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.Utils;
@@ -14,6 +16,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	public int TeamIndex;
 	public float MaxHealth;
 	public Transform[] SpawnPoints;
+	public Bounds[] ExplosionBounds;
 
 	public static readonly Dictionary<int, Shipyard> ActiveShipyards = new Dictionary<int, Shipyard>();
 
@@ -23,11 +26,17 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	private GameMode _gameMode;
 	private bool _damageable;
 
+	private Bounds _explosionHull;
+
 	public float Health { get; private set; }
 
 	private void Awake()
 	{
 		ActiveShipyards.Add(TeamIndex, this);
+		_explosionHull = new Bounds();
+		foreach (Bounds bounds in ExplosionBounds) _explosionHull.Encapsulate(bounds);
+
+		Debug.Log($"{_explosionHull.min} {_explosionHull.max}");
 	}
 
 	public static Shipyard GetShipyardForTeam(int teamIndex)
@@ -62,7 +71,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 			{
 				Transform t = SpawnPoints[(playerIndex + i) % SpawnPoints.Length];
 				// If there are no other crafts obstructing the spawn point, then it's viable.
-				var overlapCollider = Physics2D.OverlapCircle(t.position, radius, WeaponConstants.HIT_LAYER_MASK);
+				var overlapCollider = Physics2D.OverlapCircle(t.position, radius, LayerConstants.DAMAGEABLE_LAYER_MASK);
 				if (overlapCollider == null)
 				{
 					return t;
@@ -76,7 +85,19 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(new Vector2(-6f, -8f), new Vector2(6f, 8f));
+		return new Tuple<Vector2, Vector2>(_explosionHull.min, _explosionHull.max);
+	}
+
+	public Predicate<Vector2> GetPointInBoundPredicate()
+	{
+		return point => ExplosionBounds.Any(bounds => Contains2D(bounds, point));
+	}
+
+	private static bool Contains2D(Bounds bounds, Vector2 point)
+	{
+		Vector3 min = bounds.min;
+		Vector3 max = bounds.max;
+		return min.x <= point.x && min.y <= point.y && max.x >= point.x && max.y >= point.y;
 	}
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
@@ -132,6 +153,16 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		else
 		{
 			Health = (float) stream.ReceiveNext();
+		}
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.matrix = transform.localToWorldMatrix;
+		Gizmos.color = Color.yellow;
+		foreach (Bounds bound in ExplosionBounds)
+		{
+			Gizmos.DrawWireCube(bound.center, bound.size);
 		}
 	}
 }
