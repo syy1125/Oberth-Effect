@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
@@ -25,7 +26,6 @@ public class ExplosionManager : MonoBehaviour
 
 	private ContactFilter2D _contactFilter;
 	private List<Collider2D> _colliders;
-	private IDamageable[] _targets;
 
 	private void Awake()
 	{
@@ -48,7 +48,6 @@ public class ExplosionManager : MonoBehaviour
 			useLayerMask = true
 		};
 		_colliders = new List<Collider2D>();
-		_targets = new IDamageable[0];
 	}
 
 	private void OnDestroy()
@@ -105,107 +104,30 @@ public class ExplosionManager : MonoBehaviour
 		return baseFactor * unitArea;
 	}
 
-	private struct CalculateDamageFactorJob : IJobParallelFor
-	{
-		// Inputs
-		[ReadOnly]
-		public NativeArray<float> MinX;
-		[ReadOnly]
-		public NativeArray<float> MinY;
-		[ReadOnly]
-		public NativeArray<float> MaxX;
-		[ReadOnly]
-		public NativeArray<float> MaxY;
-		[ReadOnly]
-		public NativeArray<float> CenterX;
-		[ReadOnly]
-		public NativeArray<float> CenterY;
-		[ReadOnly]
-		public float Radius;
-
-		// Output
-		public NativeArray<float> Results;
-
-		public void Execute(int index)
-		{
-			Vector2 min = new Vector2(MinX[index], MinY[index]);
-			Vector2 max = new Vector2(MaxX[index], MaxY[index]);
-			Vector2 center = new Vector2(CenterX[index], CenterY[index]);
-
-			Results[index] = CalculateDamageFactor(min, max, center, Radius);
-		}
-	}
-
 	private void DealExplosionDamageAt(Vector3 center, float radius, float damage)
 	{
 		int colliderCount = Physics2D.OverlapCircle(center, radius, _contactFilter, _colliders);
+		var targets = _colliders
+			.Take(colliderCount)
+			.Select(c => ComponentUtils.GetBehaviourInParent<IDamageable>(c.transform))
+			.Where(target => target is { IsMine: true });
 
-		// We're allocating enough space for `colliderCount`, but note that only the first `count` items are actually valid
-		if (_targets.Length < colliderCount) _targets = new IDamageable[_targets.Length + colliderCount];
-		NativeArray<float> minX = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> minY = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> maxX = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> maxY = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> centerX = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> centerY = new NativeArray<float>(colliderCount, Allocator.TempJob);
-		NativeArray<float> results = new NativeArray<float>(colliderCount, Allocator.TempJob);
+		long startTime = Stopwatch.GetTimestamp();
 
-		try
+		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
+		int hitCount = 0;
+		foreach (IDamageable target in targets)
 		{
-			int count = 0;
-			for (int i = 0; i < colliderCount; i++)
-			{
-				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(_colliders[i].transform);
-
-				if (target == null || !target.IsMine) continue;
-
-				_targets[count] = target;
-
-				(Vector2 boundsMin, Vector2 boundsMax) = target.GetExplosionDamageBounds();
-				minX[count] = boundsMin.x;
-				minY[count] = boundsMin.y;
-				maxX[count] = boundsMax.x;
-				maxY[count] = boundsMax.y;
-				Vector3 localExplosionCenter = target.transform.InverseTransformPoint(center);
-				centerX[count] = localExplosionCenter.x;
-				centerY[count] = localExplosionCenter.y;
-
-				count++;
-			}
-
-			var job = new CalculateDamageFactorJob
-			{
-				MinX = minX,
-				MinY = minY,
-				MaxX = maxX,
-				MaxY = maxY,
-				CenterX = centerX,
-				CenterY = centerY,
-				Radius = radius,
-				Results = results
-			};
-
-			JobHandle handle = job.Schedule(count, 2);
-			handle.Complete();
-
-			float d = damage * 100 / (19 * Mathf.PI * radius * radius);
-
-			for (int i = 0; i < count; i++)
-			{
-				float effectiveDamage = d * results[i];
-				_targets[i].TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
-			}
+			(Vector2 minPos, Vector2 maxPos) = target.GetExplosionDamageBounds();
+			Vector2 localCenter = target.transform.InverseTransformPoint(center);
+			float effectiveDamage = d * CalculateDamageFactor(minPos, maxPos, localCenter, radius);
+			target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
+			hitCount++;
 		}
-		finally
-		{
-			minX.Dispose();
-			minY.Dispose();
-			maxX.Dispose();
-			maxY.Dispose();
-			centerX.Dispose();
-			centerY.Dispose();
-			results.Dispose();
-		}
+
+		long endTime = Stopwatch.GetTimestamp();
+		float time = (float) (endTime - startTime) / Stopwatch.Frequency;
+		Debug.Log($"Explosion damage has {hitCount} hit targets and damage calculation took {time * 1000}ms");
 	}
 
 	#endregion
