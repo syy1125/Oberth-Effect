@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using ExitGames.Client.Photon;
@@ -30,11 +31,13 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public GameObject VehicleSelectionScreen;
 	public VehicleList VehicleList;
-
 	public Button SelectVehicleButton;
 
 	[Space]
 	public SwitchSelect GameModeSelect;
+
+	public SwitchSelect CostLimitSelect;
+	public InputField CostLimitInput;
 
 	[Space]
 	public Button ReadyButton;
@@ -78,6 +81,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 		GameModeSelect.SetOptions(_gameModes.Select(gameMode => Enum.GetName(typeof(GameMode), gameMode)).ToArray());
 		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
+		CostLimitSelect.OnValueChanged.AddListener(SetCostLimitPresetOption);
+		CostLimitInput.onEndEdit.AddListener(SetCostLimitText);
 
 		SelectVehicleButton.interactable = true;
 		ReadyButton.interactable = false;
@@ -114,6 +119,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
 		GameModeSelect.OnValueChanged.RemoveListener(SetGameMode);
+		CostLimitSelect.OnValueChanged.RemoveListener(SetCostLimitPresetOption);
+		CostLimitInput.onEndEdit.RemoveListener(SetCostLimitText);
 
 		SelectVehicleButton.onClick.RemoveListener(OpenVehicleSelection);
 		ReadyButton.onClick.RemoveListener(ToggleReady);
@@ -136,7 +143,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 			RoomName.text = RoomNameInput.text = (string) nextProps[PropertyKeys.ROOM_NAME];
 		}
 
-		if (nextProps.ContainsKey(PropertyKeys.GAME_MODE))
+		if (ContainsAnyKey(nextProps, PropertyKeys.GAME_MODE, PropertyKeys.COST_LIMIT_OPTION, PropertyKeys.COST_LIMIT))
 		{
 			if (!PhotonNetwork.LocalPlayer.IsMasterClient)
 			{
@@ -150,32 +157,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		}
 	}
 
-	private void SetRoomName(string roomName)
+	private static bool ContainsAnyKey(Hashtable table, params string[] keys)
 	{
-		PhotonNetwork.CurrentRoom.SetCustomProperties(
-			new Hashtable { { PropertyKeys.ROOM_NAME, roomName } }
-		);
-	}
-
-	private void SetGameMode(int i)
-	{
-		PhotonNetwork.CurrentRoom.SetCustomProperties(
-			new Hashtable { { PropertyKeys.GAME_MODE, _gameModes[i] } }
-		);
-		UnreadyPlayers();
-	}
-
-	private static void UnreadyPlayers()
-	{
-		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
-		{
-			if (!player.IsMasterClient)
-			{
-				player.SetCustomProperties(
-					new Hashtable { { PropertyKeys.PLAYER_READY, false } }
-				);
-			}
-		}
+		return keys.Any(table.ContainsKey);
 	}
 
 	public override void OnPlayerEnteredRoom(Player player)
@@ -228,6 +212,92 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	#endregion
 
+	#region Master Client Controls
+
+	private void SetRoomName(string roomName)
+	{
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable { { PropertyKeys.ROOM_NAME, roomName } }
+		);
+	}
+
+	private static void UnreadyPlayers()
+	{
+		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+		{
+			if (!player.IsMasterClient)
+			{
+				player.SetCustomProperties(
+					new Hashtable { { PropertyKeys.PLAYER_READY, false } }
+				);
+			}
+		}
+	}
+
+	private void SetGameMode(int i)
+	{
+		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
+
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable { { PropertyKeys.GAME_MODE, _gameModes[i] } }
+		);
+		UnreadyPlayers();
+	}
+
+	private void SetCostLimitPresetOption(int index)
+	{
+		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
+
+		int costLimit = index switch
+		{
+			0 => 1000,
+			1 => 3000,
+			2 => 10000,
+			3 => 1000,
+			_ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+		};
+
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable
+			{
+				{ PropertyKeys.COST_LIMIT_OPTION, index },
+				{ PropertyKeys.COST_LIMIT, costLimit }
+			}
+		);
+
+		CostLimitInput.text = costLimit.ToString();
+		CostLimitInput.interactable = index == 3;
+
+		UnreadyPlayers();
+	}
+
+	private void SetCostLimitText(string text)
+	{
+		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
+
+		int currentLimit = PhotonHelper.GetRoomCostLimit();
+
+		if (int.TryParse(text, out int value))
+		{
+			if (value != currentLimit)
+			{
+				PhotonNetwork.CurrentRoom.SetCustomProperties(
+					new Hashtable { { PropertyKeys.COST_LIMIT, value } }
+				);
+				UnreadyPlayers();
+			}
+		}
+		else
+		{
+			PhotonNetwork.CurrentRoom.SetCustomProperties(
+				new Hashtable { { PropertyKeys.COST_LIMIT, currentLimit } }
+			);
+			CostLimitInput.text = currentLimit.ToString();
+		}
+	}
+
+	#endregion
+
 	#region Update Controls
 
 	private void UseMasterControls()
@@ -236,6 +306,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomNameInput.gameObject.SetActive(true);
 
 		GameModeSelect.SetInteractable(true);
+		CostLimitSelect.SetInteractable(true);
+		CostLimitInput.interactable = Equals(
+			PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION], 3
+		);
 
 		ReadyButton.gameObject.SetActive(false);
 		StartGameButton.gameObject.SetActive(true);
@@ -247,6 +321,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomNameInput.gameObject.SetActive(false);
 
 		GameModeSelect.SetInteractable(false);
+		CostLimitSelect.SetInteractable(false);
+		CostLimitInput.interactable = false;
 
 		ReadyButton.gameObject.SetActive(true);
 		StartGameButton.gameObject.SetActive(false);
@@ -259,6 +335,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		GameModeSelect.Value = Array.IndexOf(
 			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
 		);
+		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
+		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
 
 		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
 		StartGameButton.interactable = allReady;
@@ -273,6 +351,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		GameModeSelect.Value = Array.IndexOf(
 			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
 		);
+		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
+		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
 
 		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = ready ? "Unready" : "Ready";

@@ -17,6 +17,8 @@ public static class PropertyKeys
 	public const string GAME_MODE = "gm";
 	public const string FRIENDLY_FIRE_MODE = "ff";
 	public const string TEAM_COLORS = "tc";
+	public const string COST_LIMIT_OPTION = "clo";
+	public const string COST_LIMIT = "cl";
 
 	// Photon player custom properties
 	public const string VEHICLE_NAME = "vn";

@@ -32,5 +32,12 @@ public static class PhotonHelper
 			? (GameMode) gameMode
 			: GameMode.TestDrive;
 	}
+
+	public static int GetRoomCostLimit()
+	{
+		return PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropertyKeys.COST_LIMIT, out object costLimit)
+			? (int) costLimit
+			: 1000;
+	}
 }
 }

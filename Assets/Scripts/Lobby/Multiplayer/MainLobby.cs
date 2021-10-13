@@ -270,7 +270,9 @@ public class MainLobby : MonoBehaviourPunCallbacks
 					{ PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" },
 					{ PropertyKeys.GAME_MODE, GameMode.Assault },
 					{ PropertyKeys.FRIENDLY_FIRE_MODE, FriendlyFireMode.Team },
-					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349", "0080FF" } }
+					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349", "0080FF" } },
+					{ PropertyKeys.COST_LIMIT_OPTION, 0 },
+					{ PropertyKeys.COST_LIMIT, 1000 }
 				},
 				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME, PropertyKeys.GAME_MODE }
 			}
