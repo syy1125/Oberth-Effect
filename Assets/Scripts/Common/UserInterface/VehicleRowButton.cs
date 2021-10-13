@@ -1,8 +1,7 @@
-using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Lobby
+namespace Syy1125.OberthEffect.Common.UserInterface
 {
 [RequireComponent(typeof(Button))]
 public class VehicleRowButton : MonoBehaviour
