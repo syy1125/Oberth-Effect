@@ -26,6 +26,7 @@ public class VehicleList : MonoBehaviour
 	private string _saveDir;
 	private List<string> _vehiclePaths;
 	private Dictionary<int, GameObject> _vehiclePanels;
+	private int? _costLimit;
 	private int _selectedIndex;
 
 	private void Awake()
@@ -55,8 +56,15 @@ public class VehicleList : MonoBehaviour
 
 				string content = File.ReadAllText(vehiclePath);
 				var blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
-				go.GetComponent<VehicleRowButton>().DisplayVehicle(blueprint);
-				go.GetComponent<VehicleRowButton>().SetIndex(_vehiclePaths.Count - 1);
+
+				var button = go.GetComponent<VehicleRowButton>();
+				button.DisplayVehicle(blueprint);
+				button.SetIndex(_vehiclePaths.Count - 1);
+				button.SetCostColor(
+					_costLimit.HasValue
+						? _costLimit.Value < blueprint.CachedCost ? Color.red : Color.green
+						: Color.white
+				);
 
 				_vehiclePanels.Add(_vehiclePaths.Count - 1, go);
 			}
@@ -74,6 +82,25 @@ public class VehicleList : MonoBehaviour
 
 		_vehiclePanels.Clear();
 		_vehiclePaths.Clear();
+	}
+
+	public void SetCostLimit(int? costLimit)
+	{
+		_costLimit = costLimit;
+
+		if (_vehiclePanels == null) return;
+
+		foreach (var entry in _vehiclePanels)
+		{
+			string content = File.ReadAllText(_vehiclePaths[entry.Key]);
+			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
+
+			entry.Value.GetComponent<VehicleRowButton>().SetCostColor(
+				_costLimit.HasValue
+					? _costLimit.Value < blueprint.CachedCost ? Color.red : Color.green
+					: Color.white
+			);
+		}
 	}
 
 	public void SelectIndex(int index)

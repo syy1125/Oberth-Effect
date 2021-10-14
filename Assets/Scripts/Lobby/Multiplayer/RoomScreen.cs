@@ -53,6 +53,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private GameMode[] _gameModes;
 	private SortedDictionary<int, GameObject> _playerPanels;
+	// The vehicle that the player is considering to load. Transient state.
 	private string _selectedVehicleName;
 
 	private void Awake()
@@ -149,6 +150,11 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 			{
 				UpdateClientControls();
 			}
+		}
+
+		if (nextProps.ContainsKey(PropertyKeys.COST_LIMIT))
+		{
+			UpdateVehicleListCostLimit();
 		}
 
 		if (nextProps.ContainsKey(PropertyKeys.TEAM_COLORS))
@@ -369,17 +375,46 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		}
 	}
 
+	private void UpdateVehicleListCostLimit()
+	{
+		var costLimit = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT];
+		VehicleList.SetCostLimit(costLimit);
+
+		if (VehicleSelection.SelectedVehicle != null && VehicleSelection.SelectedVehicle.CachedCost > costLimit)
+		{
+			VehicleSelection.SerializedVehicle = null;
+			PhotonNetwork.LocalPlayer.SetCustomProperties(
+				new Hashtable { { PropertyKeys.VEHICLE_NAME, null } }
+			);
+		}
+
+		if (VehicleSelectionScreen.activeSelf && _selectedVehicleName != null)
+		{
+			string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
+			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(serializedVehicle);
+			LoadVehicleButton.interactable = blueprint.CachedCost <= PhotonHelper.GetRoomCostLimit();
+		}
+	}
+
 	private void OpenVehicleSelection()
 	{
 		VehicleSelectionScreen.SetActive(true);
+		SelectVehicle(null);
 	}
 
 	private void SelectVehicle(string vehicleName)
 	{
 		_selectedVehicleName = vehicleName;
+
 		if (vehicleName != null)
 		{
-			LoadVehicleButton.interactable = true;
+			string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
+			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(serializedVehicle);
+			LoadVehicleButton.interactable = blueprint.CachedCost <= PhotonHelper.GetRoomCostLimit();
+		}
+		else
+		{
+			LoadVehicleButton.interactable = false;
 		}
 	}
 

@@ -261,6 +261,7 @@ public class VehicleBuilder : MonoBehaviour
 	private void UpdateVehicleCost()
 	{
 		VehicleCost = VehicleHelper.GetCost(Blueprint);
+		Blueprint.CachedCost = VehicleCost;
 	}
 
 	#region Administration

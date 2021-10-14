@@ -8,6 +8,7 @@ public class VehicleRowButton : MonoBehaviour
 {
 	[Header("References")]
 	public Text NameText;
+	public Text CostText;
 
 	private VehicleList _vehicleList;
 	private Button _button;
@@ -35,11 +36,17 @@ public class VehicleRowButton : MonoBehaviour
 	public void DisplayVehicle(VehicleBlueprint blueprint)
 	{
 		NameText.text = blueprint.Name;
+		CostText.text = blueprint.CachedCost.ToString();
 	}
 
 	public void SetIndex(int index)
 	{
 		_index = index;
+	}
+
+	public void SetCostColor(Color color)
+	{
+		CostText.color = color;
 	}
 
 	private void HandleClick()

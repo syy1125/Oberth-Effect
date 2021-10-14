@@ -20,6 +20,8 @@ public class VehicleBlueprint
 	public string Description;
 	public List<BlockInstance> Blocks;
 
+	public int CachedCost;
+
 	public bool UseCustomColors;
 	public ColorScheme.ColorScheme ColorScheme;
 
