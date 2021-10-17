@@ -12,7 +12,7 @@ public class SelectVehicleEvent : UnityEvent<string>
 
 public class VehicleList : MonoBehaviour
 {
-	private const string VEHICLE_EXTENSION = ".vehicle";
+	public const string VEHICLE_EXTENSION = ".vehicle";
 
 	[Header("References")]
 	public Transform ListParent;
@@ -23,7 +23,9 @@ public class VehicleList : MonoBehaviour
 	[Header("Events")]
 	public SelectVehicleEvent OnSelectVehicle;
 
-	private string _saveDir;
+	private static string _saveDir;
+	public static string SaveDir => _saveDir ??= Path.Combine(Application.persistentDataPath, "Vehicles");
+	
 	private List<string> _vehiclePaths;
 	private Dictionary<int, GameObject> _vehiclePanels;
 	private int? _costLimit;
@@ -31,13 +33,12 @@ public class VehicleList : MonoBehaviour
 
 	private void Awake()
 	{
-		_saveDir = Path.Combine(Application.persistentDataPath, "Vehicles");
 		_vehiclePaths = new List<string>();
 		_vehiclePanels = new Dictionary<int, GameObject>();
 
-		if (!Directory.Exists(_saveDir))
+		if (!Directory.Exists(SaveDir))
 		{
-			Directory.CreateDirectory(_saveDir);
+			Directory.CreateDirectory(SaveDir);
 		}
 	}
 
@@ -45,7 +46,7 @@ public class VehicleList : MonoBehaviour
 	{
 		_selectedIndex = -1;
 
-		string[] vehicles = Directory.GetFiles(_saveDir);
+		string[] vehicles = Directory.GetFiles(SaveDir);
 
 		foreach (string vehiclePath in vehicles)
 		{
@@ -129,7 +130,7 @@ public class VehicleList : MonoBehaviour
 
 	public string ToVehiclePath(string vehicleName)
 	{
-		return Path.Combine(_saveDir, vehicleName + VEHICLE_EXTENSION);
+		return Path.Combine(SaveDir, vehicleName + VEHICLE_EXTENSION);
 	}
 }
 }
