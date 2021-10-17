@@ -52,6 +52,7 @@ public class DesignerConfig : MonoBehaviour
 	private ColorContext _context;
 	private Vector2Int? _selectedLocation;
 	private bool _updatingElements;
+	public bool HasSelectedBlock => _selectedLocation != null;
 
 	#region Unity Lifecycle
 

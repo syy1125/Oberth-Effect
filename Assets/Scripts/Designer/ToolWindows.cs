@@ -17,7 +17,7 @@ public class ToolWindows : MonoBehaviour
 	public float IndicatorMoveTime;
 	public ToolWindow[] Windows;
 
-	private int _selectedIndex;
+	public int SelectedIndex { get; private set; }
 
 	private struct RectTransformVelocity
 	{
@@ -31,7 +31,7 @@ public class ToolWindows : MonoBehaviour
 
 	private void Awake()
 	{
-		_selectedIndex = 0;
+		SelectedIndex = 0;
 		_velocity = new RectTransformVelocity();
 	}
 
@@ -48,7 +48,7 @@ public class ToolWindows : MonoBehaviour
 	{
 		for (var i = 0; i < Windows.Length; i++)
 		{
-			Windows[i].Window.SetActive(i == _selectedIndex);
+			Windows[i].Window.SetActive(i == SelectedIndex);
 		}
 	}
 
@@ -62,14 +62,14 @@ public class ToolWindows : MonoBehaviour
 
 	private void SelectIndex(int index)
 	{
-		Windows[_selectedIndex].Window.SetActive(false);
-		_selectedIndex = index;
-		Windows[_selectedIndex].Window.SetActive(true);
+		Windows[SelectedIndex].Window.SetActive(false);
+		SelectedIndex = index;
+		Windows[SelectedIndex].Window.SetActive(true);
 	}
 
 	private void Update()
 	{
-		var target = Windows[_selectedIndex].Button.GetComponent<RectTransform>();
+		var target = Windows[SelectedIndex].Button.GetComponent<RectTransform>();
 		TabIndicator.anchorMin = Vector2.SmoothDamp(
 			TabIndicator.anchorMin, target.anchorMin, ref _velocity.AnchorMinVelocity, IndicatorMoveTime
 		);
