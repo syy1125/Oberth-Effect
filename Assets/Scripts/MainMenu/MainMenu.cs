@@ -1,3 +1,4 @@
+using Syy1125.OberthEffect.Guide;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -5,14 +6,23 @@ namespace Syy1125.OberthEffect.MainMenu
 {
 public class MainMenu : MonoBehaviour
 {
+	public SceneReference Designer;
+	public SceneReference MultiplayerLobby;
+
 	public void ToDesigner()
 	{
-		SceneManager.LoadScene("Scenes/Designer");
+		SceneManager.LoadScene(Designer);
+	}
+
+	public void ToDesignerGuide()
+	{
+		GameGuide.ActiveGuide = GuideSelection.Designer;
+		SceneManager.LoadScene(Designer);
 	}
 
 	public void ToLobby()
 	{
-		SceneManager.LoadScene("Scenes/Multiplayer Lobby");
+		SceneManager.LoadScene(MultiplayerLobby);
 	}
 
 	public void Quit()

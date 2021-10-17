@@ -4,11 +4,10 @@ using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using UnityEngine;
 using UnityEngine.UI;
-using YamlDotNet.Serialization;
 
 namespace Syy1125.OberthEffect.Guide
 {
-public enum Guide
+public enum GuideSelection
 {
 	None,
 	Designer
@@ -36,7 +35,7 @@ public class GameGuide : MonoBehaviour
 	private CanvasGroup _canvasGroup;
 	private bool _skip;
 
-	public static Guide ActiveGuide = Guide.None;
+	public static GuideSelection ActiveGuide = GuideSelection.None;
 	public static GameGuide Instance { get; private set; }
 
 	private void Awake()
@@ -63,13 +62,13 @@ public class GameGuide : MonoBehaviour
 	private void Start()
 	{
 		var guide = ActiveGuide;
-		ActiveGuide = Guide.None;
+		ActiveGuide = GuideSelection.None;
 		switch (guide)
 		{
-			case Guide.None:
+			case GuideSelection.None:
 				gameObject.SetActive(false);
 				break;
-			case Guide.Designer:
+			case GuideSelection.Designer:
 				PlayDesignerGuide();
 				break;
 			default:
