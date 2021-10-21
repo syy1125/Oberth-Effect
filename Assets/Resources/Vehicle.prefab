@@ -258,7 +258,7 @@ MonoBehaviour:
   RotationPidConfig:
     Response: 5
     DerivativeTime: 2
-    IntegralTime: 10
+    IntegralTime: 50
   InertiaDampenerStrength: 1
 --- !u!114 &1675783647980130284
 MonoBehaviour:
