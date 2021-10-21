@@ -16,6 +16,7 @@ public class SwitchSelect : MonoBehaviour
 	public RectTransform Content;
 	public GameObject OptionPrefab;
 	public string[] Options;
+	public bool Cyclic;
 
 	private int _value;
 
@@ -27,8 +28,21 @@ public class SwitchSelect : MonoBehaviour
 			if (value != _value)
 			{
 				_value = value;
+				UpdateInteractable();
 				OnValueChanged.Invoke(_value);
 			}
+		}
+	}
+
+	private bool _interactable = true;
+
+	public bool Interactable
+	{
+		get => _interactable;
+		set
+		{
+			_interactable = value;
+			UpdateInteractable();
 		}
 	}
 
@@ -59,6 +73,8 @@ public class SwitchSelect : MonoBehaviour
 	{
 		Left.onClick.AddListener(PrevOption);
 		Right.onClick.AddListener(NextOption);
+
+		UpdateInteractable();
 	}
 
 	private void OnDisable()
@@ -70,19 +86,11 @@ public class SwitchSelect : MonoBehaviour
 	private void PrevOption()
 	{
 		Value = (Value + Options.Length - 1) % Options.Length;
-		OnValueChanged.Invoke(Value);
 	}
 
 	private void NextOption()
 	{
 		Value = (Value + 1) % Options.Length;
-		OnValueChanged.Invoke(Value);
-	}
-
-	public void SetInteractable(bool interactable)
-	{
-		Left.interactable = interactable;
-		Right.interactable = interactable;
 	}
 
 	public void SetOptions(string[] options)
@@ -102,6 +110,15 @@ public class SwitchSelect : MonoBehaviour
 		position = Mathf.Clamp(position, -Options.Length + 1f, 0f);
 		Content.anchorMin = new Vector2(position, 0);
 		Content.anchorMax = new Vector2(position + 1, 1);
+
+		UpdateInteractable();
+	}
+
+	private void UpdateInteractable()
+	{
+		Debug.Log($"{_value} {Options.Length}");
+		Left.interactable = _interactable && (Cyclic || _value > 0);
+		Right.interactable = _interactable && (Cyclic || _value < Options.Length - 1);
 	}
 
 	private void Update()

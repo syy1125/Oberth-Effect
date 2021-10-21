@@ -311,8 +311,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomName.gameObject.SetActive(false);
 		RoomNameInput.gameObject.SetActive(true);
 
-		GameModeSelect.SetInteractable(true);
-		CostLimitSelect.SetInteractable(true);
+		GameModeSelect.Interactable = true;
+		CostLimitSelect.Interactable = true;
 		CostLimitInput.interactable = Equals(
 			PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION], 3
 		);
@@ -326,8 +326,8 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		RoomName.gameObject.SetActive(true);
 		RoomNameInput.gameObject.SetActive(false);
 
-		GameModeSelect.SetInteractable(false);
-		CostLimitSelect.SetInteractable(false);
+		GameModeSelect.Interactable = false;
+		CostLimitSelect.Interactable = false;
 		CostLimitInput.interactable = false;
 
 		ReadyButton.gameObject.SetActive(true);
