@@ -3411,6 +3411,7 @@ GameObject:
   - component: {fileID: 459719435}
   - component: {fileID: 459719434}
   - component: {fileID: 459719433}
+  - component: {fileID: 459719436}
   m_Layer: 5
   m_Name: Cost Display
   m_TagString: Untagged
@@ -3493,6 +3494,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 459719431}
   m_CullTransparentMesh: 1
+--- !u!114 &459719436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459719431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 'Blocks add to the cost of the vehicle. Room hosts can set a cost
+    limit on what vehicles may be used. Common cost brackets are: Small=1000, Medium=3000,
+    Large=10000'
 --- !u!1 &475169510
 GameObject:
   m_ObjectHideFlags: 0
@@ -10123,12 +10140,32 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6827261719764887162, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
   m_PrefabInstance: {fileID: 1722961525}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1722961528}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1722961528 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 355799198884542376, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
+  m_PrefabInstance: {fileID: 1722961525}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1722961529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722961528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: "Weapons bound to different groups have different keybinds to fire.\n 
+    Manual 1: Fires on LMB\n  Manual 2: Fires on RMB"
 --- !u!1 &1760213434
 GameObject:
   m_ObjectHideFlags: 0

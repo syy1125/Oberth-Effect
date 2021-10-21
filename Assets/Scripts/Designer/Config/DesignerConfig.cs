@@ -100,7 +100,7 @@ public class DesignerConfig : MonoBehaviour
 	private void Start()
 	{
 		ControlModeSelect.SetOptions(Enum.GetNames(typeof(VehicleControlMode)));
-		WeaponGroupSelect.SetOptions(new[] { "Manual 1", "Manual 2", "Auto-Track", "CIWS" });
+		WeaponGroupSelect.SetOptions(new[] { "Manual 1", "Manual 2" });
 	}
 
 	private void OnDisable()
