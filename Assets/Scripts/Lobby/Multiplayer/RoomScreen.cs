@@ -380,14 +380,16 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		var costLimit = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT];
 		VehicleList.SetCostLimit(costLimit);
 
+		// If the player has loaded a selected vehicle but that vehicle is now over limit, de-select it.
 		if (VehicleSelection.SelectedVehicle != null && VehicleSelection.SelectedVehicle.CachedCost > costLimit)
 		{
 			VehicleSelection.SerializedVehicle = null;
 			PhotonNetwork.LocalPlayer.SetCustomProperties(
-				new Hashtable { { PropertyKeys.VEHICLE_NAME, null } }
+				new Hashtable { { PropertyKeys.VEHICLE_NAME, null }, { PropertyKeys.PLAYER_READY, false } }
 			);
 		}
 
+		// If the vehicle list is open and the player has selected a vehicle but not confirmed it, update whether the load vehicle button can be clicked.
 		if (VehicleSelectionScreen.activeSelf && _selectedVehicleName != null)
 		{
 			string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
@@ -398,8 +400,9 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void OpenVehicleSelection()
 	{
-		VehicleSelectionScreen.SetActive(true);
 		SelectVehicle(null);
+		UpdateVehicleListCostLimit();
+		VehicleSelectionScreen.SetActive(true);
 	}
 
 	private void SelectVehicle(string vehicleName)

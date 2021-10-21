@@ -97,7 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TooltipDisplay: {fileID: 4761314135620782134}
   TooltipText: {fileID: 4761314136047142859}
-  MaxTooltipWidth: 400
+  MaxTooltipWidth: 600
   TooltipOffset: 5
   ReservedEdgeSpace: 20
   CornerPreference: 00000000010000000200000003000000
