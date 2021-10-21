@@ -10,19 +10,26 @@ public class ColorSchemePainter : MonoBehaviour
 	private static readonly int TertiaryColor = Shader.PropertyToID("_TertiaryColor");
 
 	private ColorContext _context;
-	private SpriteRenderer[] _sprites;
 	private MaterialPropertyBlock _block;
 
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
-		_sprites = GetComponentsInChildren<SpriteRenderer>();
 		_block = new MaterialPropertyBlock();
 	}
 
 	private void OnEnable()
 	{
-		foreach (SpriteRenderer sprite in _sprites)
+		ApplyColorScheme();
+
+		_context.OnPrimaryColorChanged += UpdatePrimaryColor;
+		_context.OnSecondaryColorChanged += UpdateSecondaryColor;
+		_context.OnTertiaryColorChanged += UpdateTertiaryColor;
+	}
+
+	public void ApplyColorScheme()
+	{
+		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.GetPropertyBlock(_block);
 			_block.SetColor(PrimaryColor, _context.ColorScheme.PrimaryColor);
@@ -30,10 +37,6 @@ public class ColorSchemePainter : MonoBehaviour
 			_block.SetColor(TertiaryColor, _context.ColorScheme.TertiaryColor);
 			sprite.SetPropertyBlock(_block);
 		}
-
-		_context.OnPrimaryColorChanged += UpdatePrimaryColor;
-		_context.OnSecondaryColorChanged += UpdateSecondaryColor;
-		_context.OnTertiaryColorChanged += UpdateTertiaryColor;
 	}
 
 	private void OnDisable()
@@ -45,7 +48,7 @@ public class ColorSchemePainter : MonoBehaviour
 
 	private void UpdatePrimaryColor(Color color)
 	{
-		foreach (SpriteRenderer sprite in _sprites)
+		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.GetPropertyBlock(_block);
 			_block.SetColor(PrimaryColor, color);
@@ -55,7 +58,7 @@ public class ColorSchemePainter : MonoBehaviour
 
 	private void UpdateSecondaryColor(Color color)
 	{
-		foreach (SpriteRenderer sprite in _sprites)
+		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.GetPropertyBlock(_block);
 			_block.SetColor(SecondaryColor, color);
@@ -65,7 +68,7 @@ public class ColorSchemePainter : MonoBehaviour
 
 	private void UpdateTertiaryColor(Color color)
 	{
-		foreach (SpriteRenderer sprite in _sprites)
+		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.GetPropertyBlock(_block);
 			_block.SetColor(TertiaryColor, color);

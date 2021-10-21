@@ -107,6 +107,8 @@ public static class BlockBuilder
 			blockObject, LayerConstants.VEHICLE_BLOCK_LAYER, LayerConstants.VEHICLE_LAYER_MASK
 		);
 
+		blockObject.GetComponent<ColorSchemePainter>()?.ApplyColorScheme();
+
 		return blockObject;
 	}
 }
