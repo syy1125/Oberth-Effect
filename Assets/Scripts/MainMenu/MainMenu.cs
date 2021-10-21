@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
 
 	public void ToDesignerGuide()
 	{
-		GameGuide.ActiveGuide = GuideSelection.Designer;
+		GameGuide.ActiveGuide = GuideSelection.DesignerBasic;
 		SceneManager.LoadScene(Designer);
 	}
 

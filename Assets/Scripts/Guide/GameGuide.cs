@@ -10,7 +10,7 @@ namespace Syy1125.OberthEffect.Guide
 public enum GuideSelection
 {
 	None,
-	Designer
+	DesignerBasic
 }
 
 public class GameGuide : MonoBehaviour
@@ -21,6 +21,7 @@ public class GameGuide : MonoBehaviour
 	public Text GuideText;
 	public Button SkipStepButton;
 	public float FadeTime = 0.2f;
+	public float SkipDelay = 10f;
 
 	[Header("Designer")]
 	public VehicleDesigner Designer;
@@ -68,7 +69,7 @@ public class GameGuide : MonoBehaviour
 			case GuideSelection.None:
 				gameObject.SetActive(false);
 				break;
-			case GuideSelection.Designer:
+			case GuideSelection.DesignerBasic:
 				PlayDesignerGuide();
 				break;
 			default:
@@ -126,19 +127,38 @@ public class GameGuide : MonoBehaviour
 		while (Time.unscaledTime < endTime);
 	}
 
+	private IEnumerator ExecuteAfter(Action action, float delay)
+	{
+		yield return new WaitForSecondsRealtime(delay);
+		action();
+	}
+
 	private IEnumerator Step(string title, string text, Func<bool> condition, string skipText = null)
 	{
 		SkipStepButton.GetComponentInChildren<Text>().text = skipText ?? (condition == null ? "Continue" : "Skip");
-		SkipStepButton.interactable = false;
+
+		if (condition == null)
+		{
+			SkipStepButton.gameObject.SetActive(true);
+			SkipStepButton.interactable = false;
+		}
+		else
+		{
+			SkipStepButton.gameObject.SetActive(false);
+		}
 
 		GuideTitle.text = title;
 		GuideText.text = text;
 		yield return StartCoroutine(Fade(1f));
+
 		SkipStepButton.interactable = true;
+		Coroutine enableButton =
+			StartCoroutine(ExecuteAfter(() => SkipStepButton.gameObject.SetActive(true), SkipDelay));
 
 		yield return new WaitUntil(() => _skip || condition != null && condition());
 		_skip = false;
 
+		StopCoroutine(enableButton);
 		SkipStepButton.interactable = false;
 		yield return StartCoroutine(Fade(0f));
 	}
@@ -192,7 +212,8 @@ public class GameGuide : MonoBehaviour
 				"Placing blocks (1/2)",
 				string.Join(
 					"\n",
-					"To add a block to your design, first select it from the block palette on the right, then use left click to place blocks.",
+					"To add a block to your design, first click on it from the block palette on the right to select it, then use left click to place blocks.",
+					"You can drag to quickly place multiple blocks of the same type. Use R and Shift+R for rotation.",
 					"Make something with 10 blocks total to complete this step."
 				),
 				() => Designer.Blueprint.Blocks.Count >= 10
