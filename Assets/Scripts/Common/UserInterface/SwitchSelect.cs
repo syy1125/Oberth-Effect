@@ -116,7 +116,6 @@ public class SwitchSelect : MonoBehaviour
 
 	private void UpdateInteractable()
 	{
-		Debug.Log($"{_value} {Options.Length}");
 		Left.interactable = _interactable && (Cyclic || _value > 0);
 		Right.interactable = _interactable && (Cyclic || _value < Options.Length - 1);
 	}
