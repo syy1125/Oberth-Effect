@@ -649,3 +649,4 @@ MonoBehaviour:
   MaxHealth: 5000
   SpawnPoints:
   - {fileID: 1844357349}
+  ExplosionBounds: []
