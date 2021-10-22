@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Syy1125.OberthEffect.Spec.Block.Resource;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,7 +11,7 @@ namespace Syy1125.OberthEffect.Blocks.Resource
 public interface IFusionGeneratorRegistry : IBlockRegistry<FusionGenerator>, IEventSystemHandler
 {}
 
-public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatileComponent
+public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatileComponent, ITooltipProvider
 {
 	private Dictionary<string, float> _generationRate;
 	private Dictionary<string, float> _empty = new Dictionary<string, float>();
@@ -83,6 +84,16 @@ public class FusionGenerator : MonoBehaviour, IResourceGeneratorBlock, IVolatile
 	public IReadOnlyDictionary<string, float> GetMaxGenerationRate()
 	{
 		return _generationRate;
+	}
+
+	public string GetTooltip()
+	{
+		return "Fusion reactor resource generation\n"
+		       + string.Join(
+			       "\n",
+			       VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
+				       .Select(line => $"  {line}")
+		       );
 	}
 }
 }
