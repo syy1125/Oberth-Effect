@@ -35,8 +35,6 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		ActiveShipyards.Add(TeamIndex, this);
 		_explosionHull = new Bounds();
 		foreach (Bounds bounds in ExplosionBounds) _explosionHull.Encapsulate(bounds);
-
-		Debug.Log($"{_explosionHull.min} {_explosionHull.max}");
 	}
 
 	public static Shipyard GetShipyardForTeam(int teamIndex)
