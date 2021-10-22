@@ -222,6 +222,7 @@ public static class ModLoader
 	)
 	{
 		string contentRoot = Path.Combine(_modsRoot, mod.Directory, subDirectory);
+		if (!Directory.Exists(contentRoot)) return;
 
 		foreach (string file in Directory.EnumerateFiles(contentRoot, "*.yaml", SearchOption.AllDirectories))
 		{
