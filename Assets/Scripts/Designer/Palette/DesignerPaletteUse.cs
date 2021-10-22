@@ -253,15 +253,5 @@ public class DesignerPaletteUse : MonoBehaviour
 	{
 		_paletteSelectionChanged = true;
 	}
-
-	public void InitVehicle()
-	{
-		Builder.InitVehicle();
-	}
-
-	public void ReloadVehicle()
-	{
-		Builder.ReloadVehicle();
-	}
 }
 }

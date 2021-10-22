@@ -43,9 +43,15 @@ public class VehicleBuilder : MonoBehaviour
 		_connectedBlocks = new HashSet<VehicleBlueprint.BlockInstance>();
 	}
 
-	public void InitVehicle()
+	public void InitBlueprint()
 	{
 		// TODO get block name from game config
+		if (Blueprint.Blocks.Count > 0)
+		{
+			Debug.LogError("VehicleBuilder.InitBlueprint is being used on a non-empty vehicle!");
+		}
+
+		ClearAll();
 		AddBlock(BlockDatabase.Instance.GetSpecInstance("OberthEffect/ControlCore").Spec, Vector2Int.zero, 0);
 	}
 

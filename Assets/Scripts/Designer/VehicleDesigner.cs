@@ -76,7 +76,7 @@ public class VehicleDesigner : MonoBehaviour
 		else
 		{
 			Blueprint = new VehicleBlueprint();
-			PaletteUse.InitVehicle();
+			Builder.InitBlueprint();
 			Config.ReloadVehicle();
 		}
 	}
@@ -135,7 +135,16 @@ public class VehicleDesigner : MonoBehaviour
 	public void ImportVehicle(string blueprint)
 	{
 		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
-		PaletteUse.ReloadVehicle();
+		Builder.ReloadVehicle();
+		Config.ReloadVehicle();
+		Analyzer.StartAnalysis();
+	}
+
+	public void ResetVehicle()
+	{
+		Blueprint = new VehicleBlueprint();
+		
+		Builder.InitBlueprint();
 		Config.ReloadVehicle();
 		Analyzer.StartAnalysis();
 	}
