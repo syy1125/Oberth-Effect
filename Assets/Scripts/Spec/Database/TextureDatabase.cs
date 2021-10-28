@@ -29,9 +29,15 @@ public class TextureDatabase : MonoBehaviour
 			return;
 		}
 
+		Reload();
+		_sprites = new Dictionary<string, Sprite>();
+	}
+
+	private void Reload()
+	{
 		_specs = ModLoader.AllTextures
 			.ToDictionary(instance => instance.Spec.TextureId, instance => instance);
-		_sprites = new Dictionary<string, Sprite>();
+		Debug.Log($"Loaded {_specs.Count} texture specs");
 	}
 
 	private void OnDestroy()

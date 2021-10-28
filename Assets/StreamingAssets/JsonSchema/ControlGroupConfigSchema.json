@@ -1,0 +1,22 @@
+﻿{
+    "$id": "ControlGroupConfigSchema",
+    "type": "object",
+    "required": ["ControlGroupId"],
+    "properties": {
+        "ControlGroupId": { "type": "string" },
+        "DisplayName": { "type": "string" },
+        "States": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["StateId"],
+                "properties": {
+                    "StateId": { "type": "string" },
+                    "DisplayName": { "type": "string" },
+                    "DisplayColor": { "type": "string" }
+                }
+            }
+        },
+        "DefaultKeybind": { "type": "string" }
+    }
+}

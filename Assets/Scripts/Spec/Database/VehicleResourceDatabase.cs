@@ -23,8 +23,14 @@ public class VehicleResourceDatabase : MonoBehaviour
 			return;
 		}
 
+		Reload();
+	}
+
+	private void Reload()
+	{
 		_specs = ModLoader.AllVehicleResources
 			.ToDictionary(instance => instance.Spec.ResourceId, instance => instance);
+		Debug.Log($"Loaded {_specs.Count} vehicle resource specs");
 	}
 
 	public bool HasResource(string resourceId)

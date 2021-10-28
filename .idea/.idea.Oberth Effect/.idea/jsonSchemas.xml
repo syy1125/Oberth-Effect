@@ -26,6 +26,23 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="Control Group Spec">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Control Group Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/ControlGroupConfigSchema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Control Groups/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="JSON Schema version 7">
           <value>
             <SchemaInfo>

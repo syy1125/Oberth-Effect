@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
@@ -35,7 +36,8 @@ public class VehicleResourceManager :
 	private Dictionary<string, float> _resourceSatisfaction;
 
 	private List<FusionGenerator> _fusionGenerators;
-	private bool _fusionActive;
+	public bool FusionActive { get; private set; }
+	public UnityEvent FusionActiveChanged;
 
 	private void Awake()
 	{
@@ -53,12 +55,12 @@ public class VehicleResourceManager :
 		_resourceSatisfaction = new Dictionary<string, float>();
 
 		_fusionGenerators = new List<FusionGenerator>();
-		_fusionActive = true;
+		FusionActive = true;
+		FusionActiveChanged.Invoke();
 	}
 
 	private void OnEnable()
 	{
-		ToggleFusionAction.action.Enable();
 	}
 
 	private void Start()
@@ -68,7 +70,6 @@ public class VehicleResourceManager :
 
 	private void OnDisable()
 	{
-		ToggleFusionAction.action.Disable();
 	}
 
 	#region Resource Block Access
@@ -123,7 +124,7 @@ public class VehicleResourceManager :
 	public void RegisterBlock(FusionGenerator block)
 	{
 		_fusionGenerators.Add(block);
-		block.SetFusionActive(_fusionActive);
+		block.SetFusionActive(FusionActive);
 	}
 
 	public void UnregisterBlock(FusionGenerator block)
@@ -132,19 +133,6 @@ public class VehicleResourceManager :
 		if (!success)
 		{
 			Debug.LogError($"Failed to remove fusion generator {block}");
-		}
-	}
-
-	#endregion
-
-	#region Input Handlers
-
-	private void HandleToggleFusion(InputAction.CallbackContext context)
-	{
-		_fusionActive = !_fusionActive;
-		foreach (FusionGenerator generator in _fusionGenerators)
-		{
-			generator.SetFusionActive(_fusionActive);
 		}
 	}
 

@@ -1,24 +1,30 @@
 ﻿using System;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface
 {
-public class VehicleInfoDisplay : MonoBehaviour
+public class ControlInfoDisplay : MonoBehaviour
 {
-	public PlayerControlConfig ControlConfig;
 	public BlockHealthBarControl HealthBarControl;
 
 	public Text InertiaDampenerDisplay;
 	public Text ControlModeDisplay;
-	public Text FuelPropulsionDisplay;
 	public Text HealthBarModeDisplay;
+
+	public GameObject ControlGroupDisplayPrefab;
+	public string[] ControlGroups;
+
+	private Text[] _controlGroupDisplays;
 
 	private void OnEnable()
 	{
-		AttachThrustControlListeners();
+		CreateDisplay();
+		AttachControlListeners();
 		AttachHealthBarListeners();
 	}
 
@@ -29,22 +35,22 @@ public class VehicleInfoDisplay : MonoBehaviour
 
 	private void OnDisable()
 	{
-		DetachThrustControlListeners();
+		DetachControlListeners();
 		DetachHealthBarListeners();
 	}
 
-	private void AttachThrustControlListeners()
+	private void AttachControlListeners()
 	{
-		ControlConfig.InertiaDampenerChanged.AddListener(UpdateDisplay);
-		ControlConfig.ControlModeChanged.AddListener(UpdateDisplay);
-		ControlConfig.FuelPropulsionActiveChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.InertiaDampenerChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlModeChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.AnyControlGroupChanged.AddListener(UpdateDisplay);
 	}
 
-	private void DetachThrustControlListeners()
+	private void DetachControlListeners()
 	{
-		ControlConfig.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
-		ControlConfig.ControlModeChanged.RemoveListener(UpdateDisplay);
-		ControlConfig.FuelPropulsionActiveChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.AnyControlGroupChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void AttachHealthBarListeners()
@@ -57,25 +63,30 @@ public class VehicleInfoDisplay : MonoBehaviour
 		HealthBarControl.DisplayModeChanged.RemoveListener(UpdateDisplay);
 	}
 
+	private void CreateDisplay()
+	{
+		_controlGroupDisplays = new Text[ControlGroups.Length];
+		for (int i = 0; i < ControlGroups.Length; i++)
+		{
+			var row = Instantiate(ControlGroupDisplayPrefab, transform);
+			_controlGroupDisplays[i] = row.GetComponent<Text>();
+		}
+	}
+
 	private void UpdateDisplay()
 	{
-		string inertiaDampenerStatus = ControlConfig.InertiaDampenerActive
+		string inertiaDampenerStatus = PlayerControlConfig.Instance.InertiaDampenerActive
 			? "<color=\"cyan\">ON</color>"
 			: "<color=\"red\">OFF</color>";
 		InertiaDampenerDisplay.text = $"Inertia Dampener {inertiaDampenerStatus}";
 
-		string controlModeStatus = ControlConfig.ControlMode switch
+		string controlModeStatus = PlayerControlConfig.Instance.ControlMode switch
 		{
 			VehicleControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
 			VehicleControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
 			_ => throw new ArgumentOutOfRangeException()
 		};
 		ControlModeDisplay.text = $"Control Mode {controlModeStatus}";
-
-		string fuelPropulsionStatus = ControlConfig.FuelPropulsionActive
-			? "<color=\"cyan\">ON</color>"
-			: "<color=\"red\">OFF</color>";
-		FuelPropulsionDisplay.text = $"Fuel Thrusters {fuelPropulsionStatus}";
 
 		string healthBarStatus = HealthBarControl.DisplayMode switch
 		{
@@ -87,6 +98,17 @@ public class VehicleInfoDisplay : MonoBehaviour
 			_ => throw new ArgumentOutOfRangeException()
 		};
 		HealthBarModeDisplay.text = $"Show Health Bar {healthBarStatus}";
+
+		for (int i = 0; i < ControlGroups.Length; i++)
+		{
+			ControlGroupSpec controlGroup = ControlGroupDatabase.Instance.GetSpecInstance(ControlGroups[i]).Spec;
+			ControlGroupState state = controlGroup.States[PlayerControlConfig.Instance.GetStateIndex(ControlGroups[i])];
+
+			string stateDisplay = state.DisplayColor != null
+				? $"<color=\"{state.DisplayColor}\">{state.DisplayName}</color>"
+				: state.DisplayName;
+			_controlGroupDisplays[i].text = $"{controlGroup.DisplayName} {stateDisplay}";
+		}
 	}
 }
 }

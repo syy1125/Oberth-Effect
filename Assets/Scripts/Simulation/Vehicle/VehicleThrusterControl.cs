@@ -63,7 +63,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_controlConfig = controlConfig;
 		_controlConfig.ControlModeChanged.AddListener(OnControlModeChanged);
-		_controlConfig.FuelPropulsionActiveChanged.AddListener(OnFuelPropulsionActiveChanged);
 	}
 
 	private void OnDisable()
@@ -72,7 +71,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		StrafeAction.action.Disable();
 
 		_controlConfig.ControlModeChanged.RemoveListener(OnControlModeChanged);
-		_controlConfig.FuelPropulsionActiveChanged.RemoveListener(OnFuelPropulsionActiveChanged);
 	}
 
 	#endregion
@@ -91,7 +89,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	public void RegisterBlock(IPropulsionBlock block)
 	{
 		_propulsionBlocks.Add(block);
-		block.SetFuelPropulsionActive(_controlConfig.FuelPropulsionActive);
 	}
 
 	public void UnregisterBlock(IPropulsionBlock block)
@@ -226,14 +223,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private void OnControlModeChanged()
 	{
 		_rotationPid.Reset();
-	}
-
-	private void OnFuelPropulsionActiveChanged()
-	{
-		foreach (IPropulsionBlock block in _propulsionBlocks)
-		{
-			block.SetFuelPropulsionActive(_controlConfig.FuelPropulsionActive);
-		}
 	}
 }
 }

@@ -1,0 +1,10 @@
+﻿ControlGroupId: OberthEffect/FusionReactor
+DisplayName: Fusion Reactors
+DefaultKeybind: <Keyboard>/G
+States:
+  - StateId: On
+    DisplayName: ON
+    DisplayColor: cyan
+  - StateId: Off
+    DisplayName: OFF
+    DisplayColor: red

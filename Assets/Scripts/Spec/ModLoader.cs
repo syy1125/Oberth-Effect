@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.CM.SemanticMerge.Gui;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
@@ -156,6 +158,9 @@ public static class ModLoader
 	private static Dictionary<string, GameSpecDocument> _vehicleResourceDocuments;
 	internal static IReadOnlyCollection<SpecInstance<VehicleResourceSpec>> AllVehicleResources;
 
+	private static Dictionary<string, GameSpecDocument> _controlGroupDocuments;
+	internal static IReadOnlyCollection<SpecInstance<ControlGroupSpec>> AllControlGroups;
+
 	public static uint Checksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
@@ -180,6 +185,7 @@ public static class ModLoader
 		_blockDocuments = new Dictionary<string, GameSpecDocument>();
 		_textureDocuments = new Dictionary<string, GameSpecDocument>();
 		_vehicleResourceDocuments = new Dictionary<string, GameSpecDocument>();
+		_controlGroupDocuments = new Dictionary<string, GameSpecDocument>();
 
 		foreach (ModListElement mod in AllMods)
 		{
@@ -212,6 +218,11 @@ public static class ModLoader
 			LoadModContent(
 				mod, "Vehicle Resources", null,
 				nameof(VehicleResourceSpec.ResourceId), _vehicleResourceDocuments
+			);
+
+			LoadModContent(
+				mod, "Control Groups", null,
+				nameof(ControlGroupSpec.ControlGroupId), _controlGroupDocuments
 			);
 		}
 	}
@@ -322,6 +333,7 @@ public static class ModLoader
 		AllBlocks = ParseSpecInstance<BlockSpec>(deserializer, _blockDocuments.Values);
 		AllTextures = ParseSpecInstance<TextureSpec>(deserializer, _textureDocuments.Values);
 		AllVehicleResources = ParseSpecInstance<VehicleResourceSpec>(deserializer, _vehicleResourceDocuments.Values);
+		AllControlGroups = ParseSpecInstance<ControlGroupSpec>(deserializer, _controlGroupDocuments.Values);
 	}
 
 	private static IReadOnlyCollection<SpecInstance<T>> ParseSpecInstance<T>(

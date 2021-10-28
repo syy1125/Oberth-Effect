@@ -24,9 +24,15 @@ public class BlockDatabase : MonoBehaviour
 			return;
 		}
 
+		Reload();
+	}
+
+	private void Reload()
+	{
 		_specs = ModLoader.AllBlocks
 			.Where(instance => instance.Spec.Enabled)
 			.ToDictionary(instance => instance.Spec.BlockId, instance => instance);
+		Debug.Log($"Loaded {_specs.Count} block specs");
 	}
 
 	private void OnDestroy()

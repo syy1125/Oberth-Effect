@@ -1,0 +1,10 @@
+﻿ControlGroupId: OberthEffect/FuelThruster
+DisplayName: Fuel Thrusters
+DefaultKeybind: <Keyboard>/F
+States:
+  - StateId: Off
+    DisplayName: INACTIVE
+    DisplayColor: red
+  - StateId: On
+    DisplayName: ACTIVE
+    DisplayColor: lime
