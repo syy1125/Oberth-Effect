@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
@@ -38,7 +39,7 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
-		IsFuelPropulsion = spec.IsFuelPropulsion;
+		ActivationCondition = spec.ActivationCondition;
 
 		if (spec.Particles != null)
 		{
@@ -138,8 +139,14 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
+		if (!PropulsionActive)
+		{
+			_response = Vector2.zero;
+			return;
+		}
+
 		Vector2 rawResponse = Vector2.zero;
-		
+
 		if (RespondToTranslation)
 		{
 			rawResponse += _forwardBackResponse * translateCommand.y + _strafeResponse * translateCommand.x;
@@ -149,7 +156,7 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		{
 			rawResponse += _rotateResponse * rotateCommand;
 		}
-		
+
 		_response = new Vector2(
 			Mathf.Clamp(rawResponse.x, -1f, 1f),
 			Mathf.Clamp(rawResponse.y, -1f, 1f)

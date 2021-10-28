@@ -1,5 +1,7 @@
 ﻿using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
@@ -8,6 +10,7 @@ namespace Syy1125.OberthEffect.Blocks
 public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipProvider
 {
 	private bool _alwaysExplode;
+	private ControlConditionSpec _activationCondition;
 	private Vector2 _explosionOffset;
 	private float _maxRadius;
 	private float _maxDamage;
@@ -15,6 +18,7 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 	public void LoadSpec(VolatileSpec spec)
 	{
 		_alwaysExplode = spec.AlwaysExplode;
+		_activationCondition = spec.ActivationCondition;
 		_explosionOffset = spec.ExplosionOffset;
 		_maxRadius = spec.MaxRadius;
 		_maxDamage = spec.MaxDamage;
@@ -22,17 +26,15 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 	public void OnDestroyedByDamage()
 	{
+		if (!ComponentUtils
+			.GetBehaviourInParent<IControlConditionProvider>(transform)
+			.IsConditionTrue(_activationCondition))
+		{
+			return;
+		}
+
 		float radius = _maxRadius;
 		float damage = _maxDamage;
-
-		foreach (var component in GetComponents<Component>())
-		{
-			if (component is IVolatileComponent volatileComponent)
-			{
-				radius *= volatileComponent.GetRadiusMultiplier();
-				damage *= volatileComponent.GetDamageMultiplier();
-			}
-		}
 
 		if (Mathf.Approximately(radius, 0f) || Mathf.Approximately(damage, 0f)) return;
 

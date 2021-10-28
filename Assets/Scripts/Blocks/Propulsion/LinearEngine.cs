@@ -33,7 +33,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
-		IsFuelPropulsion = spec.IsFuelPropulsion;
+		ActivationCondition = spec.ActivationCondition;
 		_maxThrottleRate = spec.MaxThrottleRate;
 
 		if (spec.Particles != null)
@@ -100,7 +100,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{
-		if (IsFuelPropulsion && !FuelPropulsionActive)
+		if (!PropulsionActive)
 		{
 			_targetThrustStrength = 0f;
 			return;

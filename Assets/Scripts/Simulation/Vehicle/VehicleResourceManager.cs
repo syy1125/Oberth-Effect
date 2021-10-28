@@ -17,11 +17,8 @@ public class VehicleResourceManager :
 	IPunObservable,
 	IResourceStorageBlockRegistry,
 	IResourceGeneratorBlockRegistry,
-	IResourceConsumerBlockRegistry,
-	IFusionGeneratorRegistry
+	IResourceConsumerBlockRegistry
 {
-	public InputActionReference ToggleFusionAction;
-
 	private VehicleCore _core;
 
 	private List<ResourceStorageBlock> _storageBlocks;
@@ -34,10 +31,6 @@ public class VehicleResourceManager :
 	private List<IResourceConsumerBlock> _consumerBlocks;
 	private Dictionary<string, float> _resourceRequestRate;
 	private Dictionary<string, float> _resourceSatisfaction;
-
-	private List<FusionGenerator> _fusionGenerators;
-	public bool FusionActive { get; private set; }
-	public UnityEvent FusionActiveChanged;
 
 	private void Awake()
 	{
@@ -53,23 +46,11 @@ public class VehicleResourceManager :
 		_consumerBlocks = new List<IResourceConsumerBlock>();
 		_resourceRequestRate = new Dictionary<string, float>();
 		_resourceSatisfaction = new Dictionary<string, float>();
-
-		_fusionGenerators = new List<FusionGenerator>();
-		FusionActive = true;
-		FusionActiveChanged.Invoke();
-	}
-
-	private void OnEnable()
-	{
 	}
 
 	private void Start()
 	{
 		_core.AfterLoad(FillStorage);
-	}
-
-	private void OnDisable()
-	{
 	}
 
 	#region Resource Block Access
@@ -118,21 +99,6 @@ public class VehicleResourceManager :
 		if (!success)
 		{
 			Debug.LogError($"Failed to remove resource consumer block {block}");
-		}
-	}
-
-	public void RegisterBlock(FusionGenerator block)
-	{
-		_fusionGenerators.Add(block);
-		block.SetFusionActive(FusionActive);
-	}
-
-	public void UnregisterBlock(FusionGenerator block)
-	{
-		bool success = _fusionGenerators.Remove(block);
-		if (!success)
-		{
-			Debug.LogError($"Failed to remove fusion generator {block}");
 		}
 	}
 

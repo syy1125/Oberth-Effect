@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5714095635331986382}
   - component: {fileID: 8509090524700470639}
   - component: {fileID: 1675783647980130284}
+  - component: {fileID: 3991714592045019823}
   - component: {fileID: 7809706361844005263}
   - component: {fileID: 2241316949492300623}
   - component: {fileID: -3674230021090741243}
@@ -240,10 +241,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a855bc7aa10129c49bc594bae495dcac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ToggleFusionAction: {fileID: 7902095982474355681, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  FusionActiveChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &8509090524700470639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +274,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FireAction1: {fileID: -5540044965373844553, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   FireAction2: {fileID: -6982482081351046236, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+--- !u!114 &3991714592045019823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8509090524700470632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec16c4e03ee4ed0a8b3bd01744d9cd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7809706361844005263
 MonoBehaviour:
   m_ObjectHideFlags: 0

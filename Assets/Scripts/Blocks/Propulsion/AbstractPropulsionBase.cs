@@ -3,23 +3,29 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, IResourceConsumerBlock
+public abstract class AbstractPropulsionBase :
+	MonoBehaviour,
+	IPropulsionBlock,
+	IResourceConsumerBlock,
+	IControlConditionReceiver
 {
 	protected float MaxForce;
 	protected Dictionary<string, float> MaxResourceUse;
-	protected bool IsFuelPropulsion;
+	protected ControlConditionSpec ActivationCondition;
 
 	protected Rigidbody2D Body;
 	protected CenterOfMassContext MassContext;
 	protected bool IsMine;
 
-	protected bool FuelPropulsionActive;
+	protected bool PropulsionActive;
 	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
 
@@ -37,6 +43,9 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
 		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
+			gameObject, null, (handler, _) => handler.RegisterBlock(this)
+		);
+		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
 			gameObject, null, (handler, _) => handler.RegisterBlock(this)
 		);
 	}
@@ -60,6 +69,12 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 	{
 		var photonView = GetComponentInParent<PhotonView>();
 		IsMine = photonView == null || photonView.IsMine;
+
+		var provider = ComponentUtils.GetBehaviourInParent<IControlConditionProvider>(transform);
+		if (provider != null)
+		{
+			PropulsionActive = provider.IsConditionTrue(ActivationCondition);
+		}
 	}
 
 	protected virtual void OnDisable()
@@ -70,11 +85,14 @@ public abstract class AbstractPropulsionBase : MonoBehaviour, IPropulsionBlock, 
 		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
 			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
 		);
+		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
+			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
+		);
 	}
 
-	public void SetFuelPropulsionActive(bool fuelActive)
+	public void OnControlGroupsChanged(IControlConditionProvider provider)
 	{
-		FuelPropulsionActive = fuelActive;
+		PropulsionActive = provider.IsConditionTrue(ActivationCondition);
 	}
 
 	public abstract void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);

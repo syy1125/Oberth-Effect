@@ -32,7 +32,9 @@ Propulsion:
     MaxForce: 200
     MaxResourceUse:
       OberthEffect/Fuel: 50
-    IsFuelPropulsion: true
+    ActivationCondition:
+      ControlGroupId: OberthEffect/FuelPropulsion
+      MatchValues: [ On ]
     MaxThrottleRate: 2
     Particles:
       - Offset: { X: 0, Y: -0.2 }

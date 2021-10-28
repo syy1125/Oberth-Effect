@@ -157,15 +157,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfefa5c735544cf5ab3dd6bf849404dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ControlConfig: {fileID: 0}
   HealthBarControl: {fileID: 0}
   InertiaDampenerDisplay: {fileID: 2356713703974539943}
   ControlModeDisplay: {fileID: 2356713704153815771}
-  FuelPropulsionDisplay: {fileID: 0}
   HealthBarModeDisplay: {fileID: 3520543712096093677}
   ControlGroupDisplayPrefab: {fileID: 4034133934352301723, guid: 7778b23a998425e439acfbcc192088fa, type: 3}
   ControlGroups:
-  - OberthEffect/FuelThruster
+  - OberthEffect/FuelPropulsion
   - OberthEffect/FusionReactor
 --- !u!1 &2356713703974539941
 GameObject:

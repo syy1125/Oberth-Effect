@@ -360,6 +360,7 @@ public static class ModLoader
 				Debug.LogError(
 					$"Deserialization error {e.Message} when deserializing document\n{document.SpecDocument}"
 				);
+				Debug.Log(document.SpecDocument.ToString());
 			}
 		}
 

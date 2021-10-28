@@ -39,4 +39,5 @@ Combat:
   ArmorValue: 2
 Resource:
   FreeGenerator:
-    OberthEffect/Energy: 500
+    GenerationRate:
+      OberthEffect/Energy: 500

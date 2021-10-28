@@ -70,12 +70,6 @@ public static class BlockBuilder
 			freeGenerator.LoadSpec(blockSpec.Resource.FreeGenerator);
 		}
 
-		if (blockSpec.Resource?.FusionGenerator != null)
-		{
-			var fusionGenerator = blockObject.AddComponent<FusionGenerator>();
-			fusionGenerator.LoadSpec(blockSpec.Resource.FusionGenerator);
-		}
-
 		if (blockSpec.Propulsion?.Engine != null)
 		{
 			var linearEngine = blockObject.AddComponent<LinearEngine>();

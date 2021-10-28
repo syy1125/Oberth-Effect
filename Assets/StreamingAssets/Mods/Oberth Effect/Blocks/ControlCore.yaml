@@ -29,7 +29,8 @@ Combat:
 ControlCore: { }
 Resource:
   FreeGenerator:
-    OberthEffect/Energy: 100
+    GenerationRate:
+      OberthEffect/Energy: 100
   StorageCapacity:
     OberthEffect/Energy: 1000
     OberthEffect/Fuel: 1000

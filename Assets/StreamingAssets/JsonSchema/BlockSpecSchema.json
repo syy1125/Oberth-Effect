@@ -123,18 +123,15 @@
                 },
                 "FreeGenerator": {
                     "type": "object",
-                    "patternProperties": {
-                        "^.*$": { "type": "number" }
-                    }
-                },
-                "FusionGenerator": {
-                    "type": "object",
                     "properties": {
                         "GenerationRate": {
                             "type": "object",
                             "patternProperties": {
                                 "^.*$": { "type": "number" }
                             }
+                        },
+                        "ActivationCondition": {
+                            "$ref": "ControlConditionSpecSchema.json"
                         },
                         "ActivationRenderers": {
                             "$ref": "RendererSpecArraySchema.json"
@@ -160,9 +157,8 @@
                             },
                             "description": "Maximum resource usage of the engine."
                         },
-                        "IsFuelPropulsion": {
-                            "type": "boolean",
-                            "description": "Indicates whether this engine classifies as a fuel propulsion block. If so, the player can turn these blocks on and off using a keybind."
+                        "ActivationCondition": {
+                            "$ref": "ControlConditionSpecSchema.json"
                         },
                         "MaxThrottleRate": {
                             "type": "number",
@@ -189,9 +185,8 @@
                             },
                             "description": "Maximum resource usage when the thruster is operating at 100% in two directions."
                         },
-                        "IsFuelPropulsion": {
-                            "type": "boolean",
-                            "description": "Indicates whether this thruster classifies as a fuel propulsion block. If so, the player can turn these blocks on and off using a keybind."
+                        "ActivationCondition": {
+                            "$ref": "ControlConditionSpecSchema.json"
                         },
                         "Particles": {
                             "$ref": "ParticleSystemSpecArraySchema.json",

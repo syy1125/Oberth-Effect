@@ -35,7 +35,6 @@ Propulsion:
     MaxForce: 50
     MaxResourceUse:
       OberthEffect/Energy: 50
-    IsFuelPropulsion: false
     MaxThrottleRate: 2
     Particles:
       - Offset: { X: 0, Y: -0.2 }

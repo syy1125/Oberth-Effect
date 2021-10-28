@@ -1,4 +1,4 @@
-﻿ControlGroupId: OberthEffect/FuelThruster
+﻿ControlGroupId: OberthEffect/FuelPropulsion
 DisplayName: Fuel Thrusters
 DefaultKeybind: <Keyboard>/F
 States:
