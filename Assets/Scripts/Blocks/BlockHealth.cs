@@ -86,6 +86,11 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		return new Tuple<Vector2, Vector2>(_explosionBoundsMin, _explosionBoundsMax);
 	}
 
+	public int GetExplosionGridResolution()
+	{
+		return 10;
+	}
+
 	public Predicate<Vector2> GetPointInBoundPredicate()
 	{
 		return null;

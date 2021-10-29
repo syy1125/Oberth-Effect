@@ -14,6 +14,8 @@ public interface IDamageable
 
 	Tuple<Vector2, Vector2> GetExplosionDamageBounds();
 
+	int GetExplosionGridResolution();
+
 	/// <summary>
 	/// Creates a predicate for determining whether a local point is within the proper collider of the object.
 	/// </summary>

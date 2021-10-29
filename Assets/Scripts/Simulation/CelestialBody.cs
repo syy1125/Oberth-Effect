@@ -200,6 +200,11 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 		return new Tuple<Vector2, Vector2>(Vector2.zero, Vector2.zero);
 	}
 
+	public int GetExplosionGridResolution()
+	{
+		return 1;
+	}
+
 	public Predicate<Vector2> GetPointInBoundPredicate()
 	{
 		return _ => false;

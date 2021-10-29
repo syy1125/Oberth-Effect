@@ -127,7 +127,8 @@ public class ExplosionManager : MonoBehaviour
 				d
 				* CalculateDamageFactor(
 					minPos, maxPos, localCenter, radius,
-					containsPoint: target.GetPointInBoundPredicate()
+					target.GetExplosionGridResolution(),
+					target.GetPointInBoundPredicate()
 				);
 			target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
 		}

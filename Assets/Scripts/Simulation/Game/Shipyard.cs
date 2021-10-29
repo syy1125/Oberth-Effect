@@ -86,6 +86,11 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		return new Tuple<Vector2, Vector2>(_explosionHull.min, _explosionHull.max);
 	}
 
+	public int GetExplosionGridResolution()
+	{
+		return 50;
+	}
+
 	public Predicate<Vector2> GetPointInBoundPredicate()
 	{
 		return point => ExplosionBounds.Any(bounds => Contains2D(bounds, point));
