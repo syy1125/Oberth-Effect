@@ -46,6 +46,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 
 	private Vector2 _explosionBoundsMin;
 	private Vector2 _explosionBoundsMax;
+	private int _explosionResolution;
 
 	private ContactFilter2D _beamRaycastFilter;
 	private List<RaycastHit2D> _beamRaycastHits;
@@ -67,6 +68,11 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		_armor = spec.Combat.ArmorValue;
 		_explosionBoundsMin = spec.Construction.BoundsMin - new Vector2(0.5f, 0.5f);
 		_explosionBoundsMax = spec.Construction.BoundsMax - new Vector2(0.5f, 0.5f);
+		_explosionResolution = Mathf.Max(
+			                       spec.Construction.BoundsMax.x - spec.Construction.BoundsMin.x,
+			                       spec.Construction.BoundsMax.y - spec.Construction.BoundsMin.y
+		                       )
+		                       * 5;
 	}
 
 	private void Start()
@@ -88,7 +94,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 
 	public int GetExplosionGridResolution()
 	{
-		return 10;
+		return _explosionResolution;
 	}
 
 	public Predicate<Vector2> GetPointInBoundPredicate()
