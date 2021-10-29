@@ -168,7 +168,10 @@ public class VehicleAnalyzer : MonoBehaviour
 			MaxFirepower = new Dictionary<DamageType, float>()
 		};
 
-		long timestamp = Stopwatch.GetTimestamp();
+		int frames = 1;
+
+		long startTime = Stopwatch.GetTimestamp();
+		long timestamp = startTime;
 		long timeThreshold = Stopwatch.Frequency / 100; // 10ms
 
 		int blockCount = Designer.Blueprint.Blocks.Count;
@@ -180,14 +183,15 @@ public class VehicleAnalyzer : MonoBehaviour
 			VehicleBlueprint.BlockInstance block = Designer.Blueprint.Blocks[progress];
 			AnalyzeBlockFirstPass(block);
 
-			// long time = Stopwatch.GetTimestamp();
-			// if (time - timestamp > timeThreshold)
-			// {
-			StatusOutput.text = $"Performing analysis {progress}/{totalCount} ({progress * 100f / totalCount:F0}%)";
+			long time = Stopwatch.GetTimestamp();
+			if (time - timestamp > timeThreshold)
+			{
+				StatusOutput.text = $"Performing analysis {progress}/{totalCount} ({progress * 100f / totalCount:F0}%)";
 
-			yield return null;
-			// timestamp = time;
-			// }
+				yield return null;
+				frames++;
+				timestamp = time;
+			}
 		}
 
 		if (_result.Mass > Mathf.Epsilon)
@@ -201,17 +205,22 @@ public class VehicleAnalyzer : MonoBehaviour
 			VehicleBlueprint.BlockInstance block = Designer.Blueprint.Blocks[progress];
 			AnalyzeBlockSecondPass(block);
 
-			// long time = Stopwatch.GetTimestamp();
-			// if (time - timestamp > timeThreshold)
-			// {
-			StatusOutput.text =
-				$"Performing analysis {progress}/{totalCount} ({(blockCount + progress) * 100f / totalCount:F0}%)";
+			long time = Stopwatch.GetTimestamp();
+			if (time - timestamp > timeThreshold)
+			{
+				StatusOutput.text =
+					$"Performing analysis {progress}/{totalCount} ({(blockCount + progress) * 100f / totalCount:F0}%)";
 
-			yield return null;
-			// timestamp = time;
-			// }
+				yield return null;
+				frames++;
+				timestamp = time;
+			}
 		}
 
+		long endTime = Stopwatch.GetTimestamp();
+		Debug.Log(
+			$"Analysis of {blockCount} blocks done in {(float) (endTime - startTime) / Stopwatch.Frequency * 1000}ms over {frames} frames"
+		);
 		DisplayResults();
 	}
 
