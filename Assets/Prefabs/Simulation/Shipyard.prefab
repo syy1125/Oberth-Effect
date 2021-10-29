@@ -492,7 +492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamIndex: 0
-  MaxHealth: 5000
+  MaxHealth: 10000
   SpawnPoints:
   - {fileID: 3882299211580952301}
   - {fileID: 3882299210785161361}
@@ -505,6 +505,9 @@ MonoBehaviour:
     m_Extent: {x: 1, y: 8, z: 0}
   - m_Center: {x: -5, y: 0, z: 0}
     m_Extent: {x: 1, y: 8, z: 0}
+  IndicatorCanvas: {fileID: 0}
+  ProtectIndicatorPrefab: {fileID: 2393767302875424162, guid: 92e1cbcf6c1ea734daea1184bf39ea75, type: 3}
+  DestroyIndicatorPrefab: {fileID: 1935562262794819298, guid: 12d197f159f48274fa168cd625ba0a02, type: 3}
 --- !u!1 &3882299210785161360
 GameObject:
   m_ObjectHideFlags: 0

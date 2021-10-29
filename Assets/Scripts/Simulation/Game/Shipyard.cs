@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
@@ -18,6 +19,10 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	public Transform[] SpawnPoints;
 	public Bounds[] ExplosionBounds;
 
+	public Transform IndicatorCanvas;
+	public GameObject ProtectIndicatorPrefab;
+	public GameObject DestroyIndicatorPrefab;
+
 	public static readonly Dictionary<int, Shipyard> ActiveShipyards = new Dictionary<int, Shipyard>();
 
 	public bool IsMine => PhotonNetwork.LocalPlayer.IsMasterClient;
@@ -25,6 +30,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	private GameMode _gameMode;
 	private bool _damageable;
+	private GameObject _indicator;
 
 	private Bounds _explosionHull;
 
@@ -35,6 +41,17 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		ActiveShipyards.Add(TeamIndex, this);
 		_explosionHull = new Bounds();
 		foreach (Bounds bounds in ExplosionBounds) _explosionHull.Encapsulate(bounds);
+
+		if (PhotonHelper.GetRoomGameMode().CanDamageShipyards())
+		{
+			_indicator = Instantiate(
+				TeamIndex == PhotonTeamManager.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer)
+					? ProtectIndicatorPrefab
+					: DestroyIndicatorPrefab,
+				IndicatorCanvas
+			);
+			_indicator.GetComponent<HighlightTarget>().Target = transform;
+		}
 	}
 
 	public static Shipyard GetShipyardForTeam(int teamIndex)
@@ -123,6 +140,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 			Health = 0f;
 			damageExhausted = false;
 
+			if (_indicator != null) Destroy(_indicator);
 			AbstractGameManager.GameManager.OnShipyardDestroyed(TeamIndex);
 		}
 		else

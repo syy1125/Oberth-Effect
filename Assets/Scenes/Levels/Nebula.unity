@@ -141,15 +141,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -187,6 +187,10 @@ PrefabInstance:
       propertyPath: TeamIndex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3882299210713092954, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
+      propertyPath: IndicatorCanvas
+      value: 
+      objectReference: {fileID: 1943348017}
     - target: {fileID: 3882299210713092955, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: sceneViewId
       value: 3
@@ -421,6 +425,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
+--- !u!224 &1943348017 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1976241401627599206, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
+  m_PrefabInstance: {fileID: 1943348016}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2087348379
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,11 +479,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -50
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -50
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 3882299210713092933, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -512,5 +521,9 @@ PrefabInstance:
       propertyPath: TeamIndex
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3882299210713092954, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
+      propertyPath: IndicatorCanvas
+      value: 
+      objectReference: {fileID: 1943348017}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
