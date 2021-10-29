@@ -741,7 +741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1420612001671083739
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1098,7 +1098,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1420612002508861832
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1294,10 +1294,7 @@ MonoBehaviour:
 
     Cycle health bar mode
 
-    Toggle fuel-based propulsion
-
-    Toggle
-    fusion reactors'
+    Self destruct'
 --- !u!1 &5877652761787976529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,9 +1393,7 @@ MonoBehaviour:
 
     Tab
 
-    F
-
-    G'
+    Backspace (hold)'
 --- !u!1 &6907499044599357752
 GameObject:
   m_ObjectHideFlags: 0

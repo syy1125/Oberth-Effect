@@ -78,17 +78,9 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Toggle Fuel Propulsion",
+                    "name": "Self Destruct",
                     "type": "Button",
-                    "id": "1f4e58fb-dcff-4e0d-973f-d22bf70aaaaa",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "Toggle Volatile Reactors",
-                    "type": "Button",
-                    "id": "50096128-dd23-4d9e-bec3-c85a24a1b17a",
+                    "id": "5a6eb2e0-a401-44df-9eae-a8f076051978",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -350,17 +342,6 @@
                 },
                 {
                     "name": "",
-                    "id": "27e76db8-c0c8-484c-b8b1-14845b988b9e",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Toggle Fuel Propulsion",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "83204e29-516e-45cb-9d94-41d1f6764710",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
@@ -372,12 +353,12 @@
                 },
                 {
                     "name": "",
-                    "id": "247baeab-c766-454e-b359-cd4e6be2d531",
-                    "path": "<Keyboard>/g",
+                    "id": "95706f38-fba8-4b89-999d-1f966a53ec92",
+                    "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Toggle Volatile Reactors",
+                    "action": "Self Destruct",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

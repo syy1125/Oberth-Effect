@@ -233,21 +233,21 @@ public class VehicleCore :
 		if (_controlCores.Count <= 0)
 		{
 			Debug.Log($"{gameObject}: All control cores destroyed. Disabling controls.");
-
-			success = ActiveVehicles.Remove(this);
-			if (!success)
-			{
-				Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
-			}
-
 			Die();
 		}
 	}
 
 	public void Die()
 	{
+		bool success = ActiveVehicles.Remove(this);
+		if (!success)
+		{
+			Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
+		}
+
 		_dead = true;
 		OnVehicleDeath.Invoke();
+		enabled = false;
 	}
 
 	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;

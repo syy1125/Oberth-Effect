@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Codice.CM.SemanticMerge.Gui;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;

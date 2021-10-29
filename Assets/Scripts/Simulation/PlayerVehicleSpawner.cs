@@ -9,6 +9,7 @@ using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -17,6 +18,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 {
 	public float RespawnInterval = 5f;
 
+	[Header("References")]
 	public CameraFollow CameraRig;
 	public CameraFollow VehicleCamera;
 	public PlayerControlConfig ControlConfig;
@@ -26,12 +28,80 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 	public GameObject VehiclePrefab;
 
+	public GameObject SpawnPanel;
 	public Text SpawnTextDisplay;
+
+	[Header("Self Destruct")]
+	public InputActionReference SelfDestructAction;
+	public float SelfDestructHoldTime = 3f;
+
+	public GameObject SelfDestructPanel;
+	public Image SelfDestructProgress;
+	public Text SelfDestructDisplay;
 
 	public GameObject Vehicle { get; private set; }
 
 	private Coroutine _respawn;
 	private string _spawnTextTemplate;
+	private float? _selfDestructStart;
+
+	private void OnEnable()
+	{
+		SelfDestructAction.action.Enable();
+		SelfDestructAction.action.started += HandleSelfDestructStart;
+		SelfDestructAction.action.canceled += HandleSelfDestructEnd;
+	}
+
+	private void Start()
+	{
+		SpawnVehicle();
+		CameraRig.ResetPosition();
+		SpawnPanel.SetActive(false);
+		SelfDestructPanel.SetActive(false);
+	}
+
+	private void Update()
+	{
+		if (_selfDestructStart != null)
+		{
+			float progress = Time.time - _selfDestructStart.Value;
+			if (progress < SelfDestructHoldTime)
+			{
+				SelfDestructPanel.SetActive(true);
+				SelfDestructProgress.fillAmount = progress / SelfDestructHoldTime;
+				SelfDestructDisplay.text = $"Self destruct in {Mathf.CeilToInt(SelfDestructHoldTime - progress)}";
+			}
+			else
+			{
+				_selfDestructStart = null;
+				SelfDestructPanel.SetActive(false);
+
+				Vehicle.GetComponent<VehicleCore>().Die();
+			}
+		}
+		else
+		{
+			SelfDestructPanel.SetActive(false);
+		}
+	}
+
+	private void OnDisable()
+	{
+		SelfDestructAction.action.started -= HandleSelfDestructStart;
+		SelfDestructAction.action.canceled -= HandleSelfDestructEnd;
+		SelfDestructAction.action.Disable();
+
+		if (_respawn != null)
+		{
+			StopCoroutine(_respawn);
+			SpawnPanel.SetActive(false);
+		}
+
+		if (Vehicle != null)
+		{
+			Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.RemoveListener(BeginRespawn);
+		}
+	}
 
 	private void SpawnVehicle()
 	{
@@ -90,34 +160,16 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		);
 	}
 
-	private void Start()
-	{
-		SpawnVehicle();
-		CameraRig.ResetPosition();
-	}
-
-	private void OnDisable()
-	{
-		if (_respawn != null)
-		{
-			StopCoroutine(_respawn);
-			SpawnTextDisplay.text = "";
-		}
-
-		if (Vehicle != null)
-		{
-			Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.RemoveListener(BeginRespawn);
-		}
-	}
-
 	private void BeginRespawn()
 	{
+		_selfDestructStart = null;
 		_spawnTextTemplate = "Respawn in {0}";
 		_respawn = StartCoroutine(RespawnSequence());
 	}
 
 	private IEnumerator RespawnSequence()
 	{
+		SpawnPanel.SetActive(true);
 		float timer = RespawnInterval;
 
 		while (timer > CameraRig.InitTime)
@@ -129,8 +181,24 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		SpawnVehicle();
 		CameraRig.EnterInitMode();
-		SpawnTextDisplay.text = "";
+
+		yield return new WaitForSeconds(CameraRig.InitTime);
+
+		SpawnPanel.SetActive(false);
 		_respawn = null;
+	}
+
+	private void HandleSelfDestructStart(InputAction.CallbackContext context)
+	{
+		if (Vehicle != null && _respawn == null)
+		{
+			_selfDestructStart = Time.time;
+		}
+	}
+
+	private void HandleSelfDestructEnd(InputAction.CallbackContext context)
+	{
+		_selfDestructStart = null;
 	}
 }
 }
