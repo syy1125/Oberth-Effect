@@ -4,7 +4,6 @@ using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation

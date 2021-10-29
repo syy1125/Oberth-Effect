@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;

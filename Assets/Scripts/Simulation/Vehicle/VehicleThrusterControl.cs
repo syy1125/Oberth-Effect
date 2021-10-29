@@ -4,7 +4,6 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle

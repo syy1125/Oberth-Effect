@@ -143,7 +143,7 @@ public class VehicleDesigner : MonoBehaviour
 	public void ResetVehicle()
 	{
 		Blueprint = new VehicleBlueprint();
-		
+
 		Builder.InitBlueprint();
 		Config.ReloadVehicle();
 		Analyzer.StartAnalysis();

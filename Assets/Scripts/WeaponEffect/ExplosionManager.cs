@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {

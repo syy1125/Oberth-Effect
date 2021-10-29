@@ -25,7 +25,7 @@ public class VehicleList : MonoBehaviour
 
 	private static string _saveDir;
 	public static string SaveDir => _saveDir ??= Path.Combine(Application.persistentDataPath, "Vehicles");
-	
+
 	private List<string> _vehiclePaths;
 	private Dictionary<int, GameObject> _vehiclePanels;
 	private int? _costLimit;

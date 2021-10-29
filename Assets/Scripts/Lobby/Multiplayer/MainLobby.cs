@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
-using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.UserInterface;

@@ -138,7 +138,7 @@ public class DesignerPaletteUse : MonoBehaviour
 				EraserIndicator.SetActive(true);
 
 				break;
-			
+
 			case BlockSelection blockSelection:
 				if (_paletteSelectionChanged)
 				{

@@ -89,10 +89,10 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 			0.8f / blockSize / previewScale.y,
 			1f
 		);
-		
+
 		// Transform.Translate does not seem to work properly when localScale was just updated. 
 		previewTransform.Translate(
-			previewTransform.TransformVector(new Vector3(0.5f, 0.5f) - (Vector3) bounds.Center), 
+			previewTransform.TransformVector(new Vector3(0.5f, 0.5f) - (Vector3) bounds.Center),
 			Space.World
 		);
 

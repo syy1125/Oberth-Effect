@@ -11,7 +11,7 @@ public static class MathUtils
 	{
 		return Mathf.Log((1 + value) / (1 - value)) / 2;
 	}
-	
+
 	public static float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
 	{
 		return Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(oldMin, oldMax, value));
