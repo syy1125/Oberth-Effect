@@ -75,8 +75,12 @@ public class BlockHealthBarControl : MonoBehaviour
 	{
 		if (_target != null)
 		{
-			Debug.LogError($"BlockHealthBarControl cannot switch targets!");
-			return;
+			foreach (Tuple<GameObject, GameObject> entry in _healthBars)
+			{
+				Destroy(entry.Item2);
+			}
+
+			_healthBars.Clear();
 		}
 
 		_target = target;
