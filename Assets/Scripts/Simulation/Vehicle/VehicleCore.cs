@@ -30,7 +30,7 @@ public class VehicleCore :
 	private bool _loaded;
 	private UnityEvent _loadEvent;
 	private VehicleBlueprint _blueprint;
-	private bool _dead;
+	public bool Dead { get; private set; }
 
 	private void Awake()
 	{
@@ -62,7 +62,7 @@ public class VehicleCore :
 	private void OnDisable()
 	{
 		// Clean up when leaving room
-		if (!_dead)
+		if (!Dead)
 		{
 			bool success = ActiveVehicles.Remove(this);
 			if (!success)
@@ -244,9 +244,8 @@ public class VehicleCore :
 			Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 		}
 
-		_dead = true;
+		Dead = true;
 		OnVehicleDeath.Invoke();
-		enabled = false;
 	}
 
 	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;

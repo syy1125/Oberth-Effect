@@ -31,9 +31,7 @@ public class NameTag : MonoBehaviour
 
 	private void Update()
 	{
-		if (Target == null) return;
-
-		if (!Target.isActiveAndEnabled)
+		if (Target == null || Target.Dead)
 		{
 			Destroy(gameObject);
 		}
