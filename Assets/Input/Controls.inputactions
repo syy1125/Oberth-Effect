@@ -54,6 +54,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Zoom Radar",
+                    "type": "Value",
+                    "id": "eeebbe26-c6f4-488b-abd6-6d2f89550f6c",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Inertia Dampener",
                     "type": "Button",
                     "id": "c5115309-4d01-4d7f-9da3-cafaaab753f0",
@@ -361,6 +369,72 @@
                     "action": "Self Destruct",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Primary",
+                    "id": "e42d0d6a-ccce-439b-8205-4c77e653ef53",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom Radar",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "131e7f02-8e40-4722-9ef1-34729a0849c4",
+                    "path": "<Keyboard>/numpadMinus",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom Radar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "860c905c-8580-46d2-a13a-bc33567fefbe",
+                    "path": "<Keyboard>/numpadPlus",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom Radar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Secondary",
+                    "id": "41b2a0ec-c117-4816-bfa3-b623655d4e95",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom Radar",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "97268e87-59cd-4517-b37f-4f8293bcb6f5",
+                    "path": "<Keyboard>/minus",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom Radar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "9b5989ab-35d3-4981-aa6a-523efae02012",
+                    "path": "<Keyboard>/equals",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Zoom Radar",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

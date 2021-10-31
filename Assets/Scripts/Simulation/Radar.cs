@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.Vehicle;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -14,18 +16,69 @@ public class Radar : MonoBehaviour
 	public GameObject RadarPingPrefab;
 	public Sprite VehiclePingSprite;
 	public Sprite ShipyardPingSprite;
-	public float Scale = 1e-3f;
+	public InputActionReference ZoomAction;
+	public float ZoomInterval = 0.4f;
 
+	public float[] Scales;
+	public int ScaleIndex;
+	private float _scale;
+	private float _scaleVelocity;
+
+	private Coroutine _zoomIn;
+	private Coroutine _zoomOut;
 	private List<GameObject> _pings;
 
 	private void Awake()
 	{
 		_pings = new List<GameObject>();
+		_scale = Scales[ScaleIndex];
+	}
+
+	private void OnEnable()
+	{
+		ZoomAction.action.Enable();
 	}
 
 	private void LateUpdate()
 	{
 		if (OwnVehicle == null) return;
+
+		float zoomInput = ZoomAction.action.ReadValue<float>();
+
+		if (zoomInput > 0)
+		{
+			if (_zoomIn == null) _zoomIn = StartCoroutine(DoZoom(1));
+			if (_zoomOut != null)
+			{
+				StopCoroutine(_zoomOut);
+				_zoomOut = null;
+			}
+		}
+		else if (zoomInput < 0)
+		{
+			if (_zoomOut == null) _zoomOut = StartCoroutine(DoZoom(-1));
+			if (_zoomIn != null)
+			{
+				StopCoroutine(_zoomIn);
+				_zoomIn = null;
+			}
+		}
+		else
+		{
+			if (_zoomIn != null)
+			{
+				StopCoroutine(_zoomIn);
+				_zoomIn = null;
+			}
+
+			if (_zoomOut != null)
+			{
+				StopCoroutine(_zoomOut);
+				_zoomOut = null;
+			}
+		}
+
+		_scale = Mathf.SmoothDamp(_scale, Scales[ScaleIndex], ref _scaleVelocity, ZoomInterval / 2f);
 
 		int i = 0;
 		Vector2 centerOfMass = OwnVehicle.worldCenterOfMass;
@@ -38,7 +91,7 @@ public class Radar : MonoBehaviour
 
 			GameObject ping = GetOrCreatePing(i);
 
-			ping.transform.localPosition = relativePosition * Scale;
+			ping.transform.localPosition = relativePosition * _scale;
 			ping.transform.rotation = vehicle.transform.rotation;
 			ping.GetComponent<Image>().sprite = VehiclePingSprite;
 			ping.GetComponent<Image>().color =
@@ -55,7 +108,7 @@ public class Radar : MonoBehaviour
 
 			GameObject ping = GetOrCreatePing(i);
 
-			ping.transform.localPosition = relativePosition * Scale;
+			ping.transform.localPosition = relativePosition * _scale;
 			ping.transform.rotation = Quaternion.identity;
 			ping.GetComponent<Image>().sprite = ShipyardPingSprite;
 			ping.GetComponent<Image>().color = PhotonTeamManager.GetTeamColor(shipyard.TeamIndex);
@@ -67,6 +120,11 @@ public class Radar : MonoBehaviour
 		{
 			_pings[i].SetActive(false);
 		}
+	}
+
+	private void OnDisable()
+	{
+		ZoomAction.action.Disable();
 	}
 
 	private GameObject GetOrCreatePing(int i)
@@ -82,6 +140,15 @@ public class Radar : MonoBehaviour
 			GameObject ping = Instantiate(RadarPingPrefab, transform);
 			_pings.Add(ping);
 			return ping;
+		}
+	}
+
+	private IEnumerator DoZoom(int direction)
+	{
+		while (true)
+		{
+			ScaleIndex = Mathf.Clamp(ScaleIndex + direction, 0, Scales.Length - 1);
+			yield return new WaitForSeconds(ZoomInterval);
 		}
 	}
 }
