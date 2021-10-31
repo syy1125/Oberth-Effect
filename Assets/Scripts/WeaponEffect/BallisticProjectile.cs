@@ -28,6 +28,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	public BoxCollider2D ProjectileCollider;
 
 	private BallisticProjectileConfig _config;
+	private bool _expectExploded;
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
@@ -49,7 +50,18 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		if (other.isTrigger) return;
 
 		IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(other.transform);
-		if (target == null || !target.IsMine || target.OwnerId == photonView.OwnerActorNr) return;
+		if (target == null || target.OwnerId == photonView.OwnerActorNr) return;
+
+		if (!target.IsMine)
+		{
+			if (_config.DamageType == DamageType.Explosive)
+			{
+				gameObject.SetActive(false);
+				_expectExploded = true;
+			}
+
+			return;
+		}
 
 		// At this point, we've established that damage should be applied and that this client should be responsible for calculating damage.
 
@@ -60,7 +72,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 				nameof(CreateExplosionAt), RpcTarget.All,
 				transform.position, _config.ExplosionRadius, _config.Damage
 			);
-			PhotonNetwork.Destroy(gameObject);
+			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
 		}
 		else
 		{
@@ -70,7 +82,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			if (damageExhausted)
 			{
 				gameObject.SetActive(false);
-				photonView.RPC("DestroyProjectile", RpcTarget.All);
+				photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
 			}
 		}
 	}
@@ -81,7 +93,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 		if (photonView.IsMine)
 		{
-			if (_config.DamageType == DamageType.Explosive)
+			if (_config.DamageType == DamageType.Explosive && !_expectExploded)
 			{
 				photonView.RPC(
 					nameof(CreateExplosionAt), RpcTarget.All,
