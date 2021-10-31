@@ -246,7 +246,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					break;
 				case DamageType.Explosive:
 					ExplosionManager.Instance.CreateExplosionAt(
-						worldEnd, _explosionRadius, damageThisTick
+						worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId
 					);
 					break;
 				default:

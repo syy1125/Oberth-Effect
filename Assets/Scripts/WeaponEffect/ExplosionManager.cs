@@ -57,9 +57,9 @@ public class ExplosionManager : MonoBehaviour
 	}
 
 
-	public void CreateExplosionAt(Vector3 center, float radius, float damage)
+	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId)
 	{
-		DealExplosionDamageAt(center, radius, damage);
+		DealExplosionDamageAt(center, radius, damage, ownerId);
 		PlayEffectAt(center, radius);
 	}
 
@@ -107,14 +107,14 @@ public class ExplosionManager : MonoBehaviour
 		return baseFactor * unitArea;
 	}
 
-	private void DealExplosionDamageAt(Vector3 center, float radius, float damage)
+	private void DealExplosionDamageAt(Vector3 center, float radius, float damage, int explosionOwnerId)
 	{
 		int colliderCount = Physics2D.OverlapCircle(center, radius, _contactFilter, _colliders);
 		var targets = _colliders
 			.Take(colliderCount)
 			.Select(c => ComponentUtils.GetBehaviourInParent<IDamageable>(c.transform))
 			.Distinct()
-			.Where(target => target is { IsMine: true });
+			.Where(target => target != null && target.IsMine && target.OwnerId != explosionOwnerId);
 
 		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
 

@@ -117,7 +117,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	[PunRPC]
 	private void CreateExplosionAt(Vector3 position, float radius, float damage)
 	{
-		ExplosionManager.Instance.CreateExplosionAt(position, radius, damage);
+		ExplosionManager.Instance.CreateExplosionAt(position, radius, damage, photonView.OwnerActorNr);
 	}
 
 	[PunRPC]

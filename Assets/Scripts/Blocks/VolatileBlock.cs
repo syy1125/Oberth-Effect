@@ -40,7 +40,7 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 		Debug.Log($"Block \"{gameObject}\" is exploding for {damage} damage in {radius} game unit radius.");
 		ExplosionManager.Instance.CreateExplosionAt(
-			transform.TransformPoint(_explosionOffset), radius, damage
+			transform.TransformPoint(_explosionOffset), radius, damage, -1
 		);
 	}
 
