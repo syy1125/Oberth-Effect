@@ -79,6 +79,9 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			// Normal projectile damage behaviour
 			target.TakeDamage(_config.DamageType, ref _config.Damage, _config.ArmorPierce, out bool damageExhausted);
 
+			// I think the cases where the projectile hits multiple targets in a row are rare enough that we can neglect race conditions for now.
+			photonView.RPC(nameof(SetRemainingDamage), RpcTarget.Others, _config.Damage);
+
 			if (damageExhausted)
 			{
 				gameObject.SetActive(false);
@@ -103,6 +106,12 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 			PhotonNetwork.Destroy(gameObject);
 		}
+	}
+
+	[PunRPC]
+	private void SetRemainingDamage(float damage)
+	{
+		_config.Damage = damage;
 	}
 
 	[PunRPC]
