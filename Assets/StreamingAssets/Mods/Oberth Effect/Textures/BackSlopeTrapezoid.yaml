@@ -1,0 +1,6 @@
+﻿TextureId: OberthEffect/BackSlopeTrapezoid
+ImagePath: ./BackSlopeTrapezoid.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true
+Pivot: { X: 0.545454, Y: 0.5 }
+  

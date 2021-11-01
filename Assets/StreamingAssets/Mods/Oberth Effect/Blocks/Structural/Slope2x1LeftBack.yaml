@@ -5,13 +5,7 @@ Info:
   ShortName: L Slope Back
   FullName: Slope 2x1 Left Back
 Renderers:
-  - TextureId: OberthEffect/Square
-    Offset: { X: 0.25, Y: 0 }
-    Scale: { X: 0.5, Y: 1 }
-  - TextureId: OberthEffect/Slope
-    Offset: { X: -0.25, Y: 0 }
-    Rotation: 90
-    Scale: { X: 1, Y: 0.5 }
+  - TextureId: OberthEffect/BackSlopeTrapezoid
 Construction:
   ShowInDesigner: true
   AllowErase: true

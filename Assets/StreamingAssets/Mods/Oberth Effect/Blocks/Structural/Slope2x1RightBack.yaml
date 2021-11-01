@@ -5,12 +5,8 @@ Info:
   ShortName: R Slope Back
   FullName: Slope 2x1 Right Back
 Renderers:
-  - TextureId: OberthEffect/Square
-    Offset: { X: -0.25, Y: 0 }
-    Scale: { X: 0.5, Y: 1 }
-  - TextureId: OberthEffect/Slope
-    Offset: { X: 0.25, Y: 0 }
-    Scale: { X: 0.5, Y: 1 }
+  - TextureId: OberthEffect/BackSlopeTrapezoid
+    Scale: { X: -1, Y: 1 }
 Construction:
   ShowInDesigner: true
   AllowErase: true
