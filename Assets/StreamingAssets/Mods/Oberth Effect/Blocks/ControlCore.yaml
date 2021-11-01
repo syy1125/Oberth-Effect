@@ -3,7 +3,7 @@ Enabled: true
 Info:
   ShortName: Core
   FullName: Vehicle Control Core
-  Description: The control hub of the vehicle. Protect this block! [NYI] The vehicle can no longer operate once this block is destroyed.
+  Description: The control hub of the vehicle. Protect this block! The vehicle can no longer operate once this block is destroyed.
 Renderers:
   - TextureId: OberthEffect/ControlCore
 Construction:
@@ -18,8 +18,8 @@ Construction:
     - { X: 0, Y: 1 }
 Physics:
   CenterOfMass: { X: 0, Y: 0 }
-  Mass: 1
-  MomentOfInertia: 0.1666667
+  Mass: 2
+  MomentOfInertia: 0.3333333
   BoxCollider:
     Offset: { X: 0, Y: 0 }
     Size: { X: 1, Y: 1 }
@@ -33,4 +33,4 @@ Resource:
       OberthEffect/Energy: 100
   StorageCapacity:
     OberthEffect/Energy: 1000
-    OberthEffect/Fuel: 1000
+    OberthEffect/Fuel: 100

@@ -1,0 +1,31 @@
+﻿BlockId: OberthEffect/SmallFuelTank
+Enabled: true
+Info:
+  ShortName: Fuel Tank
+  FullName: Small Fuel Tank
+Renderers:
+  - TextureId: OberthEffect/FuelTank
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 2
+  MomentOfInertia: 0.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 1
+Resource:
+  StorageCapacity:
+    OberthEffect/Fuel: 100
+      

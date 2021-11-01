@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/FuelTank
+ImagePath: ./FuelTank.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true
