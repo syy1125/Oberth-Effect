@@ -1,6 +1,7 @@
 ﻿ControlGroupId: OberthEffect/FuelPropulsion
 DisplayName: Fuel Thrusters
 DefaultKeybind: <Keyboard>/F
+KeybindDescription: Toggle Fuel Thrusters
 States:
   - StateId: Off
     DisplayName: INACTIVE

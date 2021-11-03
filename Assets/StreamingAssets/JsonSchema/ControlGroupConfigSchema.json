@@ -17,6 +17,7 @@
                 }
             }
         },
-        "DefaultKeybind": { "type": "string" }
+        "DefaultKeybind": { "type": "string" },
+        "KeybindDescription": { "type": "string" }
     }
 }

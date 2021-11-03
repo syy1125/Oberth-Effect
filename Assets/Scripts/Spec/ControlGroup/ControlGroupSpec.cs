@@ -11,7 +11,8 @@ public struct ControlGroupSpec
 {
 	public string ControlGroupId;
 	public string DisplayName;
-	public ControlGroupState[] States;
 	public string DefaultKeybind;
+	public string KeybindDescription;
+	public ControlGroupState[] States;
 }
 }
