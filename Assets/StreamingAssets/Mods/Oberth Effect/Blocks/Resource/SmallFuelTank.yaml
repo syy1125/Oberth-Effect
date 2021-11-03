@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SmallFuelTank
 Enabled: true
+Cost: 10
 Info:
   ShortName: Fuel Tank
   FullName: Small Fuel Tank
