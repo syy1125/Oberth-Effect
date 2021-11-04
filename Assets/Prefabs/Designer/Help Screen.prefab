@@ -1294,6 +1294,8 @@ MonoBehaviour:
 
     Cycle health bar mode
 
+    Zoom radar
+
     Self destruct'
 --- !u!1 &5877652761787976529
 GameObject:
@@ -1392,6 +1394,8 @@ MonoBehaviour:
     R
 
     Tab
+
+    Numpad +/-
 
     Backspace (hold)'
 --- !u!1 &6907499044599357752
