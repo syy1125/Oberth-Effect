@@ -100,6 +100,7 @@ MonoBehaviour:
   MaxTooltipWidth: 600
   TooltipOffset: 5
   ReservedEdgeSpace: 20
+  PreferredWidth: 200
   CornerPreference: 00000000010000000200000003000000
 --- !u!1 &4761314135620782137
 GameObject:

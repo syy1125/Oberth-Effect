@@ -26,6 +26,7 @@ public class TooltipControl : MonoBehaviour
 	public float MaxTooltipWidth;
 	public float TooltipOffset;
 	public float ReservedEdgeSpace;
+	public float PreferredWidth;
 	public AnchorCorner[] CornerPreference;
 
 	private RectTransform _transform;
@@ -138,7 +139,7 @@ public class TooltipControl : MonoBehaviour
 	{
 		Vector2 availableSpace = GetAvailableSpace(rect, corner, _mouseLocalPosition);
 
-		if (mode == PositionMode.Preferred && availableSpace.x < TooltipText.preferredWidth - _textSizeDelta.x)
+		if (mode == PositionMode.Preferred && availableSpace.x < PreferredWidth)
 		{
 			return false;
 		}
