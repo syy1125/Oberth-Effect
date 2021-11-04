@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ZoomAction: {fileID: 8767603407121192922, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   MinExponent: -2
-  MaxExponent: 3
+  MaxExponent: 2
   SmoothTime: 0.2
 --- !u!1 &6029063041555485734
 GameObject:
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a56caf9bc2972409f4fc0d84704990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parallax: 0.1
+  Parallax: 0.05
   Density: 0.05
   NebulaTemplate: {fileID: 6029063042526230675}
 --- !u!1 &6029063042079493750
@@ -228,13 +228,10 @@ MonoBehaviour:
   Target: {fileID: 0}
   FollowCenterOfMass: 1
   UsePid: 1
-  PidConfig:
+  PositionPidConfig:
     Response: 10
     DerivativeTime: 0.8
     IntegralTime: 2
-  Response: 10
-  DerivativeTime: 0.8
-  IntegralTime: 2
   InitTime: 0.2
 --- !u!1 &6029063042526230675
 GameObject:

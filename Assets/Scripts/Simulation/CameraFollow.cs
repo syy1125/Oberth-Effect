@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Common;
+﻿using System;
+using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -11,10 +12,12 @@ public class CameraFollow : MonoBehaviour
 	public bool UsePid = true;
 	public PidConfig PositionPidConfig;
 
+	public float InitTime;
+
+	private Vector2 _targetPosition;
+
 	private Pid<Vector2> _pid;
 	private Vector2 _velocity;
-
-	public float InitTime;
 
 	private float _initTimer;
 	private Vector2 _initVelocity;
@@ -38,29 +41,35 @@ public class CameraFollow : MonoBehaviour
 	{
 		if (Target == null) return;
 
+		if (_initTimer <= 0 && UsePid)
+		{
+			Vector2 offset = _targetPosition - (Vector2) transform.position;
+			_pid.Update(offset, Time.fixedDeltaTime);
+			_velocity += _pid.Output * Time.fixedDeltaTime;
+			transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
+		}
+	}
+
+	private void LateUpdate()
+	{
+		if (Target == null) return;
+
 		var body = Target.GetComponent<Rigidbody2D>();
 
-		Vector2 targetPosition = FollowCenterOfMass && body != null
+		_targetPosition = FollowCenterOfMass && body != null
 			? body.worldCenterOfMass
 			: new Vector2(Target.position.x, Target.position.y);
 		Vector2 currentPosition = new Vector2(transform.position.x, transform.position.y);
 
 		if (_initTimer > 0)
 		{
-			_initTimer -= Time.fixedDeltaTime;
-			Vector2 position = Vector2.SmoothDamp(currentPosition, targetPosition, ref _initVelocity, InitTime);
+			_initTimer -= Time.deltaTime;
+			Vector2 position = Vector2.SmoothDamp(currentPosition, _targetPosition, ref _initVelocity, InitTime);
 			transform.position = new Vector3(position.x, position.y, transform.position.z);
 		}
-		else if (UsePid)
+		else if (!UsePid)
 		{
-			Vector2 offset = targetPosition - currentPosition;
-			_pid.Update(offset, Time.fixedDeltaTime);
-			_velocity += _pid.Output * Time.fixedDeltaTime;
-			transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
-		}
-		else
-		{
-			transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
+			transform.position = new Vector3(_targetPosition.x, _targetPosition.y, transform.position.z);
 		}
 	}
 
