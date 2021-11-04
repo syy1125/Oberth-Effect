@@ -157,8 +157,18 @@ public class DesignerMenu : MonoBehaviour
 
 	public void ToTestDrive()
 	{
-		VehicleSelection.SerializedVehicle = Designer.ExportVehicle();
-		SceneManager.LoadScene(TestDriveScene);
+		List<string> errors = Designer.GetVehicleErrors();
+
+		if (errors.Count > 0)
+		{
+			Notification.SetContent("Invalid design:\n" + string.Join("\n", errors));
+			OpenModal(Notification.gameObject);
+		}
+		else
+		{
+			VehicleSelection.SerializedVehicle = Designer.ExportVehicle();
+			SceneManager.LoadScene(TestDriveScene);
+		}
 	}
 
 	public void ToMainMenu()
