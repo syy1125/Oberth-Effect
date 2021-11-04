@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
@@ -68,6 +69,8 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				}
 			}
 		}
+		
+		StartCoroutine(LateFixedUpdate());
 	}
 
 	public JObject ExportConfig()
@@ -139,24 +142,29 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		return ResourceRequests;
 	}
 
-	private void FixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		float trueThrustStrength = _targetThrustStrength * Satisfaction;
-
-		if (Body != null && IsMine)
+		while (true)
 		{
-			Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustStrength), transform.position);
-		}
+			yield return new WaitForFixedUpdate();
 
-		if (_particles != null)
-		{
-			for (var i = 0; i < _particles.Length; i++)
+			float trueThrustStrength = _targetThrustStrength * Satisfaction;
+
+			if (Body != null && IsMine)
 			{
-				ParticleSystem.MainModule main = _particles[i].main;
-				main.startSpeedMultiplier = trueThrustStrength * _maxParticleSpeeds[i];
-				Color startColor = main.startColor.color;
-				startColor.a = trueThrustStrength;
-				main.startColor = new ParticleSystem.MinMaxGradient(startColor);
+				Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustStrength), transform.position);
+			}
+
+			if (_particles != null)
+			{
+				for (var i = 0; i < _particles.Length; i++)
+				{
+					ParticleSystem.MainModule main = _particles[i].main;
+					main.startSpeedMultiplier = trueThrustStrength * _maxParticleSpeeds[i];
+					Color startColor = main.startColor.color;
+					startColor.a = trueThrustStrength;
+					main.startColor = new ParticleSystem.MinMaxGradient(startColor);
+				}
 			}
 		}
 	}

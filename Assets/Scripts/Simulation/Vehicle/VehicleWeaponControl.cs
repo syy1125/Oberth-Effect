@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common.Enums;
@@ -26,6 +28,11 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		FireAction1.action.Enable();
 		FireAction2.action.Enable();
+	}
+
+	private void Start()
+	{
+		StartCoroutine(LateFixedUpdate());
 	}
 
 	private void OnDisable()
@@ -62,37 +69,42 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	#endregion
 
-	private void FixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		bool isMine = photonView.IsMine;
-		bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
-		bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
-
-		if (isMine)
+		while (true)
 		{
-			_mouseAimPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-		}
+			yield return new WaitForFixedUpdate();
 
-		foreach (IWeaponSystem weapon in _weapons)
-		{
-			switch (weapon.WeaponBinding)
+			bool isMine = photonView.IsMine;
+			bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
+			bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
+
+			if (isMine)
 			{
-				case WeaponBindingGroup.Manual1:
-					weapon.SetAimPoint(_mouseAimPoint);
-					if (isMine)
-					{
-						weapon.SetFiring(firing1);
-					}
+				_mouseAimPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+			}
 
-					break;
-				case WeaponBindingGroup.Manual2:
-					weapon.SetAimPoint(_mouseAimPoint);
-					if (isMine)
-					{
-						weapon.SetFiring(firing2);
-					}
+			foreach (IWeaponSystem weapon in _weapons)
+			{
+				switch (weapon.WeaponBinding)
+				{
+					case WeaponBindingGroup.Manual1:
+						weapon.SetAimPoint(_mouseAimPoint);
+						if (isMine)
+						{
+							weapon.SetFiring(firing1);
+						}
 
-					break;
+						break;
+					case WeaponBindingGroup.Manual2:
+						weapon.SetAimPoint(_mouseAimPoint);
+						if (isMine)
+						{
+							weapon.SetFiring(firing2);
+						}
+
+						break;
+				}
 			}
 		}
 	}

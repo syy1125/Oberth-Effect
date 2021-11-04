@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -110,6 +111,8 @@ public class TurretedWeapon :
 	{
 		_turretAngle = 0;
 		ApplyTurretRotation();
+
+		StartCoroutine(LateFixedUpdate());
 	}
 
 	private void OnDisable()
@@ -176,14 +179,19 @@ public class TurretedWeapon :
 		}
 	}
 
-	private void FixedUpdate()
+	public IEnumerator LateFixedUpdate()
 	{
-		UpdateTurretRotationState();
-		ApplyTurretRotation();
-
-		foreach (IWeaponEffectEmitter emitter in _weaponEmitters)
+		while (true)
 		{
-			emitter.EmitterFixedUpdate(_firing, _core.IsMine);
+			yield return new WaitForFixedUpdate();
+
+			UpdateTurretRotationState();
+			ApplyTurretRotation();
+
+			foreach (IWeaponEffectEmitter emitter in _weaponEmitters)
+			{
+				emitter.EmitterFixedUpdate(_firing, _core.IsMine);
+			}
 		}
 	}
 

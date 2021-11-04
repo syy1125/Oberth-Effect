@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
@@ -58,6 +59,11 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		StrafeAction.action.Enable();
 	}
 
+	private void Start()
+	{
+		StartCoroutine(LateFixedUpdate());
+	}
+
 	public void SetPlayerControlConfig(PlayerControlConfig controlConfig)
 	{
 		_controlConfig = controlConfig;
@@ -103,31 +109,36 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	#region Update
 
-	private void FixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		if (photonView.IsMine)
+		while (true)
 		{
-			switch (_controlConfig.ControlMode)
+			yield return new WaitForFixedUpdate();
+
+			if (photonView.IsMine)
 			{
-				case VehicleControlMode.Mouse:
-					UpdateMouseModeCommands();
-					break;
-				case VehicleControlMode.Cruise:
-					UpdateCruiseModeCommands();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				switch (_controlConfig.ControlMode)
+				{
+					case VehicleControlMode.Mouse:
+						UpdateMouseModeCommands();
+						break;
+					case VehicleControlMode.Cruise:
+						UpdateCruiseModeCommands();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+
+				if (_controlConfig.InertiaDampenerActive)
+				{
+					ApplyInertiaDampener();
+				}
+
+				ClampCommands();
 			}
 
-			if (_controlConfig.InertiaDampenerActive)
-			{
-				ApplyInertiaDampener();
-			}
-
-			ClampCommands();
+			SendCommands();
 		}
-
-		SendCommands();
 	}
 
 	private void UpdateMouseModeCommands()

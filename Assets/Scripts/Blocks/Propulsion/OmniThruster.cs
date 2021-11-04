@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
@@ -96,6 +97,8 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			StartParticleSystems(_leftParticles);
 			StartParticleSystems(_rightParticles);
 		}
+		
+		StartCoroutine(LateFixedUpdate());
 	}
 
 	private static void StartParticleSystems(ParticleSystem[] particleSystems)
@@ -176,35 +179,40 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		return ResourceRequests;
 	}
 
-	private void FixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		Vector2 overallResponse = _response * Satisfaction;
+		while (true)
+		{
+			yield return new WaitForFixedUpdate();
 
-		if (Body != null && IsMine)
-		{
-			Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
-		}
+			Vector2 overallResponse = _response * Satisfaction;
 
-		if (overallResponse.x > 0)
-		{
-			SetParticlesStrength(_leftParticles, 0f);
-			SetParticlesStrength(_rightParticles, overallResponse.x);
-		}
-		else
-		{
-			SetParticlesStrength(_leftParticles, -overallResponse.x);
-			SetParticlesStrength(_rightParticles, 0f);
-		}
+			if (Body != null && IsMine)
+			{
+				Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
+			}
 
-		if (overallResponse.y > 0)
-		{
-			SetParticlesStrength(_upParticles, overallResponse.y);
-			SetParticlesStrength(_downParticles, 0f);
-		}
-		else
-		{
-			SetParticlesStrength(_upParticles, 0f);
-			SetParticlesStrength(_downParticles, -overallResponse.y);
+			if (overallResponse.x > 0)
+			{
+				SetParticlesStrength(_leftParticles, 0f);
+				SetParticlesStrength(_rightParticles, overallResponse.x);
+			}
+			else
+			{
+				SetParticlesStrength(_leftParticles, -overallResponse.x);
+				SetParticlesStrength(_rightParticles, 0f);
+			}
+
+			if (overallResponse.y > 0)
+			{
+				SetParticlesStrength(_upParticles, overallResponse.y);
+				SetParticlesStrength(_downParticles, 0f);
+			}
+			else
+			{
+				SetParticlesStrength(_upParticles, 0f);
+				SetParticlesStrength(_downParticles, -overallResponse.y);
+			}
 		}
 	}
 
