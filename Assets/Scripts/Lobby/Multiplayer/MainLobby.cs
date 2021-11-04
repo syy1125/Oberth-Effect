@@ -77,11 +77,6 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		}
 	}
 
-	private void OnDestroy()
-	{
-		PhotonNetwork.Disconnect();
-	}
-
 	public override void OnConnectedToMaster()
 	{
 		if (!PhotonNetwork.InLobby)
@@ -343,6 +338,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 	public void ToMainMenu()
 	{
+		PhotonNetwork.Disconnect();
 		SceneManager.LoadScene("Scenes/Main Menu");
 	}
 }
