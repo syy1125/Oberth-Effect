@@ -125,7 +125,8 @@ public class PlayerControlConfig : MonoBehaviour
 	{
 		ControlMode = ControlMode switch
 		{
-			VehicleControlMode.Mouse => VehicleControlMode.Cruise,
+			VehicleControlMode.Mouse => VehicleControlMode.Relative,
+			VehicleControlMode.Relative => VehicleControlMode.Cruise,
 			VehicleControlMode.Cruise => VehicleControlMode.Mouse,
 			_ => throw new ArgumentOutOfRangeException()
 		};

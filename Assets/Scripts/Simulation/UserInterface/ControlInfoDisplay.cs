@@ -81,7 +81,8 @@ public class ControlInfoDisplay : MonoBehaviour
 
 		string controlModeStatus = PlayerControlConfig.Instance.ControlMode switch
 		{
-			VehicleControlMode.Mouse => "<color=\"lightblue\">MOUSE</color>",
+			VehicleControlMode.Mouse => "<color=\"lime\">MOUSE</color>",
+			VehicleControlMode.Relative => "<color=\"lightblue\">RELATIVE</color>",
 			VehicleControlMode.Cruise => "<color=\"yellow\">CRUISE</color>",
 			_ => throw new ArgumentOutOfRangeException()
 		};

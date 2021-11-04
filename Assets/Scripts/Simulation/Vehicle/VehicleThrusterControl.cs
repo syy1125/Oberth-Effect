@@ -122,6 +122,9 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 					case VehicleControlMode.Mouse:
 						UpdateMouseModeCommands();
 						break;
+					case VehicleControlMode.Relative:
+						UpdateRelativeModeCommands();
+						break;
 					case VehicleControlMode.Cruise:
 						UpdateCruiseModeCommands();
 						break;
@@ -144,9 +147,31 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private void UpdateMouseModeCommands()
 	{
 		var move = MoveAction.action.ReadValue<Vector2>();
-		var strafe = StrafeAction.action.ReadValue<float>();
+		move.x += StrafeAction.action.ReadValue<float>();
 
-		_translateCommand = move + new Vector2(strafe, 0f);
+		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+		Vector2 vehiclePosition = _body.worldCenterOfMass;
+		Quaternion mouseRelative = Quaternion.LookRotation(Vector3.forward, mousePosition - vehiclePosition);
+
+		_translateCommand = transform.InverseTransformDirection(mouseRelative * move);
+		// If move signal is strong, assume that the player wants to accelerate as quickly as possible - maximize propulsion commands.
+		if (move.sqrMagnitude >= 1)
+		{
+			float scale = 1f / Mathf.Max(Mathf.Abs(_translateCommand.x), Mathf.Abs(_translateCommand.y));
+			_translateCommand *= scale;
+		}
+		
+		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
+
+		_rotationPid.Update(angle, Time.fixedDeltaTime);
+
+		_rotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
+	}
+
+	private void UpdateRelativeModeCommands()
+	{
+		_translateCommand = MoveAction.action.ReadValue<Vector2>();
+		_translateCommand.x += StrafeAction.action.ReadValue<float>();
 
 		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;

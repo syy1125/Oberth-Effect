@@ -1,5 +1,84 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &166800809195316765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8876283618380571741}
+  - component: {fileID: 1847870888849497263}
+  - component: {fileID: 8983942191116898198}
+  m_Layer: 5
+  m_Name: Title
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8876283618380571741
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166800809195316765}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2482528917292512288}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 30}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1847870888849497263
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166800809195316765}
+  m_CullTransparentMesh: 1
+--- !u!114 &8983942191116898198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166800809195316765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 24
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Control Schemes
 --- !u!1 &308336102096762780
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,6 +581,7 @@ MonoBehaviour:
   Pages:
   - {fileID: 1420612001671083738}
   - {fileID: 6907499044599357752}
+  - {fileID: 1582041003192821065}
   - {fileID: 1420612002508861839}
   LeftButton: {fileID: 1420612001910747899}
   RightButton: {fileID: 1420612001983128693}
@@ -638,6 +718,7 @@ RectTransform:
   m_Children:
   - {fileID: 1420612001671083739}
   - {fileID: 4330752605849933537}
+  - {fileID: 2482528917292512288}
   - {fileID: 1420612002508861832}
   m_Father: {fileID: 1420612001345198342}
   m_RootOrder: 1
@@ -1113,7 +1194,7 @@ RectTransform:
   - {fileID: 1420612001909399191}
   - {fileID: 1420612000974677913}
   m_Father: {fileID: 1420612001597894294}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1195,6 +1276,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &1582041003192821065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2482528917292512288}
+  m_Layer: 5
+  m_Name: Control Schemes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2482528917292512288
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582041003192821065}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8876283618380571741}
+  - {fileID: 8514080617460146202}
+  m_Father: {fileID: 1420612001597894294}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4851148836970304275
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,6 +1516,108 @@ MonoBehaviour:
     Numpad +/-
 
     Backspace (hold)'
+--- !u!1 &6203256518174676774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8514080617460146202}
+  - component: {fileID: 3284255464108094146}
+  - component: {fileID: 1723559700179608189}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8514080617460146202
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6203256518174676774}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2482528917292512288}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -25}
+  m_SizeDelta: {x: 0, y: -50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3284255464108094146
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6203256518174676774}
+  m_CullTransparentMesh: 1
+--- !u!114 &1723559700179608189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6203256518174676774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 16
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "When controlling a vehicle, the player's movement inputs are first translated
+    to <b>propulsion commands</b>. These are vehicle-level directives. Each propulsion
+    component then determines how much thrust to output and in what direction, based
+    on its orientation and the vehicle's propulsion commands.\nThere are 6 propulsion
+    commands: translate up/down/left/right, and rotate counter-clockwise/clockwise.\n\nThere
+    are currently 3 available control modes.\n<color=\"lime\">Mouse</color>: The
+    vehicle will attempt to point in the direction of the mouse using rotate propulsion
+    commands. W/A/S/D/Q/E generate translational commands.\n  Player input is interpreted
+    based on the position of the mouse relative to the vehicle's center of mass.
+    The propulsion commands are then calculated to move the vehicle in that direction.\n 
+    For example, if the vehicle is currently pointing up, and the mouse is to the
+    right of the vehicle, pressing 'W' will generate a \"translate right\" propulsion
+    command, because that is the command most suited to propelling thevehicle toward
+    the mouse. Similarly, pressing 'A' will generate a \"translate up\" propulsion
+    command, because that will move the vehicle to the left relative to where the
+    mouse is.\n<color=\"lightblue\">Relative</color>: The vehicle will attempt to
+    point in the direction of the mouse using rotate propulsion commands. W/A/S/D/Q/E
+    generate translational commands.\n  Unlike mouse mode, player input is interpreted
+    relative to the vehicle's own orientation.\n<color=\"yellow\">Cruise</color>:
+    This control mode is very different from the other two in that it does not consider
+    mouse position at all. W/S will generate \"translate up/down\" commands. A/D
+    will generate \"rotate left/right\" commands. Q/E will generate \"translate left/right\"
+    commands.\n  If neither 'A' nor 'D' is pressed, the rotational propulsion commands
+    will be used to stop the vehicle's current rotation."
 --- !u!1 &6907499044599357752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,7 +1634,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4330752605849933537
 RectTransform:
   m_ObjectHideFlags: 0

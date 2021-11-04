@@ -6,6 +6,7 @@ namespace Syy1125.OberthEffect.Common
 public enum VehicleControlMode
 {
 	Mouse,
+	Relative,
 	Cruise
 }
 }
