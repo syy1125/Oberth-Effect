@@ -79,11 +79,11 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 
 	public string GetTooltip()
 	{
-		return "Passive resource generation\n"
+		return "Passive resource generation\n  "
 		       + string.Join(
-			       "\n",
+			       ", ",
 			       VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
-				       .Select(line => $"  {line}")
+				       .Select(entry => $"{entry}/s")
 		       );
 	}
 

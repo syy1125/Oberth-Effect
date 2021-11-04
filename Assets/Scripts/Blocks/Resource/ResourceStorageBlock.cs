@@ -39,11 +39,10 @@ public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 
 	public string GetTooltip()
 	{
-		return "Resource storage capacity\n"
+		return "Resource storage capacity\n  "
 		       + string.Join(
-			       "\n",
+			       ", ",
 			       VehicleResourceDatabase.Instance.FormatResourceDict(_capacity)
-				       .Select(line => $"  {line}")
 		       );
 	}
 }
