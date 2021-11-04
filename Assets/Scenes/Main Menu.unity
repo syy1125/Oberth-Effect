@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 52397046}
   - component: {fileID: 52397045}
   m_Layer: 5
-  m_Name: Guides
+  m_Name: Tutorials
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1136,7 +1136,7 @@ GameObject:
   - component: {fileID: 750476417}
   - component: {fileID: 750476416}
   m_Layer: 5
-  m_Name: Guide Buttons
+  m_Name: Tutorial Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1857,7 +1857,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Guides
+  m_Text: Tutorials
 --- !u!222 &1258822906
 CanvasRenderer:
   m_ObjectHideFlags: 0
