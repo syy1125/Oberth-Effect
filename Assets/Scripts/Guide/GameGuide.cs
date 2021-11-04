@@ -21,6 +21,8 @@ public class GameGuide : MonoBehaviour
 	public Text GuideText;
 	public Button SkipStepButton;
 	public float FadeTime = 0.2f;
+	public float HighlightZoomTime = 0.5f;
+	public float HighlightScale = 5f;
 	public float SkipDelay = 10f;
 
 	[Header("Designer")]
@@ -34,6 +36,7 @@ public class GameGuide : MonoBehaviour
 
 	private RectTransform _canvasTransform;
 	private CanvasGroup _canvasGroup;
+	private Coroutine _zoomHighlight;
 	private bool _skip;
 
 	public static GuideSelection ActiveGuide = GuideSelection.None;
@@ -110,7 +113,30 @@ public class GameGuide : MonoBehaviour
 			// Corners are in clockwise order starting from bottom left
 			HighlightFrame.offsetMin = _canvasTransform.InverseTransformPoint(corners[0]) - new Vector3(5f, 5f, 0);
 			HighlightFrame.offsetMax = _canvasTransform.InverseTransformPoint(corners[2]) + new Vector3(5f, 5f, 0);
+
+			if (_zoomHighlight != null)
+			{
+				StopCoroutine(_zoomHighlight);
+			}
+
+			_zoomHighlight = StartCoroutine(Zoom());
 		}
+	}
+
+	private IEnumerator Zoom()
+	{
+		float startTime = Time.time;
+		float endTime = startTime + HighlightZoomTime;
+
+		while (Time.time < endTime)
+		{
+			float scale = Mathf.Lerp(HighlightScale, 1f, Mathf.InverseLerp(startTime, endTime, Time.time));
+			HighlightFrame.localScale = Vector3.one * scale;
+
+			yield return null;
+		}
+
+		HighlightFrame.localScale = Vector3.one;
 	}
 
 	private IEnumerator Fade(float endAlpha)

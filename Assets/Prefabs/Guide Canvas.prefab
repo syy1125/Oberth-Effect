@@ -553,10 +553,16 @@ MonoBehaviour:
   GuideText: {fileID: 5219446465409050463}
   SkipStepButton: {fileID: 6871979839274628716}
   FadeTime: 0.2
+  HighlightZoomTime: 0.5
+  HighlightScale: 10
+  SkipDelay: 10
   Designer: {fileID: 0}
   Tools: {fileID: 0}
   ConfigButton: {fileID: 0}
   Config: {fileID: 0}
+  AnalyzerButton: {fileID: 0}
+  DesignerMenu: {fileID: 0}
+  HelpScreen: {fileID: 0}
 --- !u!225 &6913993996440482668
 CanvasGroup:
   m_ObjectHideFlags: 0
