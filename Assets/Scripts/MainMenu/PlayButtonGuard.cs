@@ -23,7 +23,8 @@ public class PlayButtonGuard : MonoBehaviour
 				string.Join(
 					"\n",
 					"You do not have any saved vehicle designs. As such, games you join will not be able to start.",
-					"Please head to the designer and create a vehicle design first. If you are new to the game, it is recommended that you first go through the vehicle designer guide."
+					"If you are new to the game, it is recommended that you first go through the guides.",
+					"Otherwise, head to the designer and create a vehicle design"
 				)
 			);
 		}
