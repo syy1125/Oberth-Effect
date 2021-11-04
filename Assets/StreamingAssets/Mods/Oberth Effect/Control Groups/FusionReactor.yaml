@@ -1,7 +1,7 @@
 ﻿ControlGroupId: OberthEffect/FusionReactor
 DisplayName: Fusion Reactors
 DefaultKeybind: <Keyboard>/G
-KeybindDescription: Toggle Fusion Reactors
+KeybindDescription: Toggle fusion reactors
 States:
   - StateId: On
     DisplayName: ON
