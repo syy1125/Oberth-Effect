@@ -59,6 +59,12 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		base.OnEnable();
 
+		_selectedRoom = null;
+		UpdateControls();
+	}
+
+	private void Start()
+	{
 		if (!PhotonNetwork.IsConnectedAndReady)
 		{
 			PhotonNetwork.ConnectUsingSettings();
@@ -69,9 +75,11 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			PhotonNetwork.JoinLobby();
 			StatusIndicator.text = "Connecting...";
 		}
+	}
 
-		_selectedRoom = null;
-		UpdateControls();
+	private void OnDestroy()
+	{
+		PhotonNetwork.Disconnect();
 	}
 
 	public override void OnConnectedToMaster()
@@ -83,12 +91,6 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		}
 
 		UpdateControls();
-	}
-
-	public override void OnDisable()
-	{
-		base.OnDisable();
-		PhotonNetwork.LeaveLobby();
 	}
 
 	public override void OnJoinedLobby()
