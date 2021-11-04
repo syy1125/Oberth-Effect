@@ -22,6 +22,7 @@ public static class PropertyKeys
 
 	// Photon player custom properties
 	public const string VEHICLE_NAME = "vn";
+	public const string VEHICLE_COST = "vc";
 	public const string PLAYER_READY = "r";
 	public const string TEAM_INDEX = "t";
 }

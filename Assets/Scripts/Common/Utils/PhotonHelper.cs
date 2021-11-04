@@ -13,6 +13,7 @@ public static class PhotonHelper
 			new Hashtable
 			{
 				{ PropertyKeys.VEHICLE_NAME, null },
+				{ PropertyKeys.VEHICLE_COST, 0 },
 				{ PropertyKeys.PLAYER_READY, false },
 				{ PropertyKeys.TEAM_INDEX, -1 }
 			}

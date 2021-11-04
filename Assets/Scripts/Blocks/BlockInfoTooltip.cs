@@ -38,7 +38,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipProvider
 		return string.Join(
 			"\n",
 			_fullName,
-			$"  Cost {_cost}",
+			$"  <color=\"lime\">Cost {_cost}</color>",
 			$"  {_mass * PhysicsConstants.KG_PER_UNIT_MASS:#,0.##}kg, {width:F0}m × {height:F0}m",
 			$"  <color=\"red\">{_maxHealth} health</color>, <color=\"lightblue\">{_armorValue} armor</color>"
 		).Trim();

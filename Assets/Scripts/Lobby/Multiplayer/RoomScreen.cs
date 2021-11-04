@@ -422,12 +422,16 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	private void LoadVehicleSelection()
 	{
-		PhotonNetwork.LocalPlayer.SetCustomProperties(
-			new Hashtable { { PropertyKeys.VEHICLE_NAME, _selectedVehicleName } }
-		);
-
 		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
 		VehicleSelection.SerializedVehicle = serializedVehicle;
+
+		PhotonNetwork.LocalPlayer.SetCustomProperties(
+			new Hashtable
+			{
+				{ PropertyKeys.VEHICLE_NAME, _selectedVehicleName },
+				{ PropertyKeys.VEHICLE_COST, VehicleSelection.SelectedVehicle.CachedCost }
+			}
+		);
 
 		VehicleSelectionScreen.SetActive(false);
 
