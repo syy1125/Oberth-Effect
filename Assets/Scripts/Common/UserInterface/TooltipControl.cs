@@ -87,8 +87,17 @@ public class TooltipControl : MonoBehaviour
 		bool success = false;
 		foreach (AnchorCorner corner in CornerPreference)
 		{
-			success = UseLayout(rect, corner);
+			success = UseLayout(rect, corner, PositionMode.Preferred);
 			if (success) break;
+		}
+
+		if (!success)
+		{
+			foreach (AnchorCorner corner in CornerPreference)
+			{
+				success = UseLayout(rect, corner, PositionMode.Minimum);
+				if (success) break;
+			}
 		}
 
 		if (!success)
@@ -101,7 +110,7 @@ public class TooltipControl : MonoBehaviour
 					? AnchorCorner.UpperLeft
 					: AnchorCorner.LowerLeft;
 
-			UseLayout(rect, bestCorner, true);
+			UseLayout(rect, bestCorner, PositionMode.Force);
 		}
 	}
 
@@ -118,9 +127,22 @@ public class TooltipControl : MonoBehaviour
 		}
 	}
 
-	private bool UseLayout(Rect rect, AnchorCorner corner, bool force = false)
+	private enum PositionMode
+	{
+		Preferred,
+		Minimum,
+		Force
+	}
+
+	private bool UseLayout(Rect rect, AnchorCorner corner, PositionMode mode)
 	{
 		Vector2 availableSpace = GetAvailableSpace(rect, corner, _mouseLocalPosition);
+
+		if (mode == PositionMode.Preferred && availableSpace.x < TooltipText.preferredWidth - _textSizeDelta.x)
+		{
+			return false;
+		}
+
 		float tooltipWidth = Mathf.Min(
 			TooltipText.preferredWidth - _textSizeDelta.x,
 			availableSpace.x, MaxTooltipWidth
@@ -137,7 +159,7 @@ public class TooltipControl : MonoBehaviour
 		Vector2 offset = Vector2.zero;
 		if (tooltipHeight > availableSpace.y)
 		{
-			if (force)
+			if (mode == PositionMode.Force)
 			{
 				offset = new Vector2(
 					0f, corner switch
