@@ -432,6 +432,7 @@ GameObject:
   - component: {fileID: 3882299210713092933}
   - component: {fileID: 3882299210713092955}
   - component: {fileID: 3882299210713092954}
+  - component: {fileID: 8948629978889915057}
   m_Layer: 7
   m_Name: Shipyard
   m_TagString: Untagged
@@ -492,7 +493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamIndex: 0
-  MaxHealth: 10000
+  BaseMaxHealth: 50000
   SpawnPoints:
   - {fileID: 3882299211580952301}
   - {fileID: 3882299210785161361}
@@ -508,6 +509,27 @@ MonoBehaviour:
   IndicatorCanvas: {fileID: 0}
   ProtectIndicatorPrefab: {fileID: 2393767302875424162, guid: 92e1cbcf6c1ea734daea1184bf39ea75, type: 3}
   DestroyIndicatorPrefab: {fileID: 1935562262794819298, guid: 12d197f159f48274fa168cd625ba0a02, type: 3}
+--- !u!114 &8948629978889915057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3882299210713092932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bdb5c151304f2aa99710160095fd9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TeamIndex: 0
+  ResupplyRange: 30
+  ResourceEmissionRate:
+  - Resource: OberthEffect/Energy
+    Amount: 500
+  - Resource: OberthEffect/Fuel
+    Amount: 20
+  ResourceParticlePrefab: {fileID: 2935171261009601661, guid: 4febd761096288b43892154f25870814, type: 3}
+  BaseParticleRate: 20
 --- !u!1 &3882299210785161360
 GameObject:
   m_ObjectHideFlags: 0

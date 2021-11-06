@@ -9,13 +9,14 @@ using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
 public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 {
 	public int TeamIndex;
-	public float MaxHealth;
+	public float BaseMaxHealth;
 	public Transform[] SpawnPoints;
 	public Bounds[] ExplosionBounds;
 
@@ -63,7 +64,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 	{
 		_gameMode = PhotonHelper.GetRoomGameMode();
 		_damageable = _gameMode.CanDamageShipyards();
-		Health = MaxHealth;
+		Health = BaseMaxHealth;
 
 		Color teamColor = PhotonTeamManager.GetTeamColor(TeamIndex);
 		foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())

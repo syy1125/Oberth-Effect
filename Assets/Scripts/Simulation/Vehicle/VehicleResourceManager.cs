@@ -4,6 +4,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
 
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
@@ -246,6 +247,8 @@ public class VehicleResourceManager :
 		_currentResources = new Dictionary<string, float>(_resourceCapacities);
 	}
 
+	#region External Access
+
 	public class ResourceStatus
 	{
 		public float CurrentAmount;
@@ -270,5 +273,13 @@ public class VehicleResourceManager :
 			return null;
 		}
 	}
+
+	public void AddResources(IReadOnlyDictionary<string, float> amount)
+	{
+		DictionaryUtils.AddDictionary(amount, _currentResources);
+		ClampCurrentResources();
+	}
+
+	#endregion
 }
 }

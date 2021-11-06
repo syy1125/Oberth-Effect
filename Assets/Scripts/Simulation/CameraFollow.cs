@@ -1,5 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Common;
+﻿using Syy1125.OberthEffect.Common;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -85,6 +84,7 @@ public class CameraFollow : MonoBehaviour
 
 		_pid.Reset();
 		_velocity = body != null ? body.velocity : Vector2.zero;
+		_initTimer = InitTime;
 	}
 }
 }

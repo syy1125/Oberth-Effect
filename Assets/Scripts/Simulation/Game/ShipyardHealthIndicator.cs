@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Common.Utils;
+﻿using Syy1125.OberthEffect.Common.Match;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,9 +17,18 @@ public class ShipyardHealthIndicator : MonoBehaviour
 		_image.color = PhotonTeamManager.GetTeamColor(Shipyard.TeamIndex);
 	}
 
+	private void Start()
+	{
+		var gameMode = PhotonHelper.GetRoomGameMode();
+		if (!gameMode.CanDamageShipyards())
+		{
+			gameObject.SetActive(false);
+		}
+	}
+
 	private void LateUpdate()
 	{
-		_image.fillAmount = Shipyard.Health / Shipyard.MaxHealth;
+		_image.fillAmount = Shipyard.Health / Shipyard.BaseMaxHealth;
 	}
 }
 }

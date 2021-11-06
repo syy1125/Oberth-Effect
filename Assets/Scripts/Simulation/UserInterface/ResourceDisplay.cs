@@ -33,9 +33,8 @@ public class ResourceDisplay : MonoBehaviour
 			var spec = VehicleResourceDatabase.Instance.GetResourceSpec(resourceId).Spec;
 
 			row.ShortName.text = spec.ShortName;
-			ColorUtility.TryParseHtmlString(spec.DisplayColor, out Color displayColor);
-			row.ShortName.color = displayColor;
-			row.FillBar.color = displayColor;
+			row.ShortName.color = spec.GetDisplayColor();
+			row.FillBar.color = spec.GetDisplayColor();
 
 			_rows.Add(resourceId, row);
 		}
