@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.Vehicle;
@@ -21,8 +23,14 @@ public class Radar : MonoBehaviour
 
 	public float[] Scales;
 	public int ScaleIndex;
+
+	public RectTransform RulerTransform;
+	public Text RulerText;
+
 	private float _scale;
 	private float _scaleVelocity;
+	private float _rulerUnit;
+	private float _rulerUnitVelocity;
 
 	private Coroutine _zoomIn;
 	private Coroutine _zoomOut;
@@ -32,6 +40,7 @@ public class Radar : MonoBehaviour
 	{
 		_pings = new List<GameObject>();
 		_scale = Scales[ScaleIndex];
+		_rulerUnit = GetTargetRulerUnit();
 	}
 
 	private void OnEnable()
@@ -43,6 +52,13 @@ public class Radar : MonoBehaviour
 	{
 		if (OwnVehicle == null) return;
 
+		UpdateScale();
+		UpdateRuler();
+		UpdatePings();
+	}
+
+	private void UpdateScale()
+	{
 		float zoomInput = ZoomAction.action.ReadValue<float>();
 
 		if (zoomInput > 0)
@@ -79,7 +95,20 @@ public class Radar : MonoBehaviour
 		}
 
 		_scale = Mathf.SmoothDamp(_scale, Scales[ScaleIndex], ref _scaleVelocity, ZoomInterval / 2f);
+	}
 
+	private void UpdateRuler()
+	{
+		_rulerUnit = Mathf.SmoothDamp(_rulerUnit, GetTargetRulerUnit(), ref _rulerUnitVelocity, ZoomInterval / 2f);
+		Vector2 offsetMax = RulerTransform.offsetMax;
+		offsetMax.x = _rulerUnit * _scale;
+		RulerTransform.offsetMax = offsetMax;
+		(float value, string prefix) = UnitUtils.GetMetricPrefix(_rulerUnit * PhysicsConstants.METERS_PER_UNIT_LENGTH);
+		RulerText.text = $"{value:G2}{prefix}m";
+	}
+
+	private void UpdatePings()
+	{
 		int i = 0;
 		Vector2 centerOfMass = OwnVehicle.worldCenterOfMass;
 
@@ -120,6 +149,20 @@ public class Radar : MonoBehaviour
 		{
 			_pings[i].SetActive(false);
 		}
+	}
+
+	private float GetTargetRulerUnit()
+	{
+		float unit = 100;
+		while (unit * _scale < 50) unit *= 10;
+		while (unit * _scale > 500) unit /= 10;
+
+		// 250..500 -> 50..100
+		if (unit * _scale > 250) unit *= 0.2f;
+		// 100..250 -> 50..125
+		else if (unit * _scale > 100) unit *= 0.5f;
+
+		return unit;
 	}
 
 	private void OnDisable()
