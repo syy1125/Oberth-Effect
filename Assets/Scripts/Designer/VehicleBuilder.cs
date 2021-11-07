@@ -5,7 +5,9 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer
@@ -69,18 +71,9 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Add(blockInstance, blockObject);
 	}
 
-	private static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockSpec spec, Vector2Int rootLocation, int rotation)
-	{
-		foreach (Vector3Int localPosition in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax)
-			.AllPositionsWithin)
-		{
-			yield return rootLocation + TransformUtils.RotatePoint(localPosition, rotation);
-		}
-	}
-
 	public List<Vector2Int> GetConflicts(BlockSpec spec, Vector2Int rootLocation, int rotation)
 	{
-		return AllPositionsOccupiedBy(spec, rootLocation, rotation)
+		return VehicleBlockUtils.AllPositionsOccupiedBy(spec, rootLocation, rotation)
 			.Where(position => _posToBlock.ContainsKey(position))
 			.ToList();
 	}
@@ -89,7 +82,7 @@ public class VehicleBuilder : MonoBehaviour
 	{
 		var positions = new List<Vector2Int>();
 
-		foreach (Vector2Int globalPosition in AllPositionsOccupiedBy(spec, rootPosition, rotation))
+		foreach (Vector2Int globalPosition in VehicleBlockUtils.AllPositionsOccupiedBy(spec, rootPosition, rotation))
 		{
 			if (_posToBlock.ContainsKey(globalPosition))
 			{
@@ -182,68 +175,23 @@ public class VehicleBuilder : MonoBehaviour
 
 	#region Attachment Handling
 
-	// Enumerates the block's attachment points in vehicle space
-	public static IEnumerable<Vector2Int> GetAttachmentPoints(VehicleBlueprint.BlockInstance blockInstance)
-	{
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
-
-		foreach (Vector2Int attachmentPoint in spec.Construction.AttachmentPoints)
-		{
-			yield return blockInstance.Position + TransformUtils.RotatePoint(attachmentPoint, blockInstance.Rotation);
-		}
-	}
-
 	private void UpdateConnectedBlocks()
 	{
 		_connectedBlocks.Clear();
-		var boundary = new LinkedList<VehicleBlueprint.BlockInstance>();
-
-		void Expand(VehicleBlueprint.BlockInstance instance)
-		{
-			if (_connectedBlocks.Contains(instance)) return;
-
-			_connectedBlocks.Add(instance);
-
-			foreach (Vector2Int attachmentPoint in GetAttachmentPoints(instance))
-			{
-				if (_posToBlock.TryGetValue(attachmentPoint, out VehicleBlueprint.BlockInstance adjacentInstance))
-				{
-					if (_connectedBlocks.Contains(adjacentInstance)) continue;
-
-
-					if (IsConnected(adjacentInstance, instance))
-					{
-						boundary.AddLast(adjacentInstance);
-					}
-				}
-			}
-		}
-
-		// A block is connected if it "connects back" to one of the originator's positions
-		bool IsConnected(VehicleBlueprint.BlockInstance fromInstance, VehicleBlueprint.BlockInstance toInstance)
-		{
-			foreach (Vector2Int attachmentPoint in GetAttachmentPoints(fromInstance))
-			{
-				if (
-					_posToBlock.TryGetValue(attachmentPoint, out VehicleBlueprint.BlockInstance targetInstance)
-					&& targetInstance == toInstance
-				)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
+		var boundary = new Queue<VehicleBlueprint.BlockInstance>();
 		VehicleBlueprint.BlockInstance controlCore = _posToBlock[Vector2Int.zero];
-		Expand(controlCore);
+		boundary.Enqueue(controlCore);
 
 		while (boundary.Count > 0)
 		{
-			VehicleBlueprint.BlockInstance next = boundary.First.Value;
-			boundary.RemoveFirst();
-			Expand(next);
+			VehicleBlueprint.BlockInstance current = boundary.Dequeue();
+			if (!_connectedBlocks.Add(current)) continue;
+
+			foreach (var target in VehicleBlockUtils.GetConnectedBlocks(current, _posToBlock))
+			{
+				if (_connectedBlocks.Contains(target)) continue;
+				boundary.Enqueue(target);
+			}
 		}
 	}
 

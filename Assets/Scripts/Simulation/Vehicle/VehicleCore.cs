@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
@@ -24,12 +26,14 @@ public class VehicleCore :
 	private Rigidbody2D _body;
 
 	private Dictionary<Vector2Int, GameObject> _posToBlock;
+	private Dictionary<Vector2Int, GameObject> _rootPosToBlock;
 
 	private List<ControlCore> _controlCores;
 
 	private bool _loaded;
 	private UnityEvent _loadEvent;
 	private VehicleBlueprint _blueprint;
+	private VehicleBlockConnectivityGraph _connectivityGraph;
 	public bool Dead { get; private set; }
 
 	private void Awake()
@@ -37,6 +41,7 @@ public class VehicleCore :
 		_body = GetComponent<Rigidbody2D>();
 
 		_posToBlock = new Dictionary<Vector2Int, GameObject>();
+		_rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
 		_controlCores = new List<ControlCore>();
 	}
 
@@ -101,6 +106,7 @@ public class VehicleCore :
 				new Tuple<Vector2, float, float>(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia)
 			);
 
+			_rootPosToBlock.Add(blockInstance.Position, blockObject);
 			foreach (
 				Vector3Int localPosition
 				in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin
@@ -140,6 +146,9 @@ public class VehicleCore :
 			BlockConfigHelper.LoadConfig(tuple.Item1, tuple.Item2);
 		}
 
+		// Set up connectivity graph
+		_connectivityGraph = new VehicleBlockConnectivityGraph(_blueprint.Blocks);
+
 		_loaded = true;
 
 		if (_loadEvent != null)
@@ -166,6 +175,7 @@ public class VehicleCore :
 
 	public void RegisterBlock(BlockCore blockCore)
 	{
+		if (!photonView.IsMine) return;
 		// When the vehicle is loading, ignore everything as the calculation will be done by the loading routine.
 		if (!_loaded) return;
 
@@ -177,14 +187,59 @@ public class VehicleCore :
 
 	public void UnregisterBlock(BlockCore blockCore)
 	{
+		if (!photonView.IsMine) return;
 		if (!_loaded) return;
 
-		BlockCore core = blockCore.GetComponent<BlockCore>();
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(core.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockCore.BlockId).Spec;
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
+
 		// Remove the block by adding negative mass
-		// TODO: Work out the physics to verify that this actually works
 		AddMass(blockCenter, -spec.Physics.Mass, -spec.Physics.MomentOfInertia);
+
+		if (_connectivityGraph.ContainsPosition(blockCore.RootPosition))
+		{
+			List<VehicleBlockConnectivityGraph> graphs =
+				_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
+			
+			if (graphs == null || graphs.Count == 0)
+			{
+				// Vehicle completely destroyed. Probably nothing need to be done here?
+			}
+			else if (graphs.Count == 1)
+			{
+				_connectivityGraph = graphs[0];
+			}
+			else if (graphs.Count > 1)
+			{
+				int primaryGraphIndex = graphs.FindIndex(graph => graph.ContainsPosition(Vector2Int.zero));
+
+				List<Vector2Int> disableRoots = new List<Vector2Int>();
+				for (int i = 0; i < graphs.Count; i++)
+				{
+					if (i == primaryGraphIndex) continue;
+
+					disableRoots.Clear();
+					disableRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
+
+					photonView.RPC(
+						nameof(DisableBlocks), RpcTarget.AllBuffered,
+						disableRoots.Select(position => position.x).ToArray(),
+						disableRoots.Select(position => position.y).ToArray()
+					);
+				}
+
+				if (primaryGraphIndex >= 0)
+				{
+					_connectivityGraph = graphs[primaryGraphIndex];
+				}
+			}
+			else
+			{
+				Debug.LogError($"Unexpected chunk count {graphs.Count}");
+			}
+			
+			Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+		}
 	}
 
 	private void AddMass(Vector2 position, float mass, float moment)
@@ -205,13 +260,20 @@ public class VehicleCore :
 
 	public void OnBlockDestroyedByDamage(BlockCore blockCore)
 	{
-		photonView.RPC("DisableBlock", RpcTarget.AllBuffered, blockCore.RootPosition.x, blockCore.RootPosition.y);
+		photonView.RPC(
+			nameof(DisableBlocks), RpcTarget.AllBuffered,
+			new[] { blockCore.RootPosition.x }, new[] { blockCore.RootPosition.y }
+		);
 	}
 
+	// Photon can't serialize Vector2Int
 	[PunRPC]
-	private void DisableBlock(int x, int y)
+	private void DisableBlocks(int[] x, int[] y)
 	{
-		_posToBlock[new Vector2Int(x, y)].SetActive(false);
+		for (int i = 0; i < x.Length; i++)
+		{
+			_rootPosToBlock[new Vector2Int(x[i], y[i])].SetActive(false);
+		}
 	}
 
 	#endregion
@@ -248,7 +310,7 @@ public class VehicleCore :
 		OnVehicleDeath.Invoke();
 	}
 
-	public IEnumerable<GameObject> GetAllBlocks() => _posToBlock.Values;
+	public IEnumerable<GameObject> GetAllBlocks() => _rootPosToBlock.Values;
 
 	public GameObject GetBlockAt(Vector2Int localPosition) =>
 		_posToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;

@@ -38,7 +38,7 @@ TurretedWeapon:
         Offset: { X: 0, Y: 0.2 }
   BurstBeamWeaponEffect:
     FiringPortOffset: { X: 0, Y: 0.6 }
-    Damage: 200
+    Damage: 100
     DamageType: Energy
     ArmorPierce: 7.5
     MaxResourceUse:

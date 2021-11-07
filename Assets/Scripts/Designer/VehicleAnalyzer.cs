@@ -12,6 +12,7 @@ using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -512,13 +513,13 @@ public class VehicleAnalyzer : MonoBehaviour
 			List<Vector2Int> closedAttachPoints = new List<Vector2Int>();
 			List<Vector2Int> openAttachPoints = new List<Vector2Int>();
 
-			foreach (Vector2Int attachmentPoint in VehicleBuilder.GetAttachmentPoints(blockInstance))
+			foreach (Vector2Int attachmentPoint in VehicleBlockUtils.GetAttachmentPoints(blockInstance))
 			{
 				if (Builder.HasBlockAt(attachmentPoint))
 				{
 					// The block is attached in this direction if we can form a two-way attachment
 					bool attached = false;
-					foreach (Vector2Int reverseAttachPoint in VehicleBuilder.GetAttachmentPoints(
+					foreach (Vector2Int reverseAttachPoint in VehicleBlockUtils.GetAttachmentPoints(
 						Builder.GetBlockInstanceAt(attachmentPoint)
 					))
 					{

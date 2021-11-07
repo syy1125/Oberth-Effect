@@ -14,6 +14,11 @@ public class VehicleBlueprint
 		public Vector2Int Position;
 		public int Rotation;
 		public string Config;
+
+		public override string ToString()
+		{
+			return $"{nameof(BlockId)}: {BlockId}, {nameof(Position)}: {Position}, {nameof(Rotation)}: {Rotation}";
+		}
 	}
 
 	public string Name;

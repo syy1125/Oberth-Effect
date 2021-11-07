@@ -37,7 +37,7 @@ TurretedWeapon:
         Scale: { X: 1.2, Y: 1.2 }
   ProjectileWeaponEffect:
     FiringPortOffset: { X: 0, Y: 0.6 }
-    Damage: 150
+    Damage: 80
     DamageType: Kinetic
     ArmorPierce: 5
     SpreadAngle: 2
