@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope1x1
 Enabled: true
+CategoryId: OberthEffect/Structural
 Cost: 2
 Info:
   ShortName: Slope

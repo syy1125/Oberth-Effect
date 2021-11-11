@@ -8,12 +8,12 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Palette
 {
-[RequireComponent(typeof(GridLayoutGroup))]
 public class BlockPalette : MonoBehaviour
 {
 	public const int CURSOR_INDEX = -1;
 	public const int ERASE_INDEX = -2;
 
+	public Transform BlockButtonsParent;
 	public GameObject BlockButtonPrefab;
 
 	public InputActionReference CursorAction;
@@ -64,7 +64,7 @@ public class BlockPalette : MonoBehaviour
 		{
 			if (!instance.Spec.Construction.ShowInDesigner) continue;
 
-			GameObject buttonObject = Instantiate(BlockButtonPrefab, transform);
+			GameObject buttonObject = Instantiate(BlockButtonPrefab, BlockButtonsParent);
 			BlockButton button = buttonObject.GetComponent<BlockButton>();
 
 			button.DisplayBlock(instance);
@@ -82,6 +82,34 @@ public class BlockPalette : MonoBehaviour
 
 		CursorAction.action.performed -= SelectCursor;
 		EraserAction.action.performed -= SelectEraser;
+	}
+
+	public void SetSelectedCategory(string category)
+	{
+		if (string.IsNullOrEmpty(category))
+		{
+			foreach (BlockButton button in _buttons.Values)
+			{
+				button.gameObject.SetActive(true);
+			}
+		}
+		else
+		{
+			foreach (KeyValuePair<string, BlockButton> entry in _buttons)
+			{
+				BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(entry.Key).Spec;
+				entry.Value.gameObject.SetActive(blockSpec.CategoryId == category);
+			}
+
+			if (CurrentSelection != null && CurrentSelection is BlockSelection blockSelection)
+			{
+				BlockSpec selectedSpec = BlockDatabase.Instance.GetSpecInstance(blockSelection.BlockId).Spec;
+				if (selectedSpec.CategoryId != category)
+				{
+					SetSelection(CursorSelection.Instance);
+				}
+			}
+		}
 	}
 
 	public void SelectBlock(string blockId)

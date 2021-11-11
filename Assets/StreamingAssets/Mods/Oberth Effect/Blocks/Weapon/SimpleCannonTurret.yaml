@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SimpleCannonTurret
 Enabled: true
+CategoryId: OberthEffect/Combat
 Cost: 100
 Info:
   ShortName: Cannon

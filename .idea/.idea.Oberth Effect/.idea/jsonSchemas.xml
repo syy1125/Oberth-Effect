@@ -3,6 +3,24 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
+        <entry key="Block Category Spec">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Block Category Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/BlockCategorySpecSchema.json" />
+              <option name="schemaVersion" value="JSON Schema version 7" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Block Categories/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="Block Spec">
           <value>
             <SchemaInfo>

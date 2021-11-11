@@ -160,6 +160,9 @@ public static class ModLoader
 	private static Dictionary<string, GameSpecDocument> _controlGroupDocuments;
 	internal static IReadOnlyCollection<SpecInstance<ControlGroupSpec>> AllControlGroups;
 
+	private static Dictionary<string, GameSpecDocument> _blockCategoryDocuments;
+	internal static IReadOnlyCollection<SpecInstance<BlockCategorySpec>> AllBlockCategories;
+
 	public static uint Checksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
@@ -185,6 +188,7 @@ public static class ModLoader
 		_textureDocuments = new Dictionary<string, GameSpecDocument>();
 		_vehicleResourceDocuments = new Dictionary<string, GameSpecDocument>();
 		_controlGroupDocuments = new Dictionary<string, GameSpecDocument>();
+		_blockCategoryDocuments = new Dictionary<string, GameSpecDocument>();
 
 		foreach (ModListElement mod in AllMods)
 		{
@@ -222,6 +226,11 @@ public static class ModLoader
 			LoadModContent(
 				mod, "Control Groups", null,
 				nameof(ControlGroupSpec.ControlGroupId), _controlGroupDocuments
+			);
+
+			LoadModContent(
+				mod, "Block Categories", null,
+				nameof(BlockCategorySpec.BlockCategoryId), _blockCategoryDocuments
 			);
 		}
 	}
@@ -333,6 +342,7 @@ public static class ModLoader
 		AllTextures = ParseSpecInstance<TextureSpec>(deserializer, _textureDocuments.Values);
 		AllVehicleResources = ParseSpecInstance<VehicleResourceSpec>(deserializer, _vehicleResourceDocuments.Values);
 		AllControlGroups = ParseSpecInstance<ControlGroupSpec>(deserializer, _controlGroupDocuments.Values);
+		AllBlockCategories = ParseSpecInstance<BlockCategorySpec>(deserializer, _blockCategoryDocuments.Values);
 	}
 
 	private static IReadOnlyCollection<SpecInstance<T>> ParseSpecInstance<T>(

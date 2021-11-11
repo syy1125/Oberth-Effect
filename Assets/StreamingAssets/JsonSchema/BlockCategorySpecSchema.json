@@ -1,0 +1,11 @@
+﻿{
+    "$id": "BlockCategorySpecSchema",
+    "type": "object",
+    "required": ["BlockCategoryId"],
+    "properties": {
+        "BlockCategoryId": { "type": "string" },
+        "Order": { "type": "integer" },
+        "DisplayName": { "type": "string" },
+        "IconTextureId": { "type": "string" }
+    }
+}

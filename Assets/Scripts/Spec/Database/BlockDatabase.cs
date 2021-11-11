@@ -10,6 +10,7 @@ public class BlockDatabase : MonoBehaviour
 	public static BlockDatabase Instance { get; private set; }
 
 	private Dictionary<string, SpecInstance<BlockSpec>> _specs;
+	private List<SpecInstance<BlockCategorySpec>> _categories;
 
 	private void Awake()
 	{
@@ -32,7 +33,9 @@ public class BlockDatabase : MonoBehaviour
 		_specs = ModLoader.AllBlocks
 			.Where(instance => instance.Spec.Enabled)
 			.ToDictionary(instance => instance.Spec.BlockId, instance => instance);
+		_categories = ModLoader.AllBlockCategories.OrderBy(instance => instance.Spec.Order).ToList();
 		Debug.Log($"Loaded {_specs.Count} block specs");
+		Debug.Log($"Loaded {_categories.Count} block categories");
 	}
 
 	private void OnDestroy()
@@ -56,6 +59,11 @@ public class BlockDatabase : MonoBehaviour
 	public SpecInstance<BlockSpec> GetSpecInstance(string blockId)
 	{
 		return _specs[blockId];
+	}
+
+	public IEnumerable<SpecInstance<BlockCategorySpec>> ListCategories()
+	{
+		return _categories;
 	}
 }
 }

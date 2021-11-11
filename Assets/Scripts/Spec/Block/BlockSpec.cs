@@ -12,6 +12,7 @@ public class BlockSpec
 {
 	public string BlockId;
 	public bool Enabled;
+	public string CategoryId;
 	public int Cost;
 	public InfoSpec Info;
 	public RendererSpec[] Renderers;

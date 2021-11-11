@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/Slope2x1RightBack
 Enabled: true
+CategoryId: OberthEffect/Structural
 Cost: 3
 Info:
   ShortName: R Slope Back

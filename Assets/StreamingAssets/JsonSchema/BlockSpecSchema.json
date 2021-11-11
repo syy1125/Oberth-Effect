@@ -5,6 +5,7 @@
     "properties": {
         "BlockId": { "type": "string" },
         "Enabled": { "type": "boolean" },
+        "CategoryId": { "type": "string" },
         "Cost": { "type": "integer" },
         "Info": {
             "type": "object",

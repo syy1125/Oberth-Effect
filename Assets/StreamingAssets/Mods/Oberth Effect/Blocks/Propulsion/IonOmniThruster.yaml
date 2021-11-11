@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/IonOmniThruster
 Enabled: true
+CategoryId: OberthEffect/Propulsion
 Cost: 10
 Info:
   ShortName: Ion Thruster

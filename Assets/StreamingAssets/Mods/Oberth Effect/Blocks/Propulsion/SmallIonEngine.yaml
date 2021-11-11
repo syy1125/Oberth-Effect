@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SmallIonEngine
 Enabled: true
+CategoryId: OberthEffect/Propulsion
 Cost: 20
 Info:
   ShortName: Ion Engine

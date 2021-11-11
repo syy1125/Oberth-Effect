@@ -50,7 +50,7 @@ public class TextureDatabase : MonoBehaviour
 
 	public bool HasTexture(string textureId)
 	{
-		return _specs.ContainsKey(textureId);
+		return textureId != null && _specs.ContainsKey(textureId);
 	}
 
 	public SpecInstance<TextureSpec> GetTextureSpec(string textureId)

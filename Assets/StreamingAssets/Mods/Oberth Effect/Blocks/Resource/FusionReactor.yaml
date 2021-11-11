@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/FusionReactor
 Enabled: true
+CategoryId: OberthEffect/Resource
 Cost: 25
 Info:
   ShortName: Fusion Reactor

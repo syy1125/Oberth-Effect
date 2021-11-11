@@ -1,5 +1,6 @@
 ﻿BlockId: OberthEffect/SmallBattery
 Enabled: true
+CategoryId: OberthEffect/Resource
 Cost: 10
 Info:
   ShortName: Small Battery
