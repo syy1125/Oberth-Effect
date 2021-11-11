@@ -74,7 +74,7 @@ public class DesignerGridMove : MonoBehaviour
 		{
 			Vector2 oldLocalPosition = GetLocalMousePosition();
 
-			_zoomExponent = Mathf.Clamp(_zoomExponent + scroll / 10f, -2f, 2f);
+			_zoomExponent = Mathf.Clamp(_zoomExponent + scroll / 10f, -2f, 1f);
 			transform.localScale = Vector3.one * Mathf.Exp(_zoomExponent);
 
 			Vector2 newLocalPosition = GetLocalMousePosition();

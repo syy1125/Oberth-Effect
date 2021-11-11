@@ -1,0 +1,40 @@
+﻿BlockId: OberthEffect/AntimatterReactor
+Enabled: true
+CategoryId: OberthEffect/Resource
+Cost: 30
+Info:
+  ShortName: Antimatter Reactor
+  FullName: Matter-Antimatter Annihilation Reactor
+  Description: |
+    The antimatter reactor is a powerful energy provider, but using it comes at quite a risk.
+    When destroyed by enemy fire, the stored antimatter fuel rapidly annihilates with nearby matter, creating a large explosion.
+    The reactor is hardened somewhat against enemy fire to help with this issue, but it is still quite fragile when subjected to concentrated fire.
+Renderers:
+  - TextureId: OberthEffect/AntimatterReactor
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 5
+  MomentOfInertia: 0.8333333
+  BoxCollider:
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 120
+  ArmorValue: 5
+Resource:
+  FreeGenerator:
+    GenerationRate:
+      OberthEffect/Energy: 500
+Volatile:
+  AlwaysExplode: true
+  MaxDamage: 500
+  MaxRadius: 10
