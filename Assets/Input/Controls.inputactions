@@ -483,6 +483,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Reset Grid Position",
+                    "type": "Button",
+                    "id": "990e12ac-3675-44d3-a87f-d5c61e8f389d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Rotate",
                     "type": "Button",
                     "id": "cb660c07-1c16-40ad-9dee-275599a48cac",
@@ -716,6 +724,17 @@
                     "processors": "Scale(factor=0.01)",
                     "groups": "Keyboard&Mouse",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1f7dfc8-7814-4fe9-bbfd-4dcc5700fbaf",
+                    "path": "<Keyboard>/backspace",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Reset Grid Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

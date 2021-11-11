@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Designer
@@ -12,6 +13,7 @@ public class DesignerGridMove : MonoBehaviour
 	public InputActionReference PanAction;
 	public InputActionReference DragAction;
 	public InputActionReference ZoomAction;
+	public InputActionReference ResetAction;
 
 	private Camera _mainCamera;
 
@@ -24,6 +26,12 @@ public class DesignerGridMove : MonoBehaviour
 		_mainCamera = Camera.main;
 	}
 
+	private void Start()
+	{
+		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
+		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
+	}
+
 	public Vector2 GetLocalMousePosition()
 	{
 		return transform.InverseTransformPoint(
@@ -33,8 +41,22 @@ public class DesignerGridMove : MonoBehaviour
 
 	private void Update()
 	{
+		if (ResetAction.action.triggered)
+		{
+			ResetGridTransform();
+		}
+
 		UpdateDrag();
 		UpdateZoom();
+	}
+
+	private void ResetGridTransform()
+	{
+		_dragHandle = null;
+		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
+		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
+		_zoomExponent = 0f;
+		transform.localScale = Vector3.one;
 	}
 
 	private void UpdateDrag()
@@ -54,7 +76,7 @@ public class DesignerGridMove : MonoBehaviour
 		{
 			Vector2 dragHandle = _dragHandle.Value;
 			Vector2 mousePosition = GetLocalMousePosition();
-			// Not sure why but when using transform.Translate when zoomed out, the drag action
+			// Not sure why but when using transform.Translate or transform.localScale when zoomed out, the drag action
 			// turns into a tick-length resonant oscillation and ends up causing positions of like 1e+11.
 			transform.position += transform.TransformVector(mousePosition - dragHandle);
 		}

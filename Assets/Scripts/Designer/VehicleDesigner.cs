@@ -65,9 +65,6 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void Start()
 	{
-		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
-		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
-
 		if (VehicleSelection.SerializedVehicle != null)
 		{
 			ImportVehicle(VehicleSelection.SerializedVehicle);

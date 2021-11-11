@@ -10075,6 +10075,7 @@ MonoBehaviour:
   PanAction: {fileID: 6333942806918389156, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   DragAction: {fileID: -8447312504652513322, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ZoomAction: {fileID: 3521568511072626616, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  ResetAction: {fileID: -9117965225612510722, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!114 &1543857983
 MonoBehaviour:
   m_ObjectHideFlags: 0
