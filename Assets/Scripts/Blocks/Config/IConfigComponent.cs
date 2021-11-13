@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Common;
@@ -45,7 +46,7 @@ public static class BlockConfigHelper
 
 		blockInstance.Config = config.ToString(Formatting.None);
 	}
-	
+
 	public static void LoadConfig(VehicleBlueprint.BlockInstance blockInstance, GameObject blockObject)
 	{
 		JObject config = ConfigUtils.ParseConfig(blockInstance.Config);
@@ -63,6 +64,30 @@ public static class BlockConfigHelper
 				}
 			}
 		}
+	}
+
+	public static void UpdateConfig(VehicleBlueprint.BlockInstance blockInstance, string[] path, JValue value)
+	{
+		Debug.Assert(path.Length >= 1, nameof(path) + ".Length >= 1");
+
+		JObject config = ConfigUtils.ParseConfig(blockInstance.Config);
+
+		JObject currentNode = config;
+
+		foreach (string step in path.Take(path.Length - 1))
+		{
+			if (!(currentNode[step] is JObject child))
+			{
+				child = new JObject();
+				currentNode[step] = child;
+			}
+
+			currentNode = child;
+		}
+
+		currentNode[path[path.Length - 1]] = value;
+
+		blockInstance.Config = config.ToString(Formatting.None);
 	}
 }
 }

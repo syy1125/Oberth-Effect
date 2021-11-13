@@ -153,7 +153,6 @@ public class DesignerConfig : MonoBehaviour
 				ShowAutoConfig();
 
 				_prevSelectBlock = blockInstance;
-				Debug.Log($"Begin multi select at {blockInstance.Position}; additive {_additive}");
 			}
 			else if (blockInstance != _prevSelectBlock)
 			{
@@ -171,7 +170,6 @@ public class DesignerConfig : MonoBehaviour
 				}
 
 				_prevSelectBlock = blockInstance;
-				Debug.Log($"additive: {_additive}; multiselect at {blockInstance.Position}");
 			}
 			// Otherwise, mouse is still over the block that the user previously clicked on.
 			// Idle for now.
@@ -487,24 +485,14 @@ public class DesignerConfig : MonoBehaviour
 			.FirstOrDefault(index => index >= 0);
 	}
 
-	private void SetBlockConfigs(Type componentType, string key, JToken value)
+	private void SetBlockConfigs(Type componentType, string itemKey, JValue value)
 	{
 		if (_updatingElements) return;
 
 		foreach (VehicleBlueprint.BlockInstance selectedBlock in _selectedBlocks)
 		{
-			JObject blockConfig = ConfigUtils.ParseConfig(selectedBlock.Config);
-			string configKey = ConfigUtils.GetConfigKey(componentType);
-
-			if (!(blockConfig[configKey] is JObject componentConfig))
-			{
-				componentConfig = new JObject();
-				blockConfig[configKey] = componentConfig;
-			}
-
-			componentConfig[key] = value;
-			selectedBlock.Config = blockConfig.ToString(Formatting.None);
-
+			string componentKey = ConfigUtils.GetConfigKey(componentType);
+			BlockConfigHelper.UpdateConfig(selectedBlock, new[] { componentKey, itemKey }, value);
 			BlockConfigHelper.SyncConfig(selectedBlock, Builder.GetBlockObject(selectedBlock));
 		}
 	}
