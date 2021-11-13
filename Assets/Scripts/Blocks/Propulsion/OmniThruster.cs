@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
@@ -97,7 +98,7 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			StartParticleSystems(_leftParticles);
 			StartParticleSystems(_rightParticles);
 		}
-		
+
 		StartCoroutine(LateFixedUpdate());
 	}
 
@@ -110,6 +111,8 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			particle.Play();
 		}
 	}
+
+	#region Config
 
 	public JObject ExportConfig()
 	{
@@ -138,6 +141,25 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			RespondToRotation = config["RespondToRotation"].Value<bool>();
 		}
 	}
+
+	public List<ConfigItemBase> GetConfigItems()
+	{
+		return new List<ConfigItemBase>
+		{
+			new ToggleConfigItem
+			{
+				Key = "RespondToTranslation",
+				Label = "Respond to translation"
+			},
+			new ToggleConfigItem
+			{
+				Key = "RespondToRotation",
+				Label = "Respond to rotation"
+			}
+		};
+	}
+
+	#endregion
 
 	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
 	{

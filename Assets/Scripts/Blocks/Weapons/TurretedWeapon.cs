@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
@@ -125,6 +126,8 @@ public class TurretedWeapon :
 		);
 	}
 
+	#region Config
+
 	public JObject ExportConfig()
 	{
 		return new JObject
@@ -148,6 +151,39 @@ public class TurretedWeapon :
 			WeaponBinding = weaponBinding;
 		}
 	}
+
+	public List<ConfigItemBase> GetConfigItems()
+	{
+		return new List<ConfigItemBase>
+		{
+			new StringSwitchSelectConfigItem
+			{
+				Key = "WeaponBinding",
+				Options = new[] { "Manual 1", "Manual 2" },
+				Label = "Group",
+				Tooltip = string.Join(
+					"\n",
+					"Weapons bound to different groups have different keybinds to fire.",
+					"  Manual 1: Fires on LMB",
+					"  Manual 2: Fires on RMB"
+				),
+				Serialize = SerializeWeaponBinding,
+				Deserialize = DeserializeWeaponBinding
+			}
+		};
+	}
+
+	private static string SerializeWeaponBinding(int index)
+	{
+		return ((WeaponBindingGroup) index).ToString();
+	}
+
+	private static int DeserializeWeaponBinding(string binding)
+	{
+		return Enum.TryParse(binding, out WeaponBindingGroup group) ? (int) group : 0;
+	}
+
+	#endregion
 
 	public void SetAimPoint(Vector2? aimPoint)
 	{

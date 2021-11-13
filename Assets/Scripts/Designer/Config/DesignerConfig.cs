@@ -1,10 +1,11 @@
 ﻿using System;
-using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Blocks.Propulsion;
-using Syy1125.OberthEffect.Blocks.Weapons;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
-using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
@@ -20,12 +21,14 @@ public class DesignerConfig : MonoBehaviour
 	[Header("Input")]
 	public InputActionReference SelectBlockAction;
 	public InputActionReference DeselectAction;
+	public InputActionReference MultiSelectAction;
 
 	[Header("References")]
 	public VehicleDesigner Designer;
 	public VehicleBuilder Builder;
 	public DesignerAreaMask AreaMask;
-	public Transform SelectionIndicator;
+	public GameObject SelectionIndicatorPrefab;
+	public Transform IndicatorParent;
 	public Text StatusText;
 	public RectTransform ConfigParent;
 
@@ -36,44 +39,46 @@ public class DesignerConfig : MonoBehaviour
 	public ColorPicker SecondaryColorPicker;
 	public ColorPicker TertiaryColorPicker;
 
-	[Header("Engine Config")]
-	public Toggle EngineTranslationToggle;
-	public Toggle EngineRotationToggle;
-
-	[Header("Thruster Config")]
-	public Toggle ThrusterTranslationToggle;
-	public Toggle ThrusterRotationToggle;
-
-	[Header("Weapon Config")]
-	public SwitchSelect WeaponGroupSelect;
+	[Header("Block Config")]
+	public GameObject TogglePrefab;
+	public GameObject SwitchSelectPrefab;
 
 	private VehicleBlueprint Blueprint => Designer.Blueprint;
 
 	private ColorContext _context;
-	private Vector2Int? _selectedLocation;
-	private bool _updatingElements;
-	public bool HasSelectedBlock => _selectedLocation != null;
 
-	#region Unity Lifecycle
+	private VehicleBlueprint.BlockInstance _prevSelectBlock;
+	private bool _additive;
+	private List<VehicleBlueprint.BlockInstance> _selectedBlocks;
+	private Dictionary<VehicleBlueprint.BlockInstance, GameObject> _selectionIndicators;
+
+	private string _configBlockId;
+	private List<GameObject> _blockConfigItems;
+	private bool _updatingElements;
+
+	public bool HasSelectedBlock => _selectedBlocks.Count > 0;
+
+	#region Initialization
 
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
+		_selectedBlocks = new List<VehicleBlueprint.BlockInstance>();
+		_selectionIndicators = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
+		_blockConfigItems = new List<GameObject>();
 	}
 
 	private void OnEnable()
 	{
 		EnableActions();
 		AttachVehicleConfigListeners();
-		AttachBlockConfigListeners();
 
-		_selectedLocation = null;
+		_selectedBlocks.Clear();
 		ShowVehicleConfig();
 	}
 
 	private void EnableActions()
 	{
-		SelectBlockAction.action.performed += HandleSelect;
 		DeselectAction.action.performed += HandleDeselect;
 	}
 
@@ -86,36 +91,21 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.AddListener(SetTertiaryColor);
 	}
 
-	private void AttachBlockConfigListeners()
-	{
-		EngineTranslationToggle.onValueChanged.AddListener(SetEngineRespondToTranslation);
-		EngineRotationToggle.onValueChanged.AddListener(SetEngineRespondToRotation);
-
-		ThrusterTranslationToggle.onValueChanged.AddListener(SetThrusterRespondToTranslation);
-		ThrusterRotationToggle.onValueChanged.AddListener(SetThrusterRespondToRotation);
-
-		WeaponGroupSelect.OnValueChanged.AddListener(SetTurretedWeaponBindingGroup);
-	}
-
 	private void Start()
 	{
 		ControlModeSelect.SetOptions(Enum.GetNames(typeof(VehicleControlMode)));
-		WeaponGroupSelect.SetOptions(new[] { "Manual 1", "Manual 2" });
 	}
 
 	private void OnDisable()
 	{
 		DisableActions();
 		DetachVehicleConfigListeners();
-		DetachBlockConfigListeners();
 
-		_selectedLocation = null;
-		SelectionIndicator.gameObject.SetActive(false);
+		_selectedBlocks.Clear();
 	}
 
 	private void DisableActions()
 	{
-		SelectBlockAction.action.performed -= HandleSelect;
 		DeselectAction.action.performed -= HandleDeselect;
 	}
 
@@ -128,41 +118,87 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.OnChange.RemoveListener(SetTertiaryColor);
 	}
 
-	private void DetachBlockConfigListeners()
-	{
-		EngineTranslationToggle.onValueChanged.RemoveListener(SetEngineRespondToTranslation);
-		EngineRotationToggle.onValueChanged.RemoveListener(SetEngineRespondToRotation);
-
-		ThrusterTranslationToggle.onValueChanged.RemoveListener(SetThrusterRespondToTranslation);
-		ThrusterRotationToggle.onValueChanged.RemoveListener(SetThrusterRespondToRotation);
-
-		WeaponGroupSelect.OnValueChanged.RemoveListener(SetTurretedWeaponBindingGroup);
-	}
-
 	#endregion
 
-	#region Input Event Handlers
+	#region User Input
 
-	private void HandleSelect(InputAction.CallbackContext context)
+	private void Update()
 	{
-		if (AreaMask.Hovering)
+		if (!AreaMask.Hovering) return;
+
+		if (SelectBlockAction.action.ReadValue<float>() > 0.5f)
 		{
-			if (Builder.HasBlockAt(Designer.HoverPositionInt))
+			HandleClickInput();
+		}
+		else
+		{
+			// Not clicking, idle
+			_prevSelectBlock = null;
+		}
+	}
+
+	private void HandleClickInput()
+	{
+		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(Designer.HoverPositionInt);
+
+		if (MultiSelectAction.action.ReadValue<float>() > 0.5f)
+		{
+			// Holding shift, drag select multiple blocks
+			if (blockInstance == null) return;
+
+			if (_prevSelectBlock == null)
 			{
-				_selectedLocation = Designer.HoverPositionInt;
-				ShowBlockConfig();
+				_additive = !_selectedBlocks.Remove(blockInstance);
+				if (_additive) _selectedBlocks.Add(blockInstance);
+				ShowAutoConfig();
+
+				_prevSelectBlock = blockInstance;
+				Debug.Log($"Begin multi select at {blockInstance.Position}; additive {_additive}");
+			}
+			else if (blockInstance != _prevSelectBlock)
+			{
+				if (_additive)
+				{
+					if (!_selectedBlocks.Contains(blockInstance))
+					{
+						_selectedBlocks.Add(blockInstance);
+						ShowBlockConfig();
+					}
+				}
+				else
+				{
+					if (_selectedBlocks.Remove(blockInstance)) ShowAutoConfig();
+				}
+
+				_prevSelectBlock = blockInstance;
+				Debug.Log($"additive: {_additive}; multiselect at {blockInstance.Position}");
+			}
+			// Otherwise, mouse is still over the block that the user previously clicked on.
+			// Idle for now.
+		}
+		else
+		{
+			// Select single block
+			if (_prevSelectBlock != null) return;
+			_prevSelectBlock = blockInstance;
+
+			if (blockInstance == null)
+			{
+				_selectedBlocks.Clear();
+				ShowVehicleConfig();
 			}
 			else
 			{
-				_selectedLocation = null;
-				ShowVehicleConfig();
+				_selectedBlocks.Clear();
+				_selectedBlocks.Add(blockInstance);
+				ShowBlockConfig();
 			}
 		}
 	}
 
 	private void HandleDeselect(InputAction.CallbackContext context)
 	{
-		_selectedLocation = null;
+		_selectedBlocks.Clear();
 		ShowVehicleConfig();
 	}
 
@@ -170,6 +206,7 @@ public class DesignerConfig : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
+		// TODO clean up config items
 		ControlModeSelect.Value = (int) Blueprint.DefaultControlMode;
 
 		ColorScheme colorScheme = ColorScheme.FromBlueprint(Designer.Blueprint);
@@ -183,9 +220,21 @@ public class DesignerConfig : MonoBehaviour
 		_context.SetColorScheme(colorScheme);
 	}
 
+	private void ShowAutoConfig()
+	{
+		if (_selectedBlocks.Count > 0)
+		{
+			ShowBlockConfig();
+		}
+		else
+		{
+			ShowVehicleConfig();
+		}
+	}
+
 	private void ShowVehicleConfig()
 	{
-		Debug.Assert(_selectedLocation == null, nameof(_selectedLocation) + " == null");
+		Debug.Assert(_selectedBlocks.Count == 0, nameof(_selectedBlocks) + ".Count == 0");
 
 		StatusText.text = string.Join(
 			"\n",
@@ -194,53 +243,57 @@ public class DesignerConfig : MonoBehaviour
 		);
 
 		SetVehicleConfigEnabled(true);
-		SetEngineConfigEnabled(false);
-		SetThrusterConfigEnabled(false);
-		SetWeaponConfigEnabled(false);
+		ClearBlockConfigItems();
+		_configBlockId = null;
 
 		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
 
-		SelectionIndicator.gameObject.SetActive(false);
+		foreach (GameObject indicator in _selectionIndicators.Values)
+		{
+			indicator.SetActive(false);
+		}
 	}
 
 	private void ShowBlockConfig()
 	{
-		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
+		Debug.Assert(_selectedBlocks.Count > 0, nameof(_selectedBlocks) + ".Count > 0");
 
-		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
-		BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+		SetVehicleConfigEnabled(false);
+		UpdateSelectionIndicators();
+
+		string blockId = _selectedBlocks[0].BlockId;
+		for (int i = 1; i < _selectedBlocks.Count; i++)
+		{
+			if (_selectedBlocks[i].BlockId != blockId)
+			{
+				StatusText.text = "Block type mismatch.";
+				ClearBlockConfigItems();
+				_configBlockId = null;
+				return;
+			}
+		}
+
+		// From this point on, we known that all blocks are of the same time (same block id).
+		BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockId).Spec;
 
 		StatusText.text = string.Join(
 			"\n",
-			$"Configuring {blockSpec.Info.FullName}",
+			_selectedBlocks.Count > 1
+				? $"Configuring {_selectedBlocks.Count} blocks."
+				: $"Configuring {blockSpec.Info.FullName} at {_selectedBlocks[0].Position}.",
 			"Press 'Q' to show vehicle config"
 		);
 
-		SetVehicleConfigEnabled(false);
-
-		LinearEngine engine = blockObject.GetComponent<LinearEngine>();
-		SetEngineConfigEnabled(engine != null);
-		if (engine != null) UpdateEngineConfigElements(engine);
-
-		OmniThruster omniThruster = blockObject.GetComponent<OmniThruster>();
-		SetThrusterConfigEnabled(omniThruster != null);
-		if (omniThruster != null) UpdateOmniThrusterConfigElements(omniThruster);
-
-		TurretedWeapon turretedWeapon = blockObject.GetComponent<TurretedWeapon>();
-		SetWeaponConfigEnabled(turretedWeapon != null);
-		if (turretedWeapon != null) UpdateTurretedWeaponConfigElements(turretedWeapon);
-
-		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
-
-		BoundsInt blockBounds = TransformUtils.TransformBounds(
-			new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax).ToBoundsInt(),
-			blockInstance.Position, blockInstance.Rotation
-		);
-
-		SelectionIndicator.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
-		SelectionIndicator.localScale = blockBounds.size;
-		SelectionIndicator.gameObject.SetActive(true);
+		if (blockId != _configBlockId)
+		{
+			ClearBlockConfigItems();
+			CreateBlockConfigItems();
+			_configBlockId = blockId;
+		}
+		else
+		{
+			UpdateBlockConfigItems();
+		}
 	}
 
 	#region Config Display
@@ -254,50 +307,233 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.gameObject.SetActive(configEnabled);
 	}
 
-	private void SetEngineConfigEnabled(bool configEnabled)
+	private void ClearBlockConfigItems()
 	{
-		EngineTranslationToggle.gameObject.SetActive(configEnabled);
-		EngineRotationToggle.gameObject.SetActive(configEnabled);
+		foreach (GameObject item in _blockConfigItems)
+		{
+			Destroy(item);
+		}
+
+		_blockConfigItems.Clear();
 	}
 
-	private void UpdateEngineConfigElements(LinearEngine engine)
+	private void CreateBlockConfigItems()
 	{
+		Debug.Assert(_selectedBlocks.Count > 0, nameof(_selectedBlocks) + ".Count > 0");
+		Debug.Assert(_blockConfigItems.Count == 0, nameof(_blockConfigItems) + ".Count == 0");
+
+		List<JObject> configs = _selectedBlocks.Select(block => ConfigUtils.ParseConfig(block.Config)).ToList();
+
+		foreach (
+			IConfigComponent component in
+			Builder.GetBlockObject(_selectedBlocks[0]).GetComponents<IConfigComponent>()
+		)
+		{
+			Type componentType = component.GetType();
+			string configKey = ConfigUtils.GetConfigKey(componentType);
+			var currentConfigs =
+				configs.Select(config => config.ContainsKey(configKey) ? (JObject) config[configKey] : null).ToList();
+
+			foreach (ConfigItemBase item in component.GetConfigItems())
+			{
+				GameObject row = null;
+
+				switch (item)
+				{
+					case ToggleConfigItem toggleItem:
+					{
+						row = Instantiate(TogglePrefab, ConfigParent);
+
+						var toggle = row.GetComponent<Toggle>();
+						toggle.isOn = GetToggleValue(currentConfigs, toggleItem);
+						toggle.onValueChanged.AddListener(
+							value => SetBlockConfigs(componentType, toggleItem.Key, new JValue(value))
+						);
+
+						break;
+					}
+					case IntSwitchSelectConfigItem intSwitchItem:
+					{
+						row = Instantiate(SwitchSelectPrefab, ConfigParent);
+
+						var switchSelect = row.GetComponent<SwitchSelect>();
+						switchSelect.SetOptions(intSwitchItem.Options);
+						switchSelect.Value = GetIntSwitchValue(currentConfigs, intSwitchItem);
+						switchSelect.OnValueChanged.AddListener(
+							value => SetBlockConfigs(componentType, intSwitchItem.Key, new JValue(value))
+						);
+
+						break;
+					}
+					case StringSwitchSelectConfigItem stringSwitchItem:
+					{
+						row = Instantiate(SwitchSelectPrefab, ConfigParent);
+
+						var switchSelect = row.GetComponent<SwitchSelect>();
+						switchSelect.SetOptions(stringSwitchItem.Options);
+						switchSelect.Value = GetStringSwitchValue(currentConfigs, stringSwitchItem);
+						switchSelect.OnValueChanged.AddListener(
+							value => SetBlockConfigs(
+								componentType, stringSwitchItem.Key, new JValue(stringSwitchItem.Serialize(value))
+							)
+						);
+
+						break;
+					}
+					default:
+					{
+						Debug.LogError($"Unhandled config item type {item.GetType()}");
+						break;
+					}
+				}
+
+				if (row != null)
+				{
+					row.GetComponentInChildren<Text>().text = item.Label;
+
+					if (!string.IsNullOrWhiteSpace(item.Tooltip))
+					{
+						Tooltip tooltip = row.AddComponent<Tooltip>();
+						tooltip.Delay = 0.2f;
+						tooltip.SetTooltip(item.Tooltip);
+					}
+
+					_blockConfigItems.Add(row);
+				}
+			}
+		}
+
+		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
+	}
+
+	private void UpdateBlockConfigItems()
+	{
+		Debug.Assert(_selectedBlocks.Count > 0, nameof(_selectedBlocks) + ".Count > 0");
+
 		_updatingElements = true;
 
-		EngineTranslationToggle.isOn = engine.RespondToTranslation;
-		EngineRotationToggle.isOn = engine.RespondToRotation;
+		List<JObject> configs = _selectedBlocks.Select(block => ConfigUtils.ParseConfig(block.Config)).ToList();
+
+		int rowIndex = 0;
+		foreach (
+			IConfigComponent component in
+			Builder.GetBlockObject(_selectedBlocks[0]).GetComponents<IConfigComponent>()
+		)
+		{
+			string configKey = ConfigUtils.GetConfigKey(component.GetType());
+			var currentConfigs =
+				configs.Select(config => config.ContainsKey(configKey) ? (JObject) config[configKey] : null).ToList();
+
+			foreach (ConfigItemBase item in component.GetConfigItems())
+			{
+				GameObject row = _blockConfigItems[rowIndex];
+
+				switch (item)
+				{
+					case ToggleConfigItem toggleItem:
+						row.GetComponent<Toggle>().isOn = GetToggleValue(currentConfigs, toggleItem);
+						break;
+					case IntSwitchSelectConfigItem intSwitchItem:
+						row.GetComponent<SwitchSelect>().Value = GetIntSwitchValue(currentConfigs, intSwitchItem);
+						break;
+					case StringSwitchSelectConfigItem stringSwitchItem:
+						row.GetComponent<SwitchSelect>().Value = GetStringSwitchValue(currentConfigs, stringSwitchItem);
+						break;
+					default:
+						Debug.LogError($"Unhandled config item type {item.GetType()}");
+						rowIndex--; // Counteract automatic increment
+						break;
+				}
+
+				rowIndex++;
+			}
+		}
 
 		_updatingElements = false;
 	}
 
-	private void SetThrusterConfigEnabled(bool configEnabled)
+	private static bool GetToggleValue(IEnumerable<JObject> currentConfigs, ToggleConfigItem toggleItem)
 	{
-		ThrusterTranslationToggle.gameObject.SetActive(configEnabled);
-		ThrusterRotationToggle.gameObject.SetActive(configEnabled);
+		return currentConfigs.All(
+			config => config != null
+			          && config.ContainsKey(toggleItem.Key)
+			          && config[toggleItem.Key].Value<bool>()
+		);
 	}
 
-	private void UpdateOmniThrusterConfigElements(OmniThruster omniThruster)
+	private static int GetIntSwitchValue(IEnumerable<JObject> currentConfigs, IntSwitchSelectConfigItem intSwitchItem)
 	{
-		_updatingElements = true;
-
-		ThrusterTranslationToggle.isOn = omniThruster.RespondToTranslation;
-		ThrusterRotationToggle.isOn = omniThruster.RespondToRotation;
-
-		_updatingElements = false;
+		return currentConfigs
+			.Select(
+				config =>
+					config != null && config.ContainsKey(intSwitchItem.Key)
+						? config[intSwitchItem.Key].Value<int>()
+						: -1
+			)
+			.FirstOrDefault(index => index >= 0);
 	}
 
-	private void SetWeaponConfigEnabled(bool configEnabled)
+	private static int GetStringSwitchValue(
+		IEnumerable<JObject> currentConfigs, StringSwitchSelectConfigItem stringSwitchItem
+	)
 	{
-		WeaponGroupSelect.gameObject.SetActive(configEnabled);
+		return currentConfigs
+			.Select(
+				config =>
+					config != null && config.ContainsKey(stringSwitchItem.Key)
+						? stringSwitchItem.Deserialize(config[stringSwitchItem.Key].Value<string>())
+						: -1
+			)
+			.FirstOrDefault(index => index >= 0);
 	}
 
-	private void UpdateTurretedWeaponConfigElements(TurretedWeapon turretedWeapon)
+	private void SetBlockConfigs(Type componentType, string key, JToken value)
 	{
-		_updatingElements = true;
+		if (_updatingElements) return;
 
-		WeaponGroupSelect.Value = (int) turretedWeapon.WeaponBinding;
+		foreach (VehicleBlueprint.BlockInstance selectedBlock in _selectedBlocks)
+		{
+			JObject blockConfig = ConfigUtils.ParseConfig(selectedBlock.Config);
+			string configKey = ConfigUtils.GetConfigKey(componentType);
 
-		_updatingElements = false;
+			if (!(blockConfig[configKey] is JObject componentConfig))
+			{
+				componentConfig = new JObject();
+				blockConfig[configKey] = componentConfig;
+			}
+
+			componentConfig[key] = value;
+			selectedBlock.Config = blockConfig.ToString(Formatting.None);
+
+			BlockConfigHelper.SyncConfig(selectedBlock, Builder.GetBlockObject(selectedBlock));
+		}
+	}
+
+	private void UpdateSelectionIndicators()
+	{
+		HashSet<VehicleBlueprint.BlockInstance>
+			newBlocks = new HashSet<VehicleBlueprint.BlockInstance>(_selectedBlocks);
+
+		foreach (KeyValuePair<VehicleBlueprint.BlockInstance, GameObject> entry in _selectionIndicators)
+		{
+			entry.Value.SetActive(newBlocks.Remove(entry.Key));
+		}
+
+		foreach (VehicleBlueprint.BlockInstance blockInstance in newBlocks)
+		{
+			var blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			BoundsInt blockBounds = TransformUtils.TransformBounds(
+				new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax).ToBoundsInt(),
+				blockInstance.Position, blockInstance.Rotation
+			);
+
+			var indicator = Instantiate(SelectionIndicatorPrefab, IndicatorParent);
+			indicator.transform.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
+			indicator.transform.localScale = blockBounds.size;
+			indicator.SetActive(true);
+
+			_selectionIndicators.Add(blockInstance, indicator);
+		}
 	}
 
 	#endregion
@@ -357,53 +593,6 @@ public class DesignerConfig : MonoBehaviour
 		{
 			PlayerPrefs.SetString(PropertyKeys.TERTIARY_COLOR, JsonUtility.ToJson(color));
 		}
-	}
-
-	#endregion
-
-	private void UpdateBlockConfig<T>(Action<T> action) where T : Component
-	{
-		if (_updatingElements) return;
-		Debug.Assert(_selectedLocation != null, nameof(_selectedLocation) + " != null");
-
-		VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(_selectedLocation.Value);
-		GameObject blockObject = Builder.GetBlockObjectAt(_selectedLocation.Value);
-
-		var component = blockObject.GetComponent<T>();
-		if (component != null)
-		{
-			action(component);
-			BlockConfigHelper.SaveConfig(blockInstance, blockObject);
-		}
-	}
-
-	#region Block Config Event Listeners
-
-	private void SetEngineRespondToTranslation(bool engineTranslation)
-	{
-		UpdateBlockConfig<LinearEngine>(linearEngine => linearEngine.RespondToTranslation = engineTranslation);
-	}
-
-	private void SetEngineRespondToRotation(bool engineRotation)
-	{
-		UpdateBlockConfig<LinearEngine>(linearEngine => linearEngine.RespondToRotation = engineRotation);
-	}
-
-	private void SetThrusterRespondToTranslation(bool thrusterTranslation)
-	{
-		UpdateBlockConfig<OmniThruster>(omniThruster => omniThruster.RespondToTranslation = thrusterTranslation);
-	}
-
-	private void SetThrusterRespondToRotation(bool thrusterRotation)
-	{
-		UpdateBlockConfig<OmniThruster>(omniThruster => omniThruster.RespondToRotation = thrusterRotation);
-	}
-
-	private void SetTurretedWeaponBindingGroup(int bindingGroupIndex)
-	{
-		UpdateBlockConfig<TurretedWeapon>(
-			turretedWeapon => turretedWeapon.WeaponBinding = (WeaponBindingGroup) bindingGroupIndex
-		);
 	}
 
 	#endregion

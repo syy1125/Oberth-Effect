@@ -516,16 +516,24 @@
                 },
                 {
                     "name": "Select Block",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "e90c5747-acde-4016-a7f4-2801ce5d4465",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Tap"
+                    "interactions": ""
                 },
                 {
                     "name": "Deselect Block",
                     "type": "Button",
                     "id": "6ef41a92-d1e8-4649-838a-491b4e4db9cc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Multi Select",
+                    "type": "Button",
+                    "id": "32d49561-7da0-4d49-a0e8-469f4cf334be",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -685,17 +693,6 @@
                 },
                 {
                     "name": "",
-                    "id": "fb204767-dc87-4a48-b5f1-d41012c007fe",
-                    "path": "<Pen>/tip",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Select Block",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "c82d32f7-a7ab-4e2c-b081-1af17e118a56",
                     "path": "<Keyboard>/f3",
                     "interactions": "",
@@ -735,6 +732,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Reset Grid Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa84e677-614a-457d-86ab-211315add4e4",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Multi Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
