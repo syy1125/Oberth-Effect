@@ -195,6 +195,7 @@ public class DesignerConfig : MonoBehaviour
 
 		SetVehicleConfigEnabled(true);
 		SetEngineConfigEnabled(false);
+		SetThrusterConfigEnabled(false);
 		SetWeaponConfigEnabled(false);
 
 		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
