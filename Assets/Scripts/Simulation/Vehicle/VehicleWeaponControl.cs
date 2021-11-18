@@ -71,10 +71,10 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private IEnumerator LateFixedUpdate()
 	{
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
+		while (enabled)
+		{
 			bool isMine = photonView.IsMine;
 			bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
 			bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
@@ -106,6 +106,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 						break;
 				}
 			}
+
+			yield return new WaitForFixedUpdate();
 		}
 	}
 

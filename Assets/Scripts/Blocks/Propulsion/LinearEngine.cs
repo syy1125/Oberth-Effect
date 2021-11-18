@@ -166,10 +166,10 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	private IEnumerator LateFixedUpdate()
 	{
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
+		while (enabled)
+		{
 			float trueThrustStrength = _targetThrustStrength * Satisfaction;
 
 			if (Body != null && IsMine)
@@ -188,6 +188,8 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 					main.startColor = new ParticleSystem.MinMaxGradient(startColor);
 				}
 			}
+
+			yield return new WaitForFixedUpdate();
 		}
 	}
 

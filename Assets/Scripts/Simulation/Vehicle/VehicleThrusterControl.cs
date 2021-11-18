@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
@@ -105,10 +106,10 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private IEnumerator LateFixedUpdate()
 	{
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
+		while (enabled)
+		{
 			if (photonView.IsMine)
 			{
 				switch (PlayerControlConfig.Instance.ControlMode)
@@ -135,6 +136,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 			}
 
 			SendCommands();
+
+			yield return new WaitForFixedUpdate();
 		}
 	}
 

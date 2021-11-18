@@ -215,12 +215,12 @@ public class TurretedWeapon :
 		}
 	}
 
-	public IEnumerator LateFixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
+		while (enabled)
+		{
 			UpdateTurretRotationState();
 			ApplyTurretRotation();
 
@@ -228,6 +228,8 @@ public class TurretedWeapon :
 			{
 				emitter.EmitterFixedUpdate(_firing, _core.IsMine);
 			}
+
+			yield return new WaitForFixedUpdate();
 		}
 	}
 

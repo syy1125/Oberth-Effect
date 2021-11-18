@@ -203,10 +203,10 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	private IEnumerator LateFixedUpdate()
 	{
-		while (true)
-		{
-			yield return new WaitForFixedUpdate();
+		yield return new WaitForFixedUpdate();
 
+		while (enabled)
+		{
 			Vector2 overallResponse = _response * Satisfaction;
 
 			if (Body != null && IsMine)
@@ -235,6 +235,8 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				SetParticlesStrength(_upParticles, 0f);
 				SetParticlesStrength(_downParticles, -overallResponse.y);
 			}
+
+			yield return new WaitForFixedUpdate();
 		}
 	}
 
