@@ -16,6 +16,15 @@ public class PaletteControls : MonoBehaviour
 	public RectTransform BlockButtonFrame;
 
 	private string _selectedCategoryId;
+	private bool _started;
+
+	private void OnEnable()
+	{
+		if (_started)
+		{
+			SetCategoryId(_selectedCategoryId, true);
+		}
+	}
 
 	private IEnumerator Start()
 	{
@@ -40,6 +49,7 @@ public class PaletteControls : MonoBehaviour
 		SetCategoryId("");
 		LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
 
+		// Give layout controller a tick to arrange things
 		yield return null;
 
 		float height = 0f;
@@ -56,16 +66,18 @@ public class PaletteControls : MonoBehaviour
 
 		GetComponent<RectTransform>().offsetMin = new Vector2(0f, -height);
 		BlockButtonFrame.offsetMax = new Vector2(0f, -height);
+
+		_started = true;
 	}
 
-	public void SetCategoryId(string value)
+	public void SetCategoryId(string value, bool immediate = false)
 	{
 		_selectedCategoryId = value;
 
 		foreach (BlockCategoryButton button in GetComponentsInChildren<BlockCategoryButton>())
 		{
 			button.SelectHighlight.CrossFadeAlpha(
-				button.BlockCategoryId == _selectedCategoryId ? 1f : 0f, HighlightFadeTime, true
+				button.BlockCategoryId == _selectedCategoryId ? 1f : 0f, immediate ? 0f : HighlightFadeTime, true
 			);
 		}
 

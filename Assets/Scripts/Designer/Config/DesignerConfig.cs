@@ -102,6 +102,7 @@ public class DesignerConfig : MonoBehaviour
 		DetachVehicleConfigListeners();
 
 		_selectedBlocks.Clear();
+		ClearSelectionIndicators();
 	}
 
 	private void DisableActions()
@@ -522,6 +523,16 @@ public class DesignerConfig : MonoBehaviour
 
 			_selectionIndicators.Add(blockInstance, indicator);
 		}
+	}
+
+	private void ClearSelectionIndicators()
+	{
+		foreach (GameObject indicator in _selectionIndicators.Values)
+		{
+			Destroy(indicator);
+		}
+
+		_selectionIndicators.Clear();
 	}
 
 	#endregion
