@@ -37,7 +37,9 @@ public abstract class AbstractGameManager : MonoBehaviourPunCallbacks
 	protected void DisableControls()
 	{
 		VehicleSpawner.enabled = false;
-		VehicleSpawner.Vehicle.GetComponent<VehicleCore>().Die();
+		VehicleSpawner.Vehicle.GetComponent<PhotonView>().RPC(
+			nameof(VehicleCore.DisableVehicle), RpcTarget.AllBuffered
+		);
 	}
 }
 }

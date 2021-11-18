@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
@@ -176,20 +175,25 @@ public class VehicleCore :
 
 	public void RegisterBlock(BlockCore blockCore)
 	{
-		if (!photonView.IsMine) return;
 		// When the vehicle is loading, ignore everything as the calculation will be done by the loading routine.
 		if (!_loaded) return;
+		if (!photonView.IsMine) return;
 
 		BlockCore core = blockCore.GetComponent<BlockCore>();
 		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(core.BlockId).Spec;
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
+
 		AddMass(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia);
+
+		photonView.RPC(
+			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, _body.mass, _body.centerOfMass, _body.inertia
+		);
 	}
 
 	public void UnregisterBlock(BlockCore blockCore)
 	{
-		if (!photonView.IsMine) return;
 		if (!_loaded) return;
+		if (!photonView.IsMine) return;
 
 		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockCore.BlockId).Spec;
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
@@ -201,7 +205,7 @@ public class VehicleCore :
 		{
 			List<VehicleBlockConnectivityGraph> graphs =
 				_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
-			
+
 			if (graphs == null || graphs.Count == 0)
 			{
 				// Vehicle completely destroyed. Probably nothing need to be done here?
@@ -238,9 +242,13 @@ public class VehicleCore :
 			{
 				Debug.LogError($"Unexpected chunk count {graphs.Count}");
 			}
-			
+
 			Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
 		}
+
+		photonView.RPC(
+			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, _body.mass, _body.centerOfMass, _body.inertia
+		);
 	}
 
 	private void AddMass(Vector2 position, float mass, float moment)
@@ -277,15 +285,27 @@ public class VehicleCore :
 		}
 	}
 
+	[PunRPC]
+	private void UpdateRigidbody2D(float mass, Vector2 centerOfMass, float momentOfInertia)
+	{
+		_body.mass = mass;
+		_body.centerOfMass = centerOfMass;
+		_body.inertia = momentOfInertia;
+	}
+
 	#endregion
 
 	public void RegisterBlock(ControlCore block)
 	{
+		if (!photonView.IsMine) return;
+
 		_controlCores.Add(block);
 	}
 
 	public void UnregisterBlock(ControlCore block)
 	{
+		if (!photonView.IsMine) return;
+
 		bool success = _controlCores.Remove(block);
 		if (!success)
 		{
@@ -295,11 +315,12 @@ public class VehicleCore :
 		if (_controlCores.Count <= 0)
 		{
 			Debug.Log($"{gameObject}: All control cores destroyed. Disabling controls.");
-			Die();
+			photonView.RPC(nameof(DisableVehicle), RpcTarget.AllBuffered);
 		}
 	}
 
-	public void Die()
+	[PunRPC]
+	public void DisableVehicle()
 	{
 		bool success = ActiveVehicles.Remove(this);
 		if (!success)

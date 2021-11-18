@@ -12,7 +12,7 @@ namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviourPun,
-	IPunObservable, IPunInstantiateMagicCallback, IPropulsionBlockRegistry
+	IPunObservable, IPropulsionBlockRegistry
 {
 	#region Unity Fields
 
@@ -229,12 +229,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	#endregion
 
 	#region PUN
-
-	public void OnPhotonInstantiate(PhotonMessageInfo info)
-	{
-		VehicleBlueprint blueprint =
-			JsonUtility.FromJson<VehicleBlueprint>((string) info.photonView.InstantiationData[0]);
-	}
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{

@@ -828,7 +828,6 @@ MonoBehaviour:
   RespawnInterval: 5
   CameraRig: {fileID: 4312688903099930239}
   VehicleCamera: {fileID: 4312688903979522742}
-  ControlConfig: {fileID: 9033823385918761468}
   ResourceDisplay: {fileID: 1976241401999951190}
   HealthBarControl: {fileID: 4312688904400713394}
   Radar: {fileID: 6213536422799217278}

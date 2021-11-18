@@ -75,7 +75,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 				_selfDestructStart = null;
 				SelfDestructPanel.SetActive(false);
 
-				Vehicle.GetComponent<VehicleCore>().Die();
+				Vehicle.GetComponent<PhotonView>().RPC(nameof(VehicleCore.DisableVehicle), RpcTarget.AllBuffered);
 			}
 		}
 		else
