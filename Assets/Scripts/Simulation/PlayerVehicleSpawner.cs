@@ -21,7 +21,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	[Header("References")]
 	public CameraFollow CameraRig;
 	public CameraFollow VehicleCamera;
-	public PlayerControlConfig ControlConfig;
 	public ResourceDisplay ResourceDisplay;
 	public BlockHealthBarControl HealthBarControl;
 	public Radar Radar;
@@ -49,7 +48,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	{
 		SelfDestructAction.action.Enable();
 		SelfDestructAction.action.started += HandleSelfDestructStart;
-		SelfDestructAction.action.canceled += HandleSelfDestructEnd;
+		SelfDestructAction.action.canceled += HandleSelfDestructCancel;
 	}
 
 	private void Start()
@@ -88,7 +87,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	private void OnDisable()
 	{
 		SelfDestructAction.action.started -= HandleSelfDestructStart;
-		SelfDestructAction.action.canceled -= HandleSelfDestructEnd;
+		SelfDestructAction.action.canceled -= HandleSelfDestructCancel;
 		SelfDestructAction.action.Disable();
 
 		if (_respawn != null)
@@ -121,7 +120,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		VehicleCamera.Target = Vehicle.transform;
 
 		ResourceDisplay.ResourceManager = Vehicle.GetComponent<VehicleResourceManager>();
-		Vehicle.GetComponent<VehicleThrusterControl>().SetPlayerControlConfig(ControlConfig);
 		HealthBarControl.SetTarget(Vehicle.GetComponent<VehicleCore>());
 		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
 
@@ -196,7 +194,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		}
 	}
 
-	private void HandleSelfDestructEnd(InputAction.CallbackContext context)
+	private void HandleSelfDestructCancel(InputAction.CallbackContext context)
 	{
 		_selfDestructStart = null;
 	}

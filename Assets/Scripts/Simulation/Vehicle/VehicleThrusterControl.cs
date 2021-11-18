@@ -27,8 +27,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	#endregion
 
-	private PlayerControlConfig _controlConfig;
-
 	private readonly List<IPropulsionBlock> _propulsionBlocks = new List<IPropulsionBlock>();
 
 	private Camera _mainCamera;
@@ -57,6 +55,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		MoveAction.action.Enable();
 		StrafeAction.action.Enable();
+
+		PlayerControlConfig.Instance.ControlModeChanged.AddListener(OnControlModeChanged);
 	}
 
 	private void Start()
@@ -64,18 +64,12 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		StartCoroutine(LateFixedUpdate());
 	}
 
-	public void SetPlayerControlConfig(PlayerControlConfig controlConfig)
-	{
-		_controlConfig = controlConfig;
-		_controlConfig.ControlModeChanged.AddListener(OnControlModeChanged);
-	}
-
 	private void OnDisable()
 	{
 		MoveAction.action.Disable();
 		StrafeAction.action.Disable();
 
-		_controlConfig.ControlModeChanged.RemoveListener(OnControlModeChanged);
+		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(OnControlModeChanged);
 	}
 
 	#endregion
@@ -117,7 +111,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 			if (photonView.IsMine)
 			{
-				switch (_controlConfig.ControlMode)
+				switch (PlayerControlConfig.Instance.ControlMode)
 				{
 					case VehicleControlMode.Mouse:
 						UpdateMouseModeCommands();
@@ -132,7 +126,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 						throw new ArgumentOutOfRangeException();
 				}
 
-				if (_controlConfig.InertiaDampenerActive)
+				if (PlayerControlConfig.Instance.InertiaDampenerActive)
 				{
 					ApplyInertiaDampener();
 				}
@@ -160,7 +154,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 			float scale = 1f / Mathf.Max(Mathf.Abs(_translateCommand.x), Mathf.Abs(_translateCommand.y));
 			_translateCommand *= scale;
 		}
-		
+
 		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
 
 		_rotationPid.Update(angle, Time.fixedDeltaTime);
