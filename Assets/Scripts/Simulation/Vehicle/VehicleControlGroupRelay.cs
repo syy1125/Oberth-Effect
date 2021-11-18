@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using UnityEngine;
@@ -37,7 +38,7 @@ public class VehicleControlGroupRelay : MonoBehaviour, IControlConditionProvider
 		}
 	}
 
-	private void BroadcastControlChange()
+	private void BroadcastControlChange(List<string> _)
 	{
 		foreach (IControlConditionReceiver receiver in _receivers)
 		{

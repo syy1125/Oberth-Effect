@@ -24,10 +24,11 @@ public class PlayerControlConfig : MonoBehaviour
 	public VehicleControlMode ControlMode { get; private set; }
 	public UnityEvent ControlModeChanged;
 
-	public UnityEvent AnyControlGroupChanged;
+	public UnityEvent<List<string>> AnyControlGroupChanged;
 
 	private List<Tuple<string, InputAction>> _controlGroupActions;
 	private Dictionary<string, int> _controlGroupStates;
+	private List<string> _changed;
 
 	private void Awake()
 	{
@@ -50,6 +51,8 @@ public class PlayerControlConfig : MonoBehaviour
 
 		_controlGroupActions = new List<Tuple<string, InputAction>>();
 		_controlGroupStates = new Dictionary<string, int>();
+		_changed = new List<string>();
+
 		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
 		{
 			InputAction action = new InputAction(
@@ -97,7 +100,7 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void Update()
 	{
-		bool triggered = false;
+		_changed.Clear();
 
 		foreach (Tuple<string, InputAction> action in _controlGroupActions)
 		{
@@ -105,13 +108,13 @@ public class PlayerControlConfig : MonoBehaviour
 			{
 				int stateCount = ControlGroupDatabase.Instance.GetSpecInstance(action.Item1).Spec.States.Length;
 				_controlGroupStates[action.Item1] = (_controlGroupStates[action.Item1] + 1) % stateCount;
-				triggered = true;
+				_changed.Add(action.Item1);
 			}
 		}
 
-		if (triggered)
+		if (_changed.Count > 0)
 		{
-			AnyControlGroupChanged.Invoke();
+			AnyControlGroupChanged.Invoke(_changed);
 		}
 	}
 
