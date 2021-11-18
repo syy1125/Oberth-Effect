@@ -48,7 +48,7 @@ public class VehicleBuilder : MonoBehaviour
 
 	public void InitBlueprint()
 	{
-		// TODO get block name from game config
+		// TODO get root block name from game config
 		if (Blueprint.Blocks.Count > 0)
 		{
 			Debug.LogError("VehicleBuilder.InitBlueprint is being used on a non-empty vehicle!");

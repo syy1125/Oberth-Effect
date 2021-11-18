@@ -24,6 +24,8 @@ public class VehicleBlueprint
 	public string Name;
 	public string Description;
 	public List<BlockInstance> Blocks;
+	public bool UseMirror;
+	public int MirrorPosition;
 
 	public int CachedCost;
 

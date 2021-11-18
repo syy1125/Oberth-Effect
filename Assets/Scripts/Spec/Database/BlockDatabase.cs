@@ -61,6 +61,12 @@ public class BlockDatabase : MonoBehaviour
 		return _specs[blockId];
 	}
 
+	public static string GetMirrorBlockId(BlockSpec blockSpec)
+	{
+		string mirrorBlockId = blockSpec.Construction.MirrorBlockId;
+		return string.IsNullOrEmpty(mirrorBlockId) ? blockSpec.BlockId : mirrorBlockId;
+	}
+
 	public IEnumerable<SpecInstance<BlockCategorySpec>> ListCategories()
 	{
 		return _categories;

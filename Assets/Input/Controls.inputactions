@@ -515,6 +515,22 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Toggle Mirror",
+                    "type": "Button",
+                    "id": "21e9d05b-6428-488e-872b-4398d4b93188",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Move Mirror",
+                    "type": "Value",
+                    "id": "29bc7b75-c40d-4d6e-bb01-ccd07b026461",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Select Block",
                     "type": "Button",
                     "id": "e90c5747-acde-4016-a7f4-2801ce5d4465",
@@ -745,6 +761,50 @@
                     "action": "Multi Select",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "72639ebc-3bb2-4c89-961d-296502f9ecee",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Toggle Mirror",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Comma Period",
+                    "id": "41171656-44ee-43c8-8ef2-3ebc3678395e",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move Mirror",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "5b065f51-bb4e-419f-98dd-417e5f5199fe",
+                    "path": "<Keyboard>/comma",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move Mirror",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "c6a3f864-9857-4af6-b496-feeee62fa218",
+                    "path": "<Keyboard>/period",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move Mirror",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

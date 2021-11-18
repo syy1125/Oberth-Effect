@@ -17,6 +17,7 @@ Construction:
     - { X: -1, Y: 0 }
     - { X: 0, Y: -1 }
     - { X: 0, Y: 1 }
+  MirrorBlockId: OberthEffect/Slope2x1LeftBack
 Physics:
   CenterOfMass: { X: -0.1111111, Y: -0.05555556 }
   Mass: 0.75

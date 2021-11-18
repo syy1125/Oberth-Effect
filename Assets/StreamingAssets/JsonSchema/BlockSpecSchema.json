@@ -50,6 +50,18 @@
                         "$ref": "Vector2IntSchema.json"
                     },
                     "description": "List of points where this block can attach to other blocks. Two blocks are attached if and only if both of them have an attachment point in each other's bounds."
+                },
+                "MirrorBlockId": {
+                    "type": "string",
+                    "description": "ID of the block that's the mirror image of this block. If blank, the game assumes that the block is its own mirror."
+                },
+                "MirrorRootOffset": {
+                    "$ref": "Vector2IntSchema.json",
+                    "description": "Root offset for the mirror block."
+                },
+                "MirrorRotationOffset": {
+                    "type": "integer",
+                    "description": "Rotation offset to use when placing the mirror block."
                 }
             }
         },

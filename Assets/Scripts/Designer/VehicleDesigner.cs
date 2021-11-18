@@ -10,7 +10,7 @@ namespace Syy1125.OberthEffect.Designer
 // A high-level controller for the designer
 public class VehicleDesigner : MonoBehaviour
 {
-	#region Public Fields
+	#region Unity Fields
 
 	[Header("References")]
 	public DesignerAreaMask AreaMask;
@@ -19,6 +19,7 @@ public class VehicleDesigner : MonoBehaviour
 	public DesignerGridMove GridMove;
 	public DesignerPaletteUse PaletteUse;
 	public VehicleBuilder Builder;
+	public VehicleMirror Mirror;
 	public DesignerConfig Config;
 	public DesignerCursorTexture CursorTexture;
 	public VehicleAnalyzer Analyzer;
@@ -72,9 +73,7 @@ public class VehicleDesigner : MonoBehaviour
 		}
 		else
 		{
-			Blueprint = new VehicleBlueprint();
-			Builder.InitBlueprint();
-			Config.ReloadVehicle();
+			ResetVehicle();
 		}
 	}
 
@@ -134,6 +133,7 @@ public class VehicleDesigner : MonoBehaviour
 		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(blueprint);
 		Builder.ReloadVehicle();
 		Config.ReloadVehicle();
+		Mirror.ReloadVehicle();
 		Analyzer.StartAnalysis();
 	}
 
@@ -143,6 +143,7 @@ public class VehicleDesigner : MonoBehaviour
 
 		Builder.InitBlueprint();
 		Config.ReloadVehicle();
+		Mirror.ReloadVehicle();
 		Analyzer.StartAnalysis();
 	}
 
