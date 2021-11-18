@@ -205,7 +205,9 @@ public class DesignerConfig : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
-		// TODO clean up config items
+		_selectedBlocks.Clear();
+		ClearSelectionIndicators();
+
 		ControlModeSelect.Value = (int) Blueprint.DefaultControlMode;
 
 		ColorScheme colorScheme = ColorScheme.FromBlueprint(Designer.Blueprint);
@@ -217,6 +219,8 @@ public class DesignerConfig : MonoBehaviour
 		TertiaryColorPicker.InitColor(colorScheme.TertiaryColor);
 
 		_context.SetColorScheme(colorScheme);
+
+		ShowVehicleConfig();
 	}
 
 	private void ShowAutoConfig()
