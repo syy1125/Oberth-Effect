@@ -43,7 +43,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				continue;
 			}
 
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 
 			GameObject blockObject = BlockBuilder.BuildFromSpec(
 				spec, transform, blockInstance.Position, blockInstance.Rotation
@@ -108,7 +108,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		if (!photonView.IsMine) return;
 
 		BlockCore core = blockCore.GetComponent<BlockCore>();
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(core.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(core.BlockId);
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 
 		AddMass(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia);
@@ -124,7 +124,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		if (!_loaded) return;
 		if (!photonView.IsMine) return;
 
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockCore.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 
 		// Remove the block by adding negative mass

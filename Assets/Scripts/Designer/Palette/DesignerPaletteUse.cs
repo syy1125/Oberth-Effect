@@ -172,7 +172,7 @@ public class DesignerPaletteUse : MonoBehaviour
 					_blockPreview = CreatePreview(blockSelection.BlockSpec);
 
 					string mirrorBlockId = BlockDatabase.GetMirrorBlockId(blockSelection.BlockSpec);
-					_mirrorBlockPreview = CreatePreview(BlockDatabase.Instance.GetSpecInstance(mirrorBlockId).Spec);
+					_mirrorBlockPreview = CreatePreview(BlockDatabase.Instance.GetBlockSpec(mirrorBlockId));
 				}
 
 				if (_hoverPosition != null)
@@ -240,7 +240,7 @@ public class DesignerPaletteUse : MonoBehaviour
 			return;
 		}
 
-		BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+		BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 		BlockBounds blockBounds = new BlockBounds(
 			blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax
 		);
@@ -286,9 +286,9 @@ public class DesignerPaletteUse : MonoBehaviour
 						                                blockSelection.BlockSpec.Construction.MirrorRootOffset,
 						                                mirrorRotation
 					                                );
-					BlockSpec mirrorBlockSpec = BlockDatabase.Instance.GetSpecInstance(
+					BlockSpec mirrorBlockSpec = BlockDatabase.Instance.GetBlockSpec(
 						BlockDatabase.GetMirrorBlockId(blockSelection.BlockSpec)
-					).Spec;
+					);
 					TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation);
 				}
 

@@ -15,7 +15,7 @@ public class BlockSelection : IPaletteSelection
 	public BlockSelection(string blockId)
 	{
 		BlockId = blockId;
-		BlockSpec = BlockDatabase.Instance.GetSpecInstance(blockId).Spec;
+		BlockSpec = BlockDatabase.Instance.GetBlockSpec(blockId);
 	}
 
 	public bool Equals(IPaletteSelection other)

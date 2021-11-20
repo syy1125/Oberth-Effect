@@ -97,13 +97,13 @@ public class BlockPalette : MonoBehaviour
 		{
 			foreach (KeyValuePair<string, BlockButton> entry in _buttons)
 			{
-				BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(entry.Key).Spec;
+				BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(entry.Key);
 				entry.Value.gameObject.SetActive(blockSpec.CategoryId == category);
 			}
 
-			if (CurrentSelection != null && CurrentSelection is BlockSelection blockSelection)
+			if (CurrentSelection is BlockSelection blockSelection)
 			{
-				BlockSpec selectedSpec = BlockDatabase.Instance.GetSpecInstance(blockSelection.BlockId).Spec;
+				BlockSpec selectedSpec = BlockDatabase.Instance.GetBlockSpec(blockSelection.BlockId);
 				if (selectedSpec.CategoryId != category)
 				{
 					SetSelection(CursorSelection.Instance);

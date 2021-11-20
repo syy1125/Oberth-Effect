@@ -277,7 +277,7 @@ public class DesignerConfig : MonoBehaviour
 		}
 
 		// From this point on, we known that all blocks are of the same time (same block id).
-		BlockSpec blockSpec = BlockDatabase.Instance.GetSpecInstance(blockId).Spec;
+		BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockId);
 
 		StatusText.text = string.Join(
 			"\n",
@@ -514,7 +514,7 @@ public class DesignerConfig : MonoBehaviour
 
 		foreach (VehicleBlueprint.BlockInstance blockInstance in newBlocks)
 		{
-			var blockSpec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			var blockSpec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 			BoundsInt blockBounds = TransformUtils.TransformBounds(
 				new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax).ToBoundsInt(),
 				blockInstance.Position, blockInstance.Rotation

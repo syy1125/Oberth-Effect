@@ -18,7 +18,7 @@ public class DesignerCenterOfMassContext : CenterOfMassContext
 
 		foreach (VehicleBlueprint.BlockInstance blockInstance in Designer.Blueprint.Blocks)
 		{
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 			Vector2 rootPosition = blockInstance.Position;
 			Vector2 blockCenter =
 				rootPosition + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);

@@ -8,7 +8,7 @@ public static class VehicleHelper
 {
 	public static int GetCost(VehicleBlueprint vehicle)
 	{
-		return vehicle.Blocks.Sum(instance => BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec.Cost);
+		return vehicle.Blocks.Sum(instance => BlockDatabase.Instance.GetBlockSpec(instance.BlockId).Cost);
 	}
 }
 }

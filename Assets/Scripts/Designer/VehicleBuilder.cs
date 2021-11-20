@@ -55,13 +55,13 @@ public class VehicleBuilder : MonoBehaviour
 		}
 
 		ClearAll();
-		AddBlock(BlockDatabase.Instance.GetSpecInstance("OberthEffect/ControlCore").Spec, Vector2Int.zero, 0);
+		AddBlock(BlockDatabase.Instance.GetBlockSpec("OberthEffect/ControlCore"), Vector2Int.zero, 0);
 	}
 
 	private void SpawnBlockGameObject(VehicleBlueprint.BlockInstance blockInstance)
 	{
 		GameObject blockObject = BlockBuilder.BuildFromSpec(
-			BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec, transform,
+			BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId), transform,
 			blockInstance.Position, blockInstance.Rotation
 		);
 
@@ -122,7 +122,7 @@ public class VehicleBuilder : MonoBehaviour
 			throw new EmptyBlockError();
 		}
 
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(instance.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(instance.BlockId);
 		if (!spec.Construction.AllowErase)
 		{
 			throw new BlockNotErasable();
@@ -245,7 +245,7 @@ public class VehicleBuilder : MonoBehaviour
 
 		foreach (VehicleBlueprint.BlockInstance blockInstance in Blueprint.Blocks)
 		{
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 
 			var positions = new List<Vector2Int>();
 

@@ -231,7 +231,7 @@ public class VehicleAnalyzer : MonoBehaviour
 	{
 		GameObject blockObject = Builder.GetBlockObject(blockInstance);
 
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockObject.GetComponent<BlockCore>().BlockId);
 		Vector2 blockCenter = blockInstance.Position
 		                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
@@ -283,7 +283,7 @@ public class VehicleAnalyzer : MonoBehaviour
 	{
 		GameObject blockObject = Builder.GetBlockObject(blockInstance);
 
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockObject.GetComponent<BlockCore>().BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockObject.GetComponent<BlockCore>().BlockId);
 		Vector2 blockCenter = blockInstance.Position
 		                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
 
@@ -499,7 +499,7 @@ public class VehicleAnalyzer : MonoBehaviour
 		if (Builder.HasBlockAt(position))
 		{
 			VehicleBlueprint.BlockInstance blockInstance = Builder.GetBlockInstanceAt(position);
-			BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 
 			BoundsInt blockBounds = TransformUtils.TransformBounds(
 				new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),

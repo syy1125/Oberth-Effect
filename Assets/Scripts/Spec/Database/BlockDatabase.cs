@@ -56,9 +56,9 @@ public class BlockDatabase : MonoBehaviour
 		return _specs.ContainsKey(blockId);
 	}
 
-	public SpecInstance<BlockSpec> GetSpecInstance(string blockId)
+	public BlockSpec GetBlockSpec(string blockId)
 	{
-		return _specs[blockId];
+		return _specs.TryGetValue(blockId, out SpecInstance<BlockSpec> instance) ? instance.Spec : null;
 	}
 
 	public static string GetMirrorBlockId(BlockSpec blockSpec)

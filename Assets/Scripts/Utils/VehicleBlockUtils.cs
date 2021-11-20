@@ -20,7 +20,7 @@ public static class VehicleBlockUtils
 
 	public static IEnumerable<Vector2Int> GetAttachmentPoints(VehicleBlueprint.BlockInstance blockInstance)
 	{
-		BlockSpec spec = BlockDatabase.Instance.GetSpecInstance(blockInstance.BlockId).Spec;
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 
 		foreach (Vector2Int attachmentPoint in spec.Construction.AttachmentPoints)
 		{

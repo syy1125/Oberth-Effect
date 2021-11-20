@@ -26,7 +26,7 @@ public class VehicleBlockConnectivityGraph
 		foreach (VehicleBlueprint.BlockInstance block in blocks)
 		{
 			_nodes.Add(block);
-			var blockSpec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
+			var blockSpec = BlockDatabase.Instance.GetBlockSpec(block.BlockId);
 			foreach (
 				Vector2Int position in VehicleBlockUtils.AllPositionsOccupiedBy(
 					blockSpec, block.Position, block.Rotation
@@ -102,7 +102,7 @@ public class VehicleBlockConnectivityGraph
 					splitGraph._edges.Add(chunkBlock, _edges[chunkBlock]);
 					_edges.Remove(chunkBlock);
 
-					var blockSpec = BlockDatabase.Instance.GetSpecInstance(chunkBlock.BlockId).Spec;
+					var blockSpec = BlockDatabase.Instance.GetBlockSpec(chunkBlock.BlockId);
 					foreach (
 						var position in VehicleBlockUtils.AllPositionsOccupiedBy(
 							blockSpec, chunkBlock.Position, chunkBlock.Rotation
@@ -131,7 +131,7 @@ public class VehicleBlockConnectivityGraph
 
 		_edges.Remove(block);
 
-		var blockSpec = BlockDatabase.Instance.GetSpecInstance(block.BlockId).Spec;
+		var blockSpec = BlockDatabase.Instance.GetBlockSpec(block.BlockId);
 		foreach (
 			Vector2Int position in VehicleBlockUtils.AllPositionsOccupiedBy(blockSpec, block.Position, block.Rotation)
 		)

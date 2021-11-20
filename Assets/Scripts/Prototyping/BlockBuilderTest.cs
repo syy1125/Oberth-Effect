@@ -31,7 +31,7 @@ public class BlockBuilderTest : MonoBehaviour, IWeaponSystemRegistry
 	private void Start()
 	{
 		GameObject blockObject = BlockBuilder.BuildFromSpec(
-			BlockDatabase.Instance.GetSpecInstance(BlockId).Spec, Parent, RootPosition, Rotation
+			BlockDatabase.Instance.GetBlockSpec(BlockId), Parent, RootPosition, Rotation
 		);
 	}
 
