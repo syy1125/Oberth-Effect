@@ -13,7 +13,7 @@ namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
 public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigComponent
 {
-	public const string CONFIG_KEY = "LinearEngine";
+	public const string CLASS_KEY = "LinearEngine";
 
 	private float _maxThrottleRate;
 

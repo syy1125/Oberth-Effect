@@ -6,19 +6,19 @@ using Newtonsoft.Json.Linq;
 
 namespace Syy1125.OberthEffect.Common.Utils
 {
-public static class ConfigUtils
+public static class ClassSerializationUtils
 {
 	private static readonly Dictionary<Type, string> KeyCache = new Dictionary<Type, string>();
 
-	public static string GetConfigKey(Type type)
+	public static string GetClassKey(Type type)
 	{
 		if (!KeyCache.TryGetValue(type, out string value))
 		{
-			var field = type.GetField("CONFIG_KEY", BindingFlags.Public | BindingFlags.Static);
+			var field = type.GetField("CLASS_KEY", BindingFlags.Public | BindingFlags.Static);
 
 			if (field == null || field.FieldType != typeof(string))
 			{
-				throw new ArgumentException($"Type {type} does not have `CONFIG_KEY` as a `public const string` field");
+				throw new ArgumentException($"Type {type} does not have `CLASS_KEY` as a `public const string` field");
 			}
 
 			value = (string) field.GetValue(null);
@@ -34,13 +34,13 @@ public static class ConfigUtils
 		return value;
 	}
 
-	public static JObject ParseConfig(string blockConfig)
+	public static JObject ParseJson(string json)
 	{
 		JObject config = new JObject();
 
 		try
 		{
-			config = JObject.Parse(blockConfig);
+			config = JObject.Parse(json);
 		}
 		catch (JsonReaderException)
 		{}

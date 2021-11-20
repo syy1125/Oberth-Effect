@@ -14,7 +14,7 @@ namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
 public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigComponent
 {
-	public const string CONFIG_KEY = "OmniThruster";
+	public const string CLASS_KEY = "OmniThruster";
 
 	[NonSerialized]
 	public bool RespondToTranslation;

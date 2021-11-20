@@ -22,7 +22,7 @@ public class TurretedWeapon :
 	MonoBehaviour,
 	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, IHasDebrisLogic, ITooltipProvider
 {
-	public const string CONFIG_KEY = "TurretedWeapon";
+	public const string CLASS_KEY = "TurretedWeapon";
 
 	private BlockCore _core;
 
