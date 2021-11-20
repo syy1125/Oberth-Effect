@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common.Utils;
+using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, IControlConditionReceiver, ITooltipProvider
+public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, IControlConditionReceiver, IHasDebrisLogic,
+	ITooltipProvider
 {
 	private Dictionary<string, float> _generationRate;
 	private ControlConditionSpec _activationCondition;
@@ -61,6 +61,20 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 		if (_activeRenderersParent != null)
 		{
 			_activeRenderersParent.gameObject.SetActive(_active);
+		}
+	}
+
+	public JObject SaveDebrisState()
+	{
+		return null;
+	}
+
+	public void LoadDebrisState(JObject state)
+	{
+		_active = false;
+		if (_activeRenderersParent != null)
+		{
+			_activeRenderersParent.gameObject.SetActive(false);
 		}
 	}
 

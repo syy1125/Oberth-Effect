@@ -7,23 +7,16 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Vehicle
 {
 [RequireComponent(typeof(PhotonView))]
-[RequireComponent(typeof(VehicleCore))]
+[RequireComponent(typeof(ConstructBlockManager))]
 public class VehicleBlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 {
-	private VehicleCore _core;
-
-	private void Awake()
-	{
-		_core = GetComponent<VehicleCore>();
-	}
-
 	public void InvokeBlockRpc(
 		Vector2Int position, Type componentType, string methodName,
 		RpcTarget target, params object[] parameters
 	)
 	{
 		photonView.RPC(
-			"BlockRpc", target,
+			nameof(BlockRpc), target,
 			position.x, position.y, componentType.ToString(), methodName, parameters
 		);
 	}
@@ -31,7 +24,7 @@ public class VehicleBlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 	[PunRPC]
 	public void BlockRpc(int x, int y, string type, string methodName, object[] parameters)
 	{
-		GameObject blockObject = _core.GetBlockAt(new Vector2Int(x, y));
+		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockAt(new Vector2Int(x, y));
 
 		if (blockObject == null)
 		{

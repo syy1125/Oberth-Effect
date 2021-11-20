@@ -89,7 +89,7 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private void SpawnHealthBars()
 	{
-		foreach (GameObject block in _target.GetAllBlocks())
+		foreach (GameObject block in _target.GetComponent<ConstructBlockManager>().GetAllBlocks())
 		{
 			GameObject healthBar = Instantiate(HealthBarPrefab, transform);
 			healthBar.GetComponent<BlockHealthBar>().Target = block.GetComponent<BlockHealth>();
@@ -160,7 +160,7 @@ public class BlockHealthBarControl : MonoBehaviour
 		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		Vector3 blockPosition = _target.transform.InverseTransformPoint(mouseWorldPosition);
 		Vector2Int hoverLocation = Vector2Int.RoundToInt(blockPosition);
-		return _target.GetBlockAt(hoverLocation);
+		return _target.GetComponent<ConstructBlockManager>().GetBlockAt(hoverLocation);
 	}
 }
 }
