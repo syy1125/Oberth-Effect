@@ -31,6 +31,8 @@ public class VehicleList : MonoBehaviour
 	private int? _costLimit;
 	private int _selectedIndex;
 
+	private string _selectNameOnEnable;
+
 	private void Awake()
 	{
 		_vehiclePaths = new List<string>();
@@ -68,6 +70,11 @@ public class VehicleList : MonoBehaviour
 				);
 
 				_vehiclePanels.Add(_vehiclePaths.Count - 1, go);
+
+				if (blueprint.Name == _selectNameOnEnable)
+				{
+					button.SetSelected(true);
+				}
 			}
 		}
 
@@ -83,6 +90,7 @@ public class VehicleList : MonoBehaviour
 
 		_vehiclePanels.Clear();
 		_vehiclePaths.Clear();
+		_selectNameOnEnable = null;
 	}
 
 	public void SetCostLimit(int? costLimit)
@@ -121,6 +129,19 @@ public class VehicleList : MonoBehaviour
 		OnSelectVehicle.Invoke(
 			_selectedIndex >= 0 ? Path.GetFileNameWithoutExtension(_vehiclePaths[_selectedIndex]) : null
 		);
+	}
+
+	public void SelectName(string vehicleName)
+	{
+		if (_vehiclePaths != null && _vehiclePaths.Count > 0)
+		{
+			int index = _vehiclePaths.FindIndex(path => Path.GetFileNameWithoutExtension(path) == vehicleName);
+			SelectIndex(index);
+		}
+		else
+		{
+			_selectNameOnEnable = vehicleName;
+		}
 	}
 
 	public string GetSelectedVehiclePath()

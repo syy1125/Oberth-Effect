@@ -1,5 +1,7 @@
+using System.Collections;
 using System.IO;
 using Syy1125.OberthEffect.Common.UserInterface;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -30,16 +32,30 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 	private void OnEnable()
 	{
-		SaveLoadButton.interactable = false;
 		VehicleList.OnSelectVehicle.AddListener(HandleSelectVehicle);
 
 		if (SaveMode)
 		{
+			string vehicleName = Designer.Blueprint.Name;
+
+			if (!string.IsNullOrWhiteSpace(vehicleName))
+			{
+				FileNameInput.text = vehicleName;
+				VehicleList.SelectName(vehicleName);
+				FileNameInput.text = vehicleName;
+				FileNameInput.interactable = true;
+			}
+			else
+			{
+				FileNameInput.interactable = false;
+			}
+
 			FileNameInput.onValueChanged.AddListener(HandleFileNameChange);
 			SaveLoadButton.onClick.AddListener(SaveVehicle);
 		}
 		else
 		{
+			SaveLoadButton.interactable = false;
 			SaveLoadButton.onClick.AddListener(LoadVehicle);
 		}
 	}
