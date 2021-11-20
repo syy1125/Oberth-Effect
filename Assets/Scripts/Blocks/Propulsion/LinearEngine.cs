@@ -144,11 +144,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 		float trueThrustStrength = _targetThrustStrength * Satisfaction;
 		_targetThrustStrength = Mathf.Clamp01(
-			Mathf.Clamp(
-				rawResponse,
-				trueThrustStrength - _maxThrottleRate * Time.fixedDeltaTime,
-				trueThrustStrength + _maxThrottleRate * Time.fixedDeltaTime
-			)
+			Mathf.Min(rawResponse, trueThrustStrength + _maxThrottleRate * Time.fixedDeltaTime)
 		);
 	}
 
