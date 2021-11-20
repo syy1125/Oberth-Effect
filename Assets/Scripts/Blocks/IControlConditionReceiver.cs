@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public interface IControlConditionProvider : IBlockRegistry<IControlConditionReceiver>, IEventSystemHandler
+public interface IControlConditionProvider : IBlockRegistry<IControlConditionReceiver>
 {
 	bool IsConditionTrue(ControlConditionSpec condition);
 }

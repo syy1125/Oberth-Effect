@@ -6,7 +6,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 public interface IWeaponEffectRpcRelay : IEventSystemHandler
 {
 	void InvokeWeaponEffectRpc(
-		IWeaponEffectEmitter self, string methodName, RpcTarget target, params object[] parameters
+		IWeaponEffectEmitter self, string methodName, RpcTarget rpcTarget, params object[] parameters
 	);
 }
 }

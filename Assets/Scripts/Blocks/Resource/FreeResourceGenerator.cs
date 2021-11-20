@@ -19,10 +19,8 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 
 	private void OnEnable()
 	{
-		GetComponentInParent<IResourceGeneratorBlockRegistry>().RegisterBlock(this);
-		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
+		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
 	public void LoadSpec(FreeGeneratorSpec spec)
@@ -52,10 +50,8 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 
 	private void OnDisable()
 	{
-		GetComponentInParent<IResourceGeneratorBlockRegistry>().UnregisterBlock(this);
-		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
+		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 
 	public void OnControlGroupsChanged(IControlConditionProvider provider)

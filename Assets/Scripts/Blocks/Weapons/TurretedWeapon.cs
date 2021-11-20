@@ -55,12 +55,8 @@ public class TurretedWeapon :
 
 	private void OnEnable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
+		GetComponentInParent<IWeaponSystemRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
 	}
 
 	public void LoadSpec(TurretedWeaponSpec spec)
@@ -118,12 +114,8 @@ public class TurretedWeapon :
 
 	private void OnDisable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IWeaponSystemRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
+		GetComponentInParent<IWeaponSystemRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>().UnregisterBlock(this);
 	}
 
 	#region Config
@@ -247,7 +239,7 @@ public class TurretedWeapon :
 	}
 
 	public void InvokeWeaponEffectRpc(
-		IWeaponEffectEmitter self, string methodName, RpcTarget target, params object[] parameters
+		IWeaponEffectEmitter self, string methodName, RpcTarget rpcTarget, params object[] parameters
 	)
 	{
 		int index = _weaponEmitters.IndexOf(self);
@@ -256,12 +248,9 @@ public class TurretedWeapon :
 			Debug.LogError($"Failed to find index of {self} in weapon emitter list");
 		}
 
-		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
-			gameObject, null,
-			(handler, _) => handler.InvokeBlockRpc(
-				_core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveBlockRpc), target,
-				index, methodName, parameters
-			)
+		GetComponentInParent<IBlockRpcRelay>().InvokeBlockRpc(
+			_core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveBlockRpc), rpcTarget,
+			index, methodName, parameters
 		);
 	}
 

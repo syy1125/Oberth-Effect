@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
-public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>, IEventSystemHandler
+public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>
 {}
 
 public interface IWeaponSystem

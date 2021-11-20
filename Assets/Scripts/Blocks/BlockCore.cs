@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>, IEventSystemHandler
+public interface IBlockCoreRegistry : IBlockRegistry<BlockCore>
 {}
 
 public class BlockCore : MonoBehaviour
@@ -29,16 +29,12 @@ public class BlockCore : MonoBehaviour
 
 	private void OnEnable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
+		GetComponentInParent<IBlockCoreRegistry>().RegisterBlock(this);
 	}
 
 	private void OnDisable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IBlockCoreRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
+		GetComponentInParent<IBlockCoreRegistry>().UnregisterBlock(this);
 	}
 }
 }

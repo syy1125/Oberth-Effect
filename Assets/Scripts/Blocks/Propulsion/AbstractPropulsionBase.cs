@@ -39,15 +39,9 @@ public abstract class AbstractPropulsionBase :
 
 	protected virtual void OnEnable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
-			gameObject, null, (handler, _) => handler.RegisterBlock(this)
-		);
+		GetComponentInParent<IPropulsionBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
 	protected static ParticleSystem CreateParticleSystem(Transform parent, ParticleSystemSpec spec)
@@ -79,15 +73,9 @@ public abstract class AbstractPropulsionBase :
 
 	protected virtual void OnDisable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IPropulsionBlockRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IResourceConsumerBlockRegistry>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
-		ExecuteEvents.ExecuteHierarchy<IControlConditionProvider>(
-			gameObject, null, (handler, _) => handler.UnregisterBlock(this)
-		);
+		GetComponentInParent<IPropulsionBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 
 	public void OnControlGroupsChanged(IControlConditionProvider provider)

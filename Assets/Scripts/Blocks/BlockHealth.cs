@@ -128,13 +128,15 @@ public class BlockHealth : MonoBehaviour, IDamageable
 			{
 				_destroyed = true;
 
-				ExecuteEvents.Execute<IBlockDestructionEffect>(
-					gameObject, null, (listener, _) => listener.OnDestroyedByDamage()
-				);
+				foreach (IBlockDestructionEffect effect in GetComponents<IBlockDestructionEffect>())
+				{
+					effect.OnDestroyedByDamage();
+				}
+
 				ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
 					gameObject, null, (listener, _) => listener.OnBlockDestroyedByDamage(_core)
 				);
-				// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore}
+				// Note that, for multiplayer synchronization reasons, disabling of game object will be executed by VehicleCore
 			}
 		}
 	}

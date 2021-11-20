@@ -3,23 +3,19 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
-public interface IControlCoreRegistry : IBlockRegistry<ControlCore>, IEventSystemHandler
+public interface IControlCoreRegistry : IBlockRegistry<ControlCore>
 {}
 
 public class ControlCore : MonoBehaviour
 {
 	private void OnEnable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IControlCoreRegistry>(
-			gameObject, null, (registry, _) => registry.RegisterBlock(this)
-		);
+		GetComponentInParent<IControlCoreRegistry>()?.RegisterBlock(this);
 	}
 
 	private void OnDisable()
 	{
-		ExecuteEvents.ExecuteHierarchy<IControlCoreRegistry>(
-			gameObject, null, (registry, _) => registry.UnregisterBlock(this)
-		);
+		GetComponentInParent<IControlCoreRegistry>()?.UnregisterBlock(this);
 	}
 }
 }

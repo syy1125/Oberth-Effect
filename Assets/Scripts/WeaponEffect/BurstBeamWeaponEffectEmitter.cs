@@ -151,11 +151,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				_reloadProgress -= _reloadTime;
 
 				StartBeamDuration();
-				ExecuteEvents.ExecuteHierarchy<IWeaponEffectRpcRelay>(
-					gameObject, null,
-					(relay, _) => relay.InvokeWeaponEffectRpc(
-						this, nameof(StartBeamDuration), RpcTarget.Others
-					)
+				GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(
+					this, nameof(StartBeamDuration), RpcTarget.Others
 				);
 			}
 
