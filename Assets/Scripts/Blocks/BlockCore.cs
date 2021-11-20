@@ -1,7 +1,6 @@
 ﻿using System;
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks
 {
@@ -29,12 +28,12 @@ public class BlockCore : MonoBehaviour
 
 	private void OnEnable()
 	{
-		GetComponentInParent<IBlockCoreRegistry>().RegisterBlock(this);
+		GetComponentInParent<IBlockCoreRegistry>()?.RegisterBlock(this);
 	}
 
 	private void OnDisable()
 	{
-		GetComponentInParent<IBlockCoreRegistry>().UnregisterBlock(this);
+		GetComponentInParent<IBlockCoreRegistry>()?.UnregisterBlock(this);
 	}
 }
 }

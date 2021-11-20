@@ -15,13 +15,12 @@ using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public class TurretedWeapon :
 	MonoBehaviour,
-	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, ITooltipProvider
+	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, IHasDebrisLogic, ITooltipProvider
 {
 	public const string CONFIG_KEY = "TurretedWeapon";
 
@@ -40,6 +39,7 @@ public class TurretedWeapon :
 	public WeaponBindingGroup WeaponBinding { get; set; }
 
 	// State
+	private bool _isDebris;
 	private bool _firing;
 	private Vector2? _aimPoint;
 	private float _turretAngle;
@@ -115,7 +115,7 @@ public class TurretedWeapon :
 	private void OnDisable()
 	{
 		GetComponentInParent<IWeaponSystemRegistry>()?.UnregisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>().UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
 	}
 
 	#region Config
@@ -236,6 +236,21 @@ public class TurretedWeapon :
 	private void ApplyTurretRotation()
 	{
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
+	}
+
+	public JObject SaveDebrisState()
+	{
+		return new JObject
+		{
+			{ "Angle", _turretAngle }
+		};
+	}
+
+	public void LoadDebrisState(JObject state)
+	{
+		_turretAngle = state["Angle"].Value<float>();
+		ApplyTurretRotation();
+		enabled = false;
 	}
 
 	public void InvokeWeaponEffectRpc(
