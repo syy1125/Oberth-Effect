@@ -218,7 +218,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			for (int i = 0; i < count; i++)
 			{
 				RaycastHit2D hit = _raycastHits[i];
-				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
+				IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
 
 				if (target != null && target.OwnerId != _ownerContext.OwnerId)
 				{

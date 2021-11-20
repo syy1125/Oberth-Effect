@@ -112,7 +112,7 @@ public class ExplosionManager : MonoBehaviour
 		int colliderCount = Physics2D.OverlapCircle(center, radius, _contactFilter, _colliders);
 		var targets = _colliders
 			.Take(colliderCount)
-			.Select(c => ComponentUtils.GetBehaviourInParent<IDamageable>(c.transform))
+			.Select(c => c.GetComponentInParent<IDamageable>())
 			.Distinct()
 			.Where(target => target != null && target.IsMine && target.OwnerId != explosionOwnerId);
 

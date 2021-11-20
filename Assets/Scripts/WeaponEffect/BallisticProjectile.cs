@@ -49,7 +49,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	{
 		if (other.isTrigger) return;
 
-		IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(other.transform);
+		IDamageable target = other.transform.GetComponentInParent<IDamageable>();
 		if (target == null || target.OwnerId == photonView.OwnerActorNr) return;
 
 		if (!target.IsMine)

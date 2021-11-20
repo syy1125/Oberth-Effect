@@ -26,9 +26,8 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 	public void OnDestroyedByDamage()
 	{
-		if (!ComponentUtils
-			.GetBehaviourInParent<IControlConditionProvider>(transform)
-			.IsConditionTrue(_activationCondition))
+		var provider = GetComponentInParent<IControlConditionProvider>();
+		if (provider == null || !provider.IsConditionTrue(_activationCondition))
 		{
 			return;
 		}

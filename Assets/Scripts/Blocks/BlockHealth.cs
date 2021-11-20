@@ -170,7 +170,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 			for (int i = 0; i < count; i++)
 			{
 				RaycastHit2D hit = _beamRaycastHits[i];
-				IDamageable target = ComponentUtils.GetBehaviourInParent<IDamageable>(hit.collider.transform);
+				IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
 
 				// Only do damage calculations for blocks we own
 				if (target == null || target.OwnerId == ownerId || !target.IsMine) continue;

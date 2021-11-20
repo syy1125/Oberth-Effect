@@ -70,7 +70,7 @@ public abstract class AbstractPropulsionBase :
 		var photonView = GetComponentInParent<PhotonView>();
 		IsMine = photonView == null || photonView.IsMine;
 
-		var provider = ComponentUtils.GetBehaviourInParent<IControlConditionProvider>(transform);
+		var provider = GetComponentInParent<IControlConditionProvider>();
 		if (provider != null)
 		{
 			PropulsionActive = provider.IsConditionTrue(ActivationCondition);
