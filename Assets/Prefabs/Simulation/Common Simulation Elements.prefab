@@ -831,9 +831,9 @@ MonoBehaviour:
   ResourceDisplay: {fileID: 1976241401999951190}
   HealthBarControl: {fileID: 4312688904400713394}
   Radar: {fileID: 6213536422799217278}
-  VehiclePrefab: {fileID: 8509090524700470632, guid: d5558323a0fd8cf4e8ebfea4ad8cacb3, type: 3}
+  VehiclePrefab: {fileID: 1066332524646835380, guid: 967bb5f959fbb5a42af9fcd1f41b0787, type: 3}
   SpawnPanel: {fileID: 6916951361047715182}
-  SpawnTextDisplay: {fileID: 8466044948741692170}
+  SpawnTextDisplay: {fileID: 4458558496746522592}
   SelfDestructAction: {fileID: -4274418199930559398, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   SelfDestructHoldTime: 3
   SelfDestructPanel: {fileID: 2437504665083030365}
