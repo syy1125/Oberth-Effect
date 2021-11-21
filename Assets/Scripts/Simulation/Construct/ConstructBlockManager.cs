@@ -5,31 +5,30 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Simulation.Vehicle;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(ColorContext))]
 public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBlockLifecycleListener
 {
+	public GameObject DebrisPrefab;
+
 	private bool _loaded;
-	private Dictionary<Vector2Int, GameObject> _occupiedPosToBlock;
-	private Dictionary<Vector2Int, GameObject> _rootPosToBlock;
-	private VehicleBlockConnectivityGraph _connectivityGraph;
+	private Dictionary<Vector2Int, GameObject> _occupiedPosToBlock = new Dictionary<Vector2Int, GameObject>();
+	private Dictionary<Vector2Int, GameObject> _rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
+	private BlockConnectivityGraph _connectivityGraph;
 
-	private void Awake()
+	public void LoadBlocks(ICollection<VehicleBlueprint.BlockInstance> blockInstances)
 	{
-		_occupiedPosToBlock = new Dictionary<Vector2Int, GameObject>();
-		_rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
-	}
+		_loaded = false;
 
-	public void LoadVehicle(ICollection<VehicleBlueprint.BlockInstance> blockInstances)
-	{
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
 		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
@@ -89,8 +88,11 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 		transform.position -= (Vector3) centerOfMass;
 
-		// Set up connectivity graph
-		_connectivityGraph = new VehicleBlockConnectivityGraph(blockInstances);
+		if (photonView.IsMine)
+		{
+			// Set up connectivity graph
+			_connectivityGraph = new BlockConnectivityGraph(blockInstances);
+		}
 
 		// Load config
 		foreach (VehicleBlueprint.BlockInstance blockInstance in blockInstances)
@@ -107,16 +109,12 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		if (!_loaded) return;
 		if (!photonView.IsMine) return;
 
-		BlockCore core = blockCore.GetComponent<BlockCore>();
-		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(core.BlockId);
+		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 
 		AddMass(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia);
 
-		var body = GetComponent<Rigidbody2D>();
-		photonView.RPC(
-			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, body.mass, body.centerOfMass, body.inertia
-		);
+		SyncRigidbody2D();
 	}
 
 	public void UnregisterBlock(BlockCore blockCore)
@@ -132,53 +130,70 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 		if (_connectivityGraph.ContainsPosition(blockCore.RootPosition))
 		{
-			List<VehicleBlockConnectivityGraph> graphs =
-				_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
-
-			if (graphs == null || graphs.Count == 0)
-			{
-				// Vehicle completely destroyed. Probably nothing need to be done here?
-			}
-			else if (graphs.Count == 1)
-			{
-				_connectivityGraph = graphs[0];
-			}
-			else if (graphs.Count > 1)
-			{
-				int primaryGraphIndex = graphs.FindIndex(graph => graph.ContainsPosition(Vector2Int.zero));
-
-				List<Vector2Int> disableRoots = new List<Vector2Int>();
-				for (int i = 0; i < graphs.Count; i++)
-				{
-					if (i == primaryGraphIndex) continue;
-
-					disableRoots.Clear();
-					disableRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
-
-					photonView.RPC(
-						nameof(DisableBlocks), RpcTarget.AllBuffered,
-						disableRoots.Select(position => position.x).ToArray(),
-						disableRoots.Select(position => position.y).ToArray()
-					);
-				}
-
-				if (primaryGraphIndex >= 0)
-				{
-					_connectivityGraph = graphs[primaryGraphIndex];
-				}
-			}
-			else
-			{
-				Debug.LogError($"Unexpected chunk count {graphs.Count}");
-			}
-
-			Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+			SplitConnectivityGraph(blockCore);
 		}
 
-		var body = GetComponent<Rigidbody2D>();
-		photonView.RPC(
-			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, body.mass, body.centerOfMass, body.inertia
-		);
+		SyncRigidbody2D();
+	}
+
+	private void SplitConnectivityGraph(BlockCore blockCore)
+	{
+		List<BlockConnectivityGraph> graphs =
+			_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
+
+		if (graphs == null || graphs.Count == 0)
+		{
+			// Construct completely destroyed. Probably nothing need to be done here?
+		}
+		else if (graphs.Count == 1)
+		{
+			// Still in one piece.
+			_connectivityGraph = graphs[0];
+		}
+		else if (graphs.Count > 1)
+		{
+			int primaryGraphIndex = -1;
+
+			List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
+			for (int i = 0; i < graphs.Count; i++)
+			{
+				if (graphs[i].ContainsPosition(Vector2Int.zero))
+				{
+					primaryGraphIndex = i;
+					continue;
+				}
+
+				disableBlockRoots.Clear();
+				disableBlockRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
+
+				PhotonNetwork.Instantiate(
+					DebrisPrefab.name, transform.position, transform.rotation,
+					0,
+					new object[]
+					{
+						JsonUtility.ToJson(
+							new DebrisInfo
+							{
+								OriginViewId = photonView.ViewID,
+								Positions = disableBlockRoots.ToArray()
+							}
+						),
+						JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
+					}
+				);
+			}
+
+			if (primaryGraphIndex >= 0)
+			{
+				_connectivityGraph = graphs[primaryGraphIndex];
+			}
+		}
+		else
+		{
+			Debug.LogError($"Unexpected chunk count {graphs.Count}");
+		}
+
+		Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
 	}
 
 	private void AddMass(Vector2 position, float mass, float moment)
@@ -217,6 +232,14 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		}
 	}
 
+	private void SyncRigidbody2D()
+	{
+		var body = GetComponent<Rigidbody2D>();
+		photonView.RPC(
+			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, body.mass, body.centerOfMass, body.inertia
+		);
+	}
+
 	[PunRPC]
 	private void UpdateRigidbody2D(float mass, Vector2 centerOfMass, float momentOfInertia)
 	{
@@ -230,5 +253,64 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 	public GameObject GetBlockAt(Vector2Int localPosition) =>
 		_occupiedPosToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
+
+	// Give up control of the block at the given positions and give them to the receiver
+	public IEnumerable<GameObject> TransferBlocksTo(ConstructBlockManager receiver, IEnumerable<Vector2Int> positions)
+	{
+		if (photonView.IsMine != receiver.photonView.IsMine)
+		{
+			Debug.LogWarning(
+				$"Source construct IsMine={photonView.IsMine} but destination IsMine={receiver.photonView.IsMine}!"
+			);
+		}
+
+		List<GameObject> blockObjects = new List<GameObject>();
+
+		foreach (Vector2Int position in positions)
+		{
+			GameObject blockObject = _rootPosToBlock[position];
+			receiver._rootPosToBlock.Add(position, blockObject);
+
+			BlockCore blockCore = blockObject.GetComponent<BlockCore>();
+			BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockObject.GetComponent<BlockCore>().BlockId);
+
+			_rootPosToBlock.Remove(position);
+			foreach (
+				Vector3Int localPosition
+				in new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax)
+					.AllPositionsWithin
+			)
+			{
+				Vector2Int vehicleSpacePosition = blockCore.RootPosition
+				                                  + TransformUtils.RotatePoint(localPosition, blockCore.Rotation);
+				receiver._occupiedPosToBlock.Add(vehicleSpacePosition, blockObject);
+				_occupiedPosToBlock.Remove(vehicleSpacePosition);
+			}
+
+			if (photonView.IsMine)
+			{
+				AddMass(blockCore.CenterOfMassPosition, -blockSpec.Physics.Mass, -blockSpec.Physics.MomentOfInertia);
+				receiver.AddMass(
+					blockCore.CenterOfMassPosition, blockSpec.Physics.Mass, blockSpec.Physics.MomentOfInertia
+				);
+			}
+
+			var blockTransform = blockObject.transform;
+			blockTransform.SetParent(receiver.transform);
+			blockTransform.localPosition = new Vector3(blockCore.RootPosition.x, blockCore.RootPosition.y, 0f);
+			blockTransform.localRotation = TransformUtils.GetPhysicalRotation(blockCore.Rotation);
+			blockTransform.localScale = Vector3.one;
+
+			blockObjects.Add(blockObject);
+		}
+
+		if (photonView.IsMine)
+		{
+			SyncRigidbody2D();
+			receiver.SyncRigidbody2D();
+		}
+
+		return blockObjects;
+	}
 }
 }

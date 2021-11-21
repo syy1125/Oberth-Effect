@@ -2,13 +2,12 @@
 
 namespace Syy1125.OberthEffect.Common
 {
+[RequireComponent(typeof(Rigidbody2D))]
 public class CenterOfMassContext : MonoBehaviour
 {
-	public Rigidbody2D Body;
-
 	public virtual Vector2 GetCenterOfMass()
 	{
-		return Body.centerOfMass;
+		return GetComponent<Rigidbody2D>().centerOfMass;
 	}
 }
 }

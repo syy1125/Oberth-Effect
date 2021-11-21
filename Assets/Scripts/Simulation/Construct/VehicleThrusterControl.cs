@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleThrusterControl : MonoBehaviourPun,
-	IPunObservable, IPropulsionBlockRegistry
+	IPunObservable, IPropulsionBlockRegistry, IVehicleDeathListener
 {
 	#region Unity Fields
 
@@ -220,6 +219,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void SendCommands()
 	{
+		Debug.Log($"{_translateCommand} {_rotateCommand}");
+
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
 			block.SetPropulsionCommands(_translateCommand, _rotateCommand);

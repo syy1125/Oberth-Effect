@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface

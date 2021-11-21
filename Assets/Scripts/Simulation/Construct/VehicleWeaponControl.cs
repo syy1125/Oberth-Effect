@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Weapons;
@@ -7,9 +6,9 @@ using Syy1125.OberthEffect.Common.Enums;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
-public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable
+public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
 {
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common.ColorScheme
 {
@@ -27,6 +28,16 @@ public class GlowReferenceTransform : MonoBehaviour
 			sprite.GetPropertyBlock(_block);
 			_block.SetMatrix(GlowReference, referenceTransform);
 			_block.SetVector(GlowRange, new Vector4(.9f, 1.1f));
+			sprite.SetPropertyBlock(_block);
+		}
+	}
+
+	private void OnDisable()
+	{
+		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
+		{
+			sprite.GetPropertyBlock(_block);
+			_block.SetVector(GlowRange, new Vector4(1f, 1f));
 			sprite.SetPropertyBlock(_block);
 		}
 	}

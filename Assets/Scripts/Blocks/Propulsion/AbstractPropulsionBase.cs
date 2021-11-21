@@ -3,11 +3,9 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
@@ -96,6 +94,14 @@ public abstract class AbstractPropulsionBase :
 		Vector3 localUp, out float forwardBackResponse, out float strafeResponse, out float rotateResponse
 	)
 	{
+		if (MassContext == null)
+		{
+			forwardBackResponse = 0f;
+			strafeResponse = 0f;
+			rotateResponse = 0f;
+			return;
+		}
+
 		localUp.Normalize();
 		Vector3 localPosition = MassContext.transform.InverseTransformPoint(transform.position)
 		                        - (Vector3) MassContext.GetCenterOfMass();

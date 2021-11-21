@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
-public class VehicleControlGroupRelay : MonoBehaviour, IControlConditionProvider
+public class VehicleControlGroupProxy : MonoBehaviour, IControlConditionProvider
 {
 	private List<IControlConditionReceiver> _receivers;
 

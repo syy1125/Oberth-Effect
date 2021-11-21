@@ -1,15 +1,15 @@
 ﻿using System;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Prototyping
 {
-public class VehicleGraphTester : MonoBehaviour
+public class BlockGraphTester : MonoBehaviour
 {
 	private void Start()
 	{
-		var graph = new VehicleBlockConnectivityGraph(
+		var graph = new BlockConnectivityGraph(
 			new[]
 			{
 				new VehicleBlueprint.BlockInstance

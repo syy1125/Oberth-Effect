@@ -4,9 +4,9 @@ using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
-public class VehicleBlockConnectivityGraph
+public class BlockConnectivityGraph
 {
 	private HashSet<VehicleBlueprint.BlockInstance> _nodes;
 	private Dictionary<VehicleBlueprint.BlockInstance, HashSet<VehicleBlueprint.BlockInstance>> _edges;
@@ -14,10 +14,10 @@ public class VehicleBlockConnectivityGraph
 
 	public int Count => _nodes.Count;
 
-	private VehicleBlockConnectivityGraph()
+	private BlockConnectivityGraph()
 	{}
 
-	public VehicleBlockConnectivityGraph(ICollection<VehicleBlueprint.BlockInstance> blocks)
+	public BlockConnectivityGraph(ICollection<VehicleBlueprint.BlockInstance> blocks)
 	{
 		_nodes = new HashSet<VehicleBlueprint.BlockInstance>();
 		_edges = new Dictionary<VehicleBlueprint.BlockInstance, HashSet<VehicleBlueprint.BlockInstance>>();
@@ -46,12 +46,12 @@ public class VehicleBlockConnectivityGraph
 		}
 	}
 
-	public List<VehicleBlockConnectivityGraph> SplitOnBlockDestroyed(Vector2Int position)
+	public List<BlockConnectivityGraph> SplitOnBlockDestroyed(Vector2Int position)
 	{
 		return SplitOnBlockDestroyed(_posToBlock[position]);
 	}
 
-	public List<VehicleBlockConnectivityGraph> SplitOnBlockDestroyed(VehicleBlueprint.BlockInstance block)
+	public List<BlockConnectivityGraph> SplitOnBlockDestroyed(VehicleBlueprint.BlockInstance block)
 	{
 		List<VehicleBlueprint.BlockInstance> unexploredRoots = new List<VehicleBlueprint.BlockInstance>(_edges[block]);
 
@@ -70,7 +70,7 @@ public class VehicleBlockConnectivityGraph
 		if (unexploredRoots.Count == 0)
 		{
 			// Vehicle still fully connected, there's only one chunk and it contains all the nodes
-			return new List<VehicleBlockConnectivityGraph> { this };
+			return new List<BlockConnectivityGraph> { this };
 		}
 		else
 		{
@@ -85,11 +85,11 @@ public class VehicleBlockConnectivityGraph
 				chunks.Add(chunk);
 			}
 
-			List<VehicleBlockConnectivityGraph> output = new List<VehicleBlockConnectivityGraph> { this };
+			List<BlockConnectivityGraph> output = new List<BlockConnectivityGraph> { this };
 
 			for (int i = 1; i < chunks.Count; i++)
 			{
-				var splitGraph = new VehicleBlockConnectivityGraph
+				var splitGraph = new BlockConnectivityGraph
 				{
 					_nodes = chunks[i],
 					_edges = new Dictionary<VehicleBlueprint.BlockInstance, HashSet<VehicleBlueprint.BlockInstance>>(),

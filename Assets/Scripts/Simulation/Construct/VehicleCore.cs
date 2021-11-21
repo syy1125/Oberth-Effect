@@ -1,17 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ConstructBlockManager))]
@@ -50,7 +44,7 @@ public class VehicleCore :
 	{
 		if (_blueprint != null)
 		{
-			GetComponent<ConstructBlockManager>().LoadVehicle(_blueprint.Blocks);
+			GetComponent<ConstructBlockManager>().LoadBlocks(_blueprint.Blocks);
 
 			_loaded = true;
 			if (_loadEvent != null)
@@ -125,6 +119,10 @@ public class VehicleCore :
 		}
 
 		Dead = true;
+		foreach (var listener in GetComponents<IVehicleDeathListener>())
+		{
+			listener.OnVehicleDeath();
+		}
 		OnVehicleDeath.Invoke();
 	}
 }

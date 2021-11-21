@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;

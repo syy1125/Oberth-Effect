@@ -1,7 +1,7 @@
 ﻿using System;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
 using UnityEngine.UI;
 

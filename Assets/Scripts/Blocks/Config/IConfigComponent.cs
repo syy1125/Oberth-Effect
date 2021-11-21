@@ -25,7 +25,7 @@ public static class BlockConfigHelper
 {
 	public static void SyncConfig(VehicleBlueprint.BlockInstance blockInstance, GameObject blockObject)
 	{
-		JObject config = ConfigUtils.ParseConfig(blockInstance.Config);
+		JObject config = ClassSerializationUtils.ParseJson(blockInstance.Config);
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
@@ -33,7 +33,7 @@ public static class BlockConfigHelper
 			{
 				component.InitDefaultConfig();
 
-				string configKey = ConfigUtils.GetConfigKey(component.GetType());
+				string configKey = ClassSerializationUtils.GetClassKey(component.GetType());
 
 				if (config.ContainsKey(configKey))
 				{
@@ -49,14 +49,14 @@ public static class BlockConfigHelper
 
 	public static void LoadConfig(VehicleBlueprint.BlockInstance blockInstance, GameObject blockObject)
 	{
-		JObject config = ConfigUtils.ParseConfig(blockInstance.Config);
+		JObject config = ClassSerializationUtils.ParseJson(blockInstance.Config);
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
 			if (behaviour is IConfigComponent component)
 			{
 				component.InitDefaultConfig();
-				string configKey = ConfigUtils.GetConfigKey(component.GetType());
+				string configKey = ClassSerializationUtils.GetClassKey(component.GetType());
 
 				if (config.ContainsKey(configKey))
 				{
@@ -70,7 +70,7 @@ public static class BlockConfigHelper
 	{
 		Debug.Assert(path.Length >= 1, nameof(path) + ".Length >= 1");
 
-		JObject config = ConfigUtils.ParseConfig(blockInstance.Config);
+		JObject config = ClassSerializationUtils.ParseJson(blockInstance.Config);
 
 		JObject currentNode = config;
 

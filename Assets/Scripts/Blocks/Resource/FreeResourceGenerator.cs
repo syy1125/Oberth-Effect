@@ -64,14 +64,8 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 		}
 	}
 
-	public JObject SaveDebrisState()
+	public void EnterDebrisMode()
 	{
-		return null;
-	}
-
-	public void LoadDebrisState(JObject state)
-	{
-		_active = false;
 		if (_activeRenderersParent != null)
 		{
 			_activeRenderersParent.gameObject.SetActive(false);

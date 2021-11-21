@@ -4,9 +4,8 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
 // Note that this class need to execute after all resource usage scripts in order to function properly.
 [RequireComponent(typeof(VehicleCore))]

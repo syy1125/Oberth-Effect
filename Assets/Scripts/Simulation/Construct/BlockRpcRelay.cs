@@ -4,11 +4,11 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation.Vehicle
+namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ConstructBlockManager))]
-public class VehicleBlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
+public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 {
 	public void InvokeBlockRpc(
 		Vector2Int position, Type componentType, string methodName,

@@ -4,7 +4,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Simulation.Vehicle;
+using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using Random = UnityEngine.Random;

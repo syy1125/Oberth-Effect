@@ -238,18 +238,8 @@ public class TurretedWeapon :
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
-	public JObject SaveDebrisState()
+	public void EnterDebrisMode()
 	{
-		return new JObject
-		{
-			{ "Angle", _turretAngle }
-		};
-	}
-
-	public void LoadDebrisState(JObject state)
-	{
-		_turretAngle = state["Angle"].Value<float>();
-		ApplyTurretRotation();
 		enabled = false;
 	}
 
