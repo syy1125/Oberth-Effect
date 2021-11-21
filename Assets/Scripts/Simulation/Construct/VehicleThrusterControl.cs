@@ -219,8 +219,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void SendCommands()
 	{
-		Debug.Log($"{_translateCommand} {_rotateCommand}");
-
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
 			block.SetPropulsionCommands(_translateCommand, _rotateCommand);
