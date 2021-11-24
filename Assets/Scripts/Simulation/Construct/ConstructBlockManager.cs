@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
@@ -25,13 +27,20 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	private Dictionary<Vector2Int, GameObject> _rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
 	private BlockConnectivityGraph _connectivityGraph;
 
+	private struct MomentOfInertiaData
+	{
+		public Vector2 Position;
+		public float Mass;
+		public float Moment;
+	}
+
 	public void LoadBlocks(ICollection<VehicleBlueprint.BlockInstance> blockInstances)
 	{
 		_loaded = false;
 
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
-		var momentOfInertiaData = new LinkedList<Tuple<Vector2, float, float>>();
+		var momentOfInertiaData = new LinkedList<MomentOfInertiaData>();
 
 		// Instantiate blocks
 		foreach (VehicleBlueprint.BlockInstance blockInstance in blockInstances)
@@ -43,49 +52,17 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			}
 
 			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
-
-			GameObject blockObject = BlockBuilder.BuildFromSpec(
-				spec, transform, blockInstance.Position, blockInstance.Rotation
-			);
-			Vector2 blockCenter = blockInstance.Position
-			                      + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, blockInstance.Rotation);
-			totalMass += spec.Physics.Mass;
-			centerOfMass += spec.Physics.Mass * blockCenter;
-			momentOfInertiaData.AddLast(
-				new Tuple<Vector2, float, float>(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia)
+			GameObject blockObject = AddBlock(
+				spec, blockInstance.Position, blockInstance.Rotation,
+				ref totalMass, ref centerOfMass, momentOfInertiaData
 			);
 
-			_rootPosToBlock.Add(blockInstance.Position, blockObject);
-			foreach (
-				Vector3Int localPosition
-				in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin
-			)
-			{
-				_occupiedPosToBlock.Add(
-					blockInstance.Position + TransformUtils.RotatePoint(localPosition, blockInstance.Rotation),
-					blockObject
-				);
-			}
+			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
 		}
 
 		// Physics computation
-		if (totalMass > Mathf.Epsilon)
-		{
-			centerOfMass /= totalMass;
-		}
-
-		var momentOfInertia = 0f;
-		foreach (Tuple<Vector2, float, float> blockData in momentOfInertiaData)
-		{
-			(Vector2 position, float mass, float blockMoment) = blockData;
-			momentOfInertia += blockMoment + mass * (position - centerOfMass).sqrMagnitude;
-		}
-
-		var body = GetComponent<Rigidbody2D>();
-		body.mass = totalMass;
-		body.centerOfMass = centerOfMass;
-		body.inertia = momentOfInertia;
-
+		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
+		ExportPhysicsData(totalMass, centerOfMass, momentOfInertiaData, GetComponent<Rigidbody2D>());
 		transform.position -= (Vector3) centerOfMass;
 
 		if (photonView.IsMine)
@@ -94,33 +71,69 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			_connectivityGraph = new BlockConnectivityGraph(blockInstances);
 		}
 
-		// Load config
-		foreach (VehicleBlueprint.BlockInstance blockInstance in blockInstances)
+		_loaded = true;
+	}
+
+	private GameObject AddBlock(
+		BlockSpec spec, Vector2Int position, int rotation,
+		ref float totalMass, ref Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData
+	)
+	{
+		GameObject blockObject = BlockBuilder.BuildFromSpec(spec, transform, position, rotation);
+
+		Vector2 blockCenter = position + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, rotation);
+		totalMass += spec.Physics.Mass;
+		centerOfMass += spec.Physics.Mass * blockCenter;
+		momentOfInertiaData.AddLast(
+			new MomentOfInertiaData
+			{
+				Position = blockCenter,
+				Mass = spec.Physics.Mass,
+				Moment = spec.Physics.MomentOfInertia
+			}
+		);
+
+		_rootPosToBlock.Add(position, blockObject);
+		foreach (
+			Vector3Int localPosition
+			in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin
+		)
 		{
-			BlockConfigHelper.LoadConfig(blockInstance, _rootPosToBlock[blockInstance.Position]);
+			_occupiedPosToBlock.Add(
+				position + TransformUtils.RotatePoint(localPosition, rotation),
+				blockObject
+			);
 		}
 
-		_loaded = true;
+		return blockObject;
+	}
+
+	private static void ExportPhysicsData(
+		float totalMass, Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData, Rigidbody2D body
+	)
+	{
+		float momentOfInertia = momentOfInertiaData
+			.Sum(blockData => blockData.Moment + blockData.Mass * (blockData.Position - centerOfMass).sqrMagnitude);
+
+		body.mass = totalMass;
+		body.centerOfMass = centerOfMass;
+		body.inertia = momentOfInertia;
 	}
 
 	public void RegisterBlock(BlockCore blockCore)
 	{
 		// When the vehicle is loading, ignore everything as the calculation will be done by the loading routine.
 		if (!_loaded) return;
-		if (!photonView.IsMine) return;
 
 		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
 
 		AddMass(blockCenter, spec.Physics.Mass, spec.Physics.MomentOfInertia);
-
-		SyncRigidbody2D();
 	}
 
 	public void UnregisterBlock(BlockCore blockCore)
 	{
 		if (!_loaded) return;
-		if (!photonView.IsMine) return;
 
 		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
 		Vector2 blockCenter = blockCore.CenterOfMassPosition;
@@ -128,72 +141,92 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		// Remove the block by adding negative mass
 		AddMass(blockCenter, -spec.Physics.Mass, -spec.Physics.MomentOfInertia);
 
-		if (_connectivityGraph.ContainsPosition(blockCore.RootPosition))
+		if (photonView.IsMine && _connectivityGraph.ContainsPosition(blockCore.RootPosition))
 		{
-			SplitConnectivityGraph(blockCore);
-		}
+			List<BlockConnectivityGraph> graphs =
+				_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
 
-		SyncRigidbody2D();
+			if (graphs == null || graphs.Count == 0)
+			{
+				// Construct completely destroyed. Probably nothing need to be done here?
+			}
+			else if (graphs.Count == 1)
+			{
+				// Still in one piece.
+				_connectivityGraph = graphs[0];
+			}
+			else if (graphs.Count > 1)
+			{
+				// Multiple chunks, create debris
+				SplitChunks(graphs);
+			}
+			else
+			{
+				Debug.LogError($"Unexpected chunk count {graphs.Count}");
+			}
+
+			Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+		}
 	}
 
-	private void SplitConnectivityGraph(BlockCore blockCore)
+	private void SplitChunks(IReadOnlyList<BlockConnectivityGraph> graphs)
 	{
-		List<BlockConnectivityGraph> graphs =
-			_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
+		int primaryGraphIndex = -1;
 
-		if (graphs == null || graphs.Count == 0)
+		List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
+		for (int i = 0; i < graphs.Count; i++)
 		{
-			// Construct completely destroyed. Probably nothing need to be done here?
-		}
-		else if (graphs.Count == 1)
-		{
-			// Still in one piece.
-			_connectivityGraph = graphs[0];
-		}
-		else if (graphs.Count > 1)
-		{
-			int primaryGraphIndex = -1;
-
-			List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
-			for (int i = 0; i < graphs.Count; i++)
+			if (graphs[i].ContainsPosition(Vector2Int.zero))
 			{
-				if (graphs[i].ContainsPosition(Vector2Int.zero))
+				primaryGraphIndex = i;
+				continue;
+			}
+
+			disableBlockRoots.Clear();
+			disableBlockRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
+
+			PhotonNetwork.Instantiate(
+				DebrisPrefab.name, transform.position, transform.rotation,
+				0,
+				new object[]
 				{
-					primaryGraphIndex = i;
-					continue;
+					JsonUtility.ToJson(
+						new DebrisInfo
+						{
+							OriginViewId = photonView.ViewID,
+							Blocks = disableBlockRoots
+								.Select(
+									blockRoot => new DebrisBlockInfo
+									{
+										Position = blockRoot,
+										DebrisState = SaveDebrisState(_rootPosToBlock[blockRoot])
+									}
+								)
+								.ToArray()
+						}
+					),
+					JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
 				}
-
-				disableBlockRoots.Clear();
-				disableBlockRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
-
-				PhotonNetwork.Instantiate(
-					DebrisPrefab.name, transform.position, transform.rotation,
-					0,
-					new object[]
-					{
-						JsonUtility.ToJson(
-							new DebrisInfo
-							{
-								OriginViewId = photonView.ViewID,
-								Positions = disableBlockRoots.ToArray()
-							}
-						),
-						JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
-					}
-				);
-			}
-
-			if (primaryGraphIndex >= 0)
-			{
-				_connectivityGraph = graphs[primaryGraphIndex];
-			}
+			);
 		}
-		else
+
+		if (primaryGraphIndex >= 0)
 		{
-			Debug.LogError($"Unexpected chunk count {graphs.Count}");
+			_connectivityGraph = graphs[primaryGraphIndex];
+		}
+	}
+
+	private static string SaveDebrisState(GameObject blockObject)
+	{
+		JObject debrisState = new JObject();
+
+		foreach (IHasDebrisState component in blockObject.GetComponents<IHasDebrisState>())
+		{
+			string classKey = TypeUtils.GetClassKey(component.GetType());
+			debrisState[classKey] = component.SaveDebrisState();
 		}
 
-		Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+		return debrisState.ToString(Formatting.None);
 	}
 
 	private void AddMass(Vector2 position, float mass, float moment)
@@ -216,6 +249,8 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 	public void OnBlockDestroyedByDamage(BlockCore blockCore)
 	{
+		if (!photonView.IsMine) return;
+
 		photonView.RPC(
 			nameof(DisableBlocks), RpcTarget.AllBuffered,
 			new[] { blockCore.RootPosition.x }, new[] { blockCore.RootPosition.y }
@@ -232,30 +267,14 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		}
 	}
 
-	private void SyncRigidbody2D()
-	{
-		var body = GetComponent<Rigidbody2D>();
-		photonView.RPC(
-			nameof(UpdateRigidbody2D), RpcTarget.OthersBuffered, body.mass, body.centerOfMass, body.inertia
-		);
-	}
-
-	[PunRPC]
-	private void UpdateRigidbody2D(float mass, Vector2 centerOfMass, float momentOfInertia)
-	{
-		var body = GetComponent<Rigidbody2D>();
-		body.mass = mass;
-		body.centerOfMass = centerOfMass;
-		body.inertia = momentOfInertia;
-	}
-
 	public IEnumerable<GameObject> GetAllBlocks() => _rootPosToBlock.Values;
 
 	public GameObject GetBlockAt(Vector2Int localPosition) =>
 		_occupiedPosToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
 
-	// Give up control of the block at the given positions and give them to the receiver
-	public IEnumerable<GameObject> TransferBlocksTo(ConstructBlockManager receiver, IEnumerable<Vector2Int> positions)
+	public void TransferDebrisBlocksTo(
+		ConstructBlockManager receiver, IEnumerable<DebrisBlockInfo> debrisBlocks
+	)
 	{
 		if (photonView.IsMine != receiver.photonView.IsMine)
 		{
@@ -264,53 +283,46 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			);
 		}
 
-		List<GameObject> blockObjects = new List<GameObject>();
+		receiver._loaded = false;
+		float totalMass = 0f;
+		Vector2 centerOfMass = Vector2.zero;
+		var momentOfInertiaData = new LinkedList<MomentOfInertiaData>();
 
-		foreach (Vector2Int position in positions)
+		foreach (DebrisBlockInfo debrisBlock in debrisBlocks)
 		{
-			GameObject blockObject = _rootPosToBlock[position];
-			receiver._rootPosToBlock.Add(position, blockObject);
+			if (!_rootPosToBlock.TryGetValue(debrisBlock.Position, out GameObject blockObject))
+			{
+				Debug.LogError(
+					$"Tried to create debris containing block at {debrisBlock.Position} but there's no block there!"
+				);
+				continue;
+			}
 
 			BlockCore blockCore = blockObject.GetComponent<BlockCore>();
-			BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockObject.GetComponent<BlockCore>().BlockId);
+			BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
 
-			_rootPosToBlock.Remove(position);
-			foreach (
-				Vector3Int localPosition
-				in new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax)
-					.AllPositionsWithin
-			)
+			blockObject.SetActive(false);
+			GameObject receiverBlock = receiver.AddBlock(
+				blockSpec, blockCore.RootPosition, blockCore.Rotation,
+				ref totalMass, ref centerOfMass, momentOfInertiaData
+			);
+
+			// Load debris state
+			JObject debrisState = TypeUtils.ParseJson(debrisBlock.DebrisState);
+			foreach (var component in receiverBlock.GetComponents<IHasDebrisState>())
 			{
-				Vector2Int vehicleSpacePosition = blockCore.RootPosition
-				                                  + TransformUtils.RotatePoint(localPosition, blockCore.Rotation);
-				receiver._occupiedPosToBlock.Add(vehicleSpacePosition, blockObject);
-				_occupiedPosToBlock.Remove(vehicleSpacePosition);
+				string classKey = TypeUtils.GetClassKey(component.GetType());
+				if (debrisState.ContainsKey(classKey))
+				{
+					component.LoadDebrisState((JObject) debrisState[classKey]);
+				}
 			}
-
-			if (photonView.IsMine)
-			{
-				AddMass(blockCore.CenterOfMassPosition, -blockSpec.Physics.Mass, -blockSpec.Physics.MomentOfInertia);
-				receiver.AddMass(
-					blockCore.CenterOfMassPosition, blockSpec.Physics.Mass, blockSpec.Physics.MomentOfInertia
-				);
-			}
-
-			var blockTransform = blockObject.transform;
-			blockTransform.SetParent(receiver.transform);
-			blockTransform.localPosition = new Vector3(blockCore.RootPosition.x, blockCore.RootPosition.y, 0f);
-			blockTransform.localRotation = TransformUtils.GetPhysicalRotation(blockCore.Rotation);
-			blockTransform.localScale = Vector3.one;
-
-			blockObjects.Add(blockObject);
 		}
 
-		if (photonView.IsMine)
-		{
-			SyncRigidbody2D();
-			receiver.SyncRigidbody2D();
-		}
+		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
+		ExportPhysicsData(totalMass, centerOfMass, momentOfInertiaData, receiver.GetComponent<Rigidbody2D>());
 
-		return blockObjects;
+		receiver._loaded = true;
 	}
 }
 }

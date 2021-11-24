@@ -9,8 +9,9 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, IControlConditionReceiver, IHasDebrisLogic,
-	ITooltipProvider
+public class FreeResourceGenerator :
+	MonoBehaviour,
+	IResourceGeneratorBlock, IControlConditionReceiver, IHasDebrisState, ITooltipProvider
 {
 	private Dictionary<string, float> _generationRate;
 	private ControlConditionSpec _activationCondition;
@@ -64,11 +65,16 @@ public class FreeResourceGenerator : MonoBehaviour, IResourceGeneratorBlock, ICo
 		}
 	}
 
-	public void EnterDebrisMode()
+	public JObject SaveDebrisState()
+	{
+		return null;
+	}
+
+	public void LoadDebrisState(JObject state)
 	{
 		if (_activeRenderersParent != null)
 		{
-			_activeRenderersParent.gameObject.SetActive(false);
+			_activeRenderersParent.gameObject.SetActive(true);
 		}
 	}
 

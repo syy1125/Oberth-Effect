@@ -20,7 +20,7 @@ namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public class TurretedWeapon :
 	MonoBehaviour,
-	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, IHasDebrisLogic, ITooltipProvider
+	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, IHasDebrisState, ITooltipProvider
 {
 	public const string CLASS_KEY = "TurretedWeapon";
 
@@ -238,8 +238,14 @@ public class TurretedWeapon :
 		_turretTransform.localRotation = Quaternion.AngleAxis(_turretAngle, Vector3.forward);
 	}
 
-	public void EnterDebrisMode()
+	public JObject SaveDebrisState()
 	{
+		return new JObject { { "TurretAngle", _turretAngle } };
+	}
+
+	public void LoadDebrisState(JObject state)
+	{
+		_turretAngle = state.Value<float>("TurretAngle");
 		enabled = false;
 	}
 

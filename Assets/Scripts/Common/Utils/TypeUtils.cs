@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Syy1125.OberthEffect.Common.Utils
 {
-public static class ClassSerializationUtils
+public static class TypeUtils
 {
 	private static readonly Dictionary<Type, string> KeyCache = new Dictionary<Type, string>();
 

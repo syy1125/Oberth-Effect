@@ -325,7 +325,7 @@ public class DesignerConfig : MonoBehaviour
 		Debug.Assert(_selectedBlocks.Count > 0, nameof(_selectedBlocks) + ".Count > 0");
 		Debug.Assert(_blockConfigItems.Count == 0, nameof(_blockConfigItems) + ".Count == 0");
 
-		List<JObject> configs = _selectedBlocks.Select(block => ClassSerializationUtils.ParseJson(block.Config)).ToList();
+		List<JObject> configs = _selectedBlocks.Select(block => TypeUtils.ParseJson(block.Config)).ToList();
 
 		foreach (
 			IConfigComponent component in
@@ -333,7 +333,7 @@ public class DesignerConfig : MonoBehaviour
 		)
 		{
 			Type componentType = component.GetType();
-			string configKey = ClassSerializationUtils.GetClassKey(componentType);
+			string configKey = TypeUtils.GetClassKey(componentType);
 			var currentConfigs =
 				configs.Select(config => config.ContainsKey(configKey) ? (JObject) config[configKey] : null).ToList();
 
@@ -415,7 +415,7 @@ public class DesignerConfig : MonoBehaviour
 
 		_updatingElements = true;
 
-		List<JObject> configs = _selectedBlocks.Select(block => ClassSerializationUtils.ParseJson(block.Config)).ToList();
+		List<JObject> configs = _selectedBlocks.Select(block => TypeUtils.ParseJson(block.Config)).ToList();
 
 		int rowIndex = 0;
 		foreach (
@@ -423,7 +423,7 @@ public class DesignerConfig : MonoBehaviour
 			Builder.GetBlockObject(_selectedBlocks[0]).GetComponents<IConfigComponent>()
 		)
 		{
-			string configKey = ClassSerializationUtils.GetClassKey(component.GetType());
+			string configKey = TypeUtils.GetClassKey(component.GetType());
 			var currentConfigs =
 				configs.Select(config => config.ContainsKey(configKey) ? (JObject) config[configKey] : null).ToList();
 
@@ -496,7 +496,7 @@ public class DesignerConfig : MonoBehaviour
 
 		foreach (VehicleBlueprint.BlockInstance selectedBlock in _selectedBlocks)
 		{
-			string componentKey = ClassSerializationUtils.GetClassKey(componentType);
+			string componentKey = TypeUtils.GetClassKey(componentType);
 			BlockConfigHelper.UpdateConfig(selectedBlock, new[] { componentKey, itemKey }, value);
 			BlockConfigHelper.SyncConfig(selectedBlock, Builder.GetBlockObject(selectedBlock));
 		}

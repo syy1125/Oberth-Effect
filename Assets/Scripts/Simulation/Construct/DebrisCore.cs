@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common.ColorScheme;
@@ -8,10 +8,17 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [Serializable]
+public struct DebrisBlockInfo
+{
+	public Vector2Int Position;
+	public string DebrisState;
+}
+
+[Serializable]
 public struct DebrisInfo
 {
 	public int OriginViewId;
-	public Vector2Int[] Positions;
+	public DebrisBlockInfo[] Blocks;
 }
 
 public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
@@ -28,17 +35,9 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 			return;
 		}
 
-		IEnumerable<GameObject> debrisBlocks = origin.GetComponent<ConstructBlockManager>().TransferBlocksTo(
-			GetComponent<ConstructBlockManager>(), debrisInfo.Positions
+		 origin.GetComponent<ConstructBlockManager>().TransferDebrisBlocksTo(
+			GetComponent<ConstructBlockManager>(), debrisInfo.Blocks
 		);
-
-		foreach (GameObject block in debrisBlocks)
-		{
-			foreach (IHasDebrisLogic component in block.GetComponents<IHasDebrisLogic>())
-			{
-				component.EnterDebrisMode();
-			}
-		}
 	}
 }
 }
