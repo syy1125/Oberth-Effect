@@ -31,7 +31,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
-		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) info.photonView.InstantiationData[0]);
+		object[] instantiationData = info.photonView.InstantiationData;
+		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) instantiationData[0]);
 		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
 
 		ProjectileCollider.size = _config.ColliderSize;

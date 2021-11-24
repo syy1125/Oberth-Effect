@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
@@ -31,7 +32,7 @@ public class VehicleCore :
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>((string) instantiationData[0]);
+		_blueprint = JsonUtility.FromJson<VehicleBlueprint>(Encoding.UTF8.GetString((byte[]) instantiationData[0]));
 		name = $"{photonView.Owner.NickName} {_blueprint.Name}";
 	}
 
@@ -54,7 +55,7 @@ public class VehicleCore :
 			}
 		}
 	}
-	
+
 	private void OnDisable()
 	{
 		// Clean up when leaving room
@@ -123,6 +124,7 @@ public class VehicleCore :
 		{
 			listener.OnVehicleDeath();
 		}
+
 		OnVehicleDeath.Invoke();
 	}
 }

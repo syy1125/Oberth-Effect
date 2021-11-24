@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
@@ -189,26 +190,26 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			disableBlockRoots.Clear();
 			disableBlockRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
 
+			var debrisInfo = new DebrisInfo
+			{
+				OriginViewId = photonView.ViewID,
+				Blocks = disableBlockRoots
+					.Select(
+						blockRoot => new DebrisBlockInfo
+						{
+							Position = blockRoot,
+							DebrisState = SaveDebrisState(_rootPosToBlock[blockRoot])
+						}
+					)
+					.ToArray()
+			};
+
 			PhotonNetwork.Instantiate(
 				DebrisPrefab.name, transform.position, transform.rotation,
 				0,
 				new object[]
 				{
-					JsonUtility.ToJson(
-						new DebrisInfo
-						{
-							OriginViewId = photonView.ViewID,
-							Blocks = disableBlockRoots
-								.Select(
-									blockRoot => new DebrisBlockInfo
-									{
-										Position = blockRoot,
-										DebrisState = SaveDebrisState(_rootPosToBlock[blockRoot])
-									}
-								)
-								.ToArray()
-						}
-					),
+					Encoding.UTF8.GetBytes(JsonUtility.ToJson(debrisInfo)),
 					JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
 				}
 			);

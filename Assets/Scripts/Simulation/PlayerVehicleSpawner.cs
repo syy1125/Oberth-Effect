@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
@@ -111,7 +112,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			0,
 			new object[]
 			{
-				VehicleSelection.SerializedVehicle,
+				Encoding.UTF8.GetBytes(VehicleSelection.SerializedVehicle),
 				JsonUtility.ToJson(ColorScheme.FromBlueprint(VehicleSelection.SelectedVehicle))
 			}
 		);

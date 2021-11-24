@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common.ColorScheme;
@@ -25,8 +26,11 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 {
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
+		object[] instantiationData = info.photonView.InstantiationData;
+
 		GetComponent<GlowReferenceTransform>().enabled = false;
-		DebrisInfo debrisInfo = JsonUtility.FromJson<DebrisInfo>((string) info.photonView.InstantiationData[0]);
+		DebrisInfo debrisInfo =
+			JsonUtility.FromJson<DebrisInfo>(Encoding.UTF8.GetString((byte[]) instantiationData[0]));
 
 		PhotonView origin = PhotonView.Find(debrisInfo.OriginViewId);
 		if (origin == null)
@@ -35,7 +39,7 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 			return;
 		}
 
-		 origin.GetComponent<ConstructBlockManager>().TransferDebrisBlocksTo(
+		origin.GetComponent<ConstructBlockManager>().TransferDebrisBlocksTo(
 			GetComponent<ConstructBlockManager>(), debrisInfo.Blocks
 		);
 	}
