@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -22,20 +24,23 @@ public class ControlInfoDisplay : MonoBehaviour
 	public float NotificationFadeTime;
 
 	public GameObject ControlGroupDisplayPrefab;
-	public string[] ControlGroups;
 
-	private Text[] _controlGroupDisplays;
+	private bool _started;
+	private Coroutine _initNotification;
+	private List<Tuple<string, Text>> _controlGroupDisplays;
 
 	private void OnEnable()
 	{
-		CreateDisplay();
 		AttachControlListeners();
 		AttachHealthBarListeners();
 	}
 
 	private void Start()
 	{
+		_started = true;
+		CreateDisplay();
 		UpdateDisplay();
+		_initNotification = StartCoroutine(InitNotification());
 	}
 
 	private void OnDisable()
@@ -78,12 +83,34 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private void CreateDisplay()
 	{
-		_controlGroupDisplays = new Text[ControlGroups.Length];
-		for (int i = 0; i < ControlGroups.Length; i++)
+		_controlGroupDisplays = new List<Tuple<string, Text>>();
+
+		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
 		{
 			var row = Instantiate(ControlGroupDisplayPrefab, transform);
-			_controlGroupDisplays[i] = row.GetComponent<Text>();
+			_controlGroupDisplays.Add(new Tuple<string, Text>(instance.Spec.ControlGroupId, row.GetComponent<Text>()));
 		}
+	}
+
+	private IEnumerator InitNotification()
+	{
+		float delay = NotificationFadeDelay * 0.8f;
+		ControlNotification.CrossFadeAlpha(1f, 0f, true);
+
+		ControlNotification.text = GetInertiaDampenerText();
+		yield return new WaitForSecondsRealtime(delay);
+		ControlNotification.text = GetControlModeText();
+		yield return new WaitForSecondsRealtime(delay);
+		ControlNotification.text = GetHealthBarStatusText();
+		yield return new WaitForSecondsRealtime(delay);
+
+		foreach ((string controlGroupId, Text _) in _controlGroupDisplays)
+		{
+			ControlNotification.text = GetControlGroupText(controlGroupId);
+			yield return new WaitForSecondsRealtime(delay);
+		}
+
+		ControlNotification.CrossFadeAlpha(0f, NotificationFadeTime, true);
 	}
 
 	private void UpdateDisplay(List<string> _)
@@ -93,13 +120,15 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private void UpdateDisplay()
 	{
+		if (!_started) return;
+
 		InertiaDampenerDisplay.text = GetInertiaDampenerText();
 		ControlModeDisplay.text = GetControlModeText();
 		HealthBarModeDisplay.text = GetHealthBarStatusText();
 
-		for (int i = 0; i < ControlGroups.Length; i++)
+		foreach ((string controlGroupId, Text text) in _controlGroupDisplays)
 		{
-			_controlGroupDisplays[i].text = GetControlGroupText(ControlGroups[i]);
+			text.text = GetControlGroupText(controlGroupId);
 		}
 	}
 
@@ -169,13 +198,21 @@ public class ControlInfoDisplay : MonoBehaviour
 		SetNotification(
 			string.Join(
 				"\n",
-				controlGroups.Where(groupId => ControlGroups.Contains(groupId)).Select(GetControlGroupText)
+				controlGroups.Select(GetControlGroupText)
 			)
 		);
 	}
 
 	private void SetNotification(string notification)
 	{
+		if (!_started) return;
+
+		if (_initNotification != null)
+		{
+			StopCoroutine(_initNotification);
+			_initNotification = null;
+		}
+
 		ControlNotification.text = notification;
 		ControlNotification.CrossFadeAlpha(1f, 0f, true);
 		CancelInvoke(nameof(FadeNotification));

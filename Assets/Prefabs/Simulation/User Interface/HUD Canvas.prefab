@@ -161,9 +161,6 @@ MonoBehaviour:
   NotificationFadeDelay: 1
   NotificationFadeTime: 1
   ControlGroupDisplayPrefab: {fileID: 4034133934352301723, guid: 7778b23a998425e439acfbcc192088fa, type: 3}
-  ControlGroups:
-  - OberthEffect/FuelPropulsion
-  - OberthEffect/FusionReactor
 --- !u!1 &2356713703974539941
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,8 +992,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25, y: 0.5}
   m_AnchorMax: {x: 0.75, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: 60}
+  m_SizeDelta: {x: 0, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1719423634478888392
 CanvasRenderer:

@@ -1,0 +1,12 @@
+﻿ControlGroupId: OberthEffect/FuelCell
+DisplayName: Fuel Cells
+DefaultKeybind: <Keyboard>/C
+KeybindDescription: Toggle fuel cells
+States:
+  - StateId: Inactive
+    DisplayName: INACTIVE
+    DisplayColor: red
+  - StateId: Active
+    DisplayName: ACTIVE
+    DisplayColor: cyan
+    

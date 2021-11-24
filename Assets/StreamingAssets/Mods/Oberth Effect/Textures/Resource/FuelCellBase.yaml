@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/FuelCellBase
+ImagePath: ./FuelCellBase.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

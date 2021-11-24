@@ -1,0 +1,41 @@
+﻿BlockId: OberthEffect/FuelCell
+Enabled: true
+CategoryId: OberthEffect/Resource
+Cost: 30
+Info:
+  ShortName: Fuel Cell
+  FullName: Fuel Cell
+  Description: |
+    The fuel cell converts fuel into energy.
+Renderers:
+  - TextureId: OberthEffect/FuelCellBase
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 5
+  MomentOfInertia: 0.8333333
+  BoxCollider:
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 2
+Resource:
+  ResourceGenerator:
+    ConsumptionRate:
+      OberthEffect/Fuel: 1
+    GenerationRate:
+      OberthEffect/Energy: 500
+    ActivationCondition:
+      ControlGroupId: OberthEffect/FuelCell
+      MatchValues: [ Active ]
+    ActivationRenderers:
+      - TextureId: OberthEffect/FuelCellActive
