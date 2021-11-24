@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,8 +35,12 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private Pid<float> _rotationPid;
 
-	private Vector2 _translateCommand;
-	private float _rotateCommand;
+	[ReadOnlyField]
+	[SerializeField]
+	private Vector2 TranslateCommand;
+	[ReadOnlyField]
+	[SerializeField]
+	private float RotateCommand;
 
 	#region Unity Lifecycle
 
@@ -76,8 +81,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	public void OnVehicleDeath()
 	{
-		_translateCommand = Vector2.zero;
-		_rotateCommand = 0f;
+		TranslateCommand = Vector2.zero;
+		RotateCommand = 0f;
 		SendCommands();
 
 		enabled = false;
@@ -149,25 +154,25 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
 		Quaternion mouseRelative = Quaternion.LookRotation(Vector3.forward, mousePosition - vehiclePosition);
 
-		_translateCommand = transform.InverseTransformDirection(mouseRelative * move);
+		TranslateCommand = transform.InverseTransformDirection(mouseRelative * move);
 		// If move signal is strong, assume that the player wants to accelerate as quickly as possible - maximize propulsion commands.
 		if (move.sqrMagnitude >= 1)
 		{
-			float scale = 1f / Mathf.Max(Mathf.Abs(_translateCommand.x), Mathf.Abs(_translateCommand.y));
-			_translateCommand *= scale;
+			float scale = 1f / Mathf.Max(Mathf.Abs(TranslateCommand.x), Mathf.Abs(TranslateCommand.y));
+			TranslateCommand *= scale;
 		}
 
 		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
 
 		_rotationPid.Update(angle, Time.fixedDeltaTime);
 
-		_rotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
+		RotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
 	}
 
 	private void UpdateRelativeModeCommands()
 	{
-		_translateCommand = MoveAction.action.ReadValue<Vector2>();
-		_translateCommand.x += StrafeAction.action.ReadValue<float>();
+		TranslateCommand = MoveAction.action.ReadValue<Vector2>();
+		TranslateCommand.x += StrafeAction.action.ReadValue<float>();
 
 		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
@@ -175,7 +180,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 		_rotationPid.Update(angle, Time.fixedDeltaTime);
 
-		_rotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
+		RotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
 	}
 
 	private void UpdateCruiseModeCommands()
@@ -183,15 +188,15 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
-		_translateCommand = new Vector2(strafe, move.y);
+		TranslateCommand = new Vector2(strafe, move.y);
 
 		if (Mathf.Abs(move.x) > Mathf.Epsilon)
 		{
-			_rotateCommand = move.x;
+			RotateCommand = move.x;
 		}
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
-			_rotateCommand = _body.angularVelocity * RotationPidConfig.DerivativeTime;
+			RotateCommand = _body.angularVelocity * RotationPidConfig.DerivativeTime;
 		}
 	}
 
@@ -199,29 +204,29 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
 
-		if (Mathf.Approximately(_translateCommand.x, 0))
+		if (Mathf.Approximately(TranslateCommand.x, 0))
 		{
-			_translateCommand.x = -localVelocity.x * InertiaDampenerStrength;
+			TranslateCommand.x = -localVelocity.x * InertiaDampenerStrength;
 		}
 
-		if (Mathf.Approximately(_translateCommand.y, 0))
+		if (Mathf.Approximately(TranslateCommand.y, 0))
 		{
-			_translateCommand.y = -localVelocity.y * InertiaDampenerStrength;
+			TranslateCommand.y = -localVelocity.y * InertiaDampenerStrength;
 		}
 	}
 
 	private void ClampCommands()
 	{
-		_translateCommand.x = Mathf.Clamp(_translateCommand.x, -1f, 1f);
-		_translateCommand.y = Mathf.Clamp(_translateCommand.y, -1f, 1f);
-		_rotateCommand = Mathf.Clamp(_rotateCommand, -1f, 1f);
+		TranslateCommand.x = Mathf.Clamp(TranslateCommand.x, -1f, 1f);
+		TranslateCommand.y = Mathf.Clamp(TranslateCommand.y, -1f, 1f);
+		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
 	}
 
 	private void SendCommands()
 	{
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			block.SetPropulsionCommands(_translateCommand, _rotateCommand);
+			block.SetPropulsionCommands(TranslateCommand, RotateCommand);
 		}
 	}
 
@@ -233,13 +238,13 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		if (stream.IsWriting)
 		{
-			stream.SendNext(_translateCommand);
-			stream.SendNext(_rotateCommand);
+			stream.SendNext(TranslateCommand);
+			stream.SendNext(RotateCommand);
 		}
 		else
 		{
-			_translateCommand = (Vector2) stream.ReceiveNext();
-			_rotateCommand = (float) stream.ReceiveNext();
+			TranslateCommand = (Vector2) stream.ReceiveNext();
+			RotateCommand = (float) stream.ReceiveNext();
 		}
 	}
 

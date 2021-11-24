@@ -124,6 +124,8 @@ MonoBehaviour:
     DerivativeTime: 2
     IntegralTime: 50
   InertiaDampenerStrength: 1
+  TranslateCommand: {x: 0, y: 0}
+  RotateCommand: 0
 --- !u!114 &6944351584787850753
 MonoBehaviour:
   m_ObjectHideFlags: 0

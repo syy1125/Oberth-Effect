@@ -14,6 +14,15 @@ public class BlockConnectivityGraph
 
 	public int Count => _nodes.Count;
 
+	private static BlockConnectivityGraph _empty;
+
+	public static BlockConnectivityGraph Empty => _empty ??= new BlockConnectivityGraph
+	{
+		_nodes = new HashSet<VehicleBlueprint.BlockInstance>(),
+		_edges = new Dictionary<VehicleBlueprint.BlockInstance, HashSet<VehicleBlueprint.BlockInstance>>(),
+		_posToBlock = new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>()
+	};
+
 	private BlockConnectivityGraph()
 	{}
 

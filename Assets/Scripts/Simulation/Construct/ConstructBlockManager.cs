@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -169,16 +168,17 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		}
 	}
 
-	private void SplitChunks(IReadOnlyList<BlockConnectivityGraph> graphs)
+	private void SplitChunks(List<BlockConnectivityGraph> graphs)
 	{
-		int primaryGraphIndex = -1;
+		int primaryGraphIndex = graphs.FindIndex(graph => graph.ContainsPosition(Vector2Int.zero));
+
+		_connectivityGraph = primaryGraphIndex >= 0 ? graphs[primaryGraphIndex] : BlockConnectivityGraph.Empty;
 
 		List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
 		for (int i = 0; i < graphs.Count; i++)
 		{
-			if (graphs[i].ContainsPosition(Vector2Int.zero))
+			if (i == primaryGraphIndex)
 			{
-				primaryGraphIndex = i;
 				continue;
 			}
 
@@ -208,11 +208,6 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 					JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
 				}
 			);
-		}
-
-		if (primaryGraphIndex >= 0)
-		{
-			_connectivityGraph = graphs[primaryGraphIndex];
 		}
 	}
 
@@ -314,7 +309,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				string classKey = TypeUtils.GetClassKey(component.GetType());
 				if (debrisState.ContainsKey(classKey))
 				{
-					component.LoadDebrisState((JObject) debrisState[classKey]);
+					component.LoadDebrisState(debrisState[classKey] as JObject);
 				}
 			}
 		}
