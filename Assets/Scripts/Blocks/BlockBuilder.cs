@@ -64,10 +64,10 @@ public static class BlockBuilder
 			resourceStorage.LoadSpec(blockSpec.Resource.StorageCapacity);
 		}
 
-		if (blockSpec.Resource?.FreeGenerator != null)
+		if (blockSpec.Resource?.ResourceGenerator != null)
 		{
-			var freeGenerator = blockObject.AddComponent<FreeResourceGenerator>();
-			freeGenerator.LoadSpec(blockSpec.Resource.FreeGenerator);
+			var freeGenerator = blockObject.AddComponent<ResourceGenerator>();
+			freeGenerator.LoadSpec(blockSpec.Resource.ResourceGenerator);
 		}
 
 		if (blockSpec.Propulsion?.Engine != null)

@@ -40,7 +40,7 @@ Combat:
   MaxHealth: 200
   ArmorValue: 2
 Resource:
-  FreeGenerator:
+  ResourceGenerator:
     GenerationRate:
       OberthEffect/Energy: 500
     ActivationCondition:

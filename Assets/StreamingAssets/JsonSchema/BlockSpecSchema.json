@@ -134,9 +134,15 @@
                         "^.*$": { "type": "number" }
                     }
                 },
-                "FreeGenerator": {
+                "ResourceGenerator": {
                     "type": "object",
                     "properties": {
+                        "ConsumptionRate": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^.*$": { "type": "number" }
+                            }
+                        },
                         "GenerationRate": {
                             "type": "object",
                             "patternProperties": {

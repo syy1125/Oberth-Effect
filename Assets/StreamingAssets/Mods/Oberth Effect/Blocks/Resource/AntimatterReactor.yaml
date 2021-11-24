@@ -31,7 +31,7 @@ Combat:
   MaxHealth: 120
   ArmorValue: 5
 Resource:
-  FreeGenerator:
+  ResourceGenerator:
     GenerationRate:
       OberthEffect/Energy: 500
 Volatile:
