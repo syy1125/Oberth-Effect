@@ -13,7 +13,7 @@ public struct ColorScheme
 
 	public static ColorScheme DefaultColorScheme = new ColorScheme
 	{
-		PrimaryColor = Color.cyan,
+		PrimaryColor = new Color(0f, 0.5f, 1f, 1f),
 		SecondaryColor = Color.blue,
 		TertiaryColor = Color.yellow,
 	};

@@ -28,7 +28,7 @@ Combat:
   ArmorValue: 5
 ControlCore: { }
 Resource:
-  FreeGenerator:
+  ResourceGenerator:
     GenerationRate:
       OberthEffect/Energy: 100
   StorageCapacity:
