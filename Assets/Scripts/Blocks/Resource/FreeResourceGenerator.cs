@@ -76,7 +76,7 @@ public class FreeResourceGenerator :
 	{
 		if (_activeRenderersParent != null)
 		{
-			_activeRenderersParent.gameObject.SetActive(true);
+			_activeRenderersParent.gameObject.SetActive(false);
 		}
 	}
 
