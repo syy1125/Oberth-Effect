@@ -147,7 +147,8 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 			if (graphs == null || graphs.Count == 0)
 			{
-				// Construct completely destroyed. Probably nothing need to be done here?
+				// Construct completely destroyed. Just destroy the construct I guess?
+				PhotonNetwork.Destroy(gameObject);
 			}
 			else if (graphs.Count == 1)
 			{
@@ -170,8 +171,11 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 	private void SplitChunks(List<BlockConnectivityGraph> graphs)
 	{
-		int primaryGraphIndex = graphs.FindIndex(graph => graph.ContainsPosition(Vector2Int.zero));
+		Debug.Assert(photonView.IsMine, "photonView.IsMine");
 
+		int primaryGraphIndex = graphs.FindIndex(graph => graph.ContainsPosition(Vector2Int.zero));
+		// Having no primary graph is valid. For example, a vehicle might have its control core shot out. Or a debris might be splitting into two.
+		// In that case, we still want to keep the construct around so we can extract data from it, but there is no primary graph anymore.
 		_connectivityGraph = primaryGraphIndex >= 0 ? graphs[primaryGraphIndex] : BlockConnectivityGraph.Empty;
 
 		List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
@@ -274,7 +278,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		if (photonView.IsMine != receiver.photonView.IsMine)
 		{
 			Debug.LogWarning(
-				$"Source construct IsMine={photonView.IsMine} but destination IsMine={receiver.photonView.IsMine}!"
+				$"Source construct IsMine={photonView.IsMine} but destination IsMine={receiver.photonView.IsMine}"
 			);
 		}
 
@@ -282,6 +286,8 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
 		var momentOfInertiaData = new LinkedList<MomentOfInertiaData>();
+
+		var debrisBlockInstances = new List<VehicleBlueprint.BlockInstance>();
 
 		foreach (DebrisBlockInfo debrisBlock in debrisBlocks)
 		{
@@ -312,10 +318,24 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 					component.LoadDebrisState(debrisState[classKey] as JObject);
 				}
 			}
+
+			debrisBlockInstances.Add(
+				new VehicleBlueprint.BlockInstance
+				{
+					BlockId = blockCore.BlockId,
+					Position = blockCore.RootPosition,
+					Rotation = blockCore.Rotation
+				}
+			);
 		}
 
 		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
 		ExportPhysicsData(totalMass, centerOfMass, momentOfInertiaData, receiver.GetComponent<Rigidbody2D>());
+
+		if (receiver.photonView.IsMine)
+		{
+			receiver._connectivityGraph = new BlockConnectivityGraph(debrisBlockInstances);
+		}
 
 		receiver._loaded = true;
 	}
