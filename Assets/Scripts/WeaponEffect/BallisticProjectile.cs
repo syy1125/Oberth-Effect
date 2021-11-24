@@ -1,7 +1,6 @@
 using System;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
@@ -68,9 +67,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		if (_config.DamageType == DamageType.Explosive)
 		{
 			// Explosive damage special case
-			photonView.RPC(
-				nameof(CreateExplosionAt), RpcTarget.All,
-				transform.position, _config.ExplosionRadius, _config.Damage
+			ExplosionManager.Instance.CreateExplosionAt(
+				transform.position, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr
 			);
 			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
 		}
@@ -98,9 +96,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		{
 			if (_config.DamageType == DamageType.Explosive && !_expectExploded)
 			{
-				photonView.RPC(
-					nameof(CreateExplosionAt), RpcTarget.All,
-					transform.position, _config.ExplosionRadius, _config.Damage
+				ExplosionManager.Instance.CreateExplosionAt(
+					transform.position, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr
 				);
 			}
 
@@ -112,12 +109,6 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	private void SetRemainingDamage(float damage)
 	{
 		_config.Damage = damage;
-	}
-
-	[PunRPC]
-	private void CreateExplosionAt(Vector3 position, float radius, float damage)
-	{
-		ExplosionManager.Instance.CreateExplosionAt(position, radius, damage, photonView.OwnerActorNr);
 	}
 
 	[PunRPC]

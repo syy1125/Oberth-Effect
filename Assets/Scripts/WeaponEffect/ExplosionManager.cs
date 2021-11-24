@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
-public class ExplosionManager : MonoBehaviour
+[RequireComponent(typeof(PhotonView))]
+public class ExplosionManager : MonoBehaviourPun
 {
 	public static ExplosionManager Instance { get; private set; }
 
@@ -56,8 +57,13 @@ public class ExplosionManager : MonoBehaviour
 		}
 	}
 
-
 	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId)
+	{
+		photonView.RPC(nameof(DoExplosionAt), RpcTarget.All, center, radius, damage, ownerId);
+	}
+
+	[PunRPC]
+	private void DoExplosionAt(Vector3 center, float radius, float damage, int ownerId)
 	{
 		DealExplosionDamageAt(center, radius, damage, ownerId);
 		PlayEffectAt(center, radius);
