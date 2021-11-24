@@ -27,6 +27,7 @@ public class ResourceGenerator :
 	private void OnEnable()
 	{
 		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
@@ -59,6 +60,7 @@ public class ResourceGenerator :
 	private void OnDisable()
 	{
 		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 

@@ -31,7 +31,7 @@ Combat:
 Resource:
   ResourceGenerator:
     ConsumptionRate:
-      OberthEffect/Fuel: 1
+      OberthEffect/Fuel: 5
     GenerationRate:
       OberthEffect/Energy: 500
     ActivationCondition:
