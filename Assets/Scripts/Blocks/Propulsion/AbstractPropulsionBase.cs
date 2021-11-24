@@ -20,7 +20,6 @@ public abstract class AbstractPropulsionBase :
 	protected ControlConditionSpec ActivationCondition;
 
 	protected Rigidbody2D Body;
-	protected CenterOfMassContext MassContext;
 	protected bool IsMine;
 
 	protected bool PropulsionActive;
@@ -30,7 +29,6 @@ public abstract class AbstractPropulsionBase :
 	protected virtual void Awake()
 	{
 		Body = GetComponentInParent<Rigidbody2D>();
-		MassContext = GetComponentInParent<CenterOfMassContext>();
 
 		ResourceRequests = new Dictionary<string, float>();
 	}
@@ -94,7 +92,7 @@ public abstract class AbstractPropulsionBase :
 		Vector3 localUp, out float forwardBackResponse, out float strafeResponse, out float rotateResponse
 	)
 	{
-		if (MassContext == null)
+		if (Body == null)
 		{
 			forwardBackResponse = 0f;
 			strafeResponse = 0f;
@@ -103,8 +101,7 @@ public abstract class AbstractPropulsionBase :
 		}
 
 		localUp.Normalize();
-		Vector3 localPosition = MassContext.transform.InverseTransformPoint(transform.position)
-		                        - (Vector3) MassContext.GetCenterOfMass();
+		Vector3 localPosition = Body.transform.InverseTransformPoint(transform.position) - (Vector3) Body.centerOfMass;
 
 		forwardBackResponse = localUp.y;
 		strafeResponse = localUp.x;

@@ -31,6 +31,8 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	private ParticleSystem[] _rightParticles;
 	private float[] _maxParticleSpeeds;
 
+	private Vector3 _localRight;
+	private Vector3 _localUp;
 	private Vector2 _forwardBackResponse;
 	private Vector2 _strafeResponse;
 	private Vector2 _rotateResponse;
@@ -87,11 +89,8 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 		if (Body != null)
 		{
-			Vector3 localRight = Body.transform.InverseTransformDirection(transform.right);
-			Vector3 localUp = Body.transform.InverseTransformDirection(transform.up);
-
-			CalculateResponse(localRight, out _forwardBackResponse.x, out _strafeResponse.x, out _rotateResponse.x);
-			CalculateResponse(localUp, out _forwardBackResponse.y, out _strafeResponse.y, out _rotateResponse.y);
+			_localRight = Body.transform.InverseTransformDirection(transform.right);
+			_localUp = Body.transform.InverseTransformDirection(transform.up);
 
 			StartParticleSystems(_upParticles);
 			StartParticleSystems(_downParticles);
@@ -168,6 +167,9 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			_response = Vector2.zero;
 			return;
 		}
+
+		CalculateResponse(_localRight, out _forwardBackResponse.x, out _strafeResponse.x, out _rotateResponse.x);
+		CalculateResponse(_localUp, out _forwardBackResponse.y, out _strafeResponse.y, out _rotateResponse.y);
 
 		Vector2 rawResponse = Vector2.zero;
 

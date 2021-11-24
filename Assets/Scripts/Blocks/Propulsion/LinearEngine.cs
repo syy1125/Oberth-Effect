@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks.Config;
@@ -30,6 +29,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	private float _rotateResponse;
 
 	private float _targetThrustStrength;
+	private Vector3 _localUp;
 
 	public void LoadSpec(LinearEngineSpec spec)
 	{
@@ -58,8 +58,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		if (Body != null)
 		{
 			// We are in simulation
-			Vector3 localUp = MassContext.transform.InverseTransformDirection(transform.up);
-			CalculateResponse(localUp, out _forwardBackResponse, out _strafeResponse, out _rotateResponse);
+			_localUp = Body.transform.InverseTransformDirection(transform.up);
 
 			if (_particles != null)
 			{
@@ -70,8 +69,6 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				}
 			}
 		}
-
-		StartCoroutine(LateFixedUpdate());
 	}
 
 	#region Config
@@ -131,6 +128,8 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			return;
 		}
 
+		CalculateResponse(_localUp, out _forwardBackResponse, out _strafeResponse, out _rotateResponse);
+
 		float rawResponse = 0f;
 		if (RespondToTranslation)
 		{
@@ -160,32 +159,25 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		return ResourceRequests;
 	}
 
-	private IEnumerator LateFixedUpdate()
+	private void FixedUpdate()
 	{
-		yield return new WaitForFixedUpdate();
+		float trueThrustStrength = _targetThrustStrength * Satisfaction;
 
-		while (enabled)
+		if (Body != null && IsMine)
 		{
-			float trueThrustStrength = _targetThrustStrength * Satisfaction;
+			Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustStrength), transform.position);
+		}
 
-			if (Body != null && IsMine)
+		if (_particles != null)
+		{
+			for (var i = 0; i < _particles.Length; i++)
 			{
-				Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustStrength), transform.position);
+				ParticleSystem.MainModule main = _particles[i].main;
+				main.startSpeedMultiplier = trueThrustStrength * _maxParticleSpeeds[i];
+				Color startColor = main.startColor.color;
+				startColor.a = trueThrustStrength;
+				main.startColor = new ParticleSystem.MinMaxGradient(startColor);
 			}
-
-			if (_particles != null)
-			{
-				for (var i = 0; i < _particles.Length; i++)
-				{
-					ParticleSystem.MainModule main = _particles[i].main;
-					main.startSpeedMultiplier = trueThrustStrength * _maxParticleSpeeds[i];
-					Color startColor = main.startColor.color;
-					startColor.a = trueThrustStrength;
-					main.startColor = new ParticleSystem.MinMaxGradient(startColor);
-				}
-			}
-
-			yield return new WaitForFixedUpdate();
 		}
 	}
 
