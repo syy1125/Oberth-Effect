@@ -13,6 +13,8 @@ public class FreeResourceGenerator :
 	MonoBehaviour,
 	IResourceGeneratorBlock, IControlConditionReceiver, IHasDebrisState, ITooltipProvider
 {
+	public const string CLASS_KEY = "FreeResourceGenerator";
+
 	private Dictionary<string, float> _generationRate;
 	private ControlConditionSpec _activationCondition;
 	private Transform _activeRenderersParent;
