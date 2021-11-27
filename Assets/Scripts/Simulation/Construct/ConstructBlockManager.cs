@@ -148,8 +148,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 			if (graphs == null || graphs.Count == 0)
 			{
-				// Construct completely destroyed. Just destroy the construct I guess?
-				PhotonNetwork.Destroy(gameObject);
+				// Construct completely destroyed. Keep the construct around so that debris can be spawned from it.
 			}
 			else if (graphs.Count == 1)
 			{
