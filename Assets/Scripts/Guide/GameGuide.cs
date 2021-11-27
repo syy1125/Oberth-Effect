@@ -1,5 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Syy1125.OberthEffect.Blocks.Propulsion;
+using Syy1125.OberthEffect.Blocks.Resource;
+using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using UnityEngine;
@@ -10,7 +16,8 @@ namespace Syy1125.OberthEffect.Guide
 public enum GuideSelection
 {
 	None,
-	DesignerBasic
+	DesignerBasic,
+	VehicleBasic
 }
 
 public class GameGuide : MonoBehaviour
@@ -27,10 +34,14 @@ public class GameGuide : MonoBehaviour
 
 	[Header("Designer")]
 	public VehicleDesigner Designer;
-	public ToolWindows Tools;
-	public RectTransform ConfigButton;
-	public DesignerConfig Config;
+	public VehicleBuilder Builder;
+
+	public RectTransform Toolbar;
+	public RectTransform BlockCategories;
 	public RectTransform AnalyzerButton;
+
+	public ToolWindows Tools;
+	public DesignerConfig Config;
 	public GameObject DesignerMenu;
 	public GameObject HelpScreen;
 
@@ -73,7 +84,10 @@ public class GameGuide : MonoBehaviour
 				gameObject.SetActive(false);
 				break;
 			case GuideSelection.DesignerBasic:
-				PlayDesignerGuide();
+				StartCoroutine(PlayDesignerGuide());
+				break;
+			case GuideSelection.VehicleBasic:
+				StartCoroutine(PlayVehicleGuide());
 				break;
 			default:
 				throw new ArgumentOutOfRangeException();
@@ -92,6 +106,8 @@ public class GameGuide : MonoBehaviour
 			Instance = null;
 		}
 	}
+
+	#region Guide Utility
 
 	private void SkipStep()
 	{
@@ -119,11 +135,11 @@ public class GameGuide : MonoBehaviour
 				StopCoroutine(_zoomHighlight);
 			}
 
-			_zoomHighlight = StartCoroutine(Zoom());
+			_zoomHighlight = StartCoroutine(ZoomHighlight());
 		}
 	}
 
-	private IEnumerator Zoom()
+	private IEnumerator ZoomHighlight()
 	{
 		float startTime = Time.time;
 		float endTime = startTime + HighlightZoomTime;
@@ -139,7 +155,7 @@ public class GameGuide : MonoBehaviour
 		HighlightFrame.localScale = Vector3.one;
 	}
 
-	private IEnumerator Fade(float endAlpha)
+	private IEnumerator FadeGuideBox(float endAlpha)
 	{
 		float startAlpha = _canvasGroup.alpha;
 		float startTime = Time.unscaledTime;
@@ -153,40 +169,46 @@ public class GameGuide : MonoBehaviour
 		while (Time.unscaledTime < endTime);
 	}
 
-	private IEnumerator ExecuteAfter(Action action, float delay)
-	{
-		yield return new WaitForSecondsRealtime(delay);
-		action();
-	}
-
 	private IEnumerator Step(string title, string text, Func<bool> condition, string skipText = null)
 	{
-		SkipStepButton.GetComponentInChildren<Text>().text = skipText ?? (condition == null ? "Continue" : "Skip");
+		skipText ??= condition == null ? "Continue" : "Skip";
+		SkipStepButton.GetComponentInChildren<Text>().text = skipText;
 
-		if (condition == null)
-		{
-			SkipStepButton.gameObject.SetActive(true);
-			SkipStepButton.interactable = false;
-		}
-		else
-		{
-			SkipStepButton.gameObject.SetActive(false);
-		}
+		SkipStepButton.interactable = condition == null;
 
 		GuideTitle.text = title;
 		GuideText.text = text;
-		yield return StartCoroutine(Fade(1f));
+		yield return StartCoroutine(FadeGuideBox(1f));
+
+		if (condition == null)
+		{
+			yield return new WaitUntil(() => _skip);
+		}
+		else
+		{
+			var delayedEnableSkip = StartCoroutine(DelayedEnableSkip(skipText));
+			yield return new WaitUntil(() => _skip || condition());
+			StopCoroutine(delayedEnableSkip);
+			yield return new WaitForSeconds(0.5f);
+		}
+
+		_skip = false;
+		SkipStepButton.interactable = false;
+		yield return StartCoroutine(FadeGuideBox(0f));
+	}
+
+	private IEnumerator DelayedEnableSkip(string skipText)
+	{
+		float startTime = Time.time;
+		while (Time.time - startTime < SkipDelay)
+		{
+			float remainingTime = startTime + SkipDelay - Time.time;
+			SkipStepButton.GetComponentInChildren<Text>().text = $"{skipText} ({Mathf.CeilToInt(remainingTime)})";
+			yield return null;
+		}
 
 		SkipStepButton.interactable = true;
-		Coroutine enableButton =
-			StartCoroutine(ExecuteAfter(() => SkipStepButton.gameObject.SetActive(true), SkipDelay));
-
-		yield return new WaitUntil(() => _skip || condition != null && condition());
-		_skip = false;
-
-		StopCoroutine(enableButton);
-		SkipStepButton.interactable = false;
-		yield return StartCoroutine(Fade(0f));
+		SkipStepButton.GetComponentInChildren<Text>().text = skipText;
 	}
 
 	private void EndGuide()
@@ -194,14 +216,18 @@ public class GameGuide : MonoBehaviour
 		gameObject.SetActive(false);
 	}
 
-	#region Designer Guide
-
-	public void PlayDesignerGuide()
+	private IEnumerable<T> GetAllBlockComponents<T>()
 	{
-		StartCoroutine(DoPlayDesignerGuide());
+		return Designer.Blueprint.Blocks
+			.Select(instance => Builder.GetBlockObject(instance))
+			.SelectMany(blockObject => blockObject.GetComponents<T>());
 	}
 
-	private IEnumerator DoPlayDesignerGuide()
+	#endregion
+
+	#region Designer Guide
+
+	private IEnumerator PlayDesignerGuide()
 	{
 		Highlight(null);
 		yield return StartCoroutine(
@@ -238,8 +264,8 @@ public class GameGuide : MonoBehaviour
 				"Placing blocks (1/2)",
 				string.Join(
 					"\n",
-					"To add a block to your design, first click on it from the block palette on the right to select it, then use left click to place blocks.",
-					"You can drag to quickly place multiple blocks of the same type. Use R and Shift+R for rotation.",
+					"To add a block to your design, first click on it from the block palette on the right to select it, then use left click to place blocks. Use R and Shift+R for rotation.",
+					"You can click and drag with the cursor to quickly place multiple blocks.",
 					"Make something with 10 blocks total to complete this step."
 				),
 				() => Designer.Blueprint.Blocks.Count >= 10
@@ -249,51 +275,8 @@ public class GameGuide : MonoBehaviour
 		yield return StartCoroutine(
 			Step(
 				"Placing blocks (2/2)",
-				"Use Q to deselect blocks and go back to cursor mode. Use E to select eraser mode for removing blocks.\nNote that you can never remove the control core, as a vehicle requires it to function.",
+				"Use Q to deselect blocks and go back to cursor mode. E selects eraser mode for removing blocks. M toggles mirror mode.\nNote that you can never remove the control core, as a vehicle requires it to function.",
 				null
-			)
-		);
-
-		Highlight(ConfigButton);
-		yield return StartCoroutine(
-			Step(
-				"Vehicle configuration",
-				"The right side of designer has several tool panels. The configuration tool lets you adjust your vehicle's behaviour and aesthetics settings.",
-				() => Tools.SelectedIndex == 1
-			)
-		);
-
-		Highlight(null);
-		yield return StartCoroutine(
-			Step(
-				"Vehicle configuration",
-				"Here the configuration tool is displaying vehicle configuration.",
-				null
-			)
-		);
-
-		yield return StartCoroutine(
-			Step(
-				"Block configuration",
-				"Some individual blocks, especially functional ones, have configuration properties too. Click on a block to view its configuration.",
-				() => Config.HasSelectedBlock
-			)
-		);
-
-		yield return StartCoroutine(
-			Step(
-				"Block configuration",
-				"Press Q or click on empty space to go back to vehicle configuration.",
-				() => !Config.HasSelectedBlock
-			)
-		);
-
-		Highlight(AnalyzerButton);
-		yield return StartCoroutine(
-			Step(
-				"Vehicle analysis",
-				"The vehicle analysis tool can tell you important information about your vehicle design, like its projected acceleration or combat capabilities.",
-				() => Tools.SelectedIndex == 2
 			)
 		);
 
@@ -316,8 +299,179 @@ public class GameGuide : MonoBehaviour
 
 		yield return StartCoroutine(
 			Step(
+				"Tooltips",
+				string.Join(
+					"\n",
+					"Oberth Effect comes with an extensive tooltip system to provide you with information.",
+					"If you ever want to know what a block does, hover over it and see what the tooltip says!"
+				),
+				null
+			)
+		);
+
+		Highlight(BlockCategories);
+		yield return StartCoroutine(
+			Step(
+				"Block categories",
+				"Blocks are grouped into categories. If you are looking for a specific block, filtering by block categories might help.",
+				null
+			)
+		);
+
+		Highlight(Toolbar);
+		yield return StartCoroutine(
+			Step(
+				"Designer toolbox",
+				string.Join(
+					"\n",
+					"So far, you have been working with the block palette. There are two other tool screens: the configuration tool and the analysis tool.",
+					"The config tool lets you adjust your vehicle's behaviour and aesthetics settings, and the analysis tool is used to review expected performance of your vehicle.",
+					"We will cover those in a future guide, when you're more familiar with other aspects of the game."
+				),
+				null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
 				"Conclusion",
-				"That concludes the core features of the vehicle designer. Now go forth and create!",
+				string.Join(
+					"\n",
+					"That concludes the basic features of the vehicle designer.",
+					"When you are ready, you can go back to the main menu and play the Vehicle Essentials guide.",
+					"Alternatively, you're welcome to experiment with the designer and see what you can come up with."
+				),
+				null, "Done"
+			)
+		);
+
+
+		EndGuide();
+	}
+
+	#endregion
+
+	#region Ship Guide
+
+	private IEnumerator PlayVehicleGuide()
+	{
+		Highlight(null);
+		yield return StartCoroutine(
+			Step(
+				"Vehicle Essentials",
+				"Now that you're familiar with the basic designer controls, let's look at what a functioning vehicle needs.",
+				null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Resources",
+				string.Join(
+					"\n",
+					"Most systems on the vehicle requires resources to function. The vehicle's control core comes with a bit of storage and basic energy generation, but that won't be enough for larger vehicles.",
+					"Bring energy generation up to over 200 per second to complete this step."
+				),
+				() => GetAllBlockComponents<IResourceGenerator>()
+					      .Select(generator => generator.GetMaxGenerationRate())
+					      .Where(rate => rate != null && rate.ContainsKey("OberthEffect/Energy"))
+					      .Sum(rate => rate["OberthEffect/Energy"])
+				      >= 200
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Propulsion (1/3)",
+				string.Join(
+					"\n",
+					"Vehicles need propulsion components to move and maneuver. The more thrusters and engines you equip, the faster you can accelerate or decelerate.",
+					"When applicable, propulsion components will also be used to rotate the vehicle. So if you want your vehicle to rotate quickly, place thrusters far away from the center of mass!"
+				),
+				null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Propulsion (2/3)", string.Join(
+					"\n",
+					"Engines are workhorses with powerful thrust in a single direction. But they generally require time to ramp up thrust.",
+					"Thrusters, on the other hand, are designed to be versatile. They are weaker and less efficient, but have fast response time and often can provide thrust in more than one direction."
+				), null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Propulsion (3/3)",
+				string.Join(
+					"\n",
+					"A mix of engines and thrusters is recommended to bring out the best of both worlds.",
+					"To complete this step, have the vehicle able to generate thrust in all 4 cardinal directions."
+				),
+				() =>
+				{
+					float up = 0, down = 0, left = 0, right = 0;
+
+					foreach (VehicleBlueprint.BlockInstance instance in Designer.Blueprint.Blocks)
+					{
+						GameObject blockObject = Builder.GetBlockObject(instance);
+						foreach (IPropulsionBlock propulsion in blockObject.GetComponents<IPropulsionBlock>())
+						{
+							up += propulsion.GetMaxPropulsionForce(
+								CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, instance.Rotation)
+							);
+							down += propulsion.GetMaxPropulsionForce(
+								CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, instance.Rotation)
+							);
+							left += propulsion.GetMaxPropulsionForce(
+								CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, instance.Rotation)
+							);
+							right += propulsion.GetMaxPropulsionForce(
+								CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, instance.Rotation)
+							);
+						}
+					}
+
+					return !Mathf.Approximately(up, 0)
+					       && !Mathf.Approximately(down, 0)
+					       && !Mathf.Approximately(left, 0)
+					       && !Mathf.Approximately(right, 0);
+				}
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Weapons",
+				string.Join(
+					"\n",
+					"Vehicle-mounted weapons lets you shoot back when encountering hostiles. Never go into combat without them.",
+					"A detailed description of damage mechanics can be found in the help (F1) screen."
+				),
+				null
+			)
+		);
+
+		Highlight(AnalyzerButton);
+		yield return StartCoroutine(
+			Step(
+				"Vehicle analyzer",
+				string.Join(
+					"\n",
+					"The vehicle analyzer lets you see the expected performance of your vehicle design, like its resource statistics or maneuverability.",
+					"Be sure to check the analyzer every now and then to make sure the vehicle's performance is within expectations."
+				),
+				() => Tools.SelectedIndex == 2
+			)
+		);
+
+		Highlight(null);
+		yield return StartCoroutine(
+			Step(
+				"Conclusion",
+				"That concludes the vehicle essentials guide. Now go forth and create!",
 				null, "Done"
 			)
 		);

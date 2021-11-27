@@ -358,7 +358,12 @@ MonoBehaviour:
 
     Enter eraser mode
 
-    Reset camera'
+    Toggle mirror
+
+    Move mirror left/right
+
+    Reset
+    camera'
 --- !u!1 &1420612001187276285
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,6 +697,10 @@ MonoBehaviour:
 
     E
 
+    M
+
+    Comma/Period
+
     Backspace'
 --- !u!1 &1420612001597894293
 GameObject:
@@ -826,7 +835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1420612001671083739
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1295,7 +1304,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2482528917292512288
 RectTransform:
   m_ObjectHideFlags: 0

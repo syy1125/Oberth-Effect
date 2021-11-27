@@ -14,9 +14,15 @@ public class MainMenu : MonoBehaviour
 		SceneManager.LoadScene(Designer);
 	}
 
-	public void ToDesignerGuide()
+	public void ToDesignerBasicsGuide()
 	{
 		GameGuide.ActiveGuide = GuideSelection.DesignerBasic;
+		SceneManager.LoadScene(Designer);
+	}
+
+	public void ToVehicleEssentialsGuide()
+	{
+		GameGuide.ActiveGuide = GuideSelection.VehicleBasic;
 		SceneManager.LoadScene(Designer);
 	}
 

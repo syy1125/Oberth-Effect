@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 3248432828021066348}
   - component: {fileID: 8960385523533377787}
   - component: {fileID: 6871979839274628716}
+  - component: {fileID: 1507675411318755172}
   m_Layer: 5
   m_Name: Skip Button
   m_TagString: Untagged
@@ -135,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -171,7 +172,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.5019608}
@@ -196,6 +197,25 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!95 &1507675411318755172
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431850897709744469}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 61cda816f7a7da14bb1600c066071e77, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1239227287536083051
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,10 +577,12 @@ MonoBehaviour:
   HighlightScale: 10
   SkipDelay: 10
   Designer: {fileID: 0}
-  Tools: {fileID: 0}
-  ConfigButton: {fileID: 0}
-  Config: {fileID: 0}
+  Builder: {fileID: 0}
+  Toolbar: {fileID: 0}
+  BlockCategories: {fileID: 0}
   AnalyzerButton: {fileID: 0}
+  Tools: {fileID: 0}
+  Config: {fileID: 0}
   DesignerMenu: {fileID: 0}
   HelpScreen: {fileID: 0}
 --- !u!225 &6913993996440482668
@@ -689,7 +711,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 10, y: 10}
-  m_SizeDelta: {x: 600, y: 150}
+  m_SizeDelta: {x: 600, y: 250}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &5145874666351746301
 CanvasRenderer:

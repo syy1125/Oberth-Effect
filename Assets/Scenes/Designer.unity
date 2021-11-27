@@ -13523,6 +13523,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 782769141}
     - target: {fileID: 7741644626959894614, guid: 5891fc09577ce894790402550c20b770, type: 3}
+      propertyPath: Builder
+      value: 
+      objectReference: {fileID: 1599521575}
+    - target: {fileID: 7741644626959894614, guid: 5891fc09577ce894790402550c20b770, type: 3}
+      propertyPath: Toolbar
+      value: 
+      objectReference: {fileID: 1601289370}
+    - target: {fileID: 7741644626959894614, guid: 5891fc09577ce894790402550c20b770, type: 3}
       propertyPath: Designer
       value: 
       objectReference: {fileID: 1543857978}
@@ -13542,5 +13550,9 @@ PrefabInstance:
       propertyPath: AnalyzerButton
       value: 
       objectReference: {fileID: 180975932}
+    - target: {fileID: 7741644626959894614, guid: 5891fc09577ce894790402550c20b770, type: 3}
+      propertyPath: BlockCategories
+      value: 
+      objectReference: {fileID: 126594022}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5891fc09577ce894790402550c20b770, type: 3}
