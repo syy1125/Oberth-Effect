@@ -144,6 +144,28 @@ public static class ModLoader
 		File.WriteAllText(Path.Combine(_modsRoot, "modlist.json"), content);
 	}
 
+	public static bool IsModded()
+	{
+		bool found = false;
+
+		foreach (ModListElement element in AllMods)
+		{
+			if (element.Enabled)
+			{
+				if (element.Directory == "Oberth Effect")
+				{
+					found = true;
+				}
+				else
+				{
+					return true;
+				}
+			}
+		}
+
+		return !found;
+	}
+
 	#endregion
 
 	#region Mod Content
