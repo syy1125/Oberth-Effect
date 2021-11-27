@@ -1,3 +1,5 @@
+using System;
+using Syy1125.OberthEffect.Common.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer
@@ -14,6 +16,14 @@ public class VisualGridPosition : MonoBehaviour
 		_parent = transform.parent;
 		_mainCamera = Camera.main;
 		_sprite = GetComponent<SpriteRenderer>();
+	}
+
+	private void Start()
+	{
+		float opacity = PlayerPrefs.GetFloat(PropertyKeys.DESIGNER_GRID_OPACITY, 0.2f);
+		var color = _sprite.color;
+		color.a = opacity;
+		_sprite.color = color;
 	}
 
 	private void LateUpdate()
