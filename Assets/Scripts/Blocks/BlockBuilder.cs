@@ -60,7 +60,7 @@ public static class BlockBuilder
 
 		if (blockSpec.Resource?.StorageCapacity != null)
 		{
-			var resourceStorage = blockObject.AddComponent<ResourceStorageBlock>();
+			var resourceStorage = blockObject.AddComponent<ResourceStorage>();
 			resourceStorage.LoadSpec(blockSpec.Resource.StorageCapacity);
 		}
 

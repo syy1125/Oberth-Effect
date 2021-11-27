@@ -42,7 +42,7 @@ public class BlockBuilderTest : MonoBehaviour, IWeaponSystemRegistry
 
 		foreach (IWeaponSystem weapon in _weapons)
 		{
-			(weapon as IResourceConsumerBlock)?.SatisfyResourceRequestAtLevel(1f);
+			(weapon as IResourceConsumer)?.SatisfyResourceRequestAtLevel(1f);
 			weapon.SetAimPoint(aimPoint);
 			weapon.SetFiring(firing);
 		}

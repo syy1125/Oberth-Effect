@@ -12,7 +12,7 @@ namespace Syy1125.OberthEffect.Blocks.Propulsion
 public abstract class AbstractPropulsionBase :
 	MonoBehaviour,
 	IPropulsionBlock,
-	IResourceConsumerBlock,
+	IResourceConsumer,
 	IControlConditionReceiver
 {
 	protected float MaxForce;
@@ -36,7 +36,7 @@ public abstract class AbstractPropulsionBase :
 	protected virtual void OnEnable()
 	{
 		GetComponentInParent<IPropulsionBlockRegistry>()?.RegisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.RegisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractPropulsionBase :
 	protected virtual void OnDisable()
 	{
 		GetComponentInParent<IPropulsionBlockRegistry>()?.UnregisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 

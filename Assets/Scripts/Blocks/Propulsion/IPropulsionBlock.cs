@@ -15,7 +15,5 @@ public interface IPropulsionBlock
 	Vector2 GetPropulsionForceOrigin();
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
-
-	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 }
 }

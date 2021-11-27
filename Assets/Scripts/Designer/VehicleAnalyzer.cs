@@ -39,9 +39,8 @@ public struct VehicleAnalysisResult
 	// Resource
 	public Dictionary<string, float> MaxResourceStorage;
 	public Dictionary<string, float> MaxResourceGeneration;
-	public Dictionary<string, float> MaxResourceConsumption;
-	public Dictionary<string, float> MaxPropulsionResourceUse;
-	public Dictionary<string, float> MaxWeaponResourceUse;
+	public Dictionary<string, float> MaxResourceUse;
+	public Dictionary<string, Dictionary<string, float>> MaxCategoryResourceUse;
 
 	// Firepower
 	public Dictionary<DamageType, float> MaxFirepower;
@@ -163,9 +162,8 @@ public class VehicleAnalyzer : MonoBehaviour
 			PropulsionRight = 0f,
 			MaxResourceStorage = new Dictionary<string, float>(),
 			MaxResourceGeneration = new Dictionary<string, float>(),
-			MaxResourceConsumption = new Dictionary<string, float>(),
-			MaxPropulsionResourceUse = new Dictionary<string, float>(),
-			MaxWeaponResourceUse = new Dictionary<string, float>(),
+			MaxResourceUse = new Dictionary<string, float>(),
+			MaxCategoryResourceUse = new Dictionary<string, Dictionary<string, float>>(),
 			MaxFirepower = new Dictionary<DamageType, float>()
 		};
 
@@ -240,21 +238,36 @@ public class VehicleAnalyzer : MonoBehaviour
 
 		foreach (MonoBehaviour behaviour in blockObject.GetComponents<MonoBehaviour>())
 		{
-			if (behaviour is IResourceGeneratorBlock generator)
+			if (behaviour is IResourceGenerator generator)
 			{
 				DictionaryUtils.AddDictionary(generator.GetMaxGenerationRate(), _result.MaxResourceGeneration);
 			}
 
-			if (behaviour is ResourceStorageBlock storage)
+			if (behaviour is IResourceConsumer consumer)
+			{
+				var maxResourceUse = consumer.GetMaxResourceUseRate();
+				if (maxResourceUse == null) continue;
+
+				DictionaryUtils.AddDictionary(maxResourceUse, _result.MaxResourceUse);
+
+				if (!_result.MaxCategoryResourceUse.TryGetValue(
+					spec.CategoryId, out Dictionary<string, float> categoryResourceUse
+				))
+				{
+					categoryResourceUse = new Dictionary<string, float>();
+					_result.MaxCategoryResourceUse.Add(spec.CategoryId, categoryResourceUse);
+				}
+
+				DictionaryUtils.AddDictionary(maxResourceUse, categoryResourceUse);
+			}
+
+			if (behaviour is ResourceStorage storage)
 			{
 				DictionaryUtils.AddDictionary(storage.GetCapacity(), _result.MaxResourceStorage);
 			}
 
 			if (behaviour is IPropulsionBlock propulsion)
 			{
-				DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxPropulsionResourceUse);
-				DictionaryUtils.AddDictionary(propulsion.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
-
 				_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
 					CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
 				);
@@ -271,9 +284,6 @@ public class VehicleAnalyzer : MonoBehaviour
 
 			if (behaviour is IWeaponSystem weaponSystem)
 			{
-				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxWeaponResourceUse);
-				DictionaryUtils.AddDictionary(weaponSystem.GetMaxResourceUseRate(), _result.MaxResourceConsumption);
-
 				DictionaryUtils.AddDictionary(weaponSystem.GetMaxFirepower(), _result.MaxFirepower);
 			}
 		}
@@ -388,19 +398,55 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void DisplayResourceResults()
 	{
-		ResourceOutput.text = string.Join(
-			"\n",
-			"<b>Resources</b>",
-			"  Max storage",
-			"    " + string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceStorage)),
-			"  Max resource generation",
-			"    "
-			+ string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceGeneration)),
-			"  Max resource consumption",
-			FormatResourceUseRate("    ", "Total", _result.MaxResourceConsumption),
-			FormatResourceUseRate("    ", "Propulsion", _result.MaxPropulsionResourceUse),
-			FormatResourceUseRate("    ", "Weapon systems", _result.MaxWeaponResourceUse)
-		);
+		StringBuilder output = new StringBuilder();
+		output.AppendLine("<b>Resources</b>")
+			.Append("  Max storage ")
+			.AppendLine(
+				string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceStorage))
+			)
+			.Append("  Max resource generation ")
+			.AppendLine(
+				string.Join(
+					", ",
+					VehicleResourceDatabase.Instance
+						.FormatResourceDict(_result.MaxResourceGeneration)
+						.Select(entry => $"{entry}/s")
+				)
+			)
+			.Append("  Max resource consumption ")
+			.AppendLine(
+				string.Join(
+					", ",
+					VehicleResourceDatabase.Instance.FormatResourceDict(_result.MaxResourceUse)
+						.Select(entry => $"{entry}/s")
+				)
+			);
+
+		var blockCategories = BlockDatabase.Instance.ListCategories()
+			.Select(instance => instance.Spec)
+			.Where(category => _result.MaxCategoryResourceUse.ContainsKey(category.BlockCategoryId));
+		foreach (BlockCategorySpec categorySpec in blockCategories)
+		{
+			Dictionary<string, float> categoryResourceUse =
+				_result.MaxCategoryResourceUse[categorySpec.BlockCategoryId];
+			if (categoryResourceUse.Count == 0 || categoryResourceUse.Values.All(rate => Mathf.Approximately(rate, 0f)))
+			{
+				continue;
+			}
+
+			output.Append("    ")
+				.Append(categorySpec.DisplayName)
+				.Append(" ")
+				.AppendLine(
+					string.Join(
+						", ",
+						VehicleResourceDatabase.Instance.FormatResourceDict(categoryResourceUse)
+							.Select(entry => $"{entry}/s")
+					)
+				);
+		}
+
+		ResourceOutput.text = output.ToString().TrimEnd();
 	}
 
 	private void DisplayPropulsionResults()

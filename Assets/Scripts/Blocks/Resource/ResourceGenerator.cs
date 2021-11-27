@@ -11,7 +11,7 @@ namespace Syy1125.OberthEffect.Blocks.Resource
 {
 public class ResourceGenerator :
 	MonoBehaviour,
-	IResourceConsumerBlock, IResourceGeneratorBlock,
+	IResourceConsumer, IResourceGenerator,
 	IControlConditionReceiver, IHasDebrisState, ITooltipProvider
 {
 	public const string CLASS_KEY = "ResourceGenerator";
@@ -26,8 +26,8 @@ public class ResourceGenerator :
 
 	private void OnEnable()
 	{
-		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.RegisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceGeneratorRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.RegisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
@@ -59,8 +59,8 @@ public class ResourceGenerator :
 
 	private void OnDisable()
 	{
-		GetComponentInParent<IResourceGeneratorBlockRegistry>()?.UnregisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceGeneratorRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 
@@ -148,6 +148,11 @@ public class ResourceGenerator :
 	public IReadOnlyDictionary<string, float> GetMaxGenerationRate()
 	{
 		return _generationRate;
+	}
+
+	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
+	{
+		return _consumptionRate;
 	}
 }
 }

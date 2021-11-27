@@ -12,20 +12,20 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 public class VehicleResourceManager :
 	MonoBehaviourPun,
 	IPunObservable,
-	IResourceStorageBlockRegistry,
-	IResourceGeneratorBlockRegistry,
-	IResourceConsumerBlockRegistry
+	IResourceStorageRegistry,
+	IResourceGeneratorRegistry,
+	IResourceConsumerRegistry
 {
 	private VehicleCore _core;
 
-	private List<ResourceStorageBlock> _storageBlocks;
+	private List<ResourceStorage> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<string, float> _resourceCapacities;
 
-	private List<IResourceGeneratorBlock> _generatorBlocks;
+	private List<IResourceGenerator> _generatorBlocks;
 	private Dictionary<string, float> _currentResources;
 
-	private List<IResourceConsumerBlock> _consumerBlocks;
+	private List<IResourceConsumer> _consumerBlocks;
 	private Dictionary<string, float> _resourceRequestRate;
 	private Dictionary<string, float> _resourceSatisfaction;
 
@@ -33,14 +33,14 @@ public class VehicleResourceManager :
 	{
 		_core = GetComponent<VehicleCore>();
 
-		_storageBlocks = new List<ResourceStorageBlock>();
+		_storageBlocks = new List<ResourceStorage>();
 		_storageChanged = false;
 		_resourceCapacities = new Dictionary<string, float>();
 
-		_generatorBlocks = new List<IResourceGeneratorBlock>();
+		_generatorBlocks = new List<IResourceGenerator>();
 		_currentResources = new Dictionary<string, float>();
 
-		_consumerBlocks = new List<IResourceConsumerBlock>();
+		_consumerBlocks = new List<IResourceConsumer>();
 		_resourceRequestRate = new Dictionary<string, float>();
 		_resourceSatisfaction = new Dictionary<string, float>();
 	}
@@ -52,13 +52,13 @@ public class VehicleResourceManager :
 
 	#region Resource Block Access
 
-	public void RegisterBlock(ResourceStorageBlock block)
+	public void RegisterBlock(ResourceStorage block)
 	{
 		_storageBlocks.Add(block);
 		_storageChanged = true;
 	}
 
-	public void UnregisterBlock(ResourceStorageBlock block)
+	public void UnregisterBlock(ResourceStorage block)
 	{
 		bool success = _storageBlocks.Remove(block);
 		if (success)
@@ -71,12 +71,12 @@ public class VehicleResourceManager :
 		}
 	}
 
-	public void RegisterBlock(IResourceGeneratorBlock block)
+	public void RegisterBlock(IResourceGenerator block)
 	{
 		_generatorBlocks.Add(block);
 	}
 
-	public void UnregisterBlock(IResourceGeneratorBlock block)
+	public void UnregisterBlock(IResourceGenerator block)
 	{
 		bool success = _generatorBlocks.Remove(block);
 		if (!success)
@@ -85,12 +85,12 @@ public class VehicleResourceManager :
 		}
 	}
 
-	public void RegisterBlock(IResourceConsumerBlock block)
+	public void RegisterBlock(IResourceConsumer block)
 	{
 		_consumerBlocks.Add(block);
 	}
 
-	public void UnregisterBlock(IResourceConsumerBlock block)
+	public void UnregisterBlock(IResourceConsumer block)
 	{
 		bool success = _consumerBlocks.Remove(block);
 		if (!success)
@@ -186,7 +186,7 @@ public class VehicleResourceManager :
 
 	private void SatisfyConsumers(bool consumeResources)
 	{
-		foreach (IResourceConsumerBlock consumer in _consumerBlocks)
+		foreach (IResourceConsumer consumer in _consumerBlocks)
 		{
 			IReadOnlyDictionary<string, float> request = consumer.GetResourceConsumptionRateRequest();
 			if (request == null) continue;

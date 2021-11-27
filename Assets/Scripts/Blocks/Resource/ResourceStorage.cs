@@ -6,16 +6,16 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public interface IResourceStorageBlockRegistry : IBlockRegistry<ResourceStorageBlock>
+public interface IResourceStorageRegistry : IBlockRegistry<ResourceStorage>
 {}
 
-public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
+public class ResourceStorage : MonoBehaviour, ITooltipProvider
 {
 	private Dictionary<string, float> _capacity;
 
 	private void OnEnable()
 	{
-		GetComponentInParent<IResourceStorageBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceStorageRegistry>()?.RegisterBlock(this);
 	}
 
 	public void LoadSpec(Dictionary<string, float> spec)
@@ -25,7 +25,7 @@ public class ResourceStorageBlock : MonoBehaviour, ITooltipProvider
 
 	private void OnDisable()
 	{
-		GetComponentInParent<IResourceStorageBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceStorageRegistry>()?.UnregisterBlock(this);
 	}
 
 	public IReadOnlyDictionary<string, float> GetCapacity()

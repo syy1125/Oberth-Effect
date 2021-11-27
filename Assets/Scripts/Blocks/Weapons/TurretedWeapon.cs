@@ -20,7 +20,7 @@ namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public class TurretedWeapon :
 	MonoBehaviour,
-	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumerBlock, IHasDebrisState, ITooltipProvider
+	IWeaponSystem, IWeaponEffectRpcRelay, IConfigComponent, IResourceConsumer, IHasDebrisState, ITooltipProvider
 {
 	public const string CLASS_KEY = "TurretedWeapon";
 
@@ -56,7 +56,7 @@ public class TurretedWeapon :
 	private void OnEnable()
 	{
 		GetComponentInParent<IWeaponSystemRegistry>()?.RegisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.RegisterBlock(this);
 	}
 
 	public void LoadSpec(TurretedWeaponSpec spec)
@@ -115,7 +115,7 @@ public class TurretedWeapon :
 	private void OnDisable()
 	{
 		GetComponentInParent<IWeaponSystemRegistry>()?.UnregisterBlock(this);
-		GetComponentInParent<IResourceConsumerBlockRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 	}
 
 	#region Config

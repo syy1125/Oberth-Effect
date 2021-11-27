@@ -3,11 +3,12 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public interface IResourceConsumerBlockRegistry : IBlockRegistry<IResourceConsumerBlock>
+public interface IResourceConsumerRegistry : IBlockRegistry<IResourceConsumer>
 {}
 
-public interface IResourceConsumerBlock
+public interface IResourceConsumer
 {
+	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 	IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 	void SatisfyResourceRequestAtLevel(float level);
 }

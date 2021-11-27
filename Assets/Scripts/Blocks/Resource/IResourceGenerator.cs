@@ -3,10 +3,10 @@ using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public interface IResourceGeneratorBlockRegistry : IBlockRegistry<IResourceGeneratorBlock>
+public interface IResourceGeneratorRegistry : IBlockRegistry<IResourceGenerator>
 {}
 
-public interface IResourceGeneratorBlock
+public interface IResourceGenerator
 {
 	/// <remark>
 	/// The return value on this should NOT be time-scaled.
