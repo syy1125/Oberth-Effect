@@ -323,6 +323,9 @@
                     "type": "boolean",
                     "description": "Informative only. Describes if the block will always explode at the described strength."
                 },
+                "ActivationCondition": {
+                    "$ref": "ControlConditionSpecSchema.json"
+                },
                 "ExplosionOffset": {
                     "$ref": "Vector2Schema.json",
                     "description": "Center of the explosion in local space."

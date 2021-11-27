@@ -1,0 +1,52 @@
+﻿BlockId: OberthEffect/CompactFusionReactor
+Enabled: true
+CategoryId: OberthEffect/Resource
+Cost: 8
+Info:
+  ShortName: Compact Fusion
+  FullName: Compact Fusion Reactor
+  Description: |
+    A smaller version of the fusion reactor.
+    Minifying the fusion controls produces an adverse effect on the efficiency of the fusion reactor, though of course it is still much more powerful than fission reactors. 
+    Just like its bigger cousin, the compact fusion reactor can explode when subjected to enemy fire.
+    Fusion reactors can be shut down to prevent explosions, though of course the reactor would not output any power when shut down.
+Renderers:
+  - TextureId: OberthEffect/FusionReactorBase
+    Scale: { X: 0.5, Y: 0.5 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 3
+  MomentOfInertia: 0.5
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 2
+Resource:
+  ResourceGenerator:
+    GenerationRate:
+      OberthEffect/Energy: 100
+    ActivationCondition:
+      ControlGroupId: OberthEffect/FusionReactor
+      MatchValues: [ On ]
+    ActivationRenderers:
+      - TextureId: OberthEffect/FusionReactorSparseRing
+Volatile:
+  AlwaysExplode: false
+  ActivationCondition:
+    ControlGroupId: OberthEffect/FusionReactor
+    MatchValues: [ On ]
+  MaxDamage: 100
+  MaxRadius: 4
+    

@@ -32,7 +32,7 @@ Propulsion:
   OmniThruster:
     MaxForce: 10
     MaxResourceUse:
-      OberthEffect/Energy: 50
+      OberthEffect/Energy: 40
     Particles:
       - Offset: { X: 0, Y: 0 }
         Direction: { X: 0, Y: -1 }

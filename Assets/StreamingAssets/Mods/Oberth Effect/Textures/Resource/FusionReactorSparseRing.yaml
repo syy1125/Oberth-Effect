@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/FusionReactorSparseRing
+ImagePath: ./FusionReactorSparseRing.png
+PixelsPerUnit: 200
+ApplyVehicleColors: true
