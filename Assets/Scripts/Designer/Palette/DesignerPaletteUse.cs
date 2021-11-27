@@ -15,6 +15,7 @@ public class DesignerPaletteUse : MonoBehaviour
 	public VehicleDesigner Designer;
 	public VehicleMirror Mirror;
 	public DesignerAreaMask AreaMask;
+	public FlytextManager FlytextManager;
 	public GameObject EraserIndicator;
 	public GameObject MirrorEraserIndicator;
 
@@ -319,7 +320,10 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (DuplicateBlockError error)
 		{
-			// TODO
+			FlytextManager.CreateFlytext(
+				Builder.transform.TransformPoint(error.Position),
+				"Block overlap"
+			);
 		}
 	}
 
@@ -329,13 +333,20 @@ public class DesignerPaletteUse : MonoBehaviour
 		{
 			Builder.RemoveBlock(position);
 		}
-		catch (EmptyBlockError)
+		catch (EmptyBlockError error)
 		{
-			// TODO
+			FlytextManager.CreateFlytext(
+				Builder.transform.TransformPoint(error.Position),
+				"Nothing to erase"
+			);
 		}
-		catch (BlockNotErasable)
+		catch (BlockNotErasable error)
 		{
-			// TODO
+			string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
+			FlytextManager.CreateFlytext(
+				Builder.transform.TransformPoint(error.Position),
+				$"{blockName} cannot be erased"
+			);
 		}
 	}
 

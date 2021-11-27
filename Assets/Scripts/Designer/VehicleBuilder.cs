@@ -14,13 +14,21 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Designer
 {
 internal class DuplicateBlockError : Exception
-{}
+{
+	public Vector2 Position;
+	public string BlockId;
+}
 
 internal class EmptyBlockError : Exception
-{}
+{
+	public Vector2 Position;
+}
 
 internal class BlockNotErasable : Exception
-{}
+{
+	public Vector2 Position;
+	public string BlockId;
+}
 
 // Designer component responsible for interacting with the blueprint
 public class VehicleBuilder : MonoBehaviour
@@ -85,9 +93,13 @@ public class VehicleBuilder : MonoBehaviour
 
 		foreach (Vector2Int globalPosition in VehicleBlockUtils.AllPositionsOccupiedBy(spec, rootPosition, rotation))
 		{
-			if (_posToBlock.ContainsKey(globalPosition))
+			if (_posToBlock.TryGetValue(globalPosition, out VehicleBlueprint.BlockInstance blockInstance))
 			{
-				throw new DuplicateBlockError();
+				throw new DuplicateBlockError
+				{
+					Position = globalPosition,
+					BlockId = blockInstance.BlockId
+				};
 			}
 
 			positions.Add(globalPosition);
@@ -119,13 +131,17 @@ public class VehicleBuilder : MonoBehaviour
 	{
 		if (!_posToBlock.TryGetValue(location, out VehicleBlueprint.BlockInstance instance))
 		{
-			throw new EmptyBlockError();
+			throw new EmptyBlockError { Position = location };
 		}
 
 		BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(instance.BlockId);
 		if (!spec.Construction.AllowErase)
 		{
-			throw new BlockNotErasable();
+			throw new BlockNotErasable
+			{
+				Position = location,
+				BlockId = instance.BlockId
+			};
 		}
 
 		Vector2Int[] positions = _blockToPos[instance];
