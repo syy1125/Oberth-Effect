@@ -37,14 +37,14 @@ public class VehicleIndicator : MonoBehaviour
 
 		if (_thrusterControl.TranslateCommand.sqrMagnitude > Mathf.Epsilon)
 		{
-			float xDist = Mathf.Max(vehicleBounds.xMax - 1 - com.x, com.x - vehicleBounds.xMin) + 1;
-			float yDist = Mathf.Max(vehicleBounds.yMax - 1 - com.y, com.y - vehicleBounds.yMin) + 1;
+			float xSize = Mathf.Max(vehicleBounds.xMax - 1 - com.x, com.x - vehicleBounds.xMin) + 1;
+			float ySize = Mathf.Max(vehicleBounds.yMax - 1 - com.y, com.y - vehicleBounds.yMin) + 1;
 			float targetAngle = Mathf.Atan2(_thrusterControl.TranslateCommand.y, _thrusterControl.TranslateCommand.x);
 
 			if (!PropulsionIndicator.gameObject.activeSelf)
 			{
 				_angle = targetAngle;
-				PositionPropulsionIndicator(com, new Vector2(xDist, yDist));
+				PositionPropulsionIndicator(com, new Vector2(xSize, ySize));
 				PropulsionIndicator.gameObject.SetActive(true);
 			}
 			else
@@ -54,7 +54,7 @@ public class VehicleIndicator : MonoBehaviour
 					         ref _angularVelocity, 0.02f
 				         )
 				         * Mathf.Deg2Rad;
-				PositionPropulsionIndicator(com, new Vector2(xDist, yDist));
+				PositionPropulsionIndicator(com, new Vector2(xSize, ySize));
 			}
 		}
 		else
@@ -64,17 +64,17 @@ public class VehicleIndicator : MonoBehaviour
 		}
 	}
 
-	private void PositionPropulsionIndicator(Vector2 com, Vector2 dist)
+	private void PositionPropulsionIndicator(Vector2 com, Vector2 size)
 	{
 		float cos = Mathf.Cos(_angle);
 		float sin = Mathf.Sin(_angle);
 
 		// Polar form of ellipse https://en.wikipedia.org/wiki/Ellipse#Polar_forms
-		float r = dist.x
-		          * dist.y
+		float r = size.x
+		          * size.y
 		          / Mathf.Sqrt(
-			          Mathf.Pow(dist.y * cos, 2)
-			          + Mathf.Pow(dist.x * sin, 2)
+			          Mathf.Pow(size.y * cos, 2)
+			          + Mathf.Pow(size.x * sin, 2)
 		          )
 		          + 1;
 		PropulsionIndicator.localPosition = com + new Vector2(cos, sin) * r;
