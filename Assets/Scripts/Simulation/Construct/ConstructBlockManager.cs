@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -27,6 +28,13 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	private Dictionary<Vector2Int, GameObject> _rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
 	private BlockConnectivityGraph _connectivityGraph;
 
+	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _minX;
+	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _minY;
+	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _maxX;
+	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _maxY;
+	private BoundsInt _bounds;
+	private bool _blocksChanged;
+
 	private struct MomentOfInertiaData
 	{
 		public Vector2 Position;
@@ -34,9 +42,25 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		public float Moment;
 	}
 
+	#region Loading
+
 	public void LoadBlocks(ICollection<VehicleBlueprint.BlockInstance> blockInstances)
 	{
 		_loaded = false;
+
+		_minX = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
+			blockInstances.Count, (left, right) => left.Item2 - right.Item2
+		);
+		_minY = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
+			blockInstances.Count, (left, right) => left.Item2 - right.Item2
+		);
+		_maxX = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
+			blockInstances.Count, (left, right) => right.Item2 - left.Item2
+		);
+		_maxY = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
+			blockInstances.Count, (left, right) => right.Item2 - left.Item2
+		);
+		_bounds = new BoundsInt();
 
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
@@ -57,6 +81,19 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				ref totalMass, ref centerOfMass, momentOfInertiaData
 			);
 
+			if (photonView.IsMine)
+			{
+				BoundsInt blockBounds = TransformUtils.TransformBounds(
+					new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),
+					blockInstance.Position, blockInstance.Rotation
+				);
+				_minX.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMin));
+				_minY.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMin));
+				_maxX.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMax));
+				_maxY.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMax));
+				UnionBounds(ref _bounds, blockBounds);
+			}
+
 			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
 		}
 
@@ -71,7 +108,50 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			_connectivityGraph = new BlockConnectivityGraph(blockInstances);
 		}
 
+		_blocksChanged = false;
 		_loaded = true;
+	}
+
+	private void UnionBounds(ref BoundsInt bounds, BoundsInt add)
+	{
+		bounds.xMin = Mathf.Min(bounds.xMin, add.xMin);
+		bounds.yMin = Mathf.Min(bounds.yMin, add.yMin);
+		bounds.xMax = Mathf.Min(bounds.xMax, add.xMax);
+		bounds.yMax = Mathf.Min(bounds.yMax, add.yMax);
+	}
+
+	private static void ExportPhysicsData(
+		float totalMass, Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData, Rigidbody2D body
+	)
+	{
+		float momentOfInertia = momentOfInertiaData
+			.Sum(blockData => blockData.Moment + blockData.Mass * (blockData.Position - centerOfMass).sqrMagnitude);
+
+		body.mass = totalMass;
+		body.centerOfMass = centerOfMass;
+		body.inertia = momentOfInertia;
+	}
+
+	#endregion
+
+	#region Block Management
+
+	private void AddMass(Vector2 position, float mass, float moment)
+	{
+		var body = GetComponent<Rigidbody2D>();
+
+		float totalMass = body.mass + mass;
+		Vector2 centerOfMass = totalMass > Mathf.Epsilon
+			? (body.centerOfMass * body.mass + position * mass) / totalMass
+			: Vector2.zero;
+		float momentOfInertia = body.inertia
+		                        + body.mass * (body.centerOfMass - centerOfMass).sqrMagnitude
+		                        + moment
+		                        + mass * (position - centerOfMass).sqrMagnitude;
+
+		body.mass = totalMass;
+		body.centerOfMass = centerOfMass;
+		body.inertia = momentOfInertia;
 	}
 
 	private GameObject AddBlock(
@@ -108,16 +188,24 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		return blockObject;
 	}
 
-	private static void ExportPhysicsData(
-		float totalMass, Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData, Rigidbody2D body
-	)
+	public void OnBlockDestroyedByDamage(BlockCore blockCore)
 	{
-		float momentOfInertia = momentOfInertiaData
-			.Sum(blockData => blockData.Moment + blockData.Mass * (blockData.Position - centerOfMass).sqrMagnitude);
+		if (!photonView.IsMine) return;
 
-		body.mass = totalMass;
-		body.centerOfMass = centerOfMass;
-		body.inertia = momentOfInertia;
+		photonView.RPC(
+			nameof(DisableBlocks), RpcTarget.AllBuffered,
+			new[] { blockCore.RootPosition.x }, new[] { blockCore.RootPosition.y }
+		);
+	}
+
+	// Photon can't serialize Vector2Int
+	[PunRPC]
+	private void DisableBlocks(int[] x, int[] y)
+	{
+		for (int i = 0; i < x.Length; i++)
+		{
+			_rootPosToBlock[new Vector2Int(x[i], y[i])].SetActive(false);
+		}
 	}
 
 	public void RegisterBlock(BlockCore blockCore)
@@ -141,33 +229,42 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		// Remove the block by adding negative mass
 		AddMass(blockCenter, -spec.Physics.Mass, -spec.Physics.MomentOfInertia);
 
-		if (photonView.IsMine && _connectivityGraph.ContainsPosition(blockCore.RootPosition))
+		if (photonView.IsMine)
 		{
-			List<BlockConnectivityGraph> graphs =
-				_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
+			_blocksChanged = true;
 
-			if (graphs == null || graphs.Count == 0)
+			if (_connectivityGraph.ContainsPosition(blockCore.RootPosition))
 			{
-				// Construct completely destroyed. Keep the construct around so that debris can be spawned from it.
-			}
-			else if (graphs.Count == 1)
-			{
-				// Still in one piece.
-				_connectivityGraph = graphs[0];
-			}
-			else if (graphs.Count > 1)
-			{
-				// Multiple chunks, create debris
-				SplitChunks(graphs);
-			}
-			else
-			{
-				Debug.LogError($"Unexpected chunk count {graphs.Count}");
-			}
+				List<BlockConnectivityGraph> graphs =
+					_connectivityGraph.SplitOnBlockDestroyed(blockCore.RootPosition);
 
-			Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+				if (graphs == null || graphs.Count == 0)
+				{
+					// Construct completely destroyed. Keep the construct around so that debris can be spawned from it.
+				}
+				else if (graphs.Count == 1)
+				{
+					// Still in one piece.
+					_connectivityGraph = graphs[0];
+				}
+				else if (graphs.Count > 1)
+				{
+					// Multiple chunks, create debris
+					SplitChunks(graphs);
+				}
+				else
+				{
+					Debug.LogError($"Unexpected chunk count {graphs.Count}");
+				}
+
+				Debug.Log($"Destruction of block at {blockCore.RootPosition} results in {graphs?.Count} chunks.");
+			}
 		}
 	}
+
+	#endregion
+
+	#region Debris
 
 	private void SplitChunks(List<BlockConnectivityGraph> graphs)
 	{
@@ -227,49 +324,6 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 		return debrisState.ToString(Formatting.None);
 	}
-
-	private void AddMass(Vector2 position, float mass, float moment)
-	{
-		var body = GetComponent<Rigidbody2D>();
-
-		float totalMass = body.mass + mass;
-		Vector2 centerOfMass = totalMass > Mathf.Epsilon
-			? (body.centerOfMass * body.mass + position * mass) / totalMass
-			: Vector2.zero;
-		float momentOfInertia = body.inertia
-		                        + body.mass * (body.centerOfMass - centerOfMass).sqrMagnitude
-		                        + moment
-		                        + mass * (position - centerOfMass).sqrMagnitude;
-
-		body.mass = totalMass;
-		body.centerOfMass = centerOfMass;
-		body.inertia = momentOfInertia;
-	}
-
-	public void OnBlockDestroyedByDamage(BlockCore blockCore)
-	{
-		if (!photonView.IsMine) return;
-
-		photonView.RPC(
-			nameof(DisableBlocks), RpcTarget.AllBuffered,
-			new[] { blockCore.RootPosition.x }, new[] { blockCore.RootPosition.y }
-		);
-	}
-
-	// Photon can't serialize Vector2Int
-	[PunRPC]
-	private void DisableBlocks(int[] x, int[] y)
-	{
-		for (int i = 0; i < x.Length; i++)
-		{
-			_rootPosToBlock[new Vector2Int(x[i], y[i])].SetActive(false);
-		}
-	}
-
-	public IEnumerable<GameObject> GetAllBlocks() => _rootPosToBlock.Values;
-
-	public GameObject GetBlockAt(Vector2Int localPosition) =>
-		_occupiedPosToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
 
 	public void TransferDebrisBlocksTo(
 		ConstructBlockManager receiver, IEnumerable<DebrisBlockInfo> debrisBlocks
@@ -338,6 +392,52 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		}
 
 		receiver._loaded = true;
+	}
+
+	#endregion
+
+	public IEnumerable<GameObject> GetAllBlocks() => _rootPosToBlock.Values;
+
+	public GameObject GetBlockAt(Vector2Int localPosition) =>
+		_occupiedPosToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
+
+	public BoundsInt GetBounds()
+	{
+		if (_blocksChanged)
+		{
+			PopDisabledBlocks(_minX);
+			PopDisabledBlocks(_minY);
+			PopDisabledBlocks(_maxX);
+			PopDisabledBlocks(_maxY);
+
+			if (_minX.Count > 0 && _minY.Count > 0 && _maxX.Count > 0 && _maxY.Count > 0)
+			{
+				_bounds.xMin = _minX.Peek().Item2;
+				_bounds.yMin = _minY.Peek().Item2;
+				_bounds.xMax = _maxX.Peek().Item2;
+				_bounds.yMax = _maxY.Peek().Item2;
+			}
+
+			_blocksChanged = false;
+		}
+
+		return _bounds;
+	}
+
+	private void PopDisabledBlocks(MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> heap)
+	{
+		while (heap.Count > 0)
+		{
+			Vector2Int position = heap.Peek().Item1.Position;
+			if (!_rootPosToBlock.TryGetValue(position, out GameObject value) || !value.activeSelf)
+			{
+				heap.Pop();
+			}
+			else
+			{
+				return;
+			}
+		}
 	}
 }
 }
