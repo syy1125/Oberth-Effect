@@ -36,11 +36,9 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private Pid<float> _rotationPid;
 
 	[ReadOnlyField]
-	[SerializeField]
-	private Vector2 TranslateCommand;
+	public Vector2 TranslateCommand;
 	[ReadOnlyField]
-	[SerializeField]
-	private float RotateCommand;
+	public float RotateCommand;
 
 	#region Unity Lifecycle
 
