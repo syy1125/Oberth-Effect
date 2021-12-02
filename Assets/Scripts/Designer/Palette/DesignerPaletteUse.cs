@@ -320,10 +320,13 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (DuplicateBlockError error)
 		{
-			FlytextManager.CreateFlytext(
-				Builder.transform.TransformPoint(error.Position),
-				"Block overlap"
-			);
+			if (_prevUse == null)
+			{
+				FlytextManager.CreateFlytext(
+					Builder.transform.TransformPoint(error.Position),
+					"Block overlap"
+				);
+			}
 		}
 	}
 
@@ -335,18 +338,24 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (EmptyBlockError error)
 		{
-			FlytextManager.CreateFlytext(
-				Builder.transform.TransformPoint(error.Position),
-				"Nothing to erase"
-			);
+			if (_prevUse == null)
+			{
+				FlytextManager.CreateFlytext(
+					Builder.transform.TransformPoint(error.Position),
+					"Nothing to erase"
+				);
+			}
 		}
 		catch (BlockNotErasable error)
 		{
-			string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
-			FlytextManager.CreateFlytext(
-				Builder.transform.TransformPoint(error.Position),
-				$"{blockName} cannot be erased"
-			);
+			if (_prevUse == null)
+			{
+				string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
+				FlytextManager.CreateFlytext(
+					Builder.transform.TransformPoint(error.Position),
+					$"{blockName} cannot be erased"
+				);
+			}
 		}
 	}
 
