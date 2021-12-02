@@ -24,6 +24,7 @@ public class BlockSpec
 	public ResourceSpec Resource;
 	public PropulsionSpec Propulsion;
 	public TurretedWeaponSpec TurretedWeapon;
+	public FixedWeaponSpec FixedWeapon;
 
 	public VolatileSpec Volatile;
 }

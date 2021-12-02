@@ -1,0 +1,52 @@
+﻿BlockId: OberthEffect/SpinalRailgun
+Enabled: true
+CategoryId: OberthEffect/Combat
+Cost: 300
+Info:
+  ShortName: Railgun
+  FullName: Spinal Mount Railgun
+  Description: |
+    A massive railgun designed to devastate enemies at long range.
+    To minimize the amount of space taken, this railgun is hull-mounted.
+Renderers:
+  - TextureId: OberthEffect/Railgun
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: -1 }
+  BoundsMax: { X: 1, Y: 2 }
+  AttachmentPoints:
+    - { X: -1, Y: -1 }
+    - { X: -1, Y: 0 }
+    - { X: -1, Y: 1 }
+    - { X: 1, Y: -1 }
+    - { X: 1, Y: 0 }
+    - { X: 1, Y: 1 }
+    - { X: 0, Y: -2 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 10
+  MomentOfInertia: 8.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 3 }
+Combat:
+  MaxHealth: 500
+  ArmorValue: 8
+FixedWeapon:
+  ProjectileWeaponEffect:
+    FiringPortOffset: { X: 0, Y: -1 }
+    Damage: 200
+    DamageType: Kinetic
+    ArmorPierce: 10
+    SpreadProfile: None
+    Recoil: 50
+    MaxResourceUse:
+      OberthEffect/Energy: 100
+    ColliderSize: { X: 0.1, Y: 0.25 }
+    Speed: 100
+    MaxLifetime: 5
+    ReloadTime: 3
+    Renderers:
+      - TextureId: OberthEffect/Square
+        Scale: { X: 0.1, Y: 0.25 }

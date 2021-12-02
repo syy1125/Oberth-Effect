@@ -41,17 +41,16 @@ TurretedWeapon:
     Damage: 80
     DamageType: Kinetic
     ArmorPierce: 5
-    SpreadAngle: 2
     SpreadProfile: None
     Recoil: 10
     MaxResourceUse:
       OberthEffect/Energy: 50
-    ColliderSize: { X: 0.1, Y: 0.2 }
+    ColliderSize: { X: 0.05, Y: 0.1 }
     Speed: 40
     MaxLifetime: 2
     ReloadTime: 1
     Renderers:
       - TextureId: OberthEffect/Square
-        Scale: { X: 0.1, Y: 0.2 }
+        Scale: { X: 0.05, Y: 0.1 }
     
     

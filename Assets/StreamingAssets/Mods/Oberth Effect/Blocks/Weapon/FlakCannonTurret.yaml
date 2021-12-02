@@ -45,10 +45,10 @@ TurretedWeapon:
     Recoil: 1
     MaxResourceUse:
       OberthEffect/Energy: 20
-    ColliderSize: { X: 0.05, Y: 0.1 }
+    ColliderSize: { X: 0.02, Y: 0.05 }
     Speed: 100
     MaxLifetime: 0.3
     ReloadTime: 0.15
     Renderers:
       - TextureId: OberthEffect/Square
-        Scale: { X: 0.05, Y: 0.1 }
+        Scale: { X: 0.02, Y: 0.05 }

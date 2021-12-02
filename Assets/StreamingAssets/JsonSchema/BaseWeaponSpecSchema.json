@@ -1,0 +1,85 @@
+﻿{
+    "$id": "BaseWeaponSpecSchema",
+    "type": "object",
+    "properties": {
+        "ProjectileWeaponEffect": {
+            "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
+            "properties": {
+                "ClusterCount": {
+                    "type": "integer",
+                    "description": "The number of shots fired simultaneously in a cluster.",
+                    "default": 1
+                },
+                "BurstCount": {
+                    "type": "integer",
+                    "description": "The number of shots or clusters fired by a trigger pull.",
+                    "default": 1
+                },
+                "BurstInterval": {
+                    "type": "number",
+                    "description": "The interval, in seconds, between shots in a burst."
+                },
+                "ColliderSize": {
+                    "$ref": "Vector2Schema.json",
+                    "description": "The size of the projectile's collider."
+                },
+                "Speed": {
+                    "type": "number",
+                    "description": "The speed of the projectile, in game units per second."
+                },
+                "MaxLifetime": {
+                    "type": "number",
+                    "description": "Maximum lifetime, in seconds, of the projectile."
+                },
+                "ReloadTime": {
+                    "type": "number",
+                    "description": "Time in seconds to reload this weapon"
+                },
+                "Renderers": {
+                    "$ref": "RendererSpecArraySchema.json",
+                    "description": "Renderers for the projectile."
+                },
+                "ProjectileParticles": {
+                    "$ref": "ParticleSystemSpecArraySchema.json"
+                }
+            }
+        },
+        "BurstBeamWeaponEffect": {
+            "description": "Specifies a burst-fired beam weapon. Damage is interpreted as the damage the weapon should do in one burst.",
+            "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
+            "properties": {
+                "ReloadTime": {
+                    "type": "number",
+                    "description": "Time in seconds to reload this weapon"
+                },
+                "PreciseDuration": {
+                    "type": "boolean",
+                    "description": "If true, duration is measured in ticks rather than seconds."
+                },
+                "DurationTicks": {
+                    "type": "integer",
+                    "description": "Duration of the beam in ticks. Only applicable if PreciseDuration is true."
+                },
+                "DurationSeconds": {
+                    "type": "number",
+                    "description": "Duration of the beam in seconds. Only applicable if PreciseDuration is false."
+                },
+                "MaxRange": {
+                    "type": "number",
+                    "description": "Maximum range where the beam can do damage."
+                },
+                "BeamWidth": {
+                    "type": "number",
+                    "description": "The width of the beam's visual effect. Does not affect logical behaviour."
+                },
+                "BeamColor": {
+                    "type": "string",
+                    "description": "The color of the beam. Can be specified as a color scheme color."
+                },
+                "HitParticles": {
+                    "$ref": "ParticleSystemSpecArraySchema.json"
+                }
+            }
+        }
+    }
+}
