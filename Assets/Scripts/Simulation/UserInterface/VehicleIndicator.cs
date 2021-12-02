@@ -37,8 +37,8 @@ public class VehicleIndicator : MonoBehaviour
 
 		if (_thrusterControl.TranslateCommand.sqrMagnitude > Mathf.Epsilon)
 		{
-			float xDist = Mathf.Max(vehicleBounds.xMax - com.x, com.x - vehicleBounds.xMin) + 1;
-			float yDist = Mathf.Max(vehicleBounds.yMax - com.y, com.y - vehicleBounds.yMin) + 1;
+			float xDist = Mathf.Max(vehicleBounds.xMax - 1 - com.x, com.x - vehicleBounds.xMin) + 1;
+			float yDist = Mathf.Max(vehicleBounds.yMax - 1 - com.y, com.y - vehicleBounds.yMin) + 1;
 			float targetAngle = Mathf.Atan2(_thrusterControl.TranslateCommand.y, _thrusterControl.TranslateCommand.x);
 
 			if (!PropulsionIndicator.gameObject.activeSelf)

@@ -118,8 +118,8 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	{
 		bounds.xMin = Mathf.Min(bounds.xMin, add.xMin);
 		bounds.yMin = Mathf.Min(bounds.yMin, add.yMin);
-		bounds.xMax = Mathf.Min(bounds.xMax, add.xMax);
-		bounds.yMax = Mathf.Min(bounds.yMax, add.yMax);
+		bounds.xMax = Mathf.Max(bounds.xMax, add.xMax);
+		bounds.yMax = Mathf.Max(bounds.yMax, add.yMax);
 	}
 
 	private static void ExportPhysicsData(
