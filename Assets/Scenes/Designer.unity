@@ -225,36 +225,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1870663}
   m_CullTransparentMesh: 1
---- !u!1 &19240423 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 355799197082249561, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
-  m_PrefabInstance: {fileID: 355799198105889325}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &19240427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 19240423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Delay: 0.2
-  TooltipText: 'Sets the default control mode that the vehicle will start with. Use
-    `R` to change the control mode while in-game.
-
-    <color="lightblue">Mouse</color>
-    - The vehicle will try to point at the mouse using rotation commands. `W/A/S/D`
-    sends translation commands, and `Q/E` sends left/right translation commands.
-    Translation commands are relative to the vehicle''s orientation.
-
-    <color="yellow">Cruise</color>
-    - The vehicle will try to kill rotation when idle. `W/S` sends forward/back translation
-    commands, `Q/E` sends left/right translation commands, and `A/D` sends rotation
-    commands.'
 --- !u!1 &70349318
 GameObject:
   m_ObjectHideFlags: 0
@@ -12933,12 +12903,35 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6827261719764887162, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
   m_PrefabInstance: {fileID: 355799198105889325}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 355799198105889327}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &355799198105889327 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 355799198884542376, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
+  m_PrefabInstance: {fileID: 355799198105889325}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &355799198105889328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355799198105889327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 'Sets the default control mode that the vehicle will start with. While
+    in game, use `R` to change the control mode.
+
+    For a detailed explanation
+    of the control modes, press F1 and see the page on "Control Schemes".'
 --- !u!1001 &640825886104664663
 PrefabInstance:
   m_ObjectHideFlags: 0
