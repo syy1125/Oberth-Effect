@@ -28,10 +28,10 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	private Dictionary<Vector2Int, GameObject> _rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
 	private BlockConnectivityGraph _connectivityGraph;
 
-	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _minX;
-	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _minY;
-	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _maxX;
-	private MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> _maxY;
+	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _xMin;
+	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _yMin;
+	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _xMax;
+	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _yMax;
 	private BoundsInt _bounds;
 	private bool _blocksChanged;
 
@@ -48,18 +48,10 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	{
 		_loaded = false;
 
-		_minX = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
-			blockInstances.Count, (left, right) => left.Item2 - right.Item2
-		);
-		_minY = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
-			blockInstances.Count, (left, right) => left.Item2 - right.Item2
-		);
-		_maxX = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
-			blockInstances.Count, (left, right) => right.Item2 - left.Item2
-		);
-		_maxY = new MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>>(
-			blockInstances.Count, (left, right) => right.Item2 - left.Item2
-		);
+		var xMinList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
+		var yMinList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
+		var xMaxList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
+		var yMaxList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
 		_bounds = new BoundsInt();
 
 		float totalMass = 0f;
@@ -87,10 +79,10 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 					new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),
 					blockInstance.Position, blockInstance.Rotation
 				);
-				_minX.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMin));
-				_minY.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMin));
-				_maxX.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMax));
-				_maxY.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMax));
+				xMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMin));
+				yMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMin));
+				xMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMax));
+				yMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMax));
 				UnionBounds(ref _bounds, blockBounds);
 			}
 
@@ -104,6 +96,16 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 		if (photonView.IsMine)
 		{
+			// Set up bounds queue
+			xMinList.Sort((left, right) => left.Item2 - right.Item2);
+			yMinList.Sort((left, right) => left.Item2 - right.Item2);
+			xMaxList.Sort((left, right) => right.Item2 - left.Item2);
+			yMaxList.Sort((left, right) => right.Item2 - left.Item2);
+			_xMin = new Queue<Tuple<VehicleBlueprint.BlockInstance, int>>(xMinList);
+			_yMin = new Queue<Tuple<VehicleBlueprint.BlockInstance, int>>(yMinList);
+			_xMax = new Queue<Tuple<VehicleBlueprint.BlockInstance, int>>(xMaxList);
+			_yMax = new Queue<Tuple<VehicleBlueprint.BlockInstance, int>>(yMaxList);
+
 			// Set up connectivity graph
 			_connectivityGraph = new BlockConnectivityGraph(blockInstances);
 		}
@@ -405,17 +407,17 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	{
 		if (_blocksChanged)
 		{
-			PopDisabledBlocks(_minX);
-			PopDisabledBlocks(_minY);
-			PopDisabledBlocks(_maxX);
-			PopDisabledBlocks(_maxY);
+			PopDisabledBlocks(_xMin);
+			PopDisabledBlocks(_yMin);
+			PopDisabledBlocks(_xMax);
+			PopDisabledBlocks(_yMax);
 
-			if (_minX.Count > 0 && _minY.Count > 0 && _maxX.Count > 0 && _maxY.Count > 0)
+			if (_xMin.Count > 0 && _yMin.Count > 0 && _xMax.Count > 0 && _yMax.Count > 0)
 			{
-				_bounds.xMin = _minX.Peek().Item2;
-				_bounds.yMin = _minY.Peek().Item2;
-				_bounds.xMax = _maxX.Peek().Item2;
-				_bounds.yMax = _maxY.Peek().Item2;
+				_bounds.xMin = _xMin.Peek().Item2;
+				_bounds.yMin = _yMin.Peek().Item2;
+				_bounds.xMax = _xMax.Peek().Item2;
+				_bounds.yMax = _yMax.Peek().Item2;
 			}
 
 			_blocksChanged = false;
@@ -424,14 +426,14 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		return _bounds;
 	}
 
-	private void PopDisabledBlocks(MinHeap<Tuple<VehicleBlueprint.BlockInstance, int>> heap)
+	private void PopDisabledBlocks(Queue<Tuple<VehicleBlueprint.BlockInstance, int>> queue)
 	{
-		while (heap.Count > 0)
+		while (queue.Count > 0)
 		{
-			Vector2Int position = heap.Peek().Item1.Position;
+			Vector2Int position = queue.Peek().Item1.Position;
 			if (!_rootPosToBlock.TryGetValue(position, out GameObject value) || !value.activeSelf)
 			{
-				heap.Pop();
+				queue.Dequeue();
 			}
 			else
 			{
