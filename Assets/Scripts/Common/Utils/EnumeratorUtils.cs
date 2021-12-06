@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Syy1125.OberthEffect.Common.Utils
@@ -33,6 +34,11 @@ public static class EnumeratorUtils
 				current.Dispose();
 			}
 		}
+	}
+
+	public static IEnumerable<T> MergeSorted<T>(this IEnumerable<IEnumerable<T>> source, Comparison<T> comparison)
+	{
+		return MergeSorted(source, Comparer<T>.Create(comparison));
 	}
 }
 }
