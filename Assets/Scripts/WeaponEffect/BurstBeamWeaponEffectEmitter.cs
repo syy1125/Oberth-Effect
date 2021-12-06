@@ -37,7 +37,6 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private int _beamTicksRemaining;
 	private float _beamSecondsRemaining;
 
-	private ContactFilter2D _raycastFilter;
 	private List<RaycastHit2D> _raycastHits;
 
 	private BeamWeaponVisual _visual;
@@ -79,12 +78,6 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_visual.Init(beamWidth, beamColor, spec.HitParticles);
 
 		_reloadResourceUse = spec.MaxResourceUse;
-
-		_raycastFilter = new ContactFilter2D
-		{
-			layerMask = LayerConstants.DAMAGEABLE_LAYER_MASK,
-			useLayerMask = true
-		};
 		_raycastHits = new List<RaycastHit2D>();
 	}
 
@@ -205,7 +198,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		Vector3? normal = null;
 		IDamageable hitTarget = null;
 		int count = Physics2D.Raycast(
-			transform.position, transform.up, _raycastFilter, _raycastHits, _maxRange
+			transform.position, transform.up, LayerConstants.WeaponHitFilter, _raycastHits, _maxRange
 		);
 
 		if (count > 0)

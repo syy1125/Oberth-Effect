@@ -48,7 +48,6 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private Vector2 _explosionBoundsMax;
 	private int _explosionResolution;
 
-	private ContactFilter2D _beamRaycastFilter;
 	private List<RaycastHit2D> _beamRaycastHits;
 
 	private void Awake()
@@ -78,12 +77,6 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private void Start()
 	{
 		_health = _maxHealth;
-
-		_beamRaycastFilter = new ContactFilter2D
-		{
-			layerMask = LayerConstants.DAMAGEABLE_LAYER_MASK,
-			useLayerMask = true
-		};
 		_beamRaycastHits = new List<RaycastHit2D>();
 	}
 
@@ -162,7 +155,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 
 		Vector2 beamDirection = beamEnd - beamStart;
 		int count = Physics2D.Raycast(
-			beamStart, beamDirection, _beamRaycastFilter, _beamRaycastHits, beamDirection.magnitude
+			beamStart, beamDirection, LayerConstants.WeaponHitFilter, _beamRaycastHits, beamDirection.magnitude
 		);
 
 		if (count > 0)
