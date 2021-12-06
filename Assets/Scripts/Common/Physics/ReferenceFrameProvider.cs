@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common
+namespace Syy1125.OberthEffect.Common.Physics
 {
 public class ReferenceFrameProvider : MonoBehaviour
 {
@@ -33,7 +32,7 @@ public class ReferenceFrameProvider : MonoBehaviour
 		ReferenceFrames.Remove(this);
 	}
 
-	public float EstimateMinApproachDistanceDuringFrame(Vector2 start, Vector2 end)
+	public float EstimateMinApproachDistance(Vector2 start, Vector2 end)
 	{
 		start -= PrevPosition;
 		end -= (Vector2) transform.position;
@@ -64,14 +63,16 @@ public class ReferenceFrameProvider : MonoBehaviour
 		public float T;
 		public Vector2 WorldStart;
 		public Vector2 WorldEnd;
-		public GameObject Parent;
+		public Transform Parent;
 	}
 
 	public RayStep[] GetRaySteps(Vector2 start, Vector2 end)
 	{
-		GameObject parent = gameObject;
+		Transform parent = transform;
 		Vector2 currentPosition = transform.position;
+
 		float currentRotation = _body == null ? 0f : _body.rotation;
+		float rotationDelta = currentRotation - PrevRotation;
 
 		// Transform to local position (but not rotated)
 		start -= PrevPosition;
@@ -88,9 +89,10 @@ public class ReferenceFrameProvider : MonoBehaviour
 			// So we should be able to safely interpolate here.
 			float t = (float) i / stepCount;
 			worldPoints[i] = RotateVector(
-				Vector2.Lerp(start, end, t) + currentPosition,
-				Mathf.Lerp(PrevRotation, currentRotation, t)
-			);
+				                 Vector2.Lerp(start, end, t),
+				                 rotationDelta * (1 - t)
+			                 )
+			                 + currentPosition;
 		}
 
 		RayStep[] steps = new RayStep[stepCount];

@@ -9,6 +9,7 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
@@ -19,7 +20,8 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ColorContext))]
-public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBlockLifecycleListener
+public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBlockLifecycleListener,
+	ICollisionRadiusProvider
 {
 	public GameObject DebrisPrefab;
 
@@ -440,6 +442,17 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				return;
 			}
 		}
+	}
+
+	public float GetCollisionRadius()
+	{
+		var bounds = GetBounds();
+		return Mathf.Max(
+			Mathf.Abs(bounds.xMin),
+			Mathf.Abs(bounds.yMin),
+			Mathf.Abs(bounds.xMax),
+			Mathf.Abs(bounds.yMax)
+		);
 	}
 }
 }

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections;
-using Syy1125.OberthEffect.Common;
+﻿using System.Collections;
+using Syy1125.OberthEffect.Common.Physics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -50,7 +49,7 @@ public class ColliderTest : MonoBehaviour
 			foreach (var referenceFrame in ReferenceFrameProvider.ReferenceFrames)
 			{
 				Debug.Log(
-					$"Estimated min distance to {referenceFrame.name} is {referenceFrame.EstimateMinApproachDistanceDuringFrame(prevPosition, transform.position)}"
+					$"Estimated min distance to {referenceFrame.name} is {referenceFrame.EstimateMinApproachDistance(prevPosition, transform.position)}"
 				);
 			}
 
