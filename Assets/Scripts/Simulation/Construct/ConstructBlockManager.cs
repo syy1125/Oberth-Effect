@@ -35,6 +35,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _xMax;
 	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _yMax;
 	private BoundsInt _bounds;
+	private float _collisionRadius;
 	private bool _blocksChanged;
 
 	private struct MomentOfInertiaData
@@ -90,6 +91,10 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
 		}
+
+		float xDist = Mathf.Max(Mathf.Abs(_bounds.xMin), Mathf.Abs(_bounds.xMax));
+		float yDist = Mathf.Max(Mathf.Abs(_bounds.yMin), Mathf.Abs(_bounds.yMax));
+		_collisionRadius = Mathf.Sqrt(xDist * xDist + yDist * yDist);
 
 		// Physics computation
 		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
@@ -409,23 +414,42 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	{
 		if (_blocksChanged)
 		{
-			PopDisabledBlocks(_xMin);
-			PopDisabledBlocks(_yMin);
-			PopDisabledBlocks(_xMax);
-			PopDisabledBlocks(_yMax);
-
-			if (_xMin.Count > 0 && _yMin.Count > 0 && _xMax.Count > 0 && _yMax.Count > 0)
-			{
-				_bounds.xMin = _xMin.Peek().Item2;
-				_bounds.yMin = _yMin.Peek().Item2;
-				_bounds.xMax = _xMax.Peek().Item2;
-				_bounds.yMax = _yMax.Peek().Item2;
-			}
-
+			UpdateBounds();
 			_blocksChanged = false;
 		}
 
 		return _bounds;
+	}
+
+	public float GetCollisionRadius()
+	{
+		if (_blocksChanged)
+		{
+			UpdateBounds();
+			_blocksChanged = false;
+		}
+
+		return _collisionRadius;
+	}
+
+	private void UpdateBounds()
+	{
+		PopDisabledBlocks(_xMin);
+		PopDisabledBlocks(_yMin);
+		PopDisabledBlocks(_xMax);
+		PopDisabledBlocks(_yMax);
+
+		if (_xMin.Count > 0 && _yMin.Count > 0 && _xMax.Count > 0 && _yMax.Count > 0)
+		{
+			_bounds.xMin = _xMin.Peek().Item2;
+			_bounds.yMin = _yMin.Peek().Item2;
+			_bounds.xMax = _xMax.Peek().Item2;
+			_bounds.yMax = _yMax.Peek().Item2;
+		}
+
+		float xDist = Mathf.Max(Mathf.Abs(_bounds.xMin), Mathf.Abs(_bounds.xMax));
+		float yDist = Mathf.Max(Mathf.Abs(_bounds.yMin), Mathf.Abs(_bounds.yMax));
+		_collisionRadius = Mathf.Sqrt(xDist * xDist + yDist * yDist);
 	}
 
 	private void PopDisabledBlocks(Queue<Tuple<VehicleBlueprint.BlockInstance, int>> queue)
@@ -444,15 +468,11 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		}
 	}
 
-	public float GetCollisionRadius()
+	private void OnDrawGizmosSelected()
 	{
-		var bounds = GetBounds();
-		return Mathf.Max(
-			Mathf.Abs(bounds.xMin),
-			Mathf.Abs(bounds.yMin),
-			Mathf.Abs(bounds.xMax),
-			Mathf.Abs(bounds.yMax)
-		);
+		Gizmos.color = Color.magenta;
+		Gizmos.matrix = Matrix4x4.identity;
+		Gizmos.DrawWireSphere(transform.position, GetCollisionRadius());
 	}
 }
 }
