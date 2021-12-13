@@ -37,8 +37,6 @@ public class DesignerMenu : MonoBehaviour
 
 	private void OnEnable()
 	{
-		MenuAction.action.Enable();
-		HelpAction.action.Enable();
 		MenuAction.action.performed += ToggleMenu;
 		HelpAction.action.performed += ToggleHelp;
 	}
@@ -47,8 +45,6 @@ public class DesignerMenu : MonoBehaviour
 	{
 		MenuAction.action.performed -= ToggleMenu;
 		HelpAction.action.performed -= ToggleHelp;
-		MenuAction.action.Disable();
-		HelpAction.action.Disable();
 	}
 
 	private void ToggleMenu(InputAction.CallbackContext context)

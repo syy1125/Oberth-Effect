@@ -23,16 +23,6 @@ public class CameraZoom : MonoBehaviour
 		_baseSize = _camera.orthographicSize;
 	}
 
-	private void OnEnable()
-	{
-		ZoomAction.action.Enable();
-	}
-
-	private void OnDisable()
-	{
-		ZoomAction.action.Disable();
-	}
-
 	private void Update()
 	{
 		var scroll = ZoomAction.action.ReadValue<float>();

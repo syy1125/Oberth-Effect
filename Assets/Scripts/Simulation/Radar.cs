@@ -42,12 +42,6 @@ public class Radar : MonoBehaviour
 		_scale = Scales[ScaleIndex];
 		_rulerUnit = GetTargetRulerUnit();
 	}
-
-	private void OnEnable()
-	{
-		ZoomAction.action.Enable();
-	}
-
 	private void LateUpdate()
 	{
 		if (OwnVehicle == null) return;
@@ -163,11 +157,6 @@ public class Radar : MonoBehaviour
 		else if (unit * _scale > 100) unit *= 0.5f;
 
 		return unit;
-	}
-
-	private void OnDisable()
-	{
-		ZoomAction.action.Disable();
 	}
 
 	private GameObject GetOrCreatePing(int i)

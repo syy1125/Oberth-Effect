@@ -44,9 +44,7 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void OnEnable()
 	{
-		ToggleInertiaDampenerAction.action.Enable();
 		ToggleInertiaDampenerAction.action.performed += ToggleInertiaDampener;
-		CycleControlModeAction.action.Enable();
 		CycleControlModeAction.action.performed += CycleControlMode;
 
 		_controlGroupActions = new List<Tuple<string, InputAction>>();
@@ -76,9 +74,7 @@ public class PlayerControlConfig : MonoBehaviour
 	private void OnDisable()
 	{
 		ToggleInertiaDampenerAction.action.performed -= ToggleInertiaDampener;
-		ToggleInertiaDampenerAction.action.Disable();
 		CycleControlModeAction.action.performed -= CycleControlMode;
-		CycleControlModeAction.action.Disable();
 
 		foreach (Tuple<string, InputAction> tuple in _controlGroupActions)
 		{

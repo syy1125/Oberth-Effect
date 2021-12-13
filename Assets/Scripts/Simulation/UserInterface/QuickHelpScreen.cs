@@ -10,14 +10,12 @@ public class QuickHelpScreen : MonoBehaviour
 
 	private void OnEnable()
 	{
-		HelpAction.action.Enable();
 		HelpAction.action.performed += HandleHelp;
 	}
 
 	private void OnDisable()
 	{
 		HelpAction.action.performed -= HandleHelp;
-		HelpAction.action.Disable();
 	}
 
 	private void HandleHelp(InputAction.CallbackContext context)

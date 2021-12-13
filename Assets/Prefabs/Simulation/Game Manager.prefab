@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2062579803616849527}
   - component: {fileID: 3104716997831203530}
+  - component: {fileID: 6533971508035550200}
   - component: {fileID: -1976580050062754444}
   - component: {fileID: 7867473050703909706}
   m_Layer: 0
@@ -55,6 +56,22 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &6533971508035550200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427084213176626525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9c71125caddbb42a46a578de33feb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActionsAsset: {fileID: -944628639613478452, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  EnabledMaps:
+  - Player
+  - UI
 --- !u!114 &-1976580050062754444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,6 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VehicleSpawner: {fileID: 0}
+  EndScreen: {fileID: 0}
 --- !u!114 &7867473050703909706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,3 +99,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VehicleSpawner: {fileID: 0}
+  EndScreen: {fileID: 0}

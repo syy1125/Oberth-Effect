@@ -45,14 +45,12 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private void OnEnable()
 	{
-		CycleModeAction.action.Enable();
 		CycleModeAction.action.performed += CycleDisplayMode;
 	}
 
 	private void OnDisable()
 	{
 		CycleModeAction.action.performed -= CycleDisplayMode;
-		CycleModeAction.action.Disable();
 	}
 
 	private void CycleDisplayMode(InputAction.CallbackContext context)

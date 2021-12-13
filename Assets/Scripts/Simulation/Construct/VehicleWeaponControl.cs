@@ -23,21 +23,9 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		_weapons = new List<IWeaponSystem>();
 	}
 
-	private void OnEnable()
-	{
-		FireAction1.action.Enable();
-		FireAction2.action.Enable();
-	}
-
 	private void Start()
 	{
 		StartCoroutine(LateFixedUpdate());
-	}
-
-	private void OnDisable()
-	{
-		FireAction1.action.Disable();
-		FireAction2.action.Disable();
 	}
 
 	public void OnVehicleDeath()

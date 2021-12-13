@@ -56,9 +56,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void OnEnable()
 	{
-		MoveAction.action.Enable();
-		StrafeAction.action.Enable();
-
 		PlayerControlConfig.Instance.ControlModeChanged.AddListener(OnControlModeChanged);
 	}
 
@@ -69,10 +66,10 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void OnDisable()
 	{
-		MoveAction.action.Disable();
-		StrafeAction.action.Disable();
-
-		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(OnControlModeChanged);
+		if (PlayerControlConfig.Instance != null)
+		{
+			PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(OnControlModeChanged);
+		}
 	}
 
 	#endregion

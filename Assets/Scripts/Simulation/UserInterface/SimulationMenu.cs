@@ -16,7 +16,6 @@ public class SimulationMenu : MonoBehaviourPunCallbacks
 	{
 		base.OnEnable();
 		_open = false;
-		MenuAction.action.Enable();
 		MenuAction.action.performed += ToggleMenu;
 	}
 
@@ -24,7 +23,6 @@ public class SimulationMenu : MonoBehaviourPunCallbacks
 	{
 		base.OnDisable();
 		MenuAction.action.performed -= ToggleMenu;
-		MenuAction.action.Disable();
 	}
 
 	private void ToggleMenu(InputAction.CallbackContext context)

@@ -323,6 +323,7 @@ GameObject:
   - component: {fileID: 1544240255}
   - component: {fileID: 1544240257}
   - component: {fileID: 1544240256}
+  - component: {fileID: 6063478415517544751}
   m_Layer: 5
   m_Name: Backdrop
   m_TagString: Untagged
@@ -388,6 +389,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6063478415517544751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544240254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd12bdb7e1f34c23bcc1cb2654411fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableMaps:
+  - Player
 --- !u!1 &1644525354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,6 +1473,7 @@ GameObject:
   - component: {fileID: 5246564377572526364}
   - component: {fileID: 3473606368324328915}
   - component: {fileID: 4444654672974028384}
+  - component: {fileID: 642623410770984219}
   m_Layer: 5
   m_Name: Respawn Panel
   m_TagString: Untagged
@@ -1523,6 +1539,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &642623410770984219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6916951361047715182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd12bdb7e1f34c23bcc1cb2654411fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableMaps:
+  - Player
 --- !u!1 &8232348590598502008
 GameObject:
   m_ObjectHideFlags: 0
@@ -1535,6 +1565,7 @@ GameObject:
   - component: {fileID: 1384566364418011053}
   - component: {fileID: 441836799077129067}
   - component: {fileID: 8438697072761218254}
+  - component: {fileID: 7447978446421383662}
   m_Layer: 5
   m_Name: End Screen
   m_TagString: Untagged
@@ -1614,6 +1645,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7447978446421383662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8232348590598502008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd12bdb7e1f34c23bcc1cb2654411fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableMaps:
+  - Player
 --- !u!1 &9004555847059955149
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,9 +12,6 @@ public class VehicleDesigner : MonoBehaviour
 {
 	#region Unity Fields
 
-	[Header("References")]
-	public DesignerAreaMask AreaMask;
-
 	[Header("Components")]
 	public DesignerGridMove GridMove;
 	public DesignerPaletteUse PaletteUse;
@@ -25,8 +22,6 @@ public class VehicleDesigner : MonoBehaviour
 	public VehicleAnalyzer Analyzer;
 
 	[Header("Input Actions")]
-	public InputActionAsset InputActions;
-	public string DesignerActionMapName;
 	public InputActionReference DebugAction;
 
 	#endregion
@@ -46,19 +41,13 @@ public class VehicleDesigner : MonoBehaviour
 
 	private void OnEnable()
 	{
-		InputActions.FindActionMap(DesignerActionMapName, true).Enable();
-
 		DebugAction.action.performed += HandleDebug;
-
 		UpdateCursor();
 	}
 
 	private void OnDisable()
 	{
 		DebugAction.action.performed -= HandleDebug;
-
-		InputActions.FindActionMap(DesignerActionMapName, true).Disable();
-
 		CursorTexture.TargetStatus = DesignerCursorTexture.CursorStatus.Default;
 	}
 

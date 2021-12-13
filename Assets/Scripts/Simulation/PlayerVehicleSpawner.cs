@@ -47,7 +47,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SelfDestructAction.action.Enable();
 		SelfDestructAction.action.started += HandleSelfDestructStart;
 		SelfDestructAction.action.canceled += HandleSelfDestructCancel;
 	}
@@ -89,7 +88,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	{
 		SelfDestructAction.action.started -= HandleSelfDestructStart;
 		SelfDestructAction.action.canceled -= HandleSelfDestructCancel;
-		SelfDestructAction.action.Disable();
 
 		if (_respawn != null)
 		{

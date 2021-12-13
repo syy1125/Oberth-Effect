@@ -2917,6 +2917,7 @@ GameObject:
   - component: {fileID: 431343213}
   - component: {fileID: 431343215}
   - component: {fileID: 431343214}
+  - component: {fileID: 431343216}
   m_Layer: 5
   m_Name: Backdrop
   m_TagString: Untagged
@@ -2981,6 +2982,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 431343212}
   m_CullTransparentMesh: 1
+--- !u!114 &431343216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431343212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd12bdb7e1f34c23bcc1cb2654411fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableMaps:
+  - Designer
 --- !u!1 &451078520
 GameObject:
   m_ObjectHideFlags: 0
@@ -5885,6 +5900,7 @@ GameObject:
   - component: {fileID: 874948197}
   - component: {fileID: 874948196}
   - component: {fileID: 874948195}
+  - component: {fileID: 874948198}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -5948,6 +5964,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &874948198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 874948194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9c71125caddbb42a46a578de33feb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActionsAsset: {fileID: -944628639613478452, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  EnabledMaps:
+  - Designer
+  - UI
 --- !u!1 &914282514
 GameObject:
   m_ObjectHideFlags: 0
@@ -8924,7 +8956,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08580aa6b71fefb4283134205234fc6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AreaMask: {fileID: 140859144}
   GridMove: {fileID: 1543857982}
   PaletteUse: {fileID: 1325757353}
   Builder: {fileID: 1599521575}
@@ -8932,8 +8963,6 @@ MonoBehaviour:
   Config: {fileID: 782769141}
   CursorTexture: {fileID: 1543857980}
   Analyzer: {fileID: 135774809}
-  InputActions: {fileID: -944628639613478452, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  DesignerActionMapName: Designer
   DebugAction: {fileID: 2021502119364431650, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!156049354 &1543857979
 Grid:
