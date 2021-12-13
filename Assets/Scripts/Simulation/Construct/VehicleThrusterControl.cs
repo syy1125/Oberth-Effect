@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
+using Syy1125.OberthEffect.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,6 +18,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	#region Unity Fields
 
 	[Header("Input")]
+	public InputActionReference LookAction;
 	public InputActionReference MoveAction;
 	public InputActionReference StrafeAction;
 
@@ -111,27 +113,35 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		{
 			if (photonView.IsMine)
 			{
-				switch (PlayerControlConfig.Instance.ControlMode)
+				if (ActionMapControl.Instance.IsActionMapEnabled("Player"))
 				{
-					case VehicleControlMode.Mouse:
-						UpdateMouseModeCommands();
-						break;
-					case VehicleControlMode.Relative:
-						UpdateRelativeModeCommands();
-						break;
-					case VehicleControlMode.Cruise:
-						UpdateCruiseModeCommands();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+					switch (PlayerControlConfig.Instance.ControlMode)
+					{
+						case VehicleControlMode.Mouse:
+							UpdateMouseModeCommands();
+							break;
+						case VehicleControlMode.Relative:
+							UpdateRelativeModeCommands();
+							break;
+						case VehicleControlMode.Cruise:
+							UpdateCruiseModeCommands();
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
 
-				if (PlayerControlConfig.Instance.InertiaDampenerActive)
+					if (PlayerControlConfig.Instance.InertiaDampenerActive)
+					{
+						ApplyInertiaDampener();
+					}
+
+					ClampCommands();
+				}
+				else
 				{
-					ApplyInertiaDampener();
+					TranslateCommand = Vector2.zero;
+					RotateCommand = 0;
 				}
-
-				ClampCommands();
 			}
 
 			SendCommands();
@@ -145,7 +155,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		var move = MoveAction.action.ReadValue<Vector2>();
 		move.x += StrafeAction.action.ReadValue<float>();
 
-		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
 		Quaternion mouseRelative = Quaternion.LookRotation(Vector3.forward, mousePosition - vehiclePosition);
 
@@ -169,7 +179,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		TranslateCommand = MoveAction.action.ReadValue<Vector2>();
 		TranslateCommand.x += StrafeAction.action.ReadValue<float>();
 
-		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
 		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
 

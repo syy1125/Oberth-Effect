@@ -10,12 +10,13 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 {
 public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
 {
+	public InputActionReference LookAction;
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;
 
 	private Camera _mainCamera;
 	private List<IWeaponSystem> _weapons;
-	private Vector2 _mouseAimPoint;
+	private Vector2 _localMouseAimPoint;
 
 	private void Awake()
 	{
@@ -66,9 +67,15 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
 			bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
 
-			if (isMine)
+			Vector3 mouseAimPoint;
+			if (isMine && LookAction.action.enabled)
 			{
-				_mouseAimPoint = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+				mouseAimPoint = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
+				_localMouseAimPoint = transform.InverseTransformPoint(mouseAimPoint);
+			}
+			else
+			{
+				mouseAimPoint = transform.TransformPoint(_localMouseAimPoint);
 			}
 
 			foreach (IWeaponSystem weapon in _weapons)
@@ -76,7 +83,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				switch (weapon.WeaponBinding)
 				{
 					case WeaponBindingGroup.Manual1:
-						weapon.SetAimPoint(_mouseAimPoint);
+						weapon.SetAimPoint(mouseAimPoint);
 						if (isMine)
 						{
 							weapon.SetFiring(firing1);
@@ -84,7 +91,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 						break;
 					case WeaponBindingGroup.Manual2:
-						weapon.SetAimPoint(_mouseAimPoint);
+						weapon.SetAimPoint(mouseAimPoint);
 						if (isMine)
 						{
 							weapon.SetFiring(firing2);
@@ -102,11 +109,11 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		if (stream.IsWriting)
 		{
-			stream.SendNext(_mouseAimPoint);
+			stream.SendNext(_localMouseAimPoint);
 		}
 		else
 		{
-			_mouseAimPoint = (Vector2) stream.ReceiveNext();
+			_localMouseAimPoint = (Vector2) stream.ReceiveNext();
 		}
 	}
 }

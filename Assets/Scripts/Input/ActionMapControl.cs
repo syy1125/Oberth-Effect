@@ -84,5 +84,10 @@ public class ActionMapControl : MonoBehaviour
 			}
 		}
 	}
+
+	public bool IsActionMapEnabled(string mapName)
+	{
+		return ActionsAsset.FindActionMap(mapName, true).enabled;
+	}
 }
 }

@@ -1024,6 +1024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27de22b4eaa74c22851be6f4a577feb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LookAction: {fileID: -841684042950946977, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   CycleModeAction: {fileID: -5474411241087866882, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   HealthBarPrefab: {fileID: 1478730788964729390, guid: d6362837c51c90e498fc7413655d365d, type: 3}
   DisplayModeChanged:

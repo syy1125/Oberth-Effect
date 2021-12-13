@@ -20,6 +20,7 @@ public class BlockHealthBarControl : MonoBehaviour
 	}
 
 	[Header("Inputs")]
+	public InputActionReference LookAction;
 	public InputActionReference CycleModeAction;
 
 	[Header("Prefabs")]
@@ -155,7 +156,8 @@ public class BlockHealthBarControl : MonoBehaviour
 
 	private GameObject GetHoverBlock()
 	{
-		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+		if (!LookAction.action.enabled) return null;
+		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
 		Vector3 blockPosition = _target.transform.InverseTransformPoint(mouseWorldPosition);
 		Vector2Int hoverLocation = Vector2Int.RoundToInt(blockPosition);
 		return _target.GetComponent<ConstructBlockManager>().GetBlockAt(hoverLocation);
