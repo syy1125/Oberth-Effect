@@ -35,11 +35,15 @@ public class VehicleIndicator : MonoBehaviour
 		BoundsInt vehicleBounds = _blockManager.GetBounds();
 		ForwardIndicator.localPosition = new Vector3(com.x, vehicleBounds.yMax + 2f, 0f);
 
-		if (_thrusterControl.TranslateCommand.sqrMagnitude > Mathf.Epsilon)
+		Vector2 playerTranslate = new Vector2(
+			_thrusterControl.HorizontalCommand.PlayerValue, _thrusterControl.VerticalCommand.PlayerValue
+		);
+
+		if (playerTranslate.sqrMagnitude > Mathf.Epsilon)
 		{
 			float xSize = Mathf.Max(vehicleBounds.xMax - 1 - com.x, com.x - vehicleBounds.xMin) + 1;
 			float ySize = Mathf.Max(vehicleBounds.yMax - 1 - com.y, com.y - vehicleBounds.yMin) + 1;
-			float targetAngle = Mathf.Atan2(_thrusterControl.TranslateCommand.y, _thrusterControl.TranslateCommand.x);
+			float targetAngle = Mathf.Atan2(playerTranslate.y, playerTranslate.x);
 
 			if (!PropulsionIndicator.gameObject.activeSelf)
 			{

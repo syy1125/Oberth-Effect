@@ -38,9 +38,11 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private Pid<float> _rotationPid;
 
 	[ReadOnlyField]
-	public Vector2 TranslateCommand;
+	public InputCommand HorizontalCommand;
 	[ReadOnlyField]
-	public float RotateCommand;
+	public InputCommand VerticalCommand;
+	[ReadOnlyField]
+	public InputCommand RotateCommand;
 
 	#region Unity Lifecycle
 
@@ -78,11 +80,17 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	public void OnVehicleDeath()
 	{
-		TranslateCommand = Vector2.zero;
-		RotateCommand = 0f;
+		ClearCommands();
 		SendCommands();
 
 		enabled = false;
+	}
+
+	private void ClearCommands()
+	{
+		HorizontalCommand = default;
+		VerticalCommand = default;
+		RotateCommand = default;
 	}
 
 	#region Propulsion Registry
@@ -135,12 +143,11 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 						ApplyInertiaDampener();
 					}
 
-					ClampCommands();
+					NetAndClampCommands();
 				}
 				else
 				{
-					TranslateCommand = Vector2.zero;
-					RotateCommand = 0;
+					ClearCommands();
 				}
 			}
 
@@ -159,25 +166,30 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
 		Quaternion mouseRelative = Quaternion.LookRotation(Vector3.forward, mousePosition - vehiclePosition);
 
-		TranslateCommand = transform.InverseTransformDirection(mouseRelative * move);
+		Vector2 playerTranslate = transform.InverseTransformDirection(mouseRelative * move);
 		// If move signal is strong, assume that the player wants to accelerate as quickly as possible - maximize propulsion commands.
 		if (move.sqrMagnitude >= 1)
 		{
-			float scale = 1f / Mathf.Max(Mathf.Abs(TranslateCommand.x), Mathf.Abs(TranslateCommand.y));
-			TranslateCommand *= scale;
+			float scale = 1f / Mathf.Max(Mathf.Abs(playerTranslate.x), Mathf.Abs(playerTranslate.y));
+			playerTranslate *= scale;
 		}
 
 		float angle = Vector2.SignedAngle(mousePosition - vehiclePosition, transform.up);
 
 		_rotationPid.Update(angle, Time.fixedDeltaTime);
 
-		RotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
+		float playerRotate = _rotationPid.Output * Mathf.Deg2Rad;
+
+		HorizontalCommand.PlayerValue = playerTranslate.x;
+		VerticalCommand.PlayerValue = playerTranslate.y;
+		RotateCommand.PlayerValue = playerRotate;
+		RotateCommand.AutoValue = 0f;
 	}
 
 	private void UpdateRelativeModeCommands()
 	{
-		TranslateCommand = MoveAction.action.ReadValue<Vector2>();
-		TranslateCommand.x += StrafeAction.action.ReadValue<float>();
+		Vector2 playerTranslate = MoveAction.action.ReadValue<Vector2>();
+		playerTranslate.x += StrafeAction.action.ReadValue<float>();
 
 		Vector2 mousePosition = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
 		Vector2 vehiclePosition = _body.worldCenterOfMass;
@@ -185,7 +197,12 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 		_rotationPid.Update(angle, Time.fixedDeltaTime);
 
-		RotateCommand = _rotationPid.Output * Mathf.Deg2Rad;
+		float playerRotate = _rotationPid.Output * Mathf.Deg2Rad;
+
+		HorizontalCommand.PlayerValue = playerTranslate.x;
+		VerticalCommand.PlayerValue = playerTranslate.y;
+		RotateCommand.PlayerValue = playerRotate;
+		RotateCommand.AutoValue = 0f;
 	}
 
 	private void UpdateCruiseModeCommands()
@@ -193,15 +210,20 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
-		TranslateCommand = new Vector2(strafe, move.y);
-
 		if (Mathf.Abs(move.x) > Mathf.Epsilon)
 		{
-			RotateCommand = move.x;
+			RotateCommand.PlayerValue = move.x;
+			RotateCommand.AutoValue = 0f;
 		}
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
-			RotateCommand = _body.angularVelocity * RotationPidConfig.DerivativeTime;
+			RotateCommand.PlayerValue = 0f;
+			RotateCommand.AutoValue = _body.angularVelocity * RotationPidConfig.DerivativeTime;
+		}
+		else
+		{
+			RotateCommand.PlayerValue = 0f;
+			RotateCommand.AutoValue = 0f;
 		}
 	}
 
@@ -209,29 +231,34 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
 
-		if (Mathf.Approximately(TranslateCommand.x, 0))
-		{
-			TranslateCommand.x = -localVelocity.x * InertiaDampenerStrength;
-		}
+		HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
+			? -localVelocity.x * InertiaDampenerStrength
+			: 0f;
 
-		if (Mathf.Approximately(TranslateCommand.y, 0))
-		{
-			TranslateCommand.y = -localVelocity.y * InertiaDampenerStrength;
-		}
+		VerticalCommand.AutoValue = Mathf.Approximately(VerticalCommand.PlayerValue, 0)
+			? -localVelocity.y * InertiaDampenerStrength
+			: 0f;
 	}
 
-	private void ClampCommands()
+	private void NetAndClampCommands()
 	{
-		TranslateCommand.x = Mathf.Clamp(TranslateCommand.x, -1f, 1f);
-		TranslateCommand.y = Mathf.Clamp(TranslateCommand.y, -1f, 1f);
-		RotateCommand = Mathf.Clamp(RotateCommand, -1f, 1f);
+		NetAndClamp(ref HorizontalCommand);
+		NetAndClamp(ref VerticalCommand);
+		NetAndClamp(ref RotateCommand);
+	}
+
+	private static void NetAndClamp(ref InputCommand command)
+	{
+		command.NetValue = Mathf.Clamp(command.PlayerValue + command.AutoValue, -1f, 1f);
+		command.PlayerValue = Mathf.Clamp(command.PlayerValue, -1f, 1f);
+		command.AutoValue = Mathf.Clamp(command.AutoValue, -1f, 1f);
 	}
 
 	private void SendCommands()
 	{
 		foreach (IPropulsionBlock block in _propulsionBlocks)
 		{
-			block.SetPropulsionCommands(TranslateCommand, RotateCommand);
+			block.SetPropulsionCommands(HorizontalCommand, VerticalCommand, RotateCommand);
 		}
 	}
 
@@ -243,14 +270,30 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		if (stream.IsWriting)
 		{
-			stream.SendNext(TranslateCommand);
-			stream.SendNext(RotateCommand);
+			SendCommandStream(stream, HorizontalCommand);
+			SendCommandStream(stream, VerticalCommand);
+			SendCommandStream(stream, RotateCommand);
 		}
 		else
 		{
-			TranslateCommand = (Vector2) stream.ReceiveNext();
-			RotateCommand = (float) stream.ReceiveNext();
+			ReadCommandStream(stream, ref HorizontalCommand);
+			ReadCommandStream(stream, ref VerticalCommand);
+			ReadCommandStream(stream, ref RotateCommand);
 		}
+	}
+
+	private static void SendCommandStream(PhotonStream stream, InputCommand command)
+	{
+		stream.SendNext(command.PlayerValue);
+		stream.SendNext(command.AutoValue);
+		stream.SendNext(command.NetValue);
+	}
+
+	private static void ReadCommandStream(PhotonStream stream, ref InputCommand command)
+	{
+		command.PlayerValue = (float) stream.ReceiveNext();
+		command.AutoValue = (float) stream.ReceiveNext();
+		command.NetValue = (float) stream.ReceiveNext();
 	}
 
 	#endregion

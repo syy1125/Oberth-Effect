@@ -26,9 +26,10 @@ public class ReadOnlyFieldDrawer : PropertyDrawer
 		GUIContent label
 	)
 	{
+		bool enabled = GUI.enabled;
 		GUI.enabled = false;
 		EditorGUI.PropertyField(position, property, label, true);
-		GUI.enabled = true;
+		GUI.enabled = enabled;
 	}
 }
 #endif

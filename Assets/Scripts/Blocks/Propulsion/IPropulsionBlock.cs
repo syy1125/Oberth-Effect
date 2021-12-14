@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
@@ -10,7 +9,7 @@ public interface IPropulsionBlockRegistry : IBlockRegistry<IPropulsionBlock>
 
 public interface IPropulsionBlock
 {
-	void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
+	void SetPropulsionCommands(InputCommand horizontal, InputCommand vertical, InputCommand rotate);
 
 	Vector2 GetPropulsionForceOrigin();
 

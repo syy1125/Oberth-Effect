@@ -120,7 +120,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	#endregion
 
-	public override void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand)
+	protected override void SetPropulsionCommands(float horizontal, float vertical, float rotate)
 	{
 		if (!PropulsionActive)
 		{
@@ -133,12 +133,12 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		float rawResponse = 0f;
 		if (RespondToTranslation)
 		{
-			rawResponse += _forwardBackResponse * translateCommand.y + _strafeResponse * translateCommand.x;
+			rawResponse += _forwardBackResponse * vertical + _strafeResponse * horizontal;
 		}
 
 		if (RespondToRotation)
 		{
-			rawResponse += _rotateResponse * rotateCommand;
+			rawResponse += _rotateResponse * rotate;
 		}
 
 		float trueThrustStrength = _targetThrustStrength * Satisfaction;

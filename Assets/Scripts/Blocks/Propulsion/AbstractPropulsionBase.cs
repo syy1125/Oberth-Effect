@@ -79,7 +79,12 @@ public abstract class AbstractPropulsionBase :
 		PropulsionActive = provider.IsConditionTrue(ActivationCondition);
 	}
 
-	public abstract void SetPropulsionCommands(Vector2 translateCommand, float rotateCommand);
+	public void SetPropulsionCommands(InputCommand horizontal, InputCommand vertical, InputCommand rotate)
+	{
+		SetPropulsionCommands(horizontal.NetValue, vertical.NetValue, rotate.NetValue);
+	}
+
+	protected abstract void SetPropulsionCommands(float horizontal, float vertical, float rotate);
 
 	public abstract IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 
