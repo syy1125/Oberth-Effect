@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Designer
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 [RequireComponent(typeof(RectTransform))]
 public class FlytextManager : MonoBehaviour
@@ -18,7 +18,7 @@ public class FlytextManager : MonoBehaviour
 
 	private Queue<Tuple<GameObject, Coroutine>> _instances = new Queue<Tuple<GameObject, Coroutine>>();
 
-	public void CreateFlytext(Vector3 worldPosition, string text)
+	public void CreateNotificationFlytext(Vector3 worldPosition, string text)
 	{
 		Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPosition);
 		if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -28,7 +28,7 @@ public class FlytextManager : MonoBehaviour
 			GameObject flytext = Instantiate(FlytextPrefab, transform);
 			flytext.transform.localPosition = localPoint;
 			flytext.GetComponent<Text>().text = text;
-			var coroutine = StartCoroutine(ManageFlytext(flytext));
+			var coroutine = StartCoroutine(ManageNotificationFlytext(flytext));
 
 			_instances.Enqueue(new Tuple<GameObject, Coroutine>(flytext, coroutine));
 
@@ -41,7 +41,7 @@ public class FlytextManager : MonoBehaviour
 		}
 	}
 
-	private IEnumerator ManageFlytext(GameObject flytext)
+	private IEnumerator ManageNotificationFlytext(GameObject flytext)
 	{
 		float startTime = Time.time;
 		float endTime = startTime + RiseTime;

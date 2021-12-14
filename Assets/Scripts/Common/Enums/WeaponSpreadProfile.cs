@@ -1,5 +1,5 @@
 ﻿using System;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 

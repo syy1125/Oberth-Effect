@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Common.UserInterface
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 public class SwitchSelect : MonoBehaviour
 {
@@ -46,6 +46,7 @@ public class SwitchSelect : MonoBehaviour
 		}
 	}
 
+	[Space]
 	public ValueChangeEvent OnValueChanged;
 
 	private float _contentVelocity;

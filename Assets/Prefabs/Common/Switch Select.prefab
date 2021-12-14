@@ -452,7 +452,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 355799198884542379}
-  - component: {fileID: 6827261719764887162}
+  - component: {fileID: 7360576404820594067}
   m_Layer: 5
   m_Name: Switch Select
   m_TagString: Untagged
@@ -481,7 +481,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6827261719764887162
+--- !u!114 &7360576404820594067
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -498,6 +498,7 @@ MonoBehaviour:
   Content: {fileID: 355799197346355410}
   OptionPrefab: {fileID: 7430282570672395253, guid: f0e0ab216852aad48979574f944c851e, type: 3}
   Options: []
+  Cyclic: 0
   OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Common.UserInterface
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 [RequireComponent(typeof(RectTransform))]
 public class TooltipControl : MonoBehaviour

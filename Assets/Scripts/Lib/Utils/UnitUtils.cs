@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.Utils
+namespace Syy1125.OberthEffect.Lib.Utils
 {
 public static class UnitUtils
 {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Prototyping
@@ -35,21 +36,16 @@ public class Playground : MonoBehaviour
 			RandArray(),
 			RandArray()
 		}.MergeSorted(
-			Comparer<int>.Create(
-				(left, right) =>
-				{
-					counter++;
-					return left - right;
-				}
-			)
+			item =>
+			{
+				counter++;
+				return item;
+			}
 		);
 
-		foreach (int i in merged)
-		{
-			Debug.Log(i);
-		}
+		Debug.Log(string.Join(" ", merged));
 
-		Debug.Log($"Comparison count {counter}");
+		Debug.Log($"Key count {counter}");
 	}
 }
 }

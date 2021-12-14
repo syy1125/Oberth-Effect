@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Syy1125.OberthEffect.Common.UserInterface
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {

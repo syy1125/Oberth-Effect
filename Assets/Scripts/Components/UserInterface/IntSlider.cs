@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Designer.Config
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 [Serializable]
 public class ValueChangeEvent : UnityEvent<int>

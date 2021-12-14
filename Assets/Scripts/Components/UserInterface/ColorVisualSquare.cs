@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Designer.Config
+namespace Syy1125.OberthEffect.Components.UserInterface
 {
 [Serializable]
 public class PickColorEvent : UnityEvent<Vector2>

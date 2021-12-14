@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
@@ -100,7 +101,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		{
 			0 => null,
 			1 => _allSteps[0],
-			_ => _allSteps.MergeSorted((left, right) => left.T.CompareTo(right.T))
+			_ => _allSteps.MergeSorted(step => step.T)
 		};
 	}
 
@@ -163,8 +164,10 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	private HitResult ResolveHit(ReferenceFrameProvider.RayStep step, RaycastHit2D hit)
 	{
 		if (hit.collider.isTrigger) return HitResult.Ignored;
-		var hitTransform = hit.collider.transform; // hit.transform is actually the rigidbody's transform, but we want collider's transform.
-		
+		var hitTransform =
+			hit.collider
+				.transform; // hit.transform is actually the rigidbody's transform, but we want collider's transform.
+
 		if (!hitTransform.IsChildOf(step.Parent)) return HitResult.Ignored;
 
 		IDamageable target = hitTransform.GetComponentInParent<IDamageable>();

@@ -5522,7 +5522,7 @@ MonoBehaviour:
   IndicatorParent: {fileID: 988178064}
   StatusText: {fileID: 1298027625}
   ConfigParent: {fileID: 414402581}
-  ControlModeSelect: {fileID: 355799198105889326}
+  ControlModeSelect: {fileID: 355799198105889329}
   CustomColorToggle: {fileID: 778286036}
   PrimaryColorPicker: {fileID: 1931512748}
   SecondaryColorPicker: {fileID: 577117800}
@@ -12927,17 +12927,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
---- !u!114 &355799198105889326 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6827261719764887162, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
-  m_PrefabInstance: {fileID: 355799198105889325}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355799198105889327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &355799198105889327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 355799198884542376, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
@@ -12961,6 +12950,17 @@ MonoBehaviour:
 
     For a detailed explanation
     of the control modes, press F1 and see the page on "Control Schemes".'
+--- !u!114 &355799198105889329 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7360576404820594067, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
+  m_PrefabInstance: {fileID: 355799198105889325}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355799198105889327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &640825886104664663
 PrefabInstance:
   m_ObjectHideFlags: 0

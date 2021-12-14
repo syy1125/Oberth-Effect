@@ -2,6 +2,7 @@
     "name": "Syy1125.OberthEffect.Lobby",
     "rootNamespace": "Syy1125.OberthEffect.Lobby",
     "references": [
+        "GUID:22d5dd6afdba5264eb9779354630b801",
         "GUID:82f52fc1a2cecfe4e95661e70562f517",
         "GUID:80b040408c5eac14285120a907808ded",
         "GUID:831409e8f9d13b5479a3baef9822ad34",

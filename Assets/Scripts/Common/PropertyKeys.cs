@@ -1,4 +1,4 @@
-namespace Syy1125.OberthEffect.Common.Utils
+namespace Syy1125.OberthEffect.Common
 {
 /// <summary>
 /// Central place to store photon custom property keys to avoid potential conflicts

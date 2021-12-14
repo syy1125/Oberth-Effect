@@ -2,6 +2,7 @@
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -322,7 +323,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		{
 			if (_prevUse == null)
 			{
-				FlytextManager.CreateFlytext(
+				FlytextManager.CreateNotificationFlytext(
 					Builder.transform.TransformPoint(error.Position),
 					"Block overlap"
 				);
@@ -340,7 +341,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		{
 			if (_prevUse == null)
 			{
-				FlytextManager.CreateFlytext(
+				FlytextManager.CreateNotificationFlytext(
 					Builder.transform.TransformPoint(error.Position),
 					"Nothing to erase"
 				);
@@ -351,7 +352,7 @@ public class DesignerPaletteUse : MonoBehaviour
 			if (_prevUse == null)
 			{
 				string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
-				FlytextManager.CreateFlytext(
+				FlytextManager.CreateNotificationFlytext(
 					Builder.transform.TransformPoint(error.Position),
 					$"{blockName} cannot be erased"
 				);
