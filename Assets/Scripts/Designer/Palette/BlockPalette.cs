@@ -4,15 +4,11 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Palette
 {
 public class BlockPalette : MonoBehaviour
 {
-	public const int CURSOR_INDEX = -1;
-	public const int ERASE_INDEX = -2;
-
 	public Transform BlockButtonsParent;
 	public GameObject BlockButtonPrefab;
 

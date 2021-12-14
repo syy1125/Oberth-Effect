@@ -808,7 +808,7 @@ MonoBehaviour:
   VehicleList: {fileID: 1079276533}
   SelectVehicleButton: {fileID: 1798867449}
   GameModeSelect: {fileID: 1891675968}
-  CostLimitSelect: {fileID: 1786771796}
+  CostLimitSelect: {fileID: 1608729814}
   CostLimitInput: {fileID: 1596780483}
   ReadyButton: {fileID: 163472261}
   ReadyTooltip: {fileID: 163472263}
@@ -4238,7 +4238,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 355799198884542376, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
       propertyPath: m_Name
-      value: Switch Select
+      value: Cost Limit Select
       objectReference: {fileID: 0}
     - target: {fileID: 355799198884542379, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
       propertyPath: m_Pivot.x
@@ -4351,6 +4351,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 355799198884542379, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
   m_PrefabInstance: {fileID: 1608729812}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1608729814 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7360576404820594067, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
+  m_PrefabInstance: {fileID: 1608729812}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1628790748
 GameObject:
   m_ObjectHideFlags: 0
@@ -5033,17 +5044,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1785238357}
   m_CullTransparentMesh: 1
---- !u!114 &1786771796 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6827261719764887162, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
-  m_PrefabInstance: {fileID: 1608729812}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8923d5458b29a7c458ec4788e841e0bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1798867447
 GameObject:
   m_ObjectHideFlags: 0
@@ -5479,7 +5479,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1891675968 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6827261719764887162, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7360576404820594067, guid: c350db17a3505104ca69c5dd7b69eb13, type: 3}
   m_PrefabInstance: {fileID: 1891675966}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
