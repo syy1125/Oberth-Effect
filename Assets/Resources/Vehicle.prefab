@@ -408,8 +408,18 @@ MonoBehaviour:
     DerivativeTime: 1
     IntegralTime: 50
   InertiaDampenerStrength: 1
-  TranslateCommand: {x: 0, y: 0}
-  RotateCommand: 0
+  HorizontalCommand:
+    PlayerValue: 0
+    AutoValue: 0
+    NetValue: 0
+  VerticalCommand:
+    PlayerValue: 0
+    AutoValue: 0
+    NetValue: 0
+  RotateCommand:
+    PlayerValue: 0
+    AutoValue: 0
+    NetValue: 0
 --- !u!114 &6944351584787850753
 MonoBehaviour:
   m_ObjectHideFlags: 0
