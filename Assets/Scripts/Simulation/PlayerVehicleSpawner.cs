@@ -5,6 +5,7 @@ using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
@@ -123,6 +124,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
 
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
+
+		ReferenceFrameProvider.MainReferenceFrame = Vehicle.GetComponent<ReferenceFrameProvider>();
 	}
 
 	private Tuple<Vector3, Quaternion> GetSpawnTransform()

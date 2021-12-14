@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Physics;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -151,6 +152,10 @@ public class ExplosionManager : MonoBehaviourPun
 
 	private IEnumerator DoPlayEffect(Vector2 position, float size)
 	{
+		Vector2 mainFrameVelocity = ReferenceFrameProvider.MainReferenceFrame == null
+			? Vector2.zero
+			: ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
+
 		GameObject effect = _visualEffectPool.Count > 0
 			? _visualEffectPool.Pop()
 			: Instantiate(ExplosionEffectPrefab);
@@ -168,11 +173,13 @@ public class ExplosionManager : MonoBehaviourPun
 		{
 			if (sprite == null) yield break;
 
+			effect.transform.position = position + mainFrameVelocity * (Time.time - startTime);
+
 			float progress = Mathf.InverseLerp(startTime, endTime, Time.time);
 			color.a = AlphaCurve.Evaluate(progress);
 			sprite.color = color;
 
-			yield return null;
+			yield return new WaitForFixedUpdate();
 		}
 
 		effect.SetActive(false);

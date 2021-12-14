@@ -5,6 +5,8 @@ namespace Syy1125.OberthEffect.Common.Physics
 {
 public class ReferenceFrameProvider : MonoBehaviour
 {
+	public static ReferenceFrameProvider MainReferenceFrame;
+
 	private Rigidbody2D _body;
 	public static readonly ICollection<ReferenceFrameProvider> ReferenceFrames = new HashSet<ReferenceFrameProvider>();
 	public Vector2 PrevPosition { get; private set; }
@@ -30,6 +32,18 @@ public class ReferenceFrameProvider : MonoBehaviour
 	private void OnDestroy()
 	{
 		ReferenceFrames.Remove(this);
+	}
+
+	public Vector2 GetVelocity()
+	{
+		if (_body != null)
+		{
+			return _body.velocity;
+		}
+		else
+		{
+			return ((Vector2) transform.position - PrevPosition) / Time.fixedDeltaTime;
+		}
 	}
 
 	public float EstimateMinApproachDistance(Vector2 start, Vector2 end)
