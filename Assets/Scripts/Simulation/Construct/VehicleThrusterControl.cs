@@ -210,6 +210,9 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		var move = MoveAction.action.ReadValue<Vector2>();
 		var strafe = StrafeAction.action.ReadValue<float>();
 
+		HorizontalCommand.PlayerValue = strafe;
+		VerticalCommand.PlayerValue = move.y;
+
 		if (Mathf.Abs(move.x) > Mathf.Epsilon)
 		{
 			RotateCommand.PlayerValue = move.x;
