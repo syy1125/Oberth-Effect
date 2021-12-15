@@ -160,7 +160,7 @@ public class BlockHealthBarControl : MonoBehaviour
 		Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
 		Vector3 blockPosition = _target.transform.InverseTransformPoint(mouseWorldPosition);
 		Vector2Int hoverLocation = Vector2Int.RoundToInt(blockPosition);
-		return _target.GetComponent<ConstructBlockManager>().GetBlockAt(hoverLocation);
+		return _target.GetComponent<ConstructBlockManager>().GetBlockOccupying(hoverLocation);
 	}
 }
 }

@@ -24,7 +24,7 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 	[PunRPC]
 	public void BlockRpc(int x, int y, string type, string methodName, object[] parameters)
 	{
-		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockAt(new Vector2Int(x, y));
+		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockOccupying(new Vector2Int(x, y));
 
 		if (blockObject == null)
 		{

@@ -26,8 +26,9 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	public GameObject DebrisPrefab;
 
 	private bool _loaded;
-	private Dictionary<Vector2Int, GameObject> _occupiedPosToBlock = new Dictionary<Vector2Int, GameObject>();
-	private Dictionary<Vector2Int, GameObject> _rootPosToBlock = new Dictionary<Vector2Int, GameObject>();
+
+	private BlockInstanceTable _blockTable = new BlockInstanceTable();
+
 	private BlockConnectivityGraph _connectivityGraph;
 
 	private Queue<Tuple<VehicleBlueprint.BlockInstance, int>> _xMin;
@@ -47,7 +48,14 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 	#region Loading
 
-	public void LoadBlocks(ICollection<VehicleBlueprint.BlockInstance> blockInstances)
+	public void LoadBlocks(IList<VehicleBlueprint.BlockInstance> blockInstances)
+	{
+		LoadBlocks(blockInstances, null);
+	}
+
+	private void LoadBlocks(
+		IList<VehicleBlueprint.BlockInstance> blockInstances, Action<int, GameObject> post
+	)
 	{
 		_loaded = false;
 
@@ -62,34 +70,36 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		var momentOfInertiaData = new LinkedList<MomentOfInertiaData>();
 
 		// Instantiate blocks
-		foreach (VehicleBlueprint.BlockInstance blockInstance in blockInstances)
+		for (var index = 0; index < blockInstances.Count; index++)
 		{
+			VehicleBlueprint.BlockInstance blockInstance = blockInstances[index];
 			if (!BlockDatabase.Instance.HasBlock(blockInstance.BlockId))
 			{
 				Debug.LogError($"Failed to load block by ID: {blockInstance.BlockId}");
 				continue;
 			}
 
-			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
-			GameObject blockObject = AddBlock(
-				spec, blockInstance.Position, blockInstance.Rotation,
+			BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
+			BlockBounds blockBounds =
+				new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax)
+					.Transformed(blockInstance.Position, blockInstance.Rotation);
+			GameObject blockObject = InstantiateBlock(
+				blockSpec, blockInstance.Position, blockInstance.Rotation,
 				ref totalMass, ref centerOfMass, momentOfInertiaData
 			);
+			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
+
+			post?.Invoke(index, blockObject);
+			_blockTable.Add(blockInstance, blockObject, blockBounds);
 
 			if (photonView.IsMine)
 			{
-				BoundsInt blockBounds = TransformUtils.TransformBounds(
-					new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).ToBoundsInt(),
-					blockInstance.Position, blockInstance.Rotation
-				);
-				xMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMin));
-				yMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMin));
-				xMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.xMax));
-				yMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.yMax));
-				UnionBounds(ref _bounds, blockBounds);
+				xMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.Min.x));
+				yMinList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.Min.y));
+				xMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.Max.x));
+				yMaxList.Add(new Tuple<VehicleBlueprint.BlockInstance, int>(blockInstance, blockBounds.Max.y));
+				UnionBounds(ref _bounds, blockBounds.ToBoundsInt());
 			}
-
-			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
 		}
 
 		float xDist = Mathf.Max(Mathf.Abs(_bounds.xMin), Mathf.Abs(_bounds.xMax));
@@ -99,7 +109,6 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		// Physics computation
 		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
 		ExportPhysicsData(totalMass, centerOfMass, momentOfInertiaData, GetComponent<Rigidbody2D>());
-		transform.position -= (Vector3) centerOfMass;
 
 		if (photonView.IsMine)
 		{
@@ -163,7 +172,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		body.inertia = momentOfInertia;
 	}
 
-	private GameObject AddBlock(
+	private GameObject InstantiateBlock(
 		BlockSpec spec, Vector2Int position, int rotation,
 		ref float totalMass, ref Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData
 	)
@@ -182,18 +191,6 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			}
 		);
 
-		_rootPosToBlock.Add(position, blockObject);
-		foreach (
-			Vector3Int localPosition
-			in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax).AllPositionsWithin
-		)
-		{
-			_occupiedPosToBlock.Add(
-				position + TransformUtils.RotatePoint(localPosition, rotation),
-				blockObject
-			);
-		}
-
 		return blockObject;
 	}
 
@@ -202,19 +199,16 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		if (!photonView.IsMine) return;
 
 		photonView.RPC(
-			nameof(DisableBlocks), RpcTarget.AllBuffered,
-			new[] { blockCore.RootPosition.x }, new[] { blockCore.RootPosition.y }
+			nameof(DisableBlockAt), RpcTarget.AllBuffered,
+			blockCore.RootPosition.x, blockCore.RootPosition.y
 		);
 	}
 
 	// Photon can't serialize Vector2Int
 	[PunRPC]
-	private void DisableBlocks(int[] x, int[] y)
+	private void DisableBlockAt(int x, int y)
 	{
-		for (int i = 0; i < x.Length; i++)
-		{
-			_rootPosToBlock[new Vector2Int(x[i], y[i])].SetActive(false);
-		}
+		_blockTable.GetObjectWithRoot(new Vector2Int(x, y)).SetActive(false);
 	}
 
 	public void RegisterBlock(BlockCore blockCore)
@@ -284,7 +278,6 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		// In that case, we still want to keep the construct around so we can extract data from it, but there is no primary graph anymore.
 		_connectivityGraph = primaryGraphIndex >= 0 ? graphs[primaryGraphIndex] : BlockConnectivityGraph.Empty;
 
-		List<Vector2Int> disableBlockRoots = new List<Vector2Int>();
 		for (int i = 0; i < graphs.Count; i++)
 		{
 			if (i == primaryGraphIndex)
@@ -292,18 +285,16 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				continue;
 			}
 
-			disableBlockRoots.Clear();
-			disableBlockRoots.AddRange(graphs[i].AllBlocks().Select(block => block.Position));
-
 			var debrisInfo = new DebrisInfo
 			{
 				OriginViewId = photonView.ViewID,
-				Blocks = disableBlockRoots
+				Blocks = graphs[i]
+					.AllBlocks()
 					.Select(
-						blockRoot => new DebrisBlockInfo
+						blockInstance => new DebrisBlockInfo
 						{
-							Position = blockRoot,
-							DebrisState = SaveDebrisState(_rootPosToBlock[blockRoot])
+							Position = blockInstance.Position,
+							DebrisState = SaveDebrisState(_blockTable.GetObject(blockInstance))
 						}
 					)
 					.ToArray()
@@ -334,8 +325,22 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		return debrisState.ToString(Formatting.None);
 	}
 
+	private static void LoadDebrisState(GameObject blockObject, string stateString)
+	{
+		JObject debrisState = TypeUtils.ParseJson(stateString);
+
+		foreach (var component in blockObject.GetComponents<IHasDebrisState>())
+		{
+			string classKey = TypeUtils.GetClassKey(component.GetType());
+			if (debrisState.ContainsKey(classKey))
+			{
+				component.LoadDebrisState(debrisState[classKey] as JObject);
+			}
+		}
+	}
+
 	public void TransferDebrisBlocksTo(
-		ConstructBlockManager receiver, IEnumerable<DebrisBlockInfo> debrisBlocks
+		ConstructBlockManager receiver, IList<DebrisBlockInfo> debrisBlocks
 	)
 	{
 		if (photonView.IsMine != receiver.photonView.IsMine)
@@ -345,70 +350,40 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			);
 		}
 
-		receiver._loaded = false;
-		float totalMass = 0f;
-		Vector2 centerOfMass = Vector2.zero;
-		var momentOfInertiaData = new LinkedList<MomentOfInertiaData>();
-
-		var debrisBlockInstances = new List<VehicleBlueprint.BlockInstance>();
-
-		foreach (DebrisBlockInfo debrisBlock in debrisBlocks)
+		foreach (DebrisBlockInfo info in debrisBlocks)
 		{
-			if (!_rootPosToBlock.TryGetValue(debrisBlock.Position, out GameObject blockObject))
+			GameObject blockObject = _blockTable.GetObjectWithRoot(info.Position);
+
+			if (blockObject == null)
 			{
 				Debug.LogError(
-					$"Tried to create debris containing block at {debrisBlock.Position} but there's no block there!"
+					$"Tried to create debris containing block at {info.Position} but there's no block there!"
 				);
 				continue;
 			}
 
-			BlockCore blockCore = blockObject.GetComponent<BlockCore>();
-			BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockCore.BlockId);
-
 			blockObject.SetActive(false);
-			GameObject receiverBlock = receiver.AddBlock(
-				blockSpec, blockCore.RootPosition, blockCore.Rotation,
-				ref totalMass, ref centerOfMass, momentOfInertiaData
-			);
-
-			// Load debris state
-			JObject debrisState = TypeUtils.ParseJson(debrisBlock.DebrisState);
-			foreach (var component in receiverBlock.GetComponents<IHasDebrisState>())
-			{
-				string classKey = TypeUtils.GetClassKey(component.GetType());
-				if (debrisState.ContainsKey(classKey))
-				{
-					component.LoadDebrisState(debrisState[classKey] as JObject);
-				}
-			}
-
-			debrisBlockInstances.Add(
-				new VehicleBlueprint.BlockInstance
-				{
-					BlockId = blockCore.BlockId,
-					Position = blockCore.RootPosition,
-					Rotation = blockCore.Rotation
-				}
-			);
 		}
 
-		if (totalMass > Mathf.Epsilon) centerOfMass /= totalMass;
-		ExportPhysicsData(totalMass, centerOfMass, momentOfInertiaData, receiver.GetComponent<Rigidbody2D>());
+		List<VehicleBlueprint.BlockInstance> blockInstances =
+			debrisBlocks
+				.Select(item => _blockTable.GetInstanceWithRoot(item.Position))
+				.ToList();
 
-		if (receiver.photonView.IsMine)
-		{
-			receiver._connectivityGraph = new BlockConnectivityGraph(debrisBlockInstances);
-		}
-
-		receiver._loaded = true;
+		receiver.LoadBlocks(
+			blockInstances,
+			(index, blockObject) => LoadDebrisState(blockObject, debrisBlocks[index].DebrisState)
+		);
 	}
 
 	#endregion
 
-	public IEnumerable<GameObject> GetAllBlocks() => _rootPosToBlock.Values;
+	public IEnumerable<GameObject> GetAllBlocks() => _blockTable.GetAllObjects();
 
-	public GameObject GetBlockAt(Vector2Int localPosition) =>
-		_occupiedPosToBlock.TryGetValue(localPosition, out GameObject block) ? block : null;
+	public GameObject GetBlockOccupying(Vector2Int position)
+	{
+		return _blockTable.GetObjectOccupying(position);
+	}
 
 	public BoundsInt GetBounds()
 	{
@@ -456,8 +431,8 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 	{
 		while (queue.Count > 0)
 		{
-			Vector2Int position = queue.Peek().Item1.Position;
-			if (!_rootPosToBlock.TryGetValue(position, out GameObject value) || !value.activeSelf)
+			GameObject blockObject = _blockTable.GetObject(queue.Peek().Item1);
+			if (blockObject == null || !blockObject.activeSelf)
 			{
 				queue.Dequeue();
 			}

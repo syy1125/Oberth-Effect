@@ -43,9 +43,32 @@ public struct BlockBounds
 		}
 	}
 
-	public static IEnumerable<Vector2Int> EnumeratePositionsWithin(Vector2Int min, Vector2Int max)
+	public BlockBounds Transformed(Vector2Int position, int rotation)
 	{
-		return new BlockBounds(min, max).AllPositionsWithin;
+		// There are some +1's in there to adjust for how BlockBounds is inclusive min and exclusive max
+		switch (rotation % 4)
+		{
+			case 0:
+				if (position == Vector2Int.zero) return this;
+				return new BlockBounds(position + Min, position + Max);
+			case 1:
+				return new BlockBounds(
+					new Vector2Int(position.x - Max.y + 1, position.y + Min.x),
+					new Vector2Int(position.x - Min.y + 1, position.y + Min.y)
+				);
+			case 2:
+				return new BlockBounds(
+					position - Max + Vector2Int.one,
+					position - Min + Vector2Int.one
+				);
+			case 3:
+				return new BlockBounds(
+					new Vector2Int(position.x + Min.y, position.y - Max.x + 1),
+					new Vector2Int(position.x + Max.y, position.y - Min.x + 1)
+				);
+			default:
+				throw new ArgumentException($"Invalid rotation {rotation}");
+		}
 	}
 }
 }

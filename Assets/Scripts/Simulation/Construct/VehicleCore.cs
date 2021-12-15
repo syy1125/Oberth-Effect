@@ -46,6 +46,7 @@ public class VehicleCore :
 		if (_blueprint != null)
 		{
 			GetComponent<ConstructBlockManager>().LoadBlocks(_blueprint.Blocks);
+			transform.position -= transform.TransformVector(GetComponent<Rigidbody2D>().centerOfMass);
 
 			_loaded = true;
 			if (_loadEvent != null)
