@@ -23,7 +23,7 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBlockLifecycleListener,
 	ICollisionRadiusProvider
 {
-	public GameObject DebrisPrefab;
+	public string DebrisPrefabName = "Debris";
 
 	private bool _loaded;
 
@@ -301,7 +301,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			};
 
 			PhotonNetwork.Instantiate(
-				DebrisPrefab.name, transform.position, transform.rotation,
+				DebrisPrefabName, transform.position, transform.rotation,
 				0,
 				new object[]
 				{

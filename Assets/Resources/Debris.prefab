@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 3829135942959768613, guid: d5558323a0fd8cf4e8ebfea4ad8cacb3, type: 3}
       propertyPath: DebrisPrefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3143220733756046700}
     - target: {fileID: 8509090524700470632, guid: d5558323a0fd8cf4e8ebfea4ad8cacb3, type: 3}
       propertyPath: m_Name
       value: Debris
