@@ -48,6 +48,7 @@ TurretedWeapon:
     ColliderSize: { X: 0.02, Y: 0.05 }
     Speed: 100
     MaxLifetime: 0.3
+    AimPointScaling: Lifetime
     ReloadTime: 0.15
     Renderers:
       - TextureId: OberthEffect/Square

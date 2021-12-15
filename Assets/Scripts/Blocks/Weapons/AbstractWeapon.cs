@@ -143,6 +143,10 @@ public abstract class AbstractWeapon :
 	public void SetAimPoint(Vector2? aimPoint)
 	{
 		AimPoint = aimPoint;
+		foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
+		{
+			emitter.SetAimPoint(aimPoint);
+		}
 	}
 
 	public void SetFiring(bool firing)

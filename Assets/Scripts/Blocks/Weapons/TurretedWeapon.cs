@@ -72,7 +72,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 
 			foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
 			{
-				emitter.EmitterFixedUpdate(Firing, Core.IsMine);
+				emitter.EmitterFixedUpdate(Core.IsMine, Firing);
 			}
 
 			yield return new WaitForFixedUpdate();

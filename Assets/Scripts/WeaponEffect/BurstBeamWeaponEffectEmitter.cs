@@ -134,7 +134,10 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public void EmitterFixedUpdate(bool firing, bool isMine)
+	public void SetAimPoint(Vector2? aimPoint)
+	{}
+
+	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
 		{

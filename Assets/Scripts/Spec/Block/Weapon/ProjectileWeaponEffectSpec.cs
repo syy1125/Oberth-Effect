@@ -3,6 +3,13 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block.Weapon
 {
+public enum AimPointScalingMode
+{
+	None,
+	Lifetime,
+	Velocity
+}
+
 public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 {
 	public int ClusterCount = 1;
@@ -12,6 +19,9 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	public Vector2 ColliderSize;
 	public float Speed;
 	public float MaxLifetime;
+
+	public AimPointScalingMode AimPointScaling;
+	public float AimPointScaleFactor = 1f;
 
 	public float ReloadTime;
 	public RendererSpec[] Renderers;

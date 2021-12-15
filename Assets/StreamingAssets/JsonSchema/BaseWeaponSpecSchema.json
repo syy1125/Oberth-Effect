@@ -31,6 +31,14 @@
                     "type": "number",
                     "description": "Maximum lifetime, in seconds, of the projectile."
                 },
+                "AimPointScaling": {
+                    "enum": ["None", "Lifetime", "Velocity"]
+                },
+                "AimPointScaleFactor": {
+                    "type": "number",
+                    "description": "Detected aim point distance is multiplied by this number. For example, a scale factor of 2 would mean that the aim point being at 50% of the max projectile distance is treated as 100%.",
+                    "default": 1
+                },
                 "ReloadTime": {
                     "type": "number",
                     "description": "Time in seconds to reload this weapon"

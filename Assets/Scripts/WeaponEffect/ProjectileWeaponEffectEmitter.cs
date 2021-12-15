@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
+using PlasticGui.WorkspaceWindow.PendingChanges;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Enums;
@@ -22,13 +23,19 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private float _spreadAngle;
 	private WeaponSpreadProfile _spreadProfile;
-	private float _projectileSpeed;
-	private float _recoil;
 
+	private float _maxSpeed;
+	private float _maxLifetime;
+	private float _maxRange;
+	private AimPointScalingMode _aimPointScaling;
+	private float _aimPointScaleFactor;
+
+	private float _recoil;
 	private float _reloadTime;
 	private BallisticProjectileConfig _projectileConfig;
 	private Dictionary<string, float> _reloadResourceUse;
 
+	private Vector2? _aimPoint;
 	private float _reloadProgress;
 	private float _resourceSatisfaction;
 
@@ -46,9 +53,14 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_spreadAngle = spec.SpreadAngle;
 		_spreadProfile = spec.SpreadProfile;
-		_projectileSpeed = spec.Speed;
-		_recoil = spec.Recoil;
 
+		_maxSpeed = spec.Speed;
+		_maxLifetime = spec.MaxLifetime;
+		_maxRange = _maxSpeed * _maxLifetime;
+		_aimPointScaling = spec.AimPointScaling;
+		_aimPointScaleFactor = spec.AimPointScaleFactor;
+
+		_recoil = spec.Recoil;
 		_reloadTime = spec.ReloadTime;
 
 		_projectileConfig = new BallisticProjectileConfig
@@ -58,7 +70,6 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			DamageType = spec.DamageType,
 			ArmorPierce = spec.ArmorPierce,
 			ExplosionRadius = spec.ExplosionRadius,
-			Lifetime = spec.MaxLifetime,
 			Renderers = spec.Renderers
 		};
 
@@ -104,9 +115,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {_projectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
 					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Speed {_projectileSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s")
 			.AppendLine(
-				$"    Expected max range {_projectileSpeed * _projectileConfig.Lifetime * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
+				$"    Max range {_maxSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s × {_maxLifetime}s = {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
 			);
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
@@ -154,7 +164,12 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public void EmitterFixedUpdate(bool firing, bool isMine)
+	public void SetAimPoint(Vector2? aimPoint)
+	{
+		_aimPoint = aimPoint;
+	}
+
+	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
 		{
@@ -166,7 +181,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 				for (int i = 1; i < _burstCount; i++)
 				{
-					FireCluster();
+					Invoke(nameof(FireCluster), _burstInterval * i);
 				}
 			}
 
@@ -183,8 +198,33 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		var position = firingPort.position;
 		var rotation = firingPort.rotation;
 
+		float aimPointScale = 1f;
+		if (_aimPoint != null && !Mathf.Approximately(_maxRange, 0f))
+		{
+			aimPointScale = Mathf.Min(
+				Vector2.Distance(_aimPoint.Value, position) * _aimPointScaleFactor / _maxRange, 1f
+			);
+		}
+
 		for (int i = 0; i < _clusterCount; i++)
 		{
+			float speed = _maxSpeed;
+			_projectileConfig.Lifetime = _maxLifetime;
+
+			switch (_aimPointScaling)
+			{
+				case AimPointScalingMode.None:
+					break;
+				case AimPointScalingMode.Lifetime:
+					_projectileConfig.Lifetime = _maxLifetime * aimPointScale;
+					break;
+				case AimPointScalingMode.Velocity:
+					speed = _maxSpeed * aimPointScale;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+
 			float deviationAngle = WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle) * Mathf.Deg2Rad;
 			GameObject projectile = PhotonNetwork.Instantiate(
 				"Weapon Projectile", position, rotation,
@@ -199,7 +239,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			projectileBody.velocity =
 				_body.GetPointVelocity(position)
 				+ (Vector2) firingPort.TransformVector(Mathf.Sin(deviationAngle), Mathf.Cos(deviationAngle), 0f)
-				* _projectileSpeed;
+				* speed;
 		}
 
 		if (_recoil > Mathf.Epsilon)
