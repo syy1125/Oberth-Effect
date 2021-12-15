@@ -54,7 +54,7 @@ public struct BlockBounds
 			case 1:
 				return new BlockBounds(
 					new Vector2Int(position.x - Max.y + 1, position.y + Min.x),
-					new Vector2Int(position.x - Min.y + 1, position.y + Min.y)
+					new Vector2Int(position.x - Min.y + 1, position.y + Max.x)
 				);
 			case 2:
 				return new BlockBounds(
