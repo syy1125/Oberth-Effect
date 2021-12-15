@@ -251,6 +251,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2860629191823017680, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
+      propertyPath: m_Text
+      value: Back To Designer
+      objectReference: {fileID: 0}
     - target: {fileID: 4312688903448934564, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
       propertyPath: m_Name
       value: Common Simulation Elements
