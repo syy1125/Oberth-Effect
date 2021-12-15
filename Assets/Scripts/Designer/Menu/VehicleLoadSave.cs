@@ -1,7 +1,5 @@
-using System.Collections;
 using System.IO;
 using Syy1125.OberthEffect.Common.UserInterface;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;

@@ -71,18 +71,18 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		StringBuilder builder = new StringBuilder();
 
 		builder.AppendLine("Fixed Weapon");
-		
+
 		foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
 		{
 			builder.Append(emitter.GetEmitterTooltip());
 		}
-		
+
 		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
 		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
 		float maxDps = firepower.Values.Sum();
 
 		builder.AppendLine($"  Maximum DPS {maxDps:F1}");
-		
+
 		Dictionary<string, float> resourcePerFirepower =
 			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);
 		string resourceCostPerFirepower = string.Join(

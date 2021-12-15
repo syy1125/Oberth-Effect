@@ -1,7 +1,7 @@
-﻿#if UNITY_EDITOR
+﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
 
 namespace Syy1125.OberthEffect.Editor.PropertyDrawers
 {

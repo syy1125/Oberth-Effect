@@ -58,7 +58,9 @@ public class PlayerPanel : MonoBehaviour
 		string vehicleName = (string) _player.CustomProperties[PropertyKeys.VEHICLE_NAME];
 		int vehicleCost = (int) _player.CustomProperties[PropertyKeys.VEHICLE_COST];
 
-		PlayerStatus.text = vehicleName == null ? "Pondering what to use" : $"Selected vehicle: \"{vehicleName}\" (<color=\"lime\">{vehicleCost}</color>)";
+		PlayerStatus.text = vehicleName == null
+			? "Pondering what to use"
+			: $"Selected vehicle: \"{vehicleName}\" (<color=\"lime\">{vehicleCost}</color>)";
 	}
 
 	public void UpdateNameDisplay()

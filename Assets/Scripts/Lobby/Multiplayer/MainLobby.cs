@@ -6,7 +6,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Match;
-using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
 using UnityEngine;

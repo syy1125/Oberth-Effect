@@ -43,6 +43,7 @@ public class Radar : MonoBehaviour
 		_scale = Scales[ScaleIndex];
 		_rulerUnit = GetTargetRulerUnit();
 	}
+
 	private void LateUpdate()
 	{
 		if (OwnVehicle == null) return;

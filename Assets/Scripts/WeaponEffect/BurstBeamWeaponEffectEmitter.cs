@@ -6,11 +6,9 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
-using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {

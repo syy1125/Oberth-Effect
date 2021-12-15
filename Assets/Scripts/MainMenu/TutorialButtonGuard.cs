@@ -1,5 +1,4 @@
-﻿using Syy1125.OberthEffect.Common.UserInterface;
-using Syy1125.OberthEffect.Components.UserInterface;
+﻿using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec;
 using UnityEngine;
 using UnityEngine.UI;

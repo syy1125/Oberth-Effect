@@ -9,7 +9,6 @@ using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {

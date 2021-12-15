@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common.ColorScheme
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.UI;

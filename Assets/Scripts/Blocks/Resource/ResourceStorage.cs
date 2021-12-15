@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {

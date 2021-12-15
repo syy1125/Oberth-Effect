@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Enums;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
