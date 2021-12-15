@@ -99,9 +99,22 @@ public class ResourceDepot : MonoBehaviour
 
 	private void Update()
 	{
+		List<GameObject> nullVehicles = new List<GameObject>();
+
 		foreach (KeyValuePair<GameObject, GameObject> entry in _vehicleToEmitter)
 		{
+			if (entry.Key == null)
+			{
+				nullVehicles.Add(entry.Key);
+				continue;
+			}
+
 			entry.Value.GetComponent<ConvergingParticleEmitter>().Target = entry.Key.transform.position;
+		}
+
+		foreach (GameObject nullVehicle in nullVehicles)
+		{
+			_vehicleToEmitter.Remove(nullVehicle);
 		}
 	}
 
