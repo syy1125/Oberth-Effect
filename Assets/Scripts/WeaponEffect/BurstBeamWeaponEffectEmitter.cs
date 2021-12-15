@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
@@ -236,7 +237,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					break;
 				case DamageType.Explosive:
 					ExplosionManager.Instance.CreateExplosionAt(
-						worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId
+						worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId,
+						hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
 					);
 					break;
 				default:

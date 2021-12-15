@@ -191,7 +191,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		{
 			// Explosive damage special case
 			ExplosionManager.Instance.CreateExplosionAt(
-				hit.point, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr
+				hit.point, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr,
+				hitTransform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
 			);
 			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
 			return HitResult.Stop;
@@ -223,7 +224,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			if (_config.DamageType == DamageType.Explosive && !_expectExploded)
 			{
 				ExplosionManager.Instance.CreateExplosionAt(
-					transform.position, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr
+					transform.position, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr, null
 				);
 			}
 

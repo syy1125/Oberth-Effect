@@ -58,16 +58,16 @@ public class ExplosionManager : MonoBehaviourPun
 		}
 	}
 
-	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId)
+	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId, Vector2? preferredVelocity)
 	{
-		photonView.RPC(nameof(DoExplosionAt), RpcTarget.All, center, radius, damage, ownerId);
+		photonView.RPC(nameof(DoExplosionAt), RpcTarget.All, center, radius, damage, ownerId, preferredVelocity);
 	}
 
 	[PunRPC]
-	private void DoExplosionAt(Vector3 center, float radius, float damage, int ownerId)
+	private void DoExplosionAt(Vector3 center, float radius, float damage, int ownerId, Vector2? preferredVelocity)
 	{
 		DealExplosionDamageAt(center, radius, damage, ownerId);
-		PlayEffectAt(center, radius);
+		PlayEffectAt(center, radius, preferredVelocity);
 	}
 
 	#region Damage Calculation
@@ -145,16 +145,19 @@ public class ExplosionManager : MonoBehaviourPun
 
 	#region Visual Effects
 
-	public void PlayEffectAt(Vector3 position, float size)
+	public void PlayEffectAt(Vector3 position, float size, Vector2? preferredVelocity)
 	{
-		StartCoroutine(DoPlayEffect(position, size));
+		StartCoroutine(DoPlayEffect(position, size, preferredVelocity));
 	}
 
-	private IEnumerator DoPlayEffect(Vector2 position, float size)
+	private IEnumerator DoPlayEffect(Vector2 position, float size, Vector2? preferredVelocity)
 	{
-		Vector2 mainFrameVelocity = ReferenceFrameProvider.MainReferenceFrame == null
-			? Vector2.zero
-			: ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
+		if (preferredVelocity == null && ReferenceFrameProvider.MainReferenceFrame != null)
+		{
+			preferredVelocity = ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
+		}
+
+		Vector2 velocity = preferredVelocity.GetValueOrDefault();
 
 		GameObject effect = _visualEffectPool.Count > 0
 			? _visualEffectPool.Pop()
@@ -173,7 +176,7 @@ public class ExplosionManager : MonoBehaviourPun
 		{
 			if (sprite == null) yield break;
 
-			effect.transform.position = position + mainFrameVelocity * (Time.time - startTime);
+			effect.transform.position = position + velocity * (Time.time - startTime);
 
 			float progress = Mathf.InverseLerp(startTime, endTime, Time.time);
 			color.a = AlphaCurve.Evaluate(progress);

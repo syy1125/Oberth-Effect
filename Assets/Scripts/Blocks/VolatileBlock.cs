@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -39,7 +40,8 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 		Debug.Log($"Block \"{gameObject}\" is exploding for {damage} damage in {radius} game unit radius.");
 		ExplosionManager.Instance.CreateExplosionAt(
-			transform.TransformPoint(_explosionOffset), radius, damage, -1
+			transform.TransformPoint(_explosionOffset), radius, damage, -1,
+			GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
 		);
 	}
 
