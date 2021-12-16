@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/ArtilleryTurret
+ImagePath: ./ArtilleryTurret.png
+PixelsPerUnit: 200
+ApplyVehicleColors: true
