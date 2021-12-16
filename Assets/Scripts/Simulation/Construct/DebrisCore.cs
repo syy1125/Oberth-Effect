@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
@@ -28,7 +28,7 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 
 		GetComponent<GlowReferenceTransform>().enabled = false;
 		DebrisInfo debrisInfo =
-			JsonUtility.FromJson<DebrisInfo>(Encoding.UTF8.GetString((byte[]) instantiationData[0]));
+			JsonUtility.FromJson<DebrisInfo>(CompressionUtils.Decompress((byte[]) instantiationData[0]));
 
 		PhotonView origin = PhotonView.Find(debrisInfo.OriginViewId);
 		if (origin == null)

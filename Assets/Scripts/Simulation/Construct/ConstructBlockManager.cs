@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
@@ -11,6 +10,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -305,7 +305,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 				0,
 				new object[]
 				{
-					Encoding.UTF8.GetBytes(JsonUtility.ToJson(debrisInfo)),
+					CompressionUtils.Compress(JsonUtility.ToJson(debrisInfo)),
 					JsonUtility.ToJson(GetComponent<ColorContext>().ColorScheme)
 				}
 			);
