@@ -18,6 +18,7 @@ public interface IDamageable
 
 	/// <summary>
 	/// Creates a predicate for determining whether a local point is within the proper collider of the object.
+	/// If null, this is interpreted as all points are always in bounds.
 	/// </summary>
 	/// <remarks>
 	/// To future-proof this, make this function work well outside Unity's main thread. Don't call on any of unity's component system functions inside this function.

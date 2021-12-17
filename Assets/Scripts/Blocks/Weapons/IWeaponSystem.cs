@@ -15,7 +15,7 @@ public interface IWeaponSystem
 	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);
 
+	float GetMaxRange();
 	IReadOnlyDictionary<DamageType, float> GetMaxFirepower();
-	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 }
 }

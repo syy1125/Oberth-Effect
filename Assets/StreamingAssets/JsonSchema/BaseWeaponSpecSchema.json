@@ -23,7 +23,7 @@
                     "$ref": "Vector2Schema.json",
                     "description": "The size of the projectile's collider."
                 },
-                "Speed": {
+                "MaxSpeed": {
                     "type": "number",
                     "description": "The speed of the projectile, in game units per second."
                 },
@@ -38,6 +38,13 @@
                     "type": "number",
                     "description": "Detected aim point distance is multiplied by this number. For example, a scale factor of 2 would mean that the aim point being at 50% of the max projectile distance is treated as 100%.",
                     "default": 1
+                },
+                "PointDefenseTarget": {
+                    "$ref": "PointDefenseTargetSpecSchema.json"
+                },
+                "HealthDamageScaling": {
+                    "type": "number",
+                    "description": "How much the projectile health affects the damage output of the projectile. For example, a value of 1 means that at 10% health, the projectile can do 10% of its original damage."
                 },
                 "ReloadTime": {
                     "type": "number",

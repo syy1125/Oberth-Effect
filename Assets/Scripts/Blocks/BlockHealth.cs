@@ -47,8 +47,6 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private Vector2 _explosionBoundsMax;
 	private int _explosionResolution;
 
-	private List<RaycastHit2D> _beamRaycastHits;
-
 	private void Awake()
 	{
 		_core = GetComponent<BlockCore>();
@@ -76,7 +74,6 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	private void Start()
 	{
 		_health = _maxHealth;
-		_beamRaycastHits = new List<RaycastHit2D>();
 	}
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
@@ -151,29 +148,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	)
 	{
 		if (!IsMine) return;
-
-		Vector2 beamDirection = beamEnd - beamStart;
-		int count = Physics2D.Raycast(
-			beamStart, beamDirection, LayerConstants.WeaponHitFilter, _beamRaycastHits, beamDirection.magnitude
-		);
-
-		if (count > 0)
-		{
-			_beamRaycastHits.Sort(0, count, RaycastHitComparer.Default);
-
-			for (int i = 0; i < count; i++)
-			{
-				RaycastHit2D hit = _beamRaycastHits[i];
-				IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
-
-				// Only do damage calculations for blocks we own
-				if (target == null || target.OwnerId == ownerId || !target.IsMine) continue;
-
-				target.TakeDamage(damageType, ref damage, armorPierce, out bool damageExhausted);
-
-				if (damageExhausted) break;
-			}
-		}
+		BeamWeaponUtils.HandleBeamDamage(damageType, damage, armorPierce, ownerId, beamStart, beamEnd);
 	}
 }
 }

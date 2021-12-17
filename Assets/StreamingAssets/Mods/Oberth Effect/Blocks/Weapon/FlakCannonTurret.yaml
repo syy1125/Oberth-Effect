@@ -46,7 +46,7 @@ TurretedWeapon:
     MaxResourceUse:
       OberthEffect/Energy: 20
     ColliderSize: { X: 0.05, Y: 0.1 }
-    Speed: 100
+    MaxSpeed: 100
     MaxLifetime: 0.3
     AimPointScaling: Lifetime
     ReloadTime: 0.15

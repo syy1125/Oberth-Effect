@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
@@ -20,14 +18,10 @@ public abstract class AbstractWeapon :
 	IResourceConsumer, IConfigComponent
 {
 	protected BlockCore Core;
-	protected List<IWeaponEffectEmitter> WeaponEmitters;
-
-	protected Dictionary<DamageType, float> Firepower;
-	protected Dictionary<string, float> MaxResourceUseRate;
+	protected IWeaponEffectEmitter WeaponEmitter;
 
 	protected bool Firing;
 	protected Vector2? AimPoint;
-	protected Dictionary<string, float> ResourceRequests;
 
 	public WeaponBindingGroup WeaponBinding { get; protected set; }
 
@@ -36,9 +30,6 @@ public abstract class AbstractWeapon :
 	protected void Awake()
 	{
 		Core = GetComponent<BlockCore>();
-
-		WeaponEmitters = new List<IWeaponEffectEmitter>();
-		ResourceRequests = new Dictionary<string, float>();
 	}
 
 	protected void OnEnable()
@@ -61,7 +52,8 @@ public abstract class AbstractWeapon :
 
 		var weaponEmitter = weaponEffectObject.AddComponent<ProjectileWeaponEffectEmitter>();
 		weaponEmitter.LoadSpec(spec);
-		WeaponEmitters.Add(weaponEmitter);
+
+		WeaponEmitter = weaponEmitter;
 	}
 
 	protected void LoadBurstBeamWeapon(BurstBeamWeaponEffectSpec spec)
@@ -72,7 +64,8 @@ public abstract class AbstractWeapon :
 
 		var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
 		weaponEmitter.LoadSpec(spec);
-		WeaponEmitters.Add(weaponEmitter);
+
+		WeaponEmitter = weaponEmitter;
 	}
 
 	protected abstract void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec);
@@ -143,10 +136,7 @@ public abstract class AbstractWeapon :
 	public void SetAimPoint(Vector2? aimPoint)
 	{
 		AimPoint = aimPoint;
-		foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
-		{
-			emitter.SetAimPoint(aimPoint);
-		}
+		WeaponEmitter.SetAimPoint(aimPoint);
 	}
 
 	public void SetFiring(bool firing)
@@ -155,92 +145,55 @@ public abstract class AbstractWeapon :
 	}
 
 	public void InvokeWeaponEffectRpc(
-		IWeaponEffectEmitter self, string methodName, RpcTarget rpcTarget, params object[] parameters
+		string methodName, RpcTarget rpcTarget, params object[] parameters
 	)
 	{
-		int index = WeaponEmitters.IndexOf(self);
-		if (index < 0)
-		{
-			Debug.LogError($"Failed to find index of {self} in weapon emitter list");
-		}
-
 		GetComponentInParent<IBlockRpcRelay>().InvokeBlockRpc(
-			Core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveBlockRpc), rpcTarget,
-			index, methodName, parameters
+			Core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveWeaponEmitterRpc), rpcTarget,
+			methodName, parameters
 		);
 	}
 
-	public void ReceiveBlockRpc(int index, string methodName, object[] parameters)
+	public void ReceiveWeaponEmitterRpc(string methodName, object[] parameters)
 	{
-		if (index < 0 || index >= WeaponEmitters.Count)
-		{
-			Debug.LogError($"Weapon emitter index {index} outside permitted range");
-			return;
-		}
-
-
-		IWeaponEffectEmitter emitter = WeaponEmitters[index];
-		var method = emitter.GetType().GetMethod(
+		var method = WeaponEmitter.GetType().GetMethod(
 			methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
 		);
 
 		if (method == null)
 		{
-			Debug.LogError($"Method {methodName} does not exist for {emitter.GetType()}");
+			Debug.LogError($"Method {methodName} does not exist for {WeaponEmitter.GetType()}");
 			return;
 		}
 
-		method.Invoke(emitter, parameters);
+		method.Invoke(WeaponEmitter, parameters);
 	}
 
 	#endregion
 
 	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
-		ResourceRequests.Clear();
-		DictionaryUtils.SumDictionaries(
-			WeaponEmitters
-				.Select(emitter => emitter.GetResourceConsumptionRateRequest())
-				.Where(dict => dict != null),
-			ResourceRequests
-		);
-		return ResourceRequests;
+		return WeaponEmitter.GetResourceConsumptionRateRequest();
 	}
 
 	public void SatisfyResourceRequestAtLevel(float level)
 	{
-		foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
-		{
-			emitter.SatisfyResourceRequestAtLevel(level);
-		}
+		WeaponEmitter.SatisfyResourceRequestAtLevel(level);
+	}
+
+	public float GetMaxRange()
+	{
+		return WeaponEmitter.GetMaxRange();
 	}
 
 	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
-		if (Firepower == null)
-		{
-			Firepower = new Dictionary<DamageType, float>();
-			DictionaryUtils.SumDictionaries(
-				WeaponEmitters.Select(emitter => emitter.GetMaxFirepower()),
-				Firepower
-			);
-		}
-
-		return Firepower;
+		return WeaponEmitter.GetMaxFirepower();
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		if (MaxResourceUseRate == null)
-		{
-			MaxResourceUseRate = new Dictionary<string, float>();
-
-			DictionaryUtils.SumDictionaries(
-				WeaponEmitters.Select(emitter => emitter.GetMaxResourceUseRate()), MaxResourceUseRate
-			);
-		}
-
-		return MaxResourceUseRate;
+		return WeaponEmitter.GetMaxResourceUseRate();
 	}
 }
 }

@@ -18,22 +18,28 @@ public struct BallisticProjectileConfig
 	public Vector2 ColliderSize;
 	public float Damage;
 	public DamageType DamageType;
-	public float ArmorPierce; // Note that explosive damage will always have damage output value of 1
+	public float ArmorPierce; // Note that explosive damage will always have armor pierce of 1
 	public float ExplosionRadius; // Only relevant for explosive damage
 	public float Lifetime;
+
+	public bool IsPointDefenseTarget;
+	public float MaxHealth;
+	public float ArmorValue;
+	public float HealthDamageScaling;
 
 	public RendererSpec[] Renderers;
 }
 
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
-	public BoxCollider2D ProjectileCollider;
-
 	private BallisticProjectileConfig _config;
+	private PointDefenseTarget _pdTarget;
 	private List<ReferenceFrameProvider.RayStep[]> _allSteps = new List<ReferenceFrameProvider.RayStep[]>();
+
+	private float _damage;
 	private bool _expectExploded;
 
 #if UNITY_EDITOR
@@ -45,8 +51,20 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		object[] instantiationData = info.photonView.InstantiationData;
 		_config = JsonUtility.FromJson<BallisticProjectileConfig>((string) instantiationData[0]);
 		_config.ArmorPierce = Mathf.Clamp(_config.ArmorPierce, 1, 10);
+		_damage = _config.Damage;
 
-		ProjectileCollider.size = _config.ColliderSize;
+		GetComponent<BoxCollider2D>().size = _config.ColliderSize;
+
+		if (_config.IsPointDefenseTarget)
+		{
+			_pdTarget = gameObject.AddComponent<PointDefenseTarget>();
+			_pdTarget.Init(_config.MaxHealth, _config.ArmorValue, _config.ColliderSize);
+			_pdTarget.OnDestroyedByDamage.AddListener(EndOfLifeDespawn);
+
+			gameObject.AddComponent<ReferenceFrameProvider>();
+			var radiusProvider = gameObject.AddComponent<ConstantCollisionRadiusProvider>();
+			radiusProvider.Radius = _config.ColliderSize.magnitude / 2;
+		}
 
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
 	}
@@ -54,7 +72,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	private void Start()
 	{
 		StartCoroutine(LateFixedUpdate());
-		Invoke(nameof(LifetimeDespawn), _config.Lifetime);
+		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
 	}
 
 	private IEnumerator LateFixedUpdate()
@@ -78,6 +96,16 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		}
 	}
 
+	private float GetHealthDamageModifier()
+	{
+		return _pdTarget == null
+			? 1f
+			: MathUtils.Remap(
+				_pdTarget.HealthFraction,
+				0f, 1f, 1f - _config.HealthDamageScaling, 1f
+			);
+	}
+
 	private IEnumerable<ReferenceFrameProvider.RayStep> GetRaySteps(
 		Vector2 prevPosition, Vector2 currentPosition
 	)
@@ -89,7 +117,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			var radiusProvider = referenceFrame.GetComponent<ICollisionRadiusProvider>();
 			if (radiusProvider == null) continue;
 
-			float approachDistance = referenceFrame.EstimateMinApproachDistance(prevPosition, currentPosition);
+			float approachDistance = referenceFrame.GetMinApproachDistance(prevPosition, currentPosition);
 			if (approachDistance <= radiusProvider.GetCollisionRadius())
 			{
 				_allSteps.Add(referenceFrame.GetRaySteps(prevPosition, currentPosition));
@@ -148,7 +176,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 		if (damageChanged)
 		{
-			photonView.RPC(nameof(SetRemainingDamage), RpcTarget.Others, _config.Damage);
+			photonView.RPC(nameof(SetRemainingDamage), RpcTarget.Others, _damage);
 		}
 	}
 
@@ -186,11 +214,12 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 		// At this point, we've established that damage should be applied and that this client should be responsible for calculating damage.
 
+		float healthModifier = GetHealthDamageModifier();
 		if (_config.DamageType == DamageType.Explosive)
 		{
 			// Explosive damage special case
 			ExplosionManager.Instance.CreateExplosionAt(
-				hit.point, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr,
+				hit.point, _config.ExplosionRadius, _damage * healthModifier, photonView.OwnerActorNr,
 				hitTransform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
 			);
 			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
@@ -199,7 +228,9 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		else
 		{
 			// Normal projectile damage behaviour
-			target.TakeDamage(_config.DamageType, ref _config.Damage, _config.ArmorPierce, out bool damageExhausted);
+			float effectiveDamage = _damage * healthModifier;
+			target.TakeDamage(_config.DamageType, ref effectiveDamage, _config.ArmorPierce, out bool damageExhausted);
+			_damage = effectiveDamage / healthModifier;
 
 			if (damageExhausted)
 			{
@@ -214,7 +245,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		}
 	}
 
-	private void LifetimeDespawn()
+	private void EndOfLifeDespawn()
 	{
 		gameObject.SetActive(false);
 
@@ -223,7 +254,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 			if (_config.DamageType == DamageType.Explosive && !_expectExploded)
 			{
 				ExplosionManager.Instance.CreateExplosionAt(
-					transform.position, _config.ExplosionRadius, _config.Damage, photonView.OwnerActorNr, null
+					transform.position, _config.ExplosionRadius, _damage * GetHealthDamageModifier(),
+					photonView.OwnerActorNr, null
 				);
 			}
 
@@ -234,7 +266,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 	[PunRPC]
 	private void SetRemainingDamage(float damage)
 	{
-		_config.Damage = damage;
+		_damage = damage;
 	}
 
 	[PunRPC]

@@ -46,7 +46,7 @@ public class ReferenceFrameProvider : MonoBehaviour
 		}
 	}
 
-	public float EstimateMinApproachDistance(Vector2 start, Vector2 end)
+	public float GetMinApproachDistance(Vector2 start, Vector2 end)
 	{
 		start -= PrevPosition;
 		end -= (Vector2) transform.position;

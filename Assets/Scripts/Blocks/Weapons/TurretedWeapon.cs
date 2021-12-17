@@ -38,8 +38,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		{
 			LoadProjectileWeapon(spec.ProjectileWeaponEffect);
 		}
-
-		if (spec.BurstBeamWeaponEffect != null)
+		else if (spec.BurstBeamWeaponEffect != null)
 		{
 			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
 		}
@@ -70,10 +69,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 			UpdateTurretRotationState();
 			ApplyTurretRotation();
 
-			foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
-			{
-				emitter.EmitterFixedUpdate(Core.IsMine, Firing);
-			}
+			WeaponEmitter.EmitterFixedUpdate(Core.IsMine, Firing);
 
 			yield return new WaitForFixedUpdate();
 		}
@@ -112,10 +108,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 			.AppendLine("  Turret")
 			.AppendLine($"    Rotation speed {_rotationSpeed}°/s");
 
-		foreach (IWeaponEffectEmitter emitter in WeaponEmitters)
-		{
-			builder.Append(emitter.GetEmitterTooltip());
-		}
+		builder.Append(WeaponEmitter.GetEmitterTooltip());
 
 		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
 		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();

@@ -17,11 +17,14 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	public float BurstInterval;
 
 	public Vector2 ColliderSize;
-	public float Speed;
+	public float MaxSpeed;
 	public float MaxLifetime;
 
 	public AimPointScalingMode AimPointScaling;
 	public float AimPointScaleFactor = 1f;
+
+	public PointDefenseTargetSpec PointDefenseTarget;
+	public float HealthDamageScaling = 0.8f;
 
 	public float ReloadTime;
 	public RendererSpec[] Renderers;

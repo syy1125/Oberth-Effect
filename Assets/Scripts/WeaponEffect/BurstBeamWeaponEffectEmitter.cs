@@ -95,6 +95,11 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_resourceSatisfaction = level;
 	}
 
+	public float GetMaxRange()
+	{
+		return _maxRange;
+	}
+
 	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
 		return new Dictionary<DamageType, float>
@@ -147,7 +152,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 				StartBeamDuration();
 				GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(
-					this, nameof(StartBeamDuration), RpcTarget.Others
+					nameof(StartBeamDuration), RpcTarget.Others
 				);
 			}
 

@@ -1,7 +1,7 @@
 ﻿using Syy1125.OberthEffect.Common.Physics;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Common
 {
 public class ConstantCollisionRadiusProvider : MonoBehaviour, ICollisionRadiusProvider
 {

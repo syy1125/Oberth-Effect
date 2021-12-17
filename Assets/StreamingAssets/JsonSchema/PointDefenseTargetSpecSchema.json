@@ -1,0 +1,8 @@
+﻿{
+    "$id": "PointDefenseTargetSpecSchema",
+    "type": "object",
+    "properties": {
+        "MaxHealth": { "type": "number" },
+        "ArmorValue": { "type": "number", "default": 1 }
+    }
+}

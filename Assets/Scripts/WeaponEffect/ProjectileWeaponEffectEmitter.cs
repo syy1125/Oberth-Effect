@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
-using PlasticGui.WorkspaceWindow.PendingChanges;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ColorScheme;
 using Syy1125.OberthEffect.Common.Enums;
@@ -54,7 +53,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_spreadAngle = spec.SpreadAngle;
 		_spreadProfile = spec.SpreadProfile;
 
-		_maxSpeed = spec.Speed;
+		_maxSpeed = spec.MaxSpeed;
 		_maxLifetime = spec.MaxLifetime;
 		_maxRange = _maxSpeed * _maxLifetime;
 		_aimPointScaling = spec.AimPointScaling;
@@ -73,6 +72,14 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			Renderers = spec.Renderers
 		};
 
+		if (spec.PointDefenseTarget != null)
+		{
+			_projectileConfig.IsPointDefenseTarget = true;
+			_projectileConfig.MaxHealth = spec.PointDefenseTarget.MaxHealth;
+			_projectileConfig.ArmorValue = spec.PointDefenseTarget.ArmorValue;
+			_projectileConfig.HealthDamageScaling = spec.HealthDamageScaling;
+		}
+
 		_reloadResourceUse = spec.MaxResourceUse;
 	}
 
@@ -89,6 +96,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public void SatisfyResourceRequestAtLevel(float level)
 	{
 		_resourceSatisfaction = level;
+	}
+
+	public float GetMaxRange()
+	{
+		return _maxRange;
 	}
 
 	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
@@ -118,6 +130,13 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			.AppendLine(
 				$"    Max range {_maxSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s × {_maxLifetime}s = {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
 			);
+
+		if (_projectileConfig.IsPointDefenseTarget)
+		{
+			builder.AppendLine(
+				$"    Projectile has <color=\"red\">{_projectileConfig.MaxHealth} health</color>, <color=\"lightblue\">{_projectileConfig.ArmorValue} armor</color>"
+			);
+		}
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(

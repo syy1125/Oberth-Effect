@@ -1,13 +1,13 @@
-﻿BlockId: OberthEffect/SimpleCannonTurret
+﻿BlockId: OberthEffect/LightArtilleryTurret
 Enabled: true
 CategoryId: OberthEffect/Combat
-Cost: 100
+Cost: 200
 Info:
-  ShortName: Cannon
-  FullName: Simple Cannon Turret
+  ShortName: Light Artillery
+  FullName: Light Artillery Turret
   Description: |
-    A cannon turret that fires high damage kinetic projectiles at your enemies (or allies, I won't judge).
-    Some reports claim that recoil from the cannons is a viable form of propulsion, though the manufacturer guarantees that such reports are unsubstantiated.
+    A powerful weapon system capable of dealing devastating damage to stationary or slow-moving targets.
+    However, the large size of artilery shells makes them vulnerable to point defense weaponry.
 Renderers:
   - TextureId: OberthEffect/Square
 Construction:
@@ -22,8 +22,8 @@ Construction:
     - { X: 0, Y: 1 }
 Physics:
   CenterOfMass: { X: 0, Y: 0 }
-  Mass: 2
-  MomentOfInertia: 0.3333333
+  Mass: 3
+  MomentOfInertia: 0.5
   BoxCollider:
     Offset: { X: 0, Y: 0 }
     Size: { X: 1, Y: 1 }
@@ -32,25 +32,26 @@ Combat:
   ArmorValue: 8
 TurretedWeapon:
   Turret:
-    RotationSpeed: 180
+    RotationSpeed: 60
     Renderers:
-      - TextureId: OberthEffect/CannonTurret
+      - TextureId: OberthEffect/ArtilleryTurret
         Scale: { X: 1.2, Y: 1.2 }
   ProjectileWeaponEffect:
     FiringPortOffset: { X: 0, Y: 0.6 }
     DamageType: Kinetic
-    Damage: 80
-    ArmorPierce: 5
+    Damage: 400
+    ArmorPierce: 10
     SpreadProfile: None
-    Recoil: 10
+    Recoil: 50
     MaxResourceUse:
-      OberthEffect/Energy: 50
-    ColliderSize: { X: 0.1, Y: 0.2 }
-    MaxSpeed: 40
-    MaxLifetime: 2
-    ReloadTime: 1
+      OberthEffect/Energy: 100
+    ColliderSize: { X: 0.2, Y: 0.5 }
+    MaxSpeed: 15
+    MaxLifetime: 8
+    PointDefenseTarget:
+      MaxHealth: 50
+      ArmorValue: 2
+    ReloadTime: 2.5
     Renderers:
       - TextureId: OberthEffect/Square
-        Scale: { X: 0.1, Y: 0.2 }
-    
-    
+        Scale: { X: 0.2, Y: 0.5 }

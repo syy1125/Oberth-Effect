@@ -44,7 +44,7 @@ FixedWeapon:
     MaxResourceUse:
       OberthEffect/Energy: 100
     ColliderSize: { X: 0.15, Y: 0.3 }
-    Speed: 250
+    MaxSpeed: 250
     MaxLifetime: 4
     ReloadTime: 3
     Renderers:
