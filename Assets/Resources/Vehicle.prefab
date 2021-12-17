@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5643191733131847326}
   - component: {fileID: 4777536661493795084}
   - component: {fileID: 2435382923802667766}
-  m_Layer: 6
+  m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 4169043753395361199}
   - component: {fileID: 3781255359856881580}
   - component: {fileID: 2535507325901147101}
-  m_Layer: 6
+  m_Layer: 5
   m_Name: Thrust Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 4053031400727466395}
   - component: {fileID: 2223849389753348692}
   - component: {fileID: 822922300308256047}
-  m_Layer: 6
+  m_Layer: 5
   m_Name: Forward Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
