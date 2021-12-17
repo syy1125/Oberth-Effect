@@ -363,7 +363,9 @@ MonoBehaviour:
     Move mirror left/right
 
     Reset
-    camera'
+    camera
+
+    Screenshot'
 --- !u!1 &1420612001187276285
 GameObject:
   m_ObjectHideFlags: 0
@@ -717,7 +719,9 @@ MonoBehaviour:
 
     Comma/Period
 
-    Backspace'
+    Backspace
+
+    F11'
 --- !u!1 &1420612001597894293
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,7 +1447,9 @@ MonoBehaviour:
 
     Zoom radar
 
-    Self destruct'
+    Self destruct
+
+    Screenshot'
 --- !u!1 &5877652761787976529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,7 +1550,9 @@ MonoBehaviour:
 
     Numpad +/-
 
-    Backspace (hold)'
+    Backspace (hold)
+
+    F11'
 --- !u!1 &6203256518174676774
 GameObject:
   m_ObjectHideFlags: 0
