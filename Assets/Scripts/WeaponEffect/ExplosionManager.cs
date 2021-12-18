@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
 using UnityEngine;
@@ -14,9 +15,6 @@ public class ExplosionManager : MonoBehaviourPun
 {
 	public static ExplosionManager Instance { get; private set; }
 
-	[Header("Damage Calculation")]
-	public LayerMask AffectedLayers;
-
 	[Header("Visual Effect")]
 	public GameObject ExplosionEffectPrefab;
 	public AnimationCurve AlphaCurve;
@@ -24,7 +22,6 @@ public class ExplosionManager : MonoBehaviourPun
 
 	private Stack<GameObject> _visualEffectPool;
 
-	private ContactFilter2D _contactFilter;
 	private List<Collider2D> _colliders;
 
 	private void Awake()
@@ -41,12 +38,6 @@ public class ExplosionManager : MonoBehaviourPun
 		}
 
 		_visualEffectPool = new Stack<GameObject>();
-
-		_contactFilter = new ContactFilter2D
-		{
-			layerMask = AffectedLayers,
-			useLayerMask = true
-		};
 		_colliders = new List<Collider2D>();
 	}
 
@@ -116,12 +107,17 @@ public class ExplosionManager : MonoBehaviourPun
 
 	private void DealExplosionDamageAt(Vector3 center, float radius, float damage, int explosionOwnerId)
 	{
-		int colliderCount = Physics2D.OverlapCircle(center, radius, _contactFilter, _colliders);
+		int colliderCount = Physics2D.OverlapCircle(center, radius, LayerConstants.WeaponHitFilter, _colliders);
 		var targets = _colliders
 			.Take(colliderCount)
 			.Select(c => c.GetComponentInParent<IDamageable>())
 			.Distinct()
-			.Where(target => target != null && target.IsMine && target.OwnerId != explosionOwnerId);
+			.Where(target => target != null && target.IsMine && target.OwnerId != explosionOwnerId)
+			.ToList();
+
+#if UNITY_EDITOR
+		Debug.Log($"Query found {colliderCount} colliders, mapped to {targets.Count} targets");
+#endif
 
 		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
 

@@ -235,11 +235,19 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			{
 				case DamageType.Kinetic:
 				case DamageType.Energy:
-					hitTarget.RequestBeamDamage(
-						_damageType, damageThisTick, _armorPierce,
-						_ownerContext.OwnerId,
-						transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
-					);
+					if (hitTarget is IDirectDamageable directTarget)
+					{
+						directTarget.RequestDirectDamage(_damageType, damageThisTick, _armorPierce);
+					}
+					else
+					{
+						hitTarget.RequestBeamDamage(
+							_damageType, damageThisTick, _armorPierce,
+							_ownerContext.OwnerId,
+							transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
+						);
+					}
+
 					break;
 				case DamageType.Explosive:
 					ExplosionManager.Instance.CreateExplosionAt(

@@ -7,12 +7,12 @@ using UnityEngine.Events;
 namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(PhotonView))]
-public class PointDefenseTarget : MonoBehaviourPun, IDamageable
+public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 {
 	public bool IsMine { get; private set; }
 	public int OwnerId { get; private set; }
 
-	public UnityEvent OnDestroyedByDamage;
+	public UnityEvent OnDestroyedByDamage = new UnityEvent();
 
 	private float _maxHealth;
 	private float _health;
