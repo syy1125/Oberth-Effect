@@ -110,18 +110,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 
 		builder.Append(WeaponEmitter.GetEmitterTooltip());
 
-		IReadOnlyDictionary<DamageType, float> firepower = GetMaxFirepower();
-		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
-		float maxDps = firepower.Values.Sum();
-
-		builder.AppendLine($"  Maximum DPS {maxDps:F1}");
-
-		Dictionary<string, float> resourcePerFirepower =
-			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);
-		string resourceCostPerFirepower = string.Join(
-			", ", VehicleResourceDatabase.Instance.FormatResourceDict(resourcePerFirepower)
-		);
-		builder.Append($"  Resource cost per unit firepower {resourceCostPerFirepower}");
+		AppendAggregateDamageInfo(builder);
 
 		return builder.ToString();
 	}

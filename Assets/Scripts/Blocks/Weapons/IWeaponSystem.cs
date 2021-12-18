@@ -18,6 +18,6 @@ public interface IWeaponSystem
 	void SetFiring(bool firing);
 
 	float GetMaxRange();
-	IReadOnlyDictionary<DamageType, float> GetMaxFirepower();
+	void GetMaxFirepower(IList<FirepowerEntry> entries);
 }
 }

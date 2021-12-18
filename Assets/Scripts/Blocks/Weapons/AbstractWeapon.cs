@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
@@ -243,14 +245,32 @@ public abstract class AbstractWeapon :
 		return WeaponEmitter.GetMaxRange();
 	}
 
-	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
+	public void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
-		return WeaponEmitter.GetMaxFirepower();
+		WeaponEmitter.GetMaxFirepower(entries);
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
 		return WeaponEmitter.GetMaxResourceUseRate();
+	}
+
+	protected void AppendAggregateDamageInfo(StringBuilder builder)
+	{
+		List<FirepowerEntry> firepower = new List<FirepowerEntry>();
+		GetMaxFirepower(firepower);
+		float maxDps = FirepowerUtils.GetTotalDamage(firepower);
+		float armorPierce = FirepowerUtils.GetMeanArmorPierce(firepower);
+		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
+
+		builder.AppendLine($"  <b>Maximum DPS {maxDps:0.#} (<color=\"lightblue\">{armorPierce:0.##} AP</color>)</b>");
+
+		Dictionary<string, float> resourcePerFirepower =
+			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);
+		string resourceCostPerFirepower = string.Join(
+			", ", VehicleResourceDatabase.Instance.FormatResourceDict(resourcePerFirepower)
+		);
+		builder.Append($"  Resource cost per unit DPS {resourceCostPerFirepower}");
 	}
 }
 }

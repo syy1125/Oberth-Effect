@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,6 +15,7 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -44,7 +46,7 @@ public struct VehicleAnalysisResult
 	public Dictionary<string, Dictionary<string, float>> MaxCategoryResourceUse;
 
 	// Firepower
-	public Dictionary<DamageType, float> MaxFirepower;
+	public List<FirepowerEntry> MaxFirepower;
 }
 
 public class VehicleAnalyzer : MonoBehaviour
@@ -165,7 +167,7 @@ public class VehicleAnalyzer : MonoBehaviour
 			MaxResourceGeneration = new Dictionary<string, float>(),
 			MaxResourceUse = new Dictionary<string, float>(),
 			MaxCategoryResourceUse = new Dictionary<string, Dictionary<string, float>>(),
-			MaxFirepower = new Dictionary<DamageType, float>()
+			MaxFirepower = new List<FirepowerEntry>()
 		};
 
 		int frames = 1;
@@ -285,7 +287,7 @@ public class VehicleAnalyzer : MonoBehaviour
 
 			if (behaviour is IWeaponSystem weaponSystem)
 			{
-				DictionaryUtils.AddDictionary(weaponSystem.GetMaxFirepower(), _result.MaxFirepower);
+				weaponSystem.GetMaxFirepower(_result.MaxFirepower);
 			}
 		}
 	}
@@ -500,18 +502,59 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void DisplayFirepowerResults()
 	{
-		_result.MaxFirepower.TryGetValue(DamageType.Kinetic, out float kineticDamage);
-		_result.MaxFirepower.TryGetValue(DamageType.Energy, out float energyDamage);
-		_result.MaxFirepower.TryGetValue(DamageType.Explosive, out float explosiveDamage);
-		FirepowerOutput.text = string.Join(
-			"\n",
-			"<b>Firepower</b>",
-			"  Theoretical maximum DPS",
-			$"    Total {_result.MaxFirepower.Values.Sum():#,0.#}",
-			$"    Kinetic {kineticDamage:#,0.#}",
-			$"    Energy {energyDamage:#,0.#}",
-			$"    Explosive {explosiveDamage:#,0.#}"
-		);
+		var aggregateFirepower = FirepowerUtils.AggregateFirepower(_result.MaxFirepower);
+		float maxDps = FirepowerUtils.GetTotalDamage(aggregateFirepower);
+		float armorPierce = FirepowerUtils.GetMeanArmorPierce(aggregateFirepower);
+
+		float kineticDamage = 0f,
+			kineticArmorPierce = 0f,
+			energyDamage = 0f,
+			energyArmorPierce = 0f,
+			explosiveDamage = 0f,
+			explosiveArmorPierce = 0f;
+
+		foreach (FirepowerEntry entry in aggregateFirepower)
+		{
+			switch (entry.DamageType)
+			{
+				case DamageType.Kinetic:
+					kineticDamage = entry.DamagePerSecond;
+					kineticArmorPierce = entry.ArmorPierce;
+					break;
+				case DamageType.Energy:
+					energyDamage = entry.DamagePerSecond;
+					energyArmorPierce = entry.ArmorPierce;
+					break;
+				case DamageType.Explosive:
+					explosiveDamage = entry.DamagePerSecond;
+					explosiveArmorPierce = entry.ArmorPierce;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		StringBuilder output = new StringBuilder();
+		output.AppendLine("<b>Firepower</b>")
+			.AppendLine("  Maximum DPS")
+			.AppendLine($"    Total {maxDps:#,0.#} (mean AP {armorPierce:0.##})");
+
+		if (kineticDamage > Mathf.Epsilon)
+		{
+			output.AppendLine($"    Kinetic {kineticDamage:#,0.#} (mean AP {kineticArmorPierce:0.##})");
+		}
+
+		if (energyDamage > Mathf.Epsilon)
+		{
+			output.AppendLine($"    Energy {energyDamage:#,0.#} (mean AP {energyArmorPierce:0.##})");
+		}
+
+		if (explosiveDamage > Mathf.Epsilon)
+		{
+			output.AppendLine($"    Explosive {explosiveDamage:#,0.#} (mean AP {explosiveArmorPierce:0.##})");
+		}
+
+		FirepowerOutput.text = output.ToString();
 		FirepowerOutput.gameObject.SetActive(true);
 	}
 

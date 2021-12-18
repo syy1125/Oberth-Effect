@@ -100,12 +100,16 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return _maxRange;
 	}
 
-	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
+	public void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
-		return new Dictionary<DamageType, float>
-		{
-			{ _damageType, _totalDamage / _reloadTime }
-		};
+		entries.Add(
+			new FirepowerEntry
+			{
+				DamageType = _damageType,
+				DamagePerSecond = _totalDamage / _reloadTime,
+				ArmorPierce = _damageType == DamageType.Explosive ? 1f : _armorPierce
+			}
+		);
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()

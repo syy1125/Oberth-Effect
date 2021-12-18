@@ -14,7 +14,7 @@ public interface IWeaponEffectEmitter
 	IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 	void SatisfyResourceRequestAtLevel(float level);
 	float GetMaxRange();
-	IReadOnlyDictionary<DamageType, float> GetMaxFirepower();
+	void GetMaxFirepower(IList<FirepowerEntry> entries);
 	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 	string GetEmitterTooltip();
 }

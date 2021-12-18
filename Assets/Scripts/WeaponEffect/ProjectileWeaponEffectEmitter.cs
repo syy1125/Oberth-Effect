@@ -108,12 +108,16 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return _maxSpeed;
 	}
 
-	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
+	public void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
-		return new Dictionary<DamageType, float>
-		{
-			{ _projectileConfig.DamageType, _projectileConfig.Damage * _clusterCount * _burstCount / _reloadTime }
-		};
+		entries.Add(
+			new FirepowerEntry
+			{
+				DamageType = _projectileConfig.DamageType,
+				DamagePerSecond = _projectileConfig.Damage * _clusterCount * _burstCount / _reloadTime,
+				ArmorPierce = _projectileConfig.DamageType == DamageType.Explosive ? 1f : _projectileConfig.ArmorPierce
+			}
+		);
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()

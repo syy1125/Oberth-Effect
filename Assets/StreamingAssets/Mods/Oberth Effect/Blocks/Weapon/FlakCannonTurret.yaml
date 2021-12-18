@@ -37,7 +37,7 @@ TurretedWeapon:
         Scale: { X: 0.8, Y: 0.8 }
   ProjectileWeaponEffect:
     FiringPortOffset: { X: 0, Y: 0.4 }
-    Damage: 15
+    Damage: 20
     DamageType: Explosive
     ExplosionRadius: 1.5
     SpreadAngle: 2.5
