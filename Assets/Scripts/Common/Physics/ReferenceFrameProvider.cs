@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common.Physics
 {
+[RequireComponent(typeof(PhotonView))]
 public class ReferenceFrameProvider : MonoBehaviour
 {
 	public static ReferenceFrameProvider MainReferenceFrame;
 
+	public bool IsMine { get; private set; }
 	private Rigidbody2D _body;
 	public static readonly ICollection<ReferenceFrameProvider> ReferenceFrames = new HashSet<ReferenceFrameProvider>();
 	public Vector2 PrevPosition { get; private set; }
@@ -15,6 +18,7 @@ public class ReferenceFrameProvider : MonoBehaviour
 	private void Awake()
 	{
 		ReferenceFrames.Add(this);
+		IsMine = GetComponent<PhotonView>().IsMine;
 		_body = GetComponent<Rigidbody2D>();
 	}
 

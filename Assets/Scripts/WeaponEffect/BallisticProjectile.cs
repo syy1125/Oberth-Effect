@@ -114,6 +114,9 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 		foreach (ReferenceFrameProvider referenceFrame in ReferenceFrameProvider.ReferenceFrames)
 		{
+			if (!referenceFrame.IsMine) continue;
+			if (referenceFrame.gameObject == gameObject) continue;
+
 			var radiusProvider = referenceFrame.GetComponent<ICollisionRadiusProvider>();
 			if (radiusProvider == null) continue;
 
