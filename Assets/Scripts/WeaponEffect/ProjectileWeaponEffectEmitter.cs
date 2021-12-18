@@ -103,6 +103,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return _maxRange;
 	}
 
+	public float GetMaxSpeed()
+	{
+		return _maxSpeed;
+	}
+
 	public IReadOnlyDictionary<DamageType, float> GetMaxFirepower()
 	{
 		return new Dictionary<DamageType, float>

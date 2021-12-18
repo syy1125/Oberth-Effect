@@ -39,8 +39,8 @@ TurretedWeapon:
     FiringPortOffset: { X: 0, Y: 0.4 }
     Damage: 15
     DamageType: Explosive
-    ExplosionRadius: 2.5
-    SpreadAngle: 3
+    ExplosionRadius: 1.5
+    SpreadAngle: 2.5
     SpreadProfile: Uniform
     Recoil: 1
     MaxResourceUse:

@@ -7,6 +7,7 @@ using UnityEngine.Events;
 namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(Rigidbody2D))] // Used by PD guns to plot intercept
 public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 {
 	public bool IsMine { get; private set; }

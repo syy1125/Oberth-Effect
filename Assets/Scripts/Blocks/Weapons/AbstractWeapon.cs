@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
@@ -22,6 +23,7 @@ public abstract class AbstractWeapon :
 
 	protected bool Firing;
 	protected Vector2? AimPoint;
+	protected Tuple<Vector2, Vector2> PointDefenseTarget;
 
 	public WeaponBindingGroup WeaponBinding { get; protected set; }
 
@@ -105,13 +107,14 @@ public abstract class AbstractWeapon :
 			new StringSwitchSelectConfigItem
 			{
 				Key = "WeaponBinding",
-				Options = new[] { "Manual 1", "Manual 2" },
+				Options = new[] { "Manual 1", "Manual 2", "Point Defense" },
 				Label = "Group",
 				Tooltip = string.Join(
 					"\n",
 					"Weapons bound to different groups have different keybinds to fire.",
 					"  Manual 1: Fires on LMB",
-					"  Manual 2: Fires on RMB"
+					"  Manual 2: Fires on RMB",
+					"  Point Defense: Automatically shoot at approaching projectiles"
 				),
 				Serialize = SerializeWeaponBinding,
 				Deserialize = DeserializeWeaponBinding
@@ -132,6 +135,60 @@ public abstract class AbstractWeapon :
 	#endregion
 
 	#region Weapon Logic
+
+	public void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTarget> targets)
+	{
+		Vector2 position = transform.position;
+		float limit = GetMaxRange();
+		limit *= limit;
+
+		Vector2 localVelocity = GetComponentInParent<Rigidbody2D>().GetPointVelocity(position);
+		int bestIndex = -1;
+		float bestScore = float.NegativeInfinity;
+
+		for (int i = 0; i < targets.Count; i++)
+		{
+			var target = targets[i];
+			Vector2 relativePosition = (Vector2) target.transform.position - position;
+			if (relativePosition.sqrMagnitude > limit) continue;
+
+			Vector2 relativeVelocity = target.GetComponent<Rigidbody2D>().velocity - localVelocity;
+			float score = Vector2.Dot(relativePosition, -relativeVelocity) / relativePosition.sqrMagnitude;
+
+			if (score > bestScore)
+			{
+				bestIndex = i;
+				bestScore = score;
+			}
+		}
+
+		if (bestIndex < 0) // No valid target
+		{
+			SetAimPoint(null);
+			SetFiring(false);
+			return;
+		}
+
+		var bestTarget = targets[bestIndex];
+		if (WeaponEmitter is ProjectileWeaponEffectEmitter projectileEmitter)
+		{
+			Vector2 relativePosition = (Vector2) bestTarget.transform.position - position;
+			Vector2 relativeVelocity = bestTarget.GetComponent<Rigidbody2D>().velocity - localVelocity;
+
+			InterceptSolver.ProjectileIntercept(
+				relativePosition, relativeVelocity, projectileEmitter.GetMaxSpeed(),
+				out Vector2 interceptVelocity, out float hitTime
+			);
+
+			SetAimPoint(position + interceptVelocity * hitTime);
+		}
+		else // Is some kind of beam weapon
+		{
+			SetAimPoint(bestTarget.transform.position);
+		}
+
+		SetFiring(true);
+	}
 
 	public void SetAimPoint(Vector2? aimPoint)
 	{

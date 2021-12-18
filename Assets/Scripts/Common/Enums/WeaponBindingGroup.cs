@@ -4,7 +4,7 @@ public enum WeaponBindingGroup
 {
 	Manual1,
 	Manual2,
+	PointDefense,
 	AutoTrack,
-	Ciws
 }
 }

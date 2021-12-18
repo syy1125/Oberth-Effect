@@ -51,6 +51,7 @@ TurretedWeapon:
     PointDefenseTarget:
       MaxHealth: 5
       ArmorValue: 2
+    HealthDamageScaling: 0.8
     ReloadTime: 2.5
     Renderers:
       - TextureId: OberthEffect/Square
