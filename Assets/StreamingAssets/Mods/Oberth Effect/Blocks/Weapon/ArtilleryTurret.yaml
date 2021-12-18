@@ -49,7 +49,7 @@ TurretedWeapon:
     MaxSpeed: 15
     MaxLifetime: 8
     PointDefenseTarget:
-      MaxHealth: 50
+      MaxHealth: 5
       ArmorValue: 2
     ReloadTime: 2.5
     Renderers:
