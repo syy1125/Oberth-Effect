@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Common.Colors;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common
@@ -30,7 +31,7 @@ public class VehicleBlueprint
 	public int CachedCost;
 
 	public bool UseCustomColors;
-	public ColorScheme.ColorScheme ColorScheme;
+	public ColorScheme ColorScheme;
 
 	public VehicleControlMode DefaultControlMode;
 

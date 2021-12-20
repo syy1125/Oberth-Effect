@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec.Block;

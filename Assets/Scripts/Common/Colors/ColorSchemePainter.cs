@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.ColorScheme
+namespace Syy1125.OberthEffect.Common.Colors
 {
 // Paints color scheme from color context onto subobjects of where this is installed.
 public class ColorSchemePainter : MonoBehaviour

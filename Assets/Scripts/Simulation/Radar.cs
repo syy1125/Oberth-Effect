@@ -120,7 +120,7 @@ public class Radar : MonoBehaviour
 			ping.transform.rotation = vehicle.transform.rotation;
 			ping.GetComponent<Image>().sprite = VehiclePingSprite;
 			ping.GetComponent<Image>().color =
-				PhotonTeamManager.GetPlayerTeamColor(vehicle.GetComponent<PhotonView>().Owner);
+				PhotonTeamHelper.GetPlayerTeamColors(vehicle.GetComponent<PhotonView>().Owner).PrimaryColor;
 
 			i++;
 		}
@@ -136,7 +136,7 @@ public class Radar : MonoBehaviour
 			ping.transform.localPosition = relativePosition * _scale;
 			ping.transform.rotation = Quaternion.identity;
 			ping.GetComponent<Image>().sprite = ShipyardPingSprite;
-			ping.GetComponent<Image>().color = PhotonTeamManager.GetTeamColor(shipyard.TeamIndex);
+			ping.GetComponent<Image>().color = PhotonTeamHelper.GetTeamColors(shipyard.TeamIndex).PrimaryColor;
 
 			i++;
 		}

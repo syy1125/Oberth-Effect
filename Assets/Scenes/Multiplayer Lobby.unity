@@ -749,7 +749,6 @@ GameObject:
   - component: {fileID: 222137031}
   - component: {fileID: 222137032}
   - component: {fileID: 222137033}
-  - component: {fileID: 222137034}
   m_Layer: 5
   m_Name: Room Screen
   m_TagString: Untagged
@@ -801,8 +800,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RoomName: {fileID: 1568556034}
   RoomNameInput: {fileID: 2026466378}
-  PlayerListParent: {fileID: 975467973}
-  PlayerPanelPrefab: {fileID: 7553454834909407481, guid: 60068dbb52a16a548b9efcd4201d7469, type: 3}
   LoadVehicleButton: {fileID: 178602834}
   VehicleSelectionScreen: {fileID: 2071403648}
   VehicleList: {fileID: 1079276533}
@@ -818,28 +815,6 @@ MonoBehaviour:
   Maps:
   - sceneAsset: {fileID: 102900000, guid: 8027120d6180dde499dd80587625e6e3, type: 3}
     scenePath: Assets/Scenes/Levels/Nebula.unity
---- !u!114 &222137034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 222137030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &224209684
 GameObject:
   m_ObjectHideFlags: 0
@@ -1540,6 +1515,7 @@ GameObject:
   - component: {fileID: 391592479}
   - component: {fileID: 391592478}
   - component: {fileID: 391592477}
+  - component: {fileID: 391592480}
   m_Layer: 5
   m_Name: Player List
   m_TagString: Untagged
@@ -1637,6 +1613,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 391592475}
   m_CullTransparentMesh: 1
+--- !u!114 &391592480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391592475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11037ebee5a44454892f3845a9e49183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerListParent: {fileID: 975467973}
+  TeamPanelPrefab: {fileID: 1947590610662305303, guid: 8513c30526ee05947beb292cd7ee8071, type: 3}
+  TeamPlayerPanelPrefab: {fileID: 2107695269017221162, guid: d6cc06f4fb317924abd1c40e1fe0c727, type: 3}
+  PlayerPanelPrefab: {fileID: 7553454834909407481, guid: 60068dbb52a16a548b9efcd4201d7469, type: 3}
 --- !u!1 &436444016
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,6 +2576,7 @@ GameObject:
   m_Component:
   - component: {fileID: 975467973}
   - component: {fileID: 975467974}
+  - component: {fileID: 975467975}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -2608,7 +2601,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.00015797841}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &975467974
 MonoBehaviour:
@@ -2632,10 +2625,24 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &975467975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975467972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1001 &1013912393
 PrefabInstance:
   m_ObjectHideFlags: 0

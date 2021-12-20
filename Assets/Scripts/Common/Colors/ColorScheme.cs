@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.ColorScheme
+namespace Syy1125.OberthEffect.Common.Colors
 {
 [Serializable]
 public struct ColorScheme

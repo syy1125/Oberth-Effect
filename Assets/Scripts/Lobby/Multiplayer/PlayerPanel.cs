@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
-public class PlayerPanel : MonoBehaviour
+public class PlayerPanel : MonoBehaviourPunCallbacks
 {
 	public Text PlayerName;
 	public Text PlayerStatus;
@@ -20,11 +20,11 @@ public class PlayerPanel : MonoBehaviour
 	public Color ReadyColor;
 	public float FadeDuration;
 
-	private Player _player;
+	public Player Player { get; private set; }
 
 	public void AssignPlayer(Player player)
 	{
-		_player = player;
+		Player = player;
 
 		UpdateNameDisplay();
 		UpdateVehicleDisplay();
@@ -36,27 +36,29 @@ public class PlayerPanel : MonoBehaviour
 		KickButton.onClick.AddListener(KickPlayer);
 	}
 
-	public void UpdatePlayerProps(Hashtable props)
+	public override void OnPlayerPropertiesUpdate(Player player, Hashtable props)
 	{
-		bool vehicleChanged = props.ContainsKey(PropertyKeys.VEHICLE_NAME);
-		bool readyChanged = props.ContainsKey(PropertyKeys.PLAYER_READY);
-		bool teamChanged = props.ContainsKey(PropertyKeys.TEAM_INDEX);
-
-		if (vehicleChanged)
+		if (player.Equals(Player))
 		{
-			UpdateVehicleDisplay();
-		}
+			bool vehicleChanged = props.ContainsKey(PropertyKeys.VEHICLE_NAME);
+			bool readyChanged = props.ContainsKey(PropertyKeys.PLAYER_READY);
 
-		if (vehicleChanged || readyChanged || teamChanged)
-		{
-			UpdateNameDisplay();
+			if (vehicleChanged)
+			{
+				UpdateVehicleDisplay();
+			}
+
+			if (vehicleChanged || readyChanged)
+			{
+				UpdateNameDisplay();
+			}
 		}
 	}
 
 	private void UpdateVehicleDisplay()
 	{
-		string vehicleName = (string) _player.CustomProperties[PropertyKeys.VEHICLE_NAME];
-		int vehicleCost = (int) _player.CustomProperties[PropertyKeys.VEHICLE_COST];
+		string vehicleName = (string) Player.CustomProperties[PropertyKeys.VEHICLE_NAME];
+		int vehicleCost = (int) Player.CustomProperties[PropertyKeys.VEHICLE_COST];
 
 		PlayerStatus.text = vehicleName == null
 			? "Pondering what to use"
@@ -65,14 +67,12 @@ public class PlayerPanel : MonoBehaviour
 
 	public void UpdateNameDisplay()
 	{
-		bool ready = PhotonHelper.IsPlayerReady(_player);
+		bool ready = PhotonHelper.IsPlayerReady(Player);
 
-		StringBuilder playerNameBuilder = new StringBuilder(_player.NickName);
-		if (_player.IsMasterClient) playerNameBuilder.Append(" (Host)");
+		StringBuilder playerNameBuilder = new StringBuilder(Player.NickName);
+		if (Player.IsMasterClient) playerNameBuilder.Append(" (Host)");
 		if (!ready) playerNameBuilder.Append(" (Not Ready)");
 		PlayerName.text = playerNameBuilder.ToString();
-
-		PlayerName.color = PhotonTeamManager.GetPlayerTeamColor(_player);
 
 		ReadyDisplay.CrossFadeColor(
 			ready ? ReadyColor : Color.white,
@@ -82,12 +82,12 @@ public class PlayerPanel : MonoBehaviour
 
 	public void UpdateKickButton()
 	{
-		KickButton.gameObject.SetActive(PhotonNetwork.LocalPlayer.IsMasterClient && !_player.IsLocal);
+		KickButton.gameObject.SetActive(PhotonNetwork.LocalPlayer.IsMasterClient && !Player.IsLocal);
 	}
 
 	private void KickPlayer()
 	{
-		PhotonNetwork.CloseConnection(_player);
+		PhotonNetwork.CloseConnection(Player);
 	}
 }
 }

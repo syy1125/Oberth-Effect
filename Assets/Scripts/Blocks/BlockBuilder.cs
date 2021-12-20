@@ -2,7 +2,7 @@
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Unity;

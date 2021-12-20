@@ -45,7 +45,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		if (PhotonHelper.GetRoomGameMode().CanDamageShipyards())
 		{
 			_indicator = Instantiate(
-				TeamIndex == PhotonTeamManager.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer)
+				TeamIndex == PhotonTeamHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer)
 					? ProtectIndicatorPrefab
 					: DestroyIndicatorPrefab,
 				IndicatorCanvas
@@ -65,7 +65,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		_damageable = _gameMode.CanDamageShipyards();
 		Health = BaseMaxHealth;
 
-		Color teamColor = PhotonTeamManager.GetTeamColor(TeamIndex);
+		Color teamColor = PhotonTeamHelper.GetTeamColors(TeamIndex).PrimaryColor;
 		foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())
 		{
 			sprite.color = teamColor;

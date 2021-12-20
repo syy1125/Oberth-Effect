@@ -148,7 +148,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			int comparison = string.CompareOrdinal(rooms[i].Name, panels[j].Key);
 			if (comparison == 0)
 			{
-				panels[j].Value.GetComponent<RoomPanel>().SetRoom(rooms[i]);
+				panels[j].Value.GetComponent<LobbyRoomPanel>().SetRoom(rooms[i]);
 
 				i++;
 				j++;
@@ -156,7 +156,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 			else if (comparison < 0) // Additional item in room list that's not on screen
 			{
 				GameObject panel = Instantiate(RoomPanelPrefab, RoomListParent);
-				panel.GetComponent<RoomPanel>().SetRoom(rooms[i]);
+				panel.GetComponent<LobbyRoomPanel>().SetRoom(rooms[i]);
 				_roomPanels.Add(rooms[i].Name, panel);
 
 				panel.transform.SetSiblingIndex(siblingIndex);
@@ -180,7 +180,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		for (; i < rooms.Length; i++)
 		{
 			GameObject panel = Instantiate(RoomPanelPrefab, RoomListParent);
-			panel.GetComponent<RoomPanel>().SetRoom(rooms[i]);
+			panel.GetComponent<LobbyRoomPanel>().SetRoom(rooms[i]);
 			_roomPanels.Add(rooms[i].Name, panel);
 		}
 
@@ -235,14 +235,14 @@ public class MainLobby : MonoBehaviourPunCallbacks
 	{
 		if (_selectedRoom != null)
 		{
-			_roomPanels[_selectedRoom]?.GetComponent<RoomPanel>().SetSelected(false);
+			_roomPanels[_selectedRoom]?.GetComponent<LobbyRoomPanel>().SetSelected(false);
 		}
 
 		_selectedRoom = roomName;
 
 		if (_selectedRoom != null)
 		{
-			_roomPanels[_selectedRoom]?.GetComponent<RoomPanel>().SetSelected(true);
+			_roomPanels[_selectedRoom]?.GetComponent<LobbyRoomPanel>().SetSelected(true);
 		}
 
 		UpdateControls();
@@ -267,7 +267,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 					{ PropertyKeys.ROOM_NAME, $"{PhotonNetwork.NickName}'s game" },
 					{ PropertyKeys.GAME_MODE, GameMode.Assault },
 					{ PropertyKeys.FRIENDLY_FIRE_MODE, FriendlyFireMode.Team },
-					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349", "0080FF" } },
+					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349;FFA500;FFEB04", "0080FF;0000FF;FFEB04" } },
 					{ PropertyKeys.COST_LIMIT_OPTION, 0 },
 					{ PropertyKeys.COST_LIMIT, 1000 }
 				},
@@ -289,7 +289,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		{
 			if (PhotonNetwork.LocalPlayer.IsMasterClient)
 			{
-				PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, 0 } });
+				PhotonTeamHelper.SetPlayerTeam(PhotonNetwork.LocalPlayer, 0);
 			}
 			else
 			{
@@ -312,14 +312,14 @@ public class MainLobby : MonoBehaviourPunCallbacks
 
 		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
 		{
-			int teamIndex = (int) player.CustomProperties[PropertyKeys.TEAM_INDEX];
+			int teamIndex = PhotonTeamHelper.GetPlayerTeamIndex(player);
 			if (teamIndex < 0 || teamIndex >= teamCount) continue;
 			playerCount[teamIndex]++;
 		}
 
 		if (playerCount.Count == 0)
 		{
-			PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, 0 } });
+			PhotonTeamHelper.SetPlayerTeam(PhotonNetwork.LocalPlayer, 0);
 			return;
 		}
 
@@ -334,7 +334,7 @@ public class MainLobby : MonoBehaviourPunCallbacks
 		}
 
 		int joinTeam = joinTeams[_rng.Next(joinTeams.Count)];
-		PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropertyKeys.TEAM_INDEX, joinTeam } });
+		PhotonTeamHelper.SetPlayerTeam(PhotonNetwork.LocalPlayer, joinTeam);
 	}
 
 	public void ToMainMenu()

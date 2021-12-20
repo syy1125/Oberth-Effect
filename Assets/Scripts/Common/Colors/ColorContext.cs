@@ -1,7 +1,7 @@
 ﻿using Photon.Pun;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.ColorScheme
+namespace Syy1125.OberthEffect.Common.Colors
 {
 public class ColorContext : MonoBehaviour, IPunInstantiateMagicCallback
 {

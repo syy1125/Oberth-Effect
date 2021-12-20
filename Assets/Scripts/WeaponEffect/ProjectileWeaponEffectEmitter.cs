@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;

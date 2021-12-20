@@ -25,7 +25,7 @@ public class AssaultGame : AbstractGameManager
 
 	private void Start()
 	{
-		_remainingTeams = new List<int>(PhotonTeamManager.GetTeams());
+		_remainingTeams = new List<int>(PhotonTeamHelper.GetTeams());
 	}
 
 	private void OnDestroy()

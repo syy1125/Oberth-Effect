@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ExitGames.Client.Photon;
@@ -15,27 +14,20 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
-[RequireComponent(typeof(PhotonView))]
-public class RoomScreen : MonoBehaviourPunCallbacks
+public class RoomControls : MonoBehaviourPunCallbacks
 {
-	[Header("Player List")]
+	[Header("Room Name")]
 	public Text RoomName;
-
 	public InputField RoomNameInput;
 
-	public Transform PlayerListParent;
-	public GameObject PlayerPanelPrefab;
-
 	[Header("Controls")]
-	public Button LoadVehicleButton;
-
+	public Button SelectVehicleButton;
 	public GameObject VehicleSelectionScreen;
 	public VehicleList VehicleList;
-	public Button SelectVehicleButton;
+	public Button LoadVehicleButton;
 
 	[Space]
 	public SwitchSelect GameModeSelect;
-
 	public SwitchSelect CostLimitSelect;
 	public InputField CostLimitInput;
 
@@ -52,7 +44,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	public SceneReference[] Maps;
 
 	private GameMode[] _gameModes;
-	private SortedDictionary<int, GameObject> _playerPanels;
 	// The vehicle that the player is considering to load. Transient state.
 	private string _selectedVehicleName;
 
@@ -62,8 +53,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 			.Cast<GameMode>()
 			.Where(gameMode => gameMode.EnabledForLobby())
 			.ToArray();
-
-		_playerPanels = new SortedDictionary<int, GameObject>();
 	}
 
 	public override void OnEnable()
@@ -101,13 +90,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		{
 			UseClientControls();
 		}
-
-		foreach (KeyValuePair<int, Player> pair in PhotonNetwork.CurrentRoom.Players)
-		{
-			GameObject go = Instantiate(PlayerPanelPrefab, PlayerListParent);
-			go.GetComponent<PlayerPanel>().AssignPlayer(pair.Value);
-			_playerPanels.Add(pair.Key, go);
-		}
 	}
 
 	public override void OnDisable()
@@ -126,13 +108,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		SelectVehicleButton.onClick.RemoveListener(OpenVehicleSelection);
 		ReadyButton.onClick.RemoveListener(ToggleReady);
 		StartGameButton.onClick.RemoveListener(StartGame);
-
-		foreach (GameObject go in _playerPanels.Values)
-		{
-			Destroy(go);
-		}
-
-		_playerPanels.Clear();
 	}
 
 	#region Photon Callbacks
@@ -156,11 +131,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		{
 			UpdateVehicleListCostLimit();
 		}
-
-		if (nextProps.ContainsKey(PropertyKeys.TEAM_COLORS))
-		{
-			UpdatePlayerColors();
-		}
 	}
 
 	private static bool ContainsAnyKey(Hashtable table, params string[] keys)
@@ -170,10 +140,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnPlayerEnteredRoom(Player player)
 	{
-		GameObject go = Instantiate(PlayerPanelPrefab, PlayerListParent);
-		go.GetComponent<PlayerPanel>().AssignPlayer(player);
-		_playerPanels.Add(player.ActorNumber, go);
-
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UpdateMasterControls();
@@ -182,6 +148,7 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 
 	public override void OnPlayerLeftRoom(Player player)
 	{
+		// If the master player left the room, one of the other player would take over.
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UseMasterControls();
@@ -191,21 +158,10 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 		{
 			UseClientControls();
 		}
-
-		Destroy(_playerPanels[player.ActorNumber]);
-		_playerPanels.Remove(player.ActorNumber);
-
-		foreach (GameObject panel in _playerPanels.Values)
-		{
-			panel.GetComponent<PlayerPanel>().UpdateNameDisplay();
-			panel.GetComponent<PlayerPanel>().UpdateKickButton();
-		}
 	}
 
 	public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable props)
 	{
-		_playerPanels[targetPlayer.ActorNumber].GetComponent<PlayerPanel>().UpdatePlayerProps(props);
-
 		if (PhotonNetwork.LocalPlayer.IsMasterClient)
 		{
 			UpdateMasterControls();
@@ -366,14 +322,6 @@ public class RoomScreen : MonoBehaviourPunCallbacks
 	}
 
 	#endregion
-
-	private void UpdatePlayerColors()
-	{
-		foreach (GameObject panel in _playerPanels.Values)
-		{
-			panel.GetComponent<PlayerPanel>().UpdateNameDisplay();
-		}
-	}
 
 	private void UpdateVehicleListCostLimit()
 	{

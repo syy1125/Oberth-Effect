@@ -17,7 +17,7 @@ public abstract class AbstractGameManager : MonoBehaviourPunCallbacks
 	[PunRPC]
 	public void SetDefeated(int teamIndex)
 	{
-		if (PhotonTeamManager.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer) == teamIndex)
+		if (PhotonTeamHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer) == teamIndex)
 		{
 			EndScreen.ShowDefeat();
 			DisableControls();
@@ -27,7 +27,7 @@ public abstract class AbstractGameManager : MonoBehaviourPunCallbacks
 	[PunRPC]
 	public void SetVictory(int teamIndex)
 	{
-		if (PhotonTeamManager.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer) == teamIndex)
+		if (PhotonTeamHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer) == teamIndex)
 		{
 			EndScreen.ShowVictory();
 			DisableControls();

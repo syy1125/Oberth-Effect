@@ -7,7 +7,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;

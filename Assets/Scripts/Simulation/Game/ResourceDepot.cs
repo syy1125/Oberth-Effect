@@ -47,7 +47,7 @@ public class ResourceDepot : MonoBehaviour
 		{
 			if (vehicle == null) continue;
 			Player owner = vehicle.GetComponent<PhotonView>().Owner;
-			if (PhotonTeamManager.GetPlayerTeamIndex(owner) != TeamIndex) continue;
+			if (PhotonTeamHelper.GetPlayerTeamIndex(owner) != TeamIndex) continue;
 
 			Vector2 relativePosition = vehicle.transform.position - transform.position;
 			if (relativePosition.sqrMagnitude > _sqrRange) continue;

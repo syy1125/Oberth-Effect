@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
@@ -135,7 +135,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			return GetFallbackSpawnTransform();
 		}
 
-		int teamIndex = PhotonTeamManager.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer);
+		int teamIndex = PhotonTeamHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer);
 		Shipyard shipyard = Shipyard.GetShipyardForTeam(teamIndex);
 
 		if (shipyard == null)
@@ -146,7 +146,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		var playersOnTeam = PhotonNetwork.CurrentRoom.Players.Values
 			.OrderBy(player => player.ActorNumber)
-			.Where(player => PhotonTeamManager.GetPlayerTeamIndex(player) == teamIndex)
+			.Where(player => PhotonTeamHelper.GetPlayerTeamIndex(player) == teamIndex)
 			.ToList();
 
 		Transform spawnTransform = shipyard.GetBestSpawnPoint(playersOnTeam.IndexOf(PhotonNetwork.LocalPlayer));

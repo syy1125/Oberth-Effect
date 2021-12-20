@@ -1,6 +1,6 @@
 ﻿using System;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common.ColorScheme;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 

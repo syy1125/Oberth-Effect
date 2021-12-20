@@ -7,7 +7,7 @@ namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
 [RequireComponent(typeof(Button))]
 [RequireComponent(typeof(Image))]
-public class RoomPanel : MonoBehaviour
+public class LobbyRoomPanel : MonoBehaviour
 {
 	public Text RoomNameDisplay;
 	public Color NormalColor;

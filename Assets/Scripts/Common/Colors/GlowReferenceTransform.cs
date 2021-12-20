@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.ColorScheme
+namespace Syy1125.OberthEffect.Common.Colors
 {
 // Renderer is required because, by unity docs, if you are using worldToLocalMatrix you must use the renderer version of it.
 [RequireComponent(typeof(Renderer))]
