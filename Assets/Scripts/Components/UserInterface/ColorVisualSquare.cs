@@ -1,4 +1,5 @@
 using System;
+using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -41,10 +42,9 @@ public class ColorVisualSquare : MonoBehaviour, IPointerDownHandler, IDragHandle
 
 	private Vector2 GetRectPosition(PointerEventData eventData)
 	{
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(
-			_transform, eventData.position, eventData.pressEventCamera, out Vector2 localPosition
+		RectTransformUtils.ScreenPointToNormalizedPointInRectangle(
+			_transform, eventData.position, eventData.pressEventCamera, out Vector2 rectPosition
 		);
-		Vector2 rectPosition = (localPosition - _transform.rect.min) / _transform.rect.size;
 		return new Vector2(Mathf.Clamp01(rectPosition.x), Mathf.Clamp01(rectPosition.y));
 	}
 
