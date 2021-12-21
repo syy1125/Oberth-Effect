@@ -16,14 +16,12 @@ public class ColorVisualSquare : MonoBehaviour, IPointerDownHandler, IDragHandle
 	public RectTransform Knob;
 	public PickColorEvent OnChange;
 
-	private Camera _mainCamera;
 	private RectTransform _transform;
 	private Image _image;
 	private Image _knobImage;
 
 	private void Awake()
 	{
-		_mainCamera = Camera.main;
 		_transform = GetComponent<RectTransform>();
 		_image = GetComponent<Image>();
 		_knobImage = Knob.GetComponent<Image>();
@@ -31,21 +29,22 @@ public class ColorVisualSquare : MonoBehaviour, IPointerDownHandler, IDragHandle
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
-		Vector2 position = GetRectPosition(eventData.position);
+		Vector2 position = GetRectPosition(eventData);
 		OnChange.Invoke(position);
 	}
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		Vector2 position = GetRectPosition(eventData.position);
+		Vector2 position = GetRectPosition(eventData);
 		OnChange.Invoke(position);
 	}
 
-	private Vector2 GetRectPosition(Vector2 screenPosition)
+	private Vector2 GetRectPosition(PointerEventData eventData)
 	{
-		Vector3 localPosition = transform.InverseTransformPoint(_mainCamera.ScreenToWorldPoint(screenPosition));
-		Rect rect = _transform.rect;
-		Vector2 rectPosition = (new Vector2(localPosition.x, localPosition.y) - rect.min) / rect.size;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle(
+			_transform, eventData.position, eventData.pressEventCamera, out Vector2 localPosition
+		);
+		Vector2 rectPosition = (localPosition - _transform.rect.min) / _transform.rect.size;
 		return new Vector2(Mathf.Clamp01(rectPosition.x), Mathf.Clamp01(rectPosition.y));
 	}
 

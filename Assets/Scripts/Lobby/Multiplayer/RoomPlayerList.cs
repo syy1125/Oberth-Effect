@@ -17,6 +17,8 @@ public class RoomPlayerList : MonoBehaviourPunCallbacks
 	public GameObject TeamPlayerPanelPrefab;
 	public GameObject PlayerPanelPrefab;
 
+	public GameObject TeamColorPicker;
+
 	private SortedDictionary<int, GameObject> _teamPanels = new SortedDictionary<int, GameObject>();
 	private SortedDictionary<int, GameObject> _playerPanels = new SortedDictionary<int, GameObject>();
 	private bool _teamMode;
@@ -43,6 +45,7 @@ public class RoomPlayerList : MonoBehaviourPunCallbacks
 		{
 			GameObject panel = Instantiate(TeamPanelPrefab, PlayerListParent);
 			panel.GetComponent<TeamPanel>().SetTeamIndex(teamIndex);
+			panel.GetComponent<TeamPanel>().ColorPickerOverlay = TeamColorPicker;
 			_teamPanels.Add(teamIndex, panel);
 		}
 
@@ -146,14 +149,6 @@ public class RoomPlayerList : MonoBehaviourPunCallbacks
 
 				// Everything has been destroyed and re-created, no need to carry out further updates.
 				return;
-			}
-		}
-
-		if (props.ContainsKey(PropertyKeys.TEAM_COLORS))
-		{
-			foreach (GameObject panel in _teamPanels.Values)
-			{
-				panel.GetComponent<TeamPanel>().UpdateNameDisplay();
 			}
 		}
 	}

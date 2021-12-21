@@ -69,11 +69,13 @@ public static class PhotonTeamHelper
 		return GetTeamColors(teamIndex, Color.white);
 	}
 
-	public static ColorScheme GetTeamColors(int teamIndex, Color fallbackColor)
+	public static ColorScheme GetTeamColors(int teamIndex, Color fallback)
 	{
-		ColorScheme fallback = new ColorScheme
-			{ PrimaryColor = fallbackColor, SecondaryColor = fallbackColor, TertiaryColor = fallbackColor };
+		return GetTeamColors(teamIndex, new ColorScheme(fallback, fallback, fallback));
+	}
 
+	public static ColorScheme GetTeamColors(int teamIndex, ColorScheme fallback)
+	{
 		if (PhotonNetwork.CurrentRoom == null) return fallback;
 
 		GameMode gameMode = PhotonHelper.GetRoomGameMode();
@@ -82,12 +84,8 @@ public static class PhotonTeamHelper
 		string[] teamColors = (string[]) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.TEAM_COLORS];
 
 		if (teamIndex < 0 || teamIndex >= teamColors.Length) return fallback;
-		string[] colors = teamColors[teamIndex].Split(';');
-
-		return ColorUtility.TryParseHtmlString("#" + colors[0], out Color primary)
-		       && ColorUtility.TryParseHtmlString("#" + colors[1], out Color secondary)
-		       && ColorUtility.TryParseHtmlString("#" + colors[2], out Color tertiary)
-			? new ColorScheme { PrimaryColor = primary, SecondaryColor = secondary, TertiaryColor = tertiary }
+		return ColorScheme.TryParseColorSet(teamColors[teamIndex], out ColorScheme colorScheme)
+			? colorScheme
 			: fallback;
 	}
 
@@ -97,6 +95,11 @@ public static class PhotonTeamHelper
 	}
 
 	public static ColorScheme GetPlayerTeamColors(Player player, Color fallback)
+	{
+		return GetTeamColors(GetPlayerTeamIndex(player), fallback);
+	}
+
+	public static ColorScheme GetPlayerTeamColors(Player player, ColorScheme fallback)
 	{
 		return GetTeamColors(GetPlayerTeamIndex(player), fallback);
 	}

@@ -26,7 +26,12 @@ public class NameTag : MonoBehaviour
 	{
 		PhotonView photonView = Target.GetComponent<PhotonView>();
 		NameTagText.text = photonView.Owner.NickName;
-		NameTagText.color = PhotonTeamHelper.GetPlayerTeamColors(photonView.Owner).PrimaryColor;
+
+		Color color = PhotonTeamHelper.GetPlayerTeamColors(photonView.Owner).PrimaryColor;
+		NameTagText.color = color;
+		Color.RGBToHSV(color, out float h, out float s, out float v);
+		h = (h + 0.5f) % 1;
+		NameTagText.GetComponent<Outline>().effectColor = Color.HSVToRGB(h, s, v);
 	}
 
 	private void Update()

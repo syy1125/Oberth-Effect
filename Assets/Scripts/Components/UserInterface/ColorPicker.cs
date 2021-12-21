@@ -12,6 +12,8 @@ public class ColorChangeEvent : UnityEvent<Color>
 [RequireComponent(typeof(RectTransform))]
 public class ColorPicker : MonoBehaviour
 {
+	public bool Expanded;
+	public bool LockExpansion;
 	public ColorChangeEvent OnChange;
 
 	[Header("Content")]
@@ -44,7 +46,6 @@ public class ColorPicker : MonoBehaviour
 
 	private RectTransform _transform;
 
-	private bool _expanded;
 	private bool _updatingElements;
 
 	private int _mode;
@@ -93,7 +94,14 @@ public class ColorPicker : MonoBehaviour
 
 	private void Start()
 	{
-		Collapse();
+		if (Expanded)
+		{
+			Expand();
+		}
+		else
+		{
+			Collapse();
+		}
 
 		UnpackColor();
 		UpdateElements();
@@ -101,7 +109,9 @@ public class ColorPicker : MonoBehaviour
 
 	public void ToggleExpansion()
 	{
-		if (_expanded)
+		if (LockExpansion) return;
+
+		if (Expanded)
 		{
 			Collapse();
 		}
@@ -117,7 +127,7 @@ public class ColorPicker : MonoBehaviour
 
 		LayoutRebuilder.ForceRebuildLayoutImmediate(_transform);
 		LayoutRebuilder.MarkLayoutForRebuild(GetComponentInParent<LayoutGroup>().GetComponent<RectTransform>());
-		_expanded = true;
+		Expanded = true;
 	}
 
 	private void Collapse()
@@ -126,7 +136,7 @@ public class ColorPicker : MonoBehaviour
 
 		LayoutRebuilder.ForceRebuildLayoutImmediate(_transform);
 		LayoutRebuilder.MarkLayoutForRebuild(GetComponentInParent<LayoutGroup>().GetComponent<RectTransform>());
-		_expanded = false;
+		Expanded = false;
 	}
 
 	public void PrevMode()

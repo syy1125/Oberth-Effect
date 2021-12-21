@@ -4,6 +4,7 @@ using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
+using Syy1125.OberthEffect.Common.Match;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
@@ -106,13 +107,19 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	{
 		(Vector3 spawnPosition, Quaternion spawnRotation) = GetSpawnTransform();
 
+		bool useTeamColors = PhotonHelper.GetRoomGameMode().IsTeamMode()
+		                     && (bool) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.USE_TEAM_COLORS];
+
+		ColorScheme colorScheme = ColorScheme.FromBlueprint(VehicleSelection.SelectedVehicle);
+		if (useTeamColors) colorScheme = PhotonTeamHelper.GetPlayerTeamColors(PhotonNetwork.LocalPlayer, colorScheme);
+
 		Vehicle = PhotonNetwork.Instantiate(
 			VehiclePrefab.name, spawnPosition, spawnRotation,
 			0,
 			new object[]
 			{
 				CompressionUtils.Compress(VehicleSelection.SerializedVehicle),
-				JsonUtility.ToJson(ColorScheme.FromBlueprint(VehicleSelection.SelectedVehicle))
+				JsonUtility.ToJson(colorScheme)
 			}
 		);
 

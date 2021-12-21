@@ -19,21 +19,20 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	[Header("Room Name")]
 	public Text RoomName;
 	public InputField RoomNameInput;
+	public Toggle UseTeamColors;
 
 	[Header("Controls")]
 	public Button SelectVehicleButton;
 	public GameObject VehicleSelectionScreen;
 	public VehicleList VehicleList;
 	public Button LoadVehicleButton;
+	public Button ReadyButton;
+	public Tooltip ReadyTooltip;
 
 	[Space]
 	public SwitchSelect GameModeSelect;
 	public SwitchSelect CostLimitSelect;
 	public InputField CostLimitInput;
-
-	[Space]
-	public Button ReadyButton;
-	public Tooltip ReadyTooltip;
 	public Button StartGameButton;
 	public Tooltip StartGameTooltip;
 
@@ -62,6 +61,8 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		RoomName.text = RoomNameInput.text =
 			(string) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.ROOM_NAME];
 		RoomNameInput.onEndEdit.AddListener(SetRoomName);
+		UseTeamColors.isOn = (bool) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.USE_TEAM_COLORS];
+		UseTeamColors.onValueChanged.AddListener(SetUseTeamColor);
 
 		_selectedVehicleName = null;
 		VehicleSelection.SerializedVehicle = null;
@@ -97,6 +98,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		base.OnDisable();
 
 		RoomNameInput.onEndEdit.RemoveListener(SetRoomName);
+		UseTeamColors.onValueChanged.RemoveListener(SetUseTeamColor);
 
 		VehicleList.OnSelectVehicle.RemoveListener(SelectVehicle);
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
@@ -183,6 +185,13 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		);
 	}
 
+	private void SetUseTeamColor(bool useTeamColor)
+	{
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable { { PropertyKeys.USE_TEAM_COLORS, useTeamColor } }
+		);
+	}
+
 	private static void UnreadyPlayers()
 	{
 		foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
@@ -266,6 +275,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	{
 		RoomName.gameObject.SetActive(false);
 		RoomNameInput.gameObject.SetActive(true);
+		UseTeamColors.interactable = true;
 
 		GameModeSelect.Interactable = true;
 		CostLimitSelect.Interactable = true;
@@ -281,6 +291,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	{
 		RoomName.gameObject.SetActive(true);
 		RoomNameInput.gameObject.SetActive(false);
+		UseTeamColors.interactable = false;
 
 		GameModeSelect.Interactable = false;
 		CostLimitSelect.Interactable = false;
