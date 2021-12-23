@@ -578,10 +578,7 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void HandleClick(InputAction.CallbackContext context)
 	{
-		if (context.interaction is TapInteraction && AreaMask.Hovering)
-		{
-			SetTargetBlockPosition(Designer.HoverPositionInt);
-		}
+		SetTargetBlockPosition(Designer.HoverPositionInt);
 	}
 
 	private void SetTargetBlockPosition(Vector2Int position)
