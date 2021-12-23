@@ -167,7 +167,6 @@ public class DesignerPaletteUse : MonoBehaviour
 			}
 			case BlockSelection blockSelection:
 			{
-				// TODO handle mirror
 				if (_selectionChanged)
 				{
 					DestroyBlockPreview();
@@ -202,7 +201,12 @@ public class DesignerPaletteUse : MonoBehaviour
 					                            );
 					_mirrorBlockPreview.transform.localPosition = (Vector2) mirrorPosition;
 					_mirrorBlockPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(mirrorRotation);
-					_mirrorBlockPreview.SetActive(!GridMove.Dragging);
+					_mirrorBlockPreview.SetActive(
+						!GridMove.Dragging
+						&& !ContainsMirrorPosition(
+							blockSelection.BlockSpec, _hoverPosition.Value, _rotation, _mirrorPosition.Value
+						)
+					);
 				}
 				else
 				{
@@ -277,31 +281,36 @@ public class DesignerPaletteUse : MonoBehaviour
 		switch (Palette.CurrentSelection)
 		{
 			case BlockSelection blockSelection:
-				TryAddBlock(blockSelection.BlockSpec, usePosition, _rotation);
+				TryAddBlock(blockSelection.BlockSpec, usePosition, _rotation, _prevUse == null);
 
-				if (_mirrorPosition != null)
+				if (
+					_mirrorPosition != null
+					&& !ContainsMirrorPosition(blockSelection.BlockSpec, usePosition, _rotation, _mirrorPosition.Value)
+				)
 				{
-					int mirrorRotation = (4 - _rotation + blockSelection.BlockSpec.Construction.MirrorRotationOffset)
-					                     % 4;
-					Vector2Int mirrorRootPosition = new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y)
-					                                + TransformUtils.RotatePoint(
-						                                blockSelection.BlockSpec.Construction.MirrorRootOffset,
-						                                mirrorRotation
-					                                );
+					int mirrorRotation =
+						(4 - _rotation + blockSelection.BlockSpec.Construction.MirrorRotationOffset)
+						% 4;
+					Vector2Int mirrorRootPosition =
+						new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y)
+						+ TransformUtils.RotatePoint(
+							blockSelection.BlockSpec.Construction.MirrorRootOffset,
+							mirrorRotation
+						);
 					BlockSpec mirrorBlockSpec = BlockDatabase.Instance.GetBlockSpec(
 						BlockDatabase.GetMirrorBlockId(blockSelection.BlockSpec)
 					);
-					TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation);
+					TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation, _prevUse == null);
 				}
 
 				UpdateDisconnections();
 
 				break;
 			case EraserSelection _:
-				TryEraseBlock(usePosition);
+				TryEraseBlock(usePosition, _prevUse == null);
 				if (_mirrorPosition != null)
 				{
-					TryEraseBlock(new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y));
+					TryEraseBlock(new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y), false);
 				}
 
 				EraserIndicator.gameObject.SetActive(false);
@@ -313,7 +322,15 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 	}
 
-	private void TryAddBlock(BlockSpec blockSpec, Vector2Int position, int rotation)
+	private static bool ContainsMirrorPosition(BlockSpec spec, Vector2Int position, int rotation, int mirror)
+	{
+		BlockBounds bounds = new BlockBounds(
+			spec.Construction.BoundsMin, spec.Construction.BoundsMax
+		).Transformed(position, rotation);
+		return mirror >= bounds.Min.x * 2 && mirror <= (bounds.Max.x - 1) * 2;
+	}
+
+	private void TryAddBlock(BlockSpec blockSpec, Vector2Int position, int rotation, bool showFailText)
 	{
 		try
 		{
@@ -321,7 +338,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (DuplicateBlockError error)
 		{
-			if (_prevUse == null)
+			if (showFailText)
 			{
 				FlytextManager.CreateNotificationFlytext(
 					Builder.transform.TransformPoint(error.Position),
@@ -331,7 +348,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 	}
 
-	private void TryEraseBlock(Vector2Int position)
+	private void TryEraseBlock(Vector2Int position, bool showFailText)
 	{
 		try
 		{
@@ -339,7 +356,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (EmptyBlockError error)
 		{
-			if (_prevUse == null)
+			if (showFailText)
 			{
 				FlytextManager.CreateNotificationFlytext(
 					Builder.transform.TransformPoint(error.Position),
@@ -349,7 +366,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 		catch (BlockNotErasable error)
 		{
-			if (_prevUse == null)
+			if (showFailText)
 			{
 				string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
 				FlytextManager.CreateNotificationFlytext(
