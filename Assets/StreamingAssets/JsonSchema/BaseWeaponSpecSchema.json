@@ -95,6 +95,9 @@
                     "$ref": "ParticleSystemSpecArraySchema.json"
                 }
             }
+        },
+        "DefaultBinding": {
+            "enum": ["Manual1", "Manual2", "PointDefense"]
         }
     }
 }

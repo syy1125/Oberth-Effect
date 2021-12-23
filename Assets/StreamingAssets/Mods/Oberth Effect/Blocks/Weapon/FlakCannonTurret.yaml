@@ -53,3 +53,4 @@ TurretedWeapon:
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.05, Y: 0.1 }
+  DefaultBinding: PointDefense

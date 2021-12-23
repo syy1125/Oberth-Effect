@@ -27,6 +27,7 @@ public abstract class AbstractWeapon :
 	protected Vector2? AimPoint;
 	protected Tuple<Vector2, Vector2> PointDefenseTarget;
 
+	protected WeaponBindingGroup DefaultBinding;
 	public WeaponBindingGroup WeaponBinding { get; protected set; }
 
 	#region Init
@@ -88,7 +89,7 @@ public abstract class AbstractWeapon :
 
 	public void InitDefaultConfig()
 	{
-		WeaponBinding = WeaponBindingGroup.Manual1;
+		WeaponBinding = DefaultBinding;
 	}
 
 	public void ImportConfig(JObject config)

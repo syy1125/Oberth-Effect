@@ -25,6 +25,8 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		{
 			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
 		}
+
+		DefaultBinding = spec.DefaultBinding;
 	}
 
 	protected override void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec)
