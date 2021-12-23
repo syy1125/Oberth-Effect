@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/HalfWedge
+ImagePath: ./HalfWedge.png
+PixelsPerUnit: 200
+ApplyVehicleColors: true

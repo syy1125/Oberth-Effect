@@ -1,0 +1,28 @@
+﻿BlockId: OberthEffect/Wedge
+Enabled: true
+CategoryId: OberthEffect/Structural
+Cost: 2
+Info:
+  ShortName: Wedge
+  FullName: Wedge Block
+Renderers:
+  - TextureId: OberthEffect/Wedge
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: 0, Y: -0.1666667 }
+  Mass: 0.5
+  MomentOfInertia: 0.04861111
+  PolygonCollider:
+    - Path:
+        - { X: -0.5, Y: -0.5 }
+        - { X: 0, Y: 0.5 }
+        - { X: 0.5, Y: -0.5 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 4

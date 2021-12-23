@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/Wedge
+ImagePath: ./Wedge.png
+PixelsPerUnit: 200
+ApplyVehicleColors: true
