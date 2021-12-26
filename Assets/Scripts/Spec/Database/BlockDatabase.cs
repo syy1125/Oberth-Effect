@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {
-public class BlockDatabase : MonoBehaviour
+public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 {
 	public static BlockDatabase Instance { get; private set; }
 
@@ -24,11 +24,9 @@ public class BlockDatabase : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
-
-		Reload();
 	}
 
-	private void Reload()
+	public void Reload()
 	{
 		_specs = ModLoader.AllBlocks
 			.Where(instance => instance.Spec.Enabled)

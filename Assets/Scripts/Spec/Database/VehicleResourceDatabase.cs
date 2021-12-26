@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {
-public class VehicleResourceDatabase : MonoBehaviour
+public class VehicleResourceDatabase : MonoBehaviour, IGameContentDatabase
 {
 	public static VehicleResourceDatabase Instance { get; private set; }
 	private Dictionary<string, SpecInstance<VehicleResourceSpec>> _specs;
@@ -22,11 +22,9 @@ public class VehicleResourceDatabase : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
-
-		Reload();
 	}
 
-	private void Reload()
+	public void Reload()
 	{
 		_specs = ModLoader.AllVehicleResources
 			.ToDictionary(instance => instance.Spec.ResourceId, instance => instance);

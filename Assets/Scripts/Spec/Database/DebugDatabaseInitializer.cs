@@ -3,7 +3,7 @@
 namespace Syy1125.OberthEffect.Spec.Database
 {
 // Mainly for testing purposes, this script ensures that all mod data is loaded before databases start initializing
-public class DatabaseInitializer : MonoBehaviour
+public class DebugDatabaseInitializer : MonoBehaviour
 {
 	private void Awake()
 	{
@@ -12,6 +12,11 @@ public class DatabaseInitializer : MonoBehaviour
 			ModLoader.Init();
 			ModLoader.LoadModList();
 			ModLoader.LoadAllEnabledContent();
+
+			foreach (IGameContentDatabase database in GetComponents<IGameContentDatabase>())
+			{
+				database.Reload();
+			}
 		}
 	}
 }

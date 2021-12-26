@@ -8,5 +8,6 @@ public struct ModSpec
 	public string DisplayName;
 	public string Version;
 	public string Description;
+	public bool AllowDuplicateDefs;
 }
 }

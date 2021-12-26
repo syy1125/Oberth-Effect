@@ -36,6 +36,20 @@ public static class ModLoader
 		public List<ModListElement> ModList;
 	}
 
+	public enum State
+	{
+		LoadModList,
+		LoadDocuments,
+		ParseDocuments,
+		ValidateDocuments,
+		Finalize
+	}
+
+	public static object LoadStateLock = new object();
+	public static State LoadState;
+	public static Tuple<int, int> LoadProgress;
+	public static string LoadDescription;
+
 	private static string _modsRoot;
 
 	public static void Init()
@@ -50,6 +64,13 @@ public static class ModLoader
 
 	public static void LoadModList()
 	{
+		lock (LoadStateLock)
+		{
+			LoadState = State.LoadModList;
+			LoadProgress = null;
+			LoadDescription = null;
+		}
+
 		List<string> modDirectories = GetValidModDirectories();
 		List<ModListElement> modList = ReadStoredModList();
 
@@ -171,19 +192,19 @@ public static class ModLoader
 	#region Mod Content
 
 	private static Dictionary<string, GameSpecDocument> _blockDocuments;
-	internal static IReadOnlyCollection<SpecInstance<BlockSpec>> AllBlocks;
+	internal static IReadOnlyList<SpecInstance<BlockSpec>> AllBlocks;
 
 	private static Dictionary<string, GameSpecDocument> _textureDocuments;
-	internal static IReadOnlyCollection<SpecInstance<TextureSpec>> AllTextures;
+	internal static IReadOnlyList<SpecInstance<TextureSpec>> AllTextures;
 
 	private static Dictionary<string, GameSpecDocument> _vehicleResourceDocuments;
-	internal static IReadOnlyCollection<SpecInstance<VehicleResourceSpec>> AllVehicleResources;
+	internal static IReadOnlyList<SpecInstance<VehicleResourceSpec>> AllVehicleResources;
 
 	private static Dictionary<string, GameSpecDocument> _controlGroupDocuments;
-	internal static IReadOnlyCollection<SpecInstance<ControlGroupSpec>> AllControlGroups;
+	internal static IReadOnlyList<SpecInstance<ControlGroupSpec>> AllControlGroups;
 
 	private static Dictionary<string, GameSpecDocument> _blockCategoryDocuments;
-	internal static IReadOnlyCollection<SpecInstance<BlockCategorySpec>> AllBlockCategories;
+	internal static IReadOnlyList<SpecInstance<BlockCategorySpec>> AllBlockCategories;
 
 	public static uint Checksum { get; private set; }
 
@@ -195,6 +216,8 @@ public static class ModLoader
 		public List<string> OverrideOrder;
 	}
 
+	#endregion
+
 	public static void LoadAllEnabledContent()
 	{
 		LoadDocuments();
@@ -204,6 +227,8 @@ public static class ModLoader
 		DataReady = true;
 	}
 
+	#region Load Documents
+
 	private static void LoadDocuments()
 	{
 		_blockDocuments = new Dictionary<string, GameSpecDocument>();
@@ -212,13 +237,26 @@ public static class ModLoader
 		_controlGroupDocuments = new Dictionary<string, GameSpecDocument>();
 		_blockCategoryDocuments = new Dictionary<string, GameSpecDocument>();
 
-		foreach (ModListElement mod in AllMods)
+		var enabledMods = AllMods.Where(mod => mod.Enabled).ToList();
+
+		for (var i = 0; i < enabledMods.Count; i++)
 		{
-			if (!mod.Enabled) continue;
+			ModListElement mod = enabledMods[i];
+			lock (LoadStateLock)
+			{
+				LoadState = State.LoadDocuments;
+				LoadProgress = Tuple.Create(i + 1, enabledMods.Count);
+				LoadDescription = enabledMods[i].Mod.DisplayName;
+			}
 
 			LoadModContent(
 				mod, "Blocks", null,
 				nameof(BlockSpec.BlockId), _blockDocuments
+			);
+
+			LoadModContent(
+				mod, "Block Categories", null,
+				nameof(BlockCategorySpec.BlockCategoryId), _blockCategoryDocuments
 			);
 
 			LoadModContent(
@@ -249,11 +287,6 @@ public static class ModLoader
 				mod, "Control Groups", null,
 				nameof(ControlGroupSpec.ControlGroupId), _controlGroupDocuments
 			);
-
-			LoadModContent(
-				mod, "Block Categories", null,
-				nameof(BlockCategorySpec.BlockCategoryId), _blockCategoryDocuments
-			);
 		}
 	}
 
@@ -265,7 +298,9 @@ public static class ModLoader
 		string contentRoot = Path.Combine(_modsRoot, mod.Directory, subDirectory);
 		if (!Directory.Exists(contentRoot)) return;
 
-		foreach (string file in Directory.EnumerateFiles(contentRoot, "*.yaml", SearchOption.AllDirectories))
+		string[] files = Directory.EnumerateFiles(contentRoot, "*.yaml", SearchOption.AllDirectories).ToArray();
+
+		foreach (string file in files)
 		{
 			StreamReader reader = File.OpenText(file);
 
@@ -289,6 +324,18 @@ public static class ModLoader
 
 						if (altered.TryGetValue(id, out YamlDocument current))
 						{
+							if (!mod.Mod.AllowDuplicateDefs)
+							{
+								Debug.LogError(
+									string.Join(
+										"\n",
+										$"Mod {mod.Mod.DisplayName} contains multiple definitions for {subDirectory} \"{id}\".",
+										"This is most likely an issue with the mod, but we will attempt to merge the definitions together anyway.",
+										$"To disable this warning, set \"{nameof(ModSpec.AllowDuplicateDefs)}\" to true in mod.json."
+									)
+								);
+							}
+
 							altered[id] = YamlMergeHelper.DeepMerge(current, document);
 						}
 						else if (result.TryGetValue(id, out GameSpecDocument original))
@@ -352,6 +399,10 @@ public static class ModLoader
 		}
 	}
 
+	#endregion
+
+	#region Parse Documents
+
 	private static void ParseDocuments()
 	{
 		var deserializer = new DeserializerBuilder()
@@ -361,20 +412,31 @@ public static class ModLoader
 			.Build();
 
 		AllBlocks = ParseSpecInstance<BlockSpec>(deserializer, _blockDocuments.Values);
+		AllBlockCategories = ParseSpecInstance<BlockCategorySpec>(deserializer, _blockCategoryDocuments.Values);
 		AllTextures = ParseSpecInstance<TextureSpec>(deserializer, _textureDocuments.Values);
 		AllVehicleResources = ParseSpecInstance<VehicleResourceSpec>(deserializer, _vehicleResourceDocuments.Values);
 		AllControlGroups = ParseSpecInstance<ControlGroupSpec>(deserializer, _controlGroupDocuments.Values);
-		AllBlockCategories = ParseSpecInstance<BlockCategorySpec>(deserializer, _blockCategoryDocuments.Values);
 	}
 
-	private static IReadOnlyCollection<SpecInstance<T>> ParseSpecInstance<T>(
+	private static IReadOnlyList<SpecInstance<T>> ParseSpecInstance<T>(
 		IDeserializer deserializer, IEnumerable<GameSpecDocument> documents
 	)
 	{
 		List<SpecInstance<T>> instances = new List<SpecInstance<T>>();
 
-		foreach (GameSpecDocument document in documents)
+		var documentList = documents.ToList();
+
+		for (var i = 0; i < documentList.Count; i++)
 		{
+			GameSpecDocument document = documentList[i];
+
+			lock (LoadStateLock)
+			{
+				LoadState = State.ParseDocuments;
+				LoadProgress = Tuple.Create(i + 1, documentList.Count);
+				LoadDescription = null;
+			}
+
 			try
 			{
 				var spec = deserializer.Deserialize<T>(new YamlStreamParserAdapter(document.SpecDocument.RootNode));
@@ -399,7 +461,25 @@ public static class ModLoader
 		return instances;
 	}
 
+	#endregion
+
+	#region Validate Documents
+
 	private static void ValidateData()
+	{
+		lock (LoadStateLock)
+		{
+			LoadState = State.ValidateDocuments;
+			LoadProgress = null;
+			LoadDescription = null;
+		}
+
+		ValidateBlocks();
+		ValidateTextures();
+		ValidateVehicleResources();
+	}
+
+	private static void ValidateBlocks()
 	{
 		HashSet<string> textureIds = new HashSet<string>(AllTextures.Select(instance => instance.Spec.TextureId));
 		HashSet<string> resourceIds =
@@ -421,7 +501,7 @@ public static class ModLoader
 			{
 				foreach (string resourceId in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
 				{
-					ValidateResourceId(resourceId, instance.Spec.BlockId, resourceIds);
+					ValidateVehicleResourceId(resourceId, instance.Spec.BlockId, resourceIds);
 				}
 
 				if (instance.Spec.Propulsion.Engine.Particles != null)
@@ -437,7 +517,7 @@ public static class ModLoader
 			{
 				foreach (string resourceId in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
 				{
-					ValidateResourceId(resourceId, instance.Spec.BlockId, resourceIds);
+					ValidateVehicleResourceId(resourceId, instance.Spec.BlockId, resourceIds);
 				}
 
 				if (instance.Spec.Propulsion.OmniThruster.Particles != null)
@@ -449,29 +529,11 @@ public static class ModLoader
 				}
 			}
 		}
-
-		foreach (SpecInstance<TextureSpec> instance in AllTextures)
-		{
-			if (!File.Exists(instance.Spec.ImagePath))
-			{
-				Debug.LogError(
-					$"Texture {instance.Spec.TextureId} references image at {instance.Spec.ImagePath} which does not exist"
-				);
-			}
-		}
-
-		foreach (SpecInstance<VehicleResourceSpec> instance in AllVehicleResources)
-		{
-			if (!ColorUtility.TryParseHtmlString(instance.Spec.DisplayColor, out Color _))
-			{
-				Debug.LogError(
-					$"VehicleResource {instance.Spec.ResourceId} has invalid color {instance.Spec.DisplayColor}"
-				);
-			}
-		}
 	}
 
-	private static void ValidateResourceId(string checkResourceId, string blockId, ICollection<string> validResourceIds)
+	private static void ValidateVehicleResourceId(
+		string checkResourceId, string blockId, ICollection<string> validResourceIds
+	)
 	{
 		if (!validResourceIds.Contains(checkResourceId))
 		{
@@ -495,19 +557,56 @@ public static class ModLoader
 
 				break;
 			default:
-				if (!ColorUtility.TryParseHtmlString(color, out Color _))
-				{
-					Debug.LogError(
-						$"{component} in {blockId} uses invalid color {color}"
-					);
-				}
+				// TODO ColorUtility.TryParseHtmlString cannot be called outside main thread
+				// if (!ColorUtility.TryParseHtmlString(color, out Color _))
+				// {
+				// 	Debug.LogError(
+				// 		$"{component} in {blockId} uses invalid color {color}"
+				// 	);
+				// }
 
 				break;
 		}
 	}
 
+	private static void ValidateTextures()
+	{
+		foreach (SpecInstance<TextureSpec> instance in AllTextures)
+		{
+			if (!File.Exists(instance.Spec.ImagePath))
+			{
+				Debug.LogError(
+					$"Texture {instance.Spec.TextureId} references image at {instance.Spec.ImagePath} which does not exist"
+				);
+			}
+		}
+	}
+
+	private static void ValidateVehicleResources()
+	{
+		foreach (SpecInstance<VehicleResourceSpec> instance in AllVehicleResources)
+		{
+			// TODO ColorUtility.TryParseHtmlString cannot be called outside main thread
+			// if (!ColorUtility.TryParseHtmlString(instance.Spec.DisplayColor, out Color _))
+			// {
+			// 	Debug.LogError(
+			// 		$"VehicleResource {instance.Spec.ResourceId} has invalid color {instance.Spec.DisplayColor}"
+			// 	);
+			// }
+		}
+	}
+
+	#endregion
+
 	private static void ComputeChecksum()
 	{
+		lock (LoadStateLock)
+		{
+			LoadState = State.Finalize;
+			LoadProgress = null;
+			LoadDescription = null;
+		}
+
 		unchecked
 		{
 			uint blockSpecChecksum = GetChecksum(_blockDocuments.Values);
@@ -526,7 +625,5 @@ public static class ModLoader
 			.AsSequential()
 			.Aggregate(0u, (sum, item) => sum + item);
 	}
-
-	#endregion
 }
 }

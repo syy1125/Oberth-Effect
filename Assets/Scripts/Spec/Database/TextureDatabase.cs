@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {
-public class TextureDatabase : MonoBehaviour
+public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 {
 	public static TextureDatabase Instance { get; private set; }
 
@@ -28,15 +28,13 @@ public class TextureDatabase : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
-
-		Reload();
-		_sprites = new Dictionary<string, Sprite>();
 	}
 
-	private void Reload()
+	public void Reload()
 	{
 		_specs = ModLoader.AllTextures
 			.ToDictionary(instance => instance.Spec.TextureId, instance => instance);
+		_sprites = new Dictionary<string, Sprite>();
 		Debug.Log($"Loaded {_specs.Count} texture specs");
 	}
 
@@ -45,6 +43,17 @@ public class TextureDatabase : MonoBehaviour
 		if (Instance == this)
 		{
 			Instance = null;
+		}
+	}
+
+	public void LoadTextures()
+	{
+		foreach (string textureId in _specs.Keys)
+		{
+			if (!_sprites.ContainsKey(textureId))
+			{
+				_sprites.Add(textureId, LoadSprite(textureId));
+			}
 		}
 	}
 
@@ -62,19 +71,25 @@ public class TextureDatabase : MonoBehaviour
 	{
 		if (!_sprites.TryGetValue(textureId, out Sprite sprite))
 		{
-			var instance = _specs[textureId];
-
-			// Reference: https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html
-			var texture = new Texture2D(2, 2);
-			texture.LoadImage(File.ReadAllBytes(instance.Spec.ImagePath));
-
-			sprite = Sprite.Create(
-				texture, new Rect(0f, 0f, texture.width, texture.height),
-				instance.Spec.Pivot, instance.Spec.PixelsPerUnit
-			);
+			sprite = LoadSprite(textureId);
 			_sprites.Add(textureId, sprite);
 		}
 
+		return sprite;
+	}
+
+	private Sprite LoadSprite(string textureId)
+	{
+		var instance = _specs[textureId];
+
+		// Reference: https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html
+		var texture = new Texture2D(2, 2);
+		texture.LoadImage(File.ReadAllBytes(instance.Spec.ImagePath));
+
+		var sprite = Sprite.Create(
+			texture, new Rect(0f, 0f, texture.width, texture.height),
+			instance.Spec.Pivot, instance.Spec.PixelsPerUnit
+		);
 		return sprite;
 	}
 }

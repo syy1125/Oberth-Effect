@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {
-public class ControlGroupDatabase : MonoBehaviour
+public class ControlGroupDatabase : MonoBehaviour, IGameContentDatabase
 {
 	public static ControlGroupDatabase Instance { get; private set; }
 
@@ -23,11 +23,9 @@ public class ControlGroupDatabase : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
-
-		Reload();
 	}
 
-	private void Reload()
+	public void Reload()
 	{
 		_specs = ModLoader.AllControlGroups.ToDictionary(
 			instance => instance.Spec.ControlGroupId, instance => instance
