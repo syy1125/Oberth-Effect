@@ -607,7 +607,7 @@ public static class ModLoader
 			BasicChecksum = ComputeChecksumAtLevel(ChecksumLevel.Basic);
 			StrictChecksum = ComputeChecksumAtLevel(ChecksumLevel.Strict);
 			FullChecksum = ComputeChecksumAtLevel(ChecksumLevel.Everything);
-			Debug.Log($"{BasicChecksum:x4} {StrictChecksum:x4} {FullChecksum:x4}");
+			Debug.Log($"Checksums: basic {BasicChecksum:x4} / strict {StrictChecksum:x4} / full {FullChecksum:x4}");
 		}
 	}
 
