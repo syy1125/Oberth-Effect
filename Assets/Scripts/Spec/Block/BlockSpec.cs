@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
@@ -33,15 +34,15 @@ public class BlockSpec : ICustomChecksum
 
 	public VolatileSpec Volatile;
 
-	public uint GetChecksum(ChecksumLevel level)
+	public void GetBytes(Stream stream, ChecksumLevel level)
 	{
 		if (!Enabled && level < ChecksumLevel.Everything)
 		{
-			return 0u;
+			return;
 		}
 		else
 		{
-			return ChecksumHelper.GetRecursiveChecksum(GetType(), this, level);
+			ChecksumHelper.GetBytesFromFields(stream, GetType(), this, level);
 		}
 	}
 }

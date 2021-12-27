@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public abstract class AbstractWeaponEffectSpec
 
 	public Dictionary<string, float> MaxResourceUse;
 
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] FireParticles;
 }
 }

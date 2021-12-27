@@ -1,7 +1,9 @@
-﻿namespace Syy1125.OberthEffect.Spec.Checksum
+﻿using System.IO;
+
+namespace Syy1125.OberthEffect.Spec.Checksum
 {
 public interface ICustomChecksum
 {
-	uint GetChecksum(ChecksumLevel level);
+	void GetBytes(Stream stream, ChecksumLevel level);
 }
 }

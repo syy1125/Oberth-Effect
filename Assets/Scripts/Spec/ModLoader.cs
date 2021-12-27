@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -206,9 +207,9 @@ public static class ModLoader
 	private static Dictionary<string, GameSpecDocument> _blockCategoryDocuments;
 	internal static IReadOnlyList<SpecInstance<BlockCategorySpec>> AllBlockCategories;
 
-	public static uint BasicChecksum { get; private set; }
-	public static uint StrictChecksum { get; private set; }
-	public static uint FullChecksum { get; private set; }
+	public static ushort BasicChecksum { get; private set; }
+	public static ushort StrictChecksum { get; private set; }
+	public static ushort FullChecksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
 
@@ -610,19 +611,22 @@ public static class ModLoader
 		}
 	}
 
-	private static uint ComputeChecksumAtLevel(ChecksumLevel level)
+	private static ushort ComputeChecksumAtLevel(ChecksumLevel level)
 	{
-		uint blockSpecChecksum = GetChecksum(AllBlocks, level);
-		uint blockCategorySpecChecksum = GetChecksum(AllBlockCategories, level);
-		uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
-		uint vehicleResourceChecksum = GetChecksum(AllVehicleResources, level);
-		uint controlGroupChecksum = GetChecksum(AllControlGroups, level);
+		ushort blockSpecChecksum = GetChecksum(AllBlocks, level);
+		ushort blockCategorySpecChecksum = GetChecksum(AllBlockCategories, level);
+		ushort textureSpecChecksum = GetChecksum(AllTextures, level);
+		ushort vehicleResourceChecksum = GetChecksum(AllVehicleResources, level);
+		ushort controlGroupChecksum = GetChecksum(AllControlGroups, level);
 
-		return blockSpecChecksum
-		       + blockCategorySpecChecksum
-		       + textureSpecChecksum
-		       + vehicleResourceChecksum
-		       + controlGroupChecksum;
+		// Convert throws OverflowException even in unchecked. So start with uint and then truncate it down to ushort.
+		return (ushort) Convert.ToUInt32(
+			blockSpecChecksum
+			+ blockCategorySpecChecksum
+			+ textureSpecChecksum
+			+ vehicleResourceChecksum
+			+ controlGroupChecksum
+		);
 	}
 
 	private static uint GetChecksum(IEnumerable<GameSpecDocument> values)
@@ -634,9 +638,29 @@ public static class ModLoader
 			.Aggregate(0u, (sum, item) => sum + item);
 	}
 
-	private static uint GetChecksum<T>(IEnumerable<SpecInstance<T>> values, ChecksumLevel level)
+	private static ushort GetChecksum<T>(IEnumerable<SpecInstance<T>> values, ChecksumLevel level)
 	{
-		return values.Aggregate(0u, (sum, item) => sum + ChecksumHelper.GetChecksum(item.Spec, level));
+		using MD5 md5 = MD5.Create();
+		ulong sum = 0;
+
+		foreach (SpecInstance<T> value in values)
+		{
+			using MemoryStream stream = new MemoryStream();
+			ChecksumHelper.GetBytes(stream, value.Spec, level);
+			stream.Seek(0, SeekOrigin.Begin);
+			byte[] checksum = md5.ComputeHash(stream);
+
+			// The order of the files should not matter, so we need to combine the checksums in an order-independent way.
+			// So far, addition, as a simple associative and commutative operation, seems to work well.
+			sum += BitConverter.ToUInt64(checksum, 0);
+		}
+
+		return CompactChecksum(sum);
+	}
+
+	private static ushort CompactChecksum(ulong sum)
+	{
+		return (ushort) ((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) | 0xffff));
 	}
 }
 }

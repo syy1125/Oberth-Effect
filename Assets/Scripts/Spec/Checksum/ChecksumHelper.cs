@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Checksum
@@ -11,27 +13,27 @@ public static class ChecksumHelper
 {
 	private const BindingFlags FIELD_FLAGS = BindingFlags.Public | BindingFlags.Instance;
 
-	public static uint GetChecksum(object target, ChecksumLevel level)
+	public static void GetBytes(Stream stream, object target, ChecksumLevel level)
 	{
-		return GetObjectChecksum(target.GetType(), target, level);
+		GetBytes(stream, target.GetType(), target, level);
 	}
 
-	public static uint GetObjectChecksum(Type objectType, object value, ChecksumLevel level)
+	public static void GetBytes(Stream stream, Type objectType, object value, ChecksumLevel level)
 	{
-		if (value == null) return 0u;
+		if (value == null) return;
 
 		// Check for direct checksum computation
 		if (objectType == typeof(float))
 		{
-			return GetPrimitiveChecksum((float) value);
+			GetBytesFromPrimitive(stream, (float) value);
 		}
 		else if (objectType == typeof(int))
 		{
-			return GetPrimitiveChecksum((int) value);
+			GetBytesFromPrimitive(stream, (int) value);
 		}
 		else if (objectType == typeof(bool))
 		{
-			return GetPrimitiveChecksum((bool) value);
+			GetBytesFromPrimitive(stream, (bool) value);
 		}
 		else if (objectType.IsPrimitive)
 		{
@@ -39,21 +41,19 @@ public static class ChecksumHelper
 		}
 		else if (typeof(string).IsAssignableFrom(objectType))
 		{
-			return ((string) value).Aggregate(0u, (sum, c) => sum + Convert.ToUInt32(c));
+			GetBytesFromString(stream, (string) value);
 		}
 		else if (typeof(Vector2Int).IsAssignableFrom(objectType))
 		{
-			Vector2Int v = (Vector2Int) value;
-			return GetPrimitiveChecksum(v.x) + GetPrimitiveChecksum(v.y);
+			GetBytesFromVector(stream, (Vector2Int) value);
 		}
 		else if (typeof(Vector2).IsAssignableFrom(objectType))
 		{
-			Vector2 v = (Vector2) value;
-			return GetPrimitiveChecksum(v.x) + GetPrimitiveChecksum(v.y);
+			GetBytesFromVector(stream, (Vector2) value);
 		}
 		else if (typeof(ICustomChecksum).IsAssignableFrom(objectType))
 		{
-			return ((ICustomChecksum) value).GetChecksum(level);
+			((ICustomChecksum) value).GetBytes(stream, level);
 		}
 		else
 		{
@@ -63,7 +63,8 @@ public static class ChecksumHelper
 
 			if (dictionaryType != null)
 			{
-				return GetDictionaryChecksum(dictionaryType, value, level);
+				GetBytesFromDictionary(stream, dictionaryType, (IDictionary) value, level);
+				return;
 			}
 
 			// Check for enumerable of checksum-capable objects
@@ -72,18 +73,17 @@ public static class ChecksumHelper
 
 			if (enumerableType != null)
 			{
-				return GetEnumerableChecksum(value, level, enumerableType);
+				GetBytesFromEnumerable(stream, enumerableType, (IEnumerable) value, level);
+				return;
 			}
 
 			// No special case, do recursive checksum
-			return GetRecursiveChecksum(objectType, value, level);
+			GetBytesFromFields(stream, objectType, value, level);
 		}
 	}
 
-	public static uint GetRecursiveChecksum(Type parentType, object parent, ChecksumLevel level)
+	public static void GetBytesFromFields(Stream stream, Type parentType, object parent, ChecksumLevel level)
 	{
-		uint checksum = 0u;
-
 		FieldInfo[] fields = parentType.GetFields(FIELD_FLAGS);
 
 		foreach (FieldInfo field in fields.OrderBy(field => field.Name))
@@ -98,55 +98,90 @@ public static class ChecksumHelper
 			}
 
 			object fieldValue = field.GetValue(parent);
-			checksum += GetObjectChecksum(field.FieldType, fieldValue, level);
+			GetBytes(stream, field.FieldType, fieldValue, level);
 		}
-
-		return checksum;
 	}
 
-	private static uint GetPrimitiveChecksum(float value)
+	public static void GetBytesFromPrimitive(Stream stream, float value)
 	{
 		byte[] bytes = BitConverter.GetBytes(value);
-		return (uint) (bytes[0] + bytes[1] + bytes[2] + bytes[3]);
+		stream.Write(bytes, 0, bytes.Length);
 	}
 
-	private static uint GetPrimitiveChecksum(int value)
+	public static void GetBytesFromPrimitive(Stream stream, int value)
 	{
 		byte[] bytes = BitConverter.GetBytes(value);
-		return (uint) (bytes[0] + bytes[1] + bytes[2] + bytes[3]);
+		stream.Write(bytes, 0, bytes.Length);
 	}
 
-	private static uint GetPrimitiveChecksum(bool value)
+	public static void GetBytesFromPrimitive(Stream stream, bool value)
 	{
-		return Convert.ToUInt32(value);
+		stream.WriteByte(Convert.ToByte(value));
 	}
 
-	private static uint GetDictionaryChecksum(Type dictionaryType, object value, ChecksumLevel level)
+	public static void GetBytesFromString(Stream stream, string value)
+	{
+		byte[] bytes = Encoding.UTF8.GetBytes(value);
+		stream.Write(bytes, 0, bytes.Length);
+	}
+
+	public static void GetBytesFromVector(Stream stream, Vector2Int value)
+	{
+		GetBytesFromPrimitive(stream, value.x);
+		GetBytesFromPrimitive(stream, value.y);
+	}
+
+	public static void GetBytesFromVector(Stream stream, Vector2 value)
+	{
+		GetBytesFromPrimitive(stream, value.x);
+		GetBytesFromPrimitive(stream, value.y);
+	}
+
+	public static void GetBytesFromDictionary(Stream stream, Type dictionaryType, IDictionary dict, ChecksumLevel level)
 	{
 		Type keyType = dictionaryType.GetGenericArguments()[0];
 		Type valueType = dictionaryType.GetGenericArguments()[1];
 
-		var enumerator = ((IDictionary) value).GetEnumerator();
-
-		// LINQ .Cast<DictionaryEntry>() raised InvalidCastException
-		uint checksum = 0u;
-
-		while (enumerator.MoveNext())
+		if (!typeof(string).IsAssignableFrom(keyType))
 		{
-			checksum += GetObjectChecksum(keyType, enumerator.Key, level)
-			            ^ GetObjectChecksum(valueType, enumerator.Value, level);
+			Debug.LogError($"Only dictionaries with string keys are supported in checksums.");
+			return;
 		}
 
-		return checksum;
+		List<Tuple<string, object>> entries = new List<Tuple<string, object>>();
+
+		// LINQ .Cast<DictionaryEntry>() raised InvalidCastException
+		var enumerator = dict.GetEnumerator();
+		while (enumerator.MoveNext())
+		{
+			entries.Add(Tuple.Create((string) enumerator.Key, enumerator.Value));
+		}
+
+		// Impose uniform ordering to avoid issues with keys getting ordered differently on different machines.
+		entries.Sort(CompareDictionaryEntries);
+
+		foreach ((string key, object value) in entries)
+		{
+			GetBytes(stream, keyType, key, level);
+			GetBytes(stream, valueType, value, level);
+		}
 	}
 
-	private static uint GetEnumerableChecksum(object value, ChecksumLevel level, Type enumerableType)
+	private static int CompareDictionaryEntries(Tuple<string, object> left, Tuple<string, object> right)
+	{
+		return string.Compare(left.Item1, right.Item1, StringComparison.Ordinal);
+	}
+
+	private static void GetBytesFromEnumerable(
+		Stream stream, Type enumerableType, IEnumerable value, ChecksumLevel level
+	)
 	{
 		Type elementType = enumerableType.GetGenericArguments()[0];
 
-		return ((IEnumerable) value)
-			.Cast<object>()
-			.Aggregate(0u, (sum, item) => sum + GetObjectChecksum(elementType, item, level));
+		foreach (object item in value)
+		{
+			GetBytes(stream, elementType, item, level);
+		}
 	}
 }
 }
