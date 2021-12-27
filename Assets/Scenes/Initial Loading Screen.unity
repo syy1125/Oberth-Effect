@@ -816,3 +816,4 @@ MonoBehaviour:
     scenePath: Assets/Scenes/Main Menu.unity
   LoadText: {fileID: 783908286}
   LoadProgress: {fileID: 1926339720}
+  DatabaseTag: GameDatabase

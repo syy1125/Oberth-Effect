@@ -2,19 +2,24 @@
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
-public class BlockSpec
+public class BlockSpec : ICustomChecksum
 {
 	public string BlockId;
+	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public bool Enabled;
+	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public string CategoryId;
 	public int Cost;
+	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public InfoSpec Info;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public RendererSpec[] Renderers;
 	public ConstructionSpec Construction;
 	public PhysicsSpec Physics;
@@ -27,6 +32,18 @@ public class BlockSpec
 	public FixedWeaponSpec FixedWeapon;
 
 	public VolatileSpec Volatile;
+
+	public uint GetChecksum(ChecksumLevel level)
+	{
+		if (!Enabled && level < ChecksumLevel.Everything)
+		{
+			return 0u;
+		}
+		else
+		{
+			return ChecksumHelper.GetRecursiveChecksum(GetType(), this, level);
+		}
+	}
 }
 
 public class BlockSpecFactory : IObjectFactory

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using Syy1125.OberthEffect.Components.UserInterface;
+using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -15,6 +16,9 @@ public class GameInitializer : MonoBehaviour
 	public SceneReference MainMenuScene;
 	public Text LoadText;
 	public ProgressBar LoadProgress;
+
+	[TagField]
+	public string DatabaseTag;
 
 	private IEnumerator Start()
 	{
@@ -52,10 +56,6 @@ public class GameInitializer : MonoBehaviour
 						LoadText.text = "Validating game data";
 						LoadProgress.Progress = null;
 						break;
-					case ModLoader.State.Finalize:
-						LoadText.text = "Finalizing";
-						LoadProgress.Progress = null;
-						break;
 					default:
 						LoadText.text = "";
 						LoadProgress.Progress = null;
@@ -75,13 +75,15 @@ public class GameInitializer : MonoBehaviour
 		LoadText.text = "Initializing database";
 		LoadProgress.Progress = null;
 
+		IGameContentDatabase[] databases = GameObject.FindWithTag(DatabaseTag).GetComponents<IGameContentDatabase>();
+
 		Task dbTask = Task.Run(
 			() =>
 			{
-				BlockDatabase.Instance.Reload();
-				ControlGroupDatabase.Instance.Reload();
-				TextureDatabase.Instance.Reload();
-				VehicleResourceDatabase.Instance.Reload();
+				foreach (IGameContentDatabase database in databases)
+				{
+					database.Reload();
+				}
 			}
 		);
 
@@ -92,6 +94,12 @@ public class GameInitializer : MonoBehaviour
 
 		Task textureTask = Task.Run(TextureDatabase.Instance.LoadTextures);
 		yield return new WaitUntil(() => textureTask.IsCompleted);
+
+		LoadText.text = "Finalizing";
+		LoadProgress.Progress = null;
+
+		Task checksumTask = Task.Run(ModLoader.ComputeChecksum);
+		yield return new WaitUntil(() => checksumTask.IsCompleted);
 
 		LoadText.text = "Starting game";
 		LoadProgress.Progress = null;

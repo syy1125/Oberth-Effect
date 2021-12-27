@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Syy1125.OberthEffect.Spec.Checksum;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {
@@ -17,6 +19,8 @@ public class DebugDatabaseInitializer : MonoBehaviour
 			{
 				database.Reload();
 			}
+
+			ModLoader.ComputeChecksum();
 		}
 	}
 }

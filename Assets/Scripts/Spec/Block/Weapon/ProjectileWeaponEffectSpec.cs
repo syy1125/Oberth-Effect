@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Spec.Unity;
+﻿using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block.Weapon
@@ -27,7 +28,9 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	public float HealthDamageScaling = 0.8f;
 
 	public float ReloadTime;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public RendererSpec[] Renderers;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] ProjectileParticles;
 }
 }

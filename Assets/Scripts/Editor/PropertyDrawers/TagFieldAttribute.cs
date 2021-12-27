@@ -5,16 +5,16 @@ using UnityEditor;
 
 namespace Syy1125.OberthEffect.Editor.PropertyDrawers
 {
-public class UnityLayerAttribute : PropertyAttribute
+public class TagFieldAttribute : PropertyAttribute
 {}
 
 #if UNITY_EDITOR
-[CustomPropertyDrawer(typeof(UnityLayerAttribute))]
-public class UnityLayerAttributeEditor : PropertyDrawer
+[CustomPropertyDrawer(typeof(TagFieldAttribute))]
+public class TagFieldAttributeEditor : PropertyDrawer
 {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
-		property.intValue = EditorGUI.LayerField(position, label, property.intValue);
+		property.stringValue = EditorGUI.TagField(position, label, property.stringValue);
 	}
 }
 #endif

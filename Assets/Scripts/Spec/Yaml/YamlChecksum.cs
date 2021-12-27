@@ -10,7 +10,7 @@ public static class YamlChecksum
 	{
 		return document.AllNodes
 			.OfType<YamlScalarNode>()
-			.Select(node => node.Value.Aggregate(0u, (sum, item) => sum + Convert.ToUInt32(item)))
+			.SelectMany(node => node.Value, (_, c) => Convert.ToUInt32(c))
 			.Aggregate(0u, (sum, item) => sum + item);
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Yaml;
@@ -41,11 +42,10 @@ public static class ModLoader
 		LoadModList,
 		LoadDocuments,
 		ParseDocuments,
-		ValidateDocuments,
-		Finalize
+		ValidateDocuments
 	}
 
-	public static object LoadStateLock = new object();
+	public static readonly object LoadStateLock = new object();
 	public static State LoadState;
 	public static Tuple<int, int> LoadProgress;
 	public static string LoadDescription;
@@ -206,7 +206,9 @@ public static class ModLoader
 	private static Dictionary<string, GameSpecDocument> _blockCategoryDocuments;
 	internal static IReadOnlyList<SpecInstance<BlockCategorySpec>> AllBlockCategories;
 
-	public static uint Checksum { get; private set; }
+	public static uint BasicChecksum { get; private set; }
+	public static uint StrictChecksum { get; private set; }
+	public static uint FullChecksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
 
@@ -223,7 +225,6 @@ public static class ModLoader
 		LoadDocuments();
 		ParseDocuments();
 		ValidateData();
-		ComputeChecksum();
 		DataReady = true;
 	}
 
@@ -598,23 +599,30 @@ public static class ModLoader
 
 	#endregion
 
-	private static void ComputeChecksum()
+	public static void ComputeChecksum()
 	{
-		lock (LoadStateLock)
-		{
-			LoadState = State.Finalize;
-			LoadProgress = null;
-			LoadDescription = null;
-		}
-
 		unchecked
 		{
-			uint blockSpecChecksum = GetChecksum(_blockDocuments.Values);
-			uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
-			uint vehicleResourceChecksum = GetChecksum(_vehicleResourceDocuments.Values);
-
-			Checksum = blockSpecChecksum + textureSpecChecksum + vehicleResourceChecksum;
+			BasicChecksum = ComputeChecksumAtLevel(ChecksumLevel.Basic);
+			StrictChecksum = ComputeChecksumAtLevel(ChecksumLevel.Strict);
+			FullChecksum = ComputeChecksumAtLevel(ChecksumLevel.Everything);
+			Debug.Log($"{BasicChecksum:x4} {StrictChecksum:x4} {FullChecksum:x4}");
 		}
+	}
+
+	private static uint ComputeChecksumAtLevel(ChecksumLevel level)
+	{
+		uint blockSpecChecksum = GetChecksum(AllBlocks, level);
+		uint blockCategorySpecChecksum = GetChecksum(AllBlockCategories, level);
+		uint textureSpecChecksum = GetChecksum(_textureDocuments.Values);
+		uint vehicleResourceChecksum = GetChecksum(AllVehicleResources, level);
+		uint controlGroupChecksum = GetChecksum(AllControlGroups, level);
+
+		return blockSpecChecksum
+		       + blockCategorySpecChecksum
+		       + textureSpecChecksum
+		       + vehicleResourceChecksum
+		       + controlGroupChecksum;
 	}
 
 	private static uint GetChecksum(IEnumerable<GameSpecDocument> values)
@@ -624,6 +632,11 @@ public static class ModLoader
 			.Select(document => YamlChecksum.GetChecksum(document.SpecDocument))
 			.AsSequential()
 			.Aggregate(0u, (sum, item) => sum + item);
+	}
+
+	private static uint GetChecksum<T>(IEnumerable<SpecInstance<T>> values, ChecksumLevel level)
+	{
+		return values.Aggregate(0u, (sum, item) => sum + ChecksumHelper.GetChecksum(item.Spec, level));
 	}
 }
 }

@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Spec.Unity;
+﻿using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.Unity;
 
 namespace Syy1125.OberthEffect.Spec.Block.Weapon
 {
@@ -16,8 +17,11 @@ public class BurstBeamWeaponEffectSpec : AbstractWeaponEffectSpec
 	public float DurationSeconds;
 	public float MaxRange;
 
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public float BeamWidth;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public string BeamColor;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] HitParticles;
 }
 }
