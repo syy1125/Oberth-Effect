@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Init;
 using UnityEngine;
 using UnityEngine.Events;
@@ -24,9 +26,11 @@ public class KeybindScreen : MonoBehaviour
 	[Header("Events")]
 	public UnityEvent OnClose;
 
+	private bool _canRevert;
+
 	private void OnEnable()
 	{
-		RevertButton.interactable = false;
+		_canRevert = false;
 		ResetButton.interactable = InputActions.Any(KeybindManager.HasOverride);
 	}
 
@@ -36,6 +40,22 @@ public class KeybindScreen : MonoBehaviour
 		RevertButton.onClick.AddListener(RevertBindings);
 		ResetButton.onClick.AddListener(ResetBindings);
 		SaveButton.onClick.AddListener(SaveBindings);
+	}
+
+	private void Update()
+	{
+		RevertButton.interactable = KeybindManager.Instance.Ready && _canRevert;
+
+		if (KeybindManager.Instance.Ready)
+		{
+			RevertButton.interactable = _canRevert;
+			RevertButton.GetComponent<Tooltip>().SetTooltip(null);
+		}
+		else
+		{
+			RevertButton.interactable = false;
+			RevertButton.GetComponent<Tooltip>().SetTooltip("A keybind save/load operation is currently in progress.");
+		}
 	}
 
 	public void SetBindingStatus(string status)
@@ -51,13 +71,13 @@ public class KeybindScreen : MonoBehaviour
 
 	public void AfterRebind()
 	{
-		RevertButton.interactable = true;
+		_canRevert = true;
 		ResetButton.interactable = InputActions.Any(KeybindManager.HasOverride);
 	}
 
 	private void BackToMenu()
 	{
-		RevertBindings();
+		KeybindManager.Instance.LoadKeybinds();
 		OnClose.Invoke();
 	}
 
@@ -70,7 +90,7 @@ public class KeybindScreen : MonoBehaviour
 			row.UpdateBindingDisplay();
 		}
 
-		RevertButton.interactable = false;
+		_canRevert = false;
 		ResetButton.interactable = InputActions.Any(KeybindManager.HasOverride);
 	}
 
@@ -92,14 +112,14 @@ public class KeybindScreen : MonoBehaviour
 			row.UpdateBindingDisplay();
 		}
 
-		RevertButton.interactable |= changed;
+		_canRevert |= changed;
 		ResetButton.interactable = false;
 	}
 
 	private void SaveBindings()
 	{
 		KeybindManager.Instance.SaveKeybinds();
-		BackToMenu();
+		OnClose.Invoke();
 	}
 }
 }

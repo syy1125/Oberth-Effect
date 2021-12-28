@@ -103,7 +103,6 @@ public class KeybindRow : MonoBehaviour
 		// Reset the delay to 0 to get around that issue.
 		_operation.OnMatchWaitForAnother(0f);
 
-
 		if (!string.IsNullOrWhiteSpace(CancelControlPath))
 		{
 			_operation.WithCancelingThrough(CancelControlPath);
@@ -111,6 +110,7 @@ public class KeybindRow : MonoBehaviour
 
 		_operation
 			.OnPotentialMatch(CheckConflicts)
+			.OnApplyBinding(ApplyBinding)
 			.OnComplete(CompleteBinding)
 			.OnCancel(ClearBinding);
 
@@ -189,6 +189,16 @@ public class KeybindRow : MonoBehaviour
 		return $"{action.actionMap.name}/{action.name}";
 	}
 
+	private void ApplyBinding(InputActionRebindingExtensions.RebindingOperation operation, string path)
+	{
+		if (path != TargetAction.action.bindings[_rebindIndex].effectivePath)
+		{
+			TargetAction.action.ApplyBindingOverride(_rebindIndex, path);
+			Debug.Log($"{Label.text} rebound to {TargetAction.action.bindings[_rebindIndex].effectivePath}");
+			GetComponentInParent<KeybindScreen>().AfterRebind();
+		}
+	}
+
 	private void ClearBinding(InputActionRebindingExtensions.RebindingOperation operation)
 	{
 		Debug.Log($"Clearing binding for {Label.text}");
@@ -201,9 +211,6 @@ public class KeybindRow : MonoBehaviour
 
 	private void CompleteBinding(InputActionRebindingExtensions.RebindingOperation operation)
 	{
-		Debug.Log($"{Label.text} rebound to {TargetAction.action.bindings[_rebindIndex].effectivePath}");
-
-		GetComponentInParent<KeybindScreen>().AfterRebind();
 		EndRebind();
 	}
 

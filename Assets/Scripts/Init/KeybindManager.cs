@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 namespace Syy1125.OberthEffect.Init
 {
@@ -16,9 +20,14 @@ public struct KeybindOverride
 }
 
 [Serializable]
-public struct KeybindProfile
+public class KeybindProfile
 {
 	public KeybindOverride[] Overrides;
+
+	public KeybindProfile()
+	{
+		Overrides = new KeybindOverride[0];
+	}
 }
 
 public class KeybindManager : MonoBehaviour
@@ -26,6 +35,9 @@ public class KeybindManager : MonoBehaviour
 	public static KeybindManager Instance { get; private set; }
 
 	public InputActionAsset InputActions;
+
+	private KeybindProfile _profile;
+	public bool Ready { get; private set; } = true;
 
 	private void Awake()
 	{
@@ -49,31 +61,96 @@ public class KeybindManager : MonoBehaviour
 		}
 	}
 
-	public void LoadKeybinds()
+	public Coroutine LoadKeybinds()
 	{
-		foreach (InputAction action in InputActions)
-		{
-			action.RemoveAllBindingOverrides();
-		}
-
-		string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
-
-		if (File.Exists(profilePath))
-		{
-			KeybindProfile profile = JsonUtility.FromJson<KeybindProfile>(File.ReadAllText(profilePath));
-
-			Debug.Log($"Loaded {profile.Overrides.Length} keybind overrides");
-
-			foreach (KeybindOverride item in profile.Overrides)
-			{
-				InputActions[item.ActionId].ApplyBindingOverride(item.BindingIndex, item.OverridePath);
-			}
-		}
+		if (!Ready) throw new Exception("Keybind manager is not ready");
+		return StartCoroutine(DoLoadKeybinds());
 	}
 
-	public void SaveKeybinds()
+	private IEnumerator DoLoadKeybinds()
 	{
-		string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
+		Ready = false;
+
+		if (_profile == null)
+		{
+			string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
+
+			if (File.Exists(profilePath))
+			{
+				Task<string> readTask = Task.Run(() => File.ReadAllText(profilePath));
+				yield return new WaitUntil(() => readTask.IsCompleted);
+
+				_profile = JsonUtility.FromJson<KeybindProfile>(readTask.Result);
+			}
+			else
+			{
+				_profile = new KeybindProfile();
+			}
+		}
+
+		Debug.Log($"Loaded {_profile.Overrides.Length} keybind overrides");
+
+		var overrides = new Dictionary<string, Dictionary<int, string>>();
+		foreach (KeybindOverride item in _profile.Overrides)
+		{
+			if (!overrides.TryGetValue(item.ActionId, out var actionOverride))
+			{
+				actionOverride = new Dictionary<int, string>();
+				overrides.Add(item.ActionId, actionOverride);
+			}
+
+			actionOverride.Add(item.BindingIndex, item.OverridePath);
+		}
+
+		long startTime = Stopwatch.GetTimestamp();
+		long timestamp = startTime;
+		long timeThreshold = Stopwatch.Frequency / 50; // 20ms
+		int frames = 0;
+
+		foreach (InputAction action in InputActions)
+		{
+			if (overrides.TryGetValue(action.id.ToString(), out var actionOverrides))
+			{
+				for (int i = 0; i < action.bindings.Count; i++)
+				{
+					if (actionOverrides.TryGetValue(i, out string overridePath))
+					{
+						action.ApplyBindingOverride(i, overridePath);
+					}
+					else if (HasOverride(action.bindings[i]))
+					{
+						action.RemoveBindingOverride(i);
+					}
+				}
+			}
+			else if (HasOverride(action))
+			{
+				action.RemoveAllBindingOverrides();
+			}
+
+			long time = Stopwatch.GetTimestamp();
+			if (time - timestamp > timeThreshold)
+			{
+				timestamp = time;
+				frames++;
+				yield return null;
+			}
+		}
+
+		Debug.Log($"Reloading keybind overrides took {frames + 1} frames.");
+
+		Ready = true;
+	}
+
+	public Coroutine SaveKeybinds()
+	{
+		if (!Ready) throw new Exception("Keybind manager is not ready");
+		return StartCoroutine(DoSaveKeybinds());
+	}
+
+	private IEnumerator DoSaveKeybinds()
+	{
+		Ready = false;
 
 		List<KeybindOverride> overrides = new List<KeybindOverride>();
 
@@ -99,13 +176,18 @@ public class KeybindManager : MonoBehaviour
 
 		Debug.Log($"Saving {overrides.Count} keybind overrides to profile");
 
-		KeybindProfile profile = new KeybindProfile
+		_profile = new KeybindProfile
 		{
 			Overrides = overrides.ToArray()
 		};
 
-		string content = JsonUtility.ToJson(profile);
-		File.WriteAllText(profilePath, content);
+		string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
+		string content = JsonUtility.ToJson(_profile);
+
+		Task writeTask = Task.Run(() => File.WriteAllText(profilePath, content));
+		yield return new WaitUntil(() => writeTask.IsCompleted);
+
+		Ready = true;
 	}
 
 	public static bool HasOverride(InputAction action)
