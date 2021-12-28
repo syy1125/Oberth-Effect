@@ -20,7 +20,7 @@ public class KeybindDisplay : MonoBehaviour
 	public BindingDisplayToken[] Tokens;
 	public string Separator;
 
-	private const InputControlPath.HumanReadableStringOptions PATH_OPTIONS =
+	public const InputControlPath.HumanReadableStringOptions PATH_OPTIONS =
 		InputControlPath.HumanReadableStringOptions.OmitDevice
 		| InputControlPath.HumanReadableStringOptions.UseShortNames;
 

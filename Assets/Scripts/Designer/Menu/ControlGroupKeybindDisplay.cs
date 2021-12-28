@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Syy1125.OberthEffect.Components.UserInterface;
+using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,30 +9,23 @@ namespace Syy1125.OberthEffect.Designer.Menu
 {
 public class ControlGroupKeybindDisplay : MonoBehaviour
 {
-	public Text AppendKeybind;
-	public Text AppendDescription;
+	public GameObject DisplayPrefab;
+	public Transform Parent;
 
 	private void Start()
 	{
-		StringBuilder keybindBuilder = new StringBuilder(AppendKeybind.text);
-		StringBuilder descriptionBuilder = new StringBuilder(AppendDescription.text);
-
 		foreach (var controlGroup in ControlGroupDatabase.Instance.ListControlGroups())
 		{
-			InputAction action = new InputAction(
-				controlGroup.Spec.ControlGroupId, InputActionType.Button, controlGroup.Spec.DefaultKeybind
-			);
+			string path = KeybindManager.Instance.GetControlGroupPath(controlGroup.Spec.ControlGroupId);
 
-			keybindBuilder
-				.Append('\n')
-				.Append(action.GetBindingDisplayString().ToUpper());
-			descriptionBuilder
-				.Append('\n')
-				.Append(controlGroup.Spec.KeybindDescription);
+			if (string.IsNullOrWhiteSpace(path)) continue;
+
+			GameObject row = Instantiate(DisplayPrefab, Parent);
+			Text[] texts = row.GetComponentsInChildren<Text>();
+
+			texts[0].text = InputControlPath.ToHumanReadableString(path, KeybindDisplay.PATH_OPTIONS);
+			texts[1].text = controlGroup.Spec.KeybindDescription;
 		}
-
-		AppendKeybind.text = keybindBuilder.ToString();
-		AppendDescription.text = descriptionBuilder.ToString();
 	}
 }
 }

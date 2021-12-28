@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
@@ -121,7 +120,11 @@ public class KeybindScreen : MonoBehaviour
 
 		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
 		{
-			KeybindManager.Instance.RemoveControlGroupOverride(instance.Spec.ControlGroupId);
+			if (KeybindManager.Instance.ControlGroupHasOverride(instance.Spec.ControlGroupId))
+			{
+				KeybindManager.Instance.RemoveControlGroupOverride(instance.Spec.ControlGroupId);
+				changed = true;
+			}
 		}
 
 		foreach (var row in GetComponentsInChildren<IKeybindRow>())
