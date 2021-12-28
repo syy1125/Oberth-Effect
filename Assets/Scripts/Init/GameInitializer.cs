@@ -112,8 +112,7 @@ public class GameInitializer : MonoBehaviour
 		LoadText.text = "Loading user profile";
 		LoadProgress.Progress = null;
 
-		Task profileTask = Task.Run(KeybindManager.Instance.LoadKeybinds);
-		yield return new WaitUntil(() => profileTask.IsCompleted);
+		yield return KeybindManager.Instance.LoadKeybinds();
 
 		LoadText.text = "Starting game";
 		LoadProgress.Progress = null;
