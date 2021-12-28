@@ -1,11 +1,11 @@
-﻿using System;
-using Syy1125.OberthEffect.Spec.Checksum;
+﻿using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec.Database
+namespace Syy1125.OberthEffect.Init
 {
-// Mainly for testing purposes, this script ensures that all mod data is loaded before databases start initializing
-public class DebugDatabaseInitializer : MonoBehaviour
+// A debug counterpart to GameInitializer. It does everything synchronously in Awake.
+public class DebugGameInitializer : MonoBehaviour
 {
 	private void Awake()
 	{
@@ -21,6 +21,8 @@ public class DebugDatabaseInitializer : MonoBehaviour
 			}
 
 			ModLoader.ComputeChecksum();
+
+			KeybindManager.Instance.LoadKeybinds();
 		}
 	}
 }

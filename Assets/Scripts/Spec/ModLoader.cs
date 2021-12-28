@@ -51,11 +51,13 @@ public static class ModLoader
 	public static Tuple<int, int> LoadProgress;
 	public static string LoadDescription;
 
-	private static string _modsRoot;
+	private static string _modsRoot = null;
+	public static bool Initialized { get; private set; }
 
 	public static void Init()
 	{
 		_modsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
+		Initialized = true;
 	}
 
 

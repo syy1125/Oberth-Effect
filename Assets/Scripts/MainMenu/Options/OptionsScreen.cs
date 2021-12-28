@@ -2,7 +2,7 @@
 using Syy1125.OberthEffect.Components.UserInterface;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.MainMenu
+namespace Syy1125.OberthEffect.MainMenu.Options
 {
 public class OptionsScreen : MonoBehaviour
 {

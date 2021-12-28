@@ -20,10 +20,18 @@ public class GameInitializer : MonoBehaviour
 	[TagField]
 	public string DatabaseTag;
 
-	private IEnumerator Start()
+	private void Start()
 	{
-		ModLoader.Init();
+		if (!ModLoader.Initialized)
+		{
+			ModLoader.Init();
+		}
 
+		StartCoroutine(LoadGame());
+	}
+
+	private IEnumerator LoadGame()
+	{
 		Task loadTask = Task.Run(
 			() =>
 			{
@@ -95,11 +103,17 @@ public class GameInitializer : MonoBehaviour
 		Task textureTask = Task.Run(TextureDatabase.Instance.LoadTextures);
 		yield return new WaitUntil(() => textureTask.IsCompleted);
 
-		LoadText.text = "Finalizing";
+		LoadText.text = "Finalizing game data";
 		LoadProgress.Progress = null;
 
 		Task checksumTask = Task.Run(ModLoader.ComputeChecksum);
 		yield return new WaitUntil(() => checksumTask.IsCompleted);
+
+		LoadText.text = "Loading user profile";
+		LoadProgress.Progress = null;
+
+		Task profileTask = Task.Run(KeybindManager.Instance.LoadKeybinds);
+		yield return new WaitUntil(() => profileTask.IsCompleted);
 
 		LoadText.text = "Starting game";
 		LoadProgress.Progress = null;

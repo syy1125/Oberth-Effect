@@ -10,6 +10,7 @@ public class DesignerGridMove : MonoBehaviour
 
 	[Header("Actions")]
 	public InputActionReference PanAction;
+	public InputActionReference FastPanAction;
 	public InputActionReference DragAction;
 	public InputActionReference ZoomAction;
 	public InputActionReference ResetAction;
@@ -82,7 +83,7 @@ public class DesignerGridMove : MonoBehaviour
 		else
 		{
 			Vector2 pan = PanAction.action.ReadValue<Vector2>();
-			if (Keyboard.current.leftShiftKey.ReadValue() > 0.5f) pan *= 4f;
+			if (FastPanAction.action.ReadValue<float>() > 0.5f) pan *= 4f;
 			transform.Translate(Time.deltaTime * -5f * pan);
 		}
 	}

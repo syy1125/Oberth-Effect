@@ -28,6 +28,7 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
+	public InputActionReference InverseRotateAction;
 	public InputActionReference UsePaletteAction;
 
 	public IPaletteSelection CurrentSelection => Palette.CurrentSelection;
@@ -401,7 +402,7 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	private void HandleRotate(InputAction.CallbackContext context)
 	{
-		if (Keyboard.current.leftShiftKey.ReadValue() > 0)
+		if (InverseRotateAction.action.ReadValue<float>() > 0.5f)
 		{
 			_rotation = (_rotation + 1) % 4;
 		}
