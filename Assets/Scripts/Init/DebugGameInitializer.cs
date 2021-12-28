@@ -22,7 +22,7 @@ public class DebugGameInitializer : MonoBehaviour
 
 			ModLoader.ComputeChecksum();
 
-			KeybindManager.Instance.LoadKeybinds();
+			KeybindManager.Instance.QuickLoadKeybinds();
 		}
 	}
 }

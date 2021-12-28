@@ -304,7 +304,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "Strafe",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -315,7 +315,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "Strafe",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1026,8 +1026,8 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Home End",
-                    "id": "b4a2e9fa-f6d3-4a12-9efe-552011c1dc75",
+                    "name": "Secondary",
+                    "id": "f4e4269e-1703-4b23-8169-af5f97ce595d",
                     "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
@@ -1038,8 +1038,8 @@
                 },
                 {
                     "name": "negative",
-                    "id": "b43cf939-1510-4233-908d-d02e6835f131",
-                    "path": "<Keyboard>/home",
+                    "id": "f292a12c-fb8d-4003-b296-3b876aa6d3cf",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -1049,8 +1049,8 @@
                 },
                 {
                     "name": "positive",
-                    "id": "c197c862-dc9a-4589-b93a-7f99f3317129",
-                    "path": "<Keyboard>/end",
+                    "id": "a4bb7f0f-26d0-40c4-a223-e4a08a23cb48",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",

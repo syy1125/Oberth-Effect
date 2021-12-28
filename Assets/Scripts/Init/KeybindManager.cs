@@ -61,6 +61,25 @@ public class KeybindManager : MonoBehaviour
 		}
 	}
 
+	public void QuickLoadKeybinds()
+	{
+		if (_profile == null)
+		{
+			string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
+
+			_profile = File.Exists(profilePath)
+				? JsonUtility.FromJson<KeybindProfile>(File.ReadAllText(profilePath))
+				: new KeybindProfile();
+		}
+
+		Dictionary<string, Dictionary<int, string>> overrides = CreateOverrideDictionary();
+
+		foreach (InputAction action in InputActions)
+		{
+			SyncOverride(action, overrides);
+		}
+	}
+
 	public Coroutine LoadKeybinds()
 	{
 		if (!Ready) throw new Exception("Keybind manager is not ready");
@@ -90,17 +109,7 @@ public class KeybindManager : MonoBehaviour
 
 		Debug.Log($"Loaded {_profile.Overrides.Length} keybind overrides");
 
-		var overrides = new Dictionary<string, Dictionary<int, string>>();
-		foreach (KeybindOverride item in _profile.Overrides)
-		{
-			if (!overrides.TryGetValue(item.ActionId, out var actionOverride))
-			{
-				actionOverride = new Dictionary<int, string>();
-				overrides.Add(item.ActionId, actionOverride);
-			}
-
-			actionOverride.Add(item.BindingIndex, item.OverridePath);
-		}
+		Dictionary<string, Dictionary<int, string>> overrides = CreateOverrideDictionary();
 
 		long startTime = Stopwatch.GetTimestamp();
 		long timestamp = startTime;
@@ -109,24 +118,7 @@ public class KeybindManager : MonoBehaviour
 
 		foreach (InputAction action in InputActions)
 		{
-			if (overrides.TryGetValue(action.id.ToString(), out var actionOverrides))
-			{
-				for (int i = 0; i < action.bindings.Count; i++)
-				{
-					if (actionOverrides.TryGetValue(i, out string overridePath))
-					{
-						action.ApplyBindingOverride(i, overridePath);
-					}
-					else if (HasOverride(action.bindings[i]))
-					{
-						action.RemoveBindingOverride(i);
-					}
-				}
-			}
-			else if (HasOverride(action))
-			{
-				action.RemoveAllBindingOverrides();
-			}
+			SyncOverride(action, overrides);
 
 			long time = Stopwatch.GetTimestamp();
 			if (time - timestamp > timeThreshold)
@@ -140,6 +132,45 @@ public class KeybindManager : MonoBehaviour
 		Debug.Log($"Reloading keybind overrides took {frames + 1} frames.");
 
 		Ready = true;
+	}
+
+	private static void SyncOverride(InputAction action, Dictionary<string, Dictionary<int, string>> overrides)
+	{
+		if (overrides.TryGetValue(action.id.ToString(), out var actionOverrides))
+		{
+			for (int i = 0; i < action.bindings.Count; i++)
+			{
+				if (actionOverrides.TryGetValue(i, out string overridePath))
+				{
+					action.ApplyBindingOverride(i, overridePath);
+				}
+				else if (HasOverride(action.bindings[i]))
+				{
+					action.RemoveBindingOverride(i);
+				}
+			}
+		}
+		else if (HasOverride(action))
+		{
+			action.RemoveAllBindingOverrides();
+		}
+	}
+
+	private Dictionary<string, Dictionary<int, string>> CreateOverrideDictionary()
+	{
+		var overrides = new Dictionary<string, Dictionary<int, string>>();
+		foreach (KeybindOverride item in _profile.Overrides)
+		{
+			if (!overrides.TryGetValue(item.ActionId, out var actionOverride))
+			{
+				actionOverride = new Dictionary<int, string>();
+				overrides.Add(item.ActionId, actionOverride);
+			}
+
+			actionOverride.Add(item.BindingIndex, item.OverridePath);
+		}
+
+		return overrides;
 	}
 
 	public Coroutine SaveKeybinds()
@@ -160,14 +191,14 @@ public class KeybindManager : MonoBehaviour
 			{
 				if (action.bindings[i].isComposite) continue;
 
-				if (action.bindings[i].overridePath != null)
+				if (HasOverride(action.bindings[i]))
 				{
 					overrides.Add(
 						new KeybindOverride
 						{
 							ActionId = action.id.ToString(),
 							BindingIndex = i,
-							OverridePath = action.bindings[i].overridePath
+							OverridePath = action.bindings[i].effectivePath
 						}
 					);
 				}
