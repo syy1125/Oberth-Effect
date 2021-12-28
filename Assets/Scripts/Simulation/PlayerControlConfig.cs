@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
@@ -54,9 +55,11 @@ public class PlayerControlConfig : MonoBehaviour
 		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
 		{
 			InputAction action = new InputAction(
-				instance.Spec.ControlGroupId, InputActionType.Button, instance.Spec.DefaultKeybind
+				instance.Spec.ControlGroupId, InputActionType.Button,
+				KeybindManager.Instance.GetControlGroupPath(instance.Spec.ControlGroupId)
 			);
 			action.Enable();
+
 			_controlGroupActions.Add(new Tuple<string, InputAction>(instance.Spec.ControlGroupId, action));
 			_controlGroupStates.Add(instance.Spec.ControlGroupId, 0);
 		}
@@ -79,6 +82,7 @@ public class PlayerControlConfig : MonoBehaviour
 		foreach (Tuple<string, InputAction> tuple in _controlGroupActions)
 		{
 			tuple.Item2.Disable();
+			tuple.Item2.Dispose();
 		}
 
 		_controlGroupActions.Clear();

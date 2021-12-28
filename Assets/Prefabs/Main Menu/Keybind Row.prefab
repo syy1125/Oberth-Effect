@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -448,7 +448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -534,8 +534,8 @@ MonoBehaviour:
   TargetAction: {fileID: 0}
   PrimaryBindingIndex: 0
   SecondaryBindingIndex: -1
+  ConflictWithControlGroups: 0
   IgnoreConflicts: []
-  CancelControlPath: <Keyboard>/escape
   Label: {fileID: 6657751650896557184}
   PrimaryBinding: {fileID: 6657751651285691942}
   SecondaryBinding: {fileID: 6657751651887069593}

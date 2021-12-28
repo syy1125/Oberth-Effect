@@ -1,23 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
+﻿using System.Linq;
 using Syy1125.OberthEffect.Init;
+using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.MainMenu.Options
 {
-public class KeybindRow : MonoBehaviour
+public class KeybindRow : MonoBehaviour, IKeybindRow
 {
 	[Header("Input")]
 	public InputActionReference TargetAction;
 	public int PrimaryBindingIndex = 0;
 	public int SecondaryBindingIndex = -1;
+	public bool ConflictWithControlGroups;
 	public InputActionReference[] IgnoreConflicts;
-
-	[Header("Config")]
-	public string CancelControlPath = "<Keyboard>/escape";
 
 	[Header("References")]
 	public Text Label;
@@ -32,9 +32,6 @@ public class KeybindRow : MonoBehaviour
 	private void OnEnable()
 	{
 		UpdateBindingDisplay();
-		PrimaryBinding.onClick.AddListener(RebindPrimary);
-		SecondaryBinding.onClick.AddListener(RebindSecondary);
-		ResetButton.onClick.AddListener(ResetBindings);
 	}
 
 	private void Start()
@@ -42,13 +39,10 @@ public class KeybindRow : MonoBehaviour
 		_conflictingActions = TargetAction.action.actionMap.actions
 			.Except(IgnoreConflicts.Select(item => item.action))
 			.ToArray();
-	}
 
-	private void OnDisable()
-	{
-		PrimaryBinding.onClick.RemoveListener(RebindPrimary);
-		SecondaryBinding.onClick.RemoveListener(RebindSecondary);
-		ResetButton.onClick.RemoveListener(ResetBindings);
+		PrimaryBinding.onClick.AddListener(RebindPrimary);
+		SecondaryBinding.onClick.AddListener(RebindSecondary);
+		ResetButton.onClick.AddListener(ResetBindings);
 	}
 
 	public void UpdateBindingDisplay()
@@ -103,10 +97,7 @@ public class KeybindRow : MonoBehaviour
 		// Reset the delay to 0 to get around that issue.
 		_operation.OnMatchWaitForAnother(0f);
 
-		if (!string.IsNullOrWhiteSpace(CancelControlPath))
-		{
-			_operation.WithCancelingThrough(CancelControlPath);
-		}
+		_operation.WithCancelingThrough("<Keyboard>/escape");
 
 		_operation
 			.OnPotentialMatch(CheckConflicts)
@@ -126,9 +117,9 @@ public class KeybindRow : MonoBehaviour
 
 		while (operation.selectedControl != null)
 		{
-			var conflict = FindConflict(operation.selectedControl);
+			var conflictName = FindConflict(operation.selectedControl);
 
-			if (conflict == null)
+			if (conflictName == null)
 			{
 				operation.Complete();
 				return;
@@ -137,10 +128,9 @@ public class KeybindRow : MonoBehaviour
 			if (!warned)
 			{
 				string pathName = InputControlPath.ToHumanReadableString(operation.selectedControl.path);
-				string actionName = GetActionName(conflict.Item1, conflict.Item2);
 
 				GetComponentInParent<KeybindScreen>().SetBindingStatus(
-					$"<color=\"orange\">{pathName}</color> is already assigned to <color=\"orange\">{actionName}</color>"
+					$"<color=\"orange\">{pathName}</color> is already assigned to <color=\"orange\">{conflictName}</color>"
 				);
 
 				warned = true;
@@ -150,7 +140,7 @@ public class KeybindRow : MonoBehaviour
 		}
 	}
 
-	private Tuple<InputAction, int> FindConflict(InputControl targetControl)
+	private string FindConflict(InputControl targetControl)
 	{
 		foreach (InputAction action in _conflictingActions)
 		{
@@ -165,7 +155,20 @@ public class KeybindRow : MonoBehaviour
 
 				if (InputControlPath.Matches(binding.effectivePath, targetControl))
 				{
-					return Tuple.Create(action, i);
+					return GetActionName(action, i);
+				}
+			}
+		}
+
+		if (ConflictWithControlGroups)
+		{
+			foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
+			{
+				string path = KeybindManager.Instance.GetControlGroupPath(instance.Spec.ControlGroupId);
+
+				if (!string.IsNullOrEmpty(path) && InputControlPath.Matches(path, targetControl))
+				{
+					return StringUtils.ToTitleCase(instance.Spec.KeybindDescription);
 				}
 			}
 		}
@@ -225,8 +228,11 @@ public class KeybindRow : MonoBehaviour
 
 	private void ResetBindings()
 	{
-		TargetAction.action.RemoveAllBindingOverrides();
+		TargetAction.action.RemoveBindingOverride(PrimaryBindingIndex);
+		if (SecondaryBindingIndex >= 0) TargetAction.action.RemoveBindingOverride(SecondaryBindingIndex);
+
 		UpdateBindingDisplay();
+		GetComponentInParent<KeybindScreen>().AfterRebind();
 	}
 }
 }

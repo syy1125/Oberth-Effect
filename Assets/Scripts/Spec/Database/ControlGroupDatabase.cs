@@ -2,6 +2,7 @@
 using System.Linq;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {

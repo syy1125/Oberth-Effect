@@ -3,7 +3,8 @@
     "rootNamespace": "Syy1125.OberthEffect.Spec",
     "references": [
         "GUID:82f52fc1a2cecfe4e95661e70562f517",
-        "GUID:b3f49edfedc855a48aa1a9e5d3cba438"
+        "GUID:b3f49edfedc855a48aa1a9e5d3cba438",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

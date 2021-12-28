@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
@@ -20,13 +21,22 @@ public struct KeybindOverride
 }
 
 [Serializable]
+public struct ControlGroupOverride
+{
+	public string ControlGroupId;
+	public string OverridePath;
+}
+
+[Serializable]
 public class KeybindProfile
 {
 	public KeybindOverride[] Overrides;
+	public ControlGroupOverride[] ControlGroupOverrides;
 
 	public KeybindProfile()
 	{
 		Overrides = new KeybindOverride[0];
+		ControlGroupOverrides = new ControlGroupOverride[0];
 	}
 }
 
@@ -37,6 +47,7 @@ public class KeybindManager : MonoBehaviour
 	public InputActionAsset InputActions;
 
 	private KeybindProfile _profile;
+	private Dictionary<string, string> _controlGroupOverrides = new Dictionary<string, string>();
 	public bool Ready { get; private set; } = true;
 
 	private void Awake()
@@ -78,6 +89,10 @@ public class KeybindManager : MonoBehaviour
 		{
 			SyncOverride(action, overrides);
 		}
+
+		_controlGroupOverrides = _profile.ControlGroupOverrides.ToDictionary(
+			item => item.ControlGroupId, item => item.OverridePath
+		);
 	}
 
 	public Coroutine LoadKeybinds()
@@ -129,6 +144,10 @@ public class KeybindManager : MonoBehaviour
 			}
 		}
 
+		_controlGroupOverrides = _profile.ControlGroupOverrides.ToDictionary(
+			item => item.ControlGroupId, item => item.OverridePath
+		);
+
 		Debug.Log($"Reloading keybind overrides took {frames + 1} frames.");
 
 		Ready = true;
@@ -173,6 +192,29 @@ public class KeybindManager : MonoBehaviour
 		return overrides;
 	}
 
+	public bool ControlGroupHasOverride(string controlGroupId)
+	{
+		return _controlGroupOverrides.TryGetValue(controlGroupId, out string overridePath)
+		       && overridePath != ControlGroupDatabase.Instance.GetSpecInstance(controlGroupId).Spec.DefaultKeybind;
+	}
+
+	public string GetControlGroupPath(string controlGroupId)
+	{
+		return _controlGroupOverrides.TryGetValue(controlGroupId, out string overridePath)
+			? overridePath
+			: ControlGroupDatabase.Instance.GetSpecInstance(controlGroupId).Spec.DefaultKeybind;
+	}
+
+	public void SetControlGroupOverride(string controlGroupId, string overridePath)
+	{
+		_controlGroupOverrides[controlGroupId] = overridePath;
+	}
+
+	public void RemoveControlGroupOverride(string controlGroupId)
+	{
+		_controlGroupOverrides.Remove(controlGroupId);
+	}
+
 	public Coroutine SaveKeybinds()
 	{
 		if (!Ready) throw new Exception("Keybind manager is not ready");
@@ -207,10 +249,11 @@ public class KeybindManager : MonoBehaviour
 
 		Debug.Log($"Saving {overrides.Count} keybind overrides to profile");
 
-		_profile = new KeybindProfile
-		{
-			Overrides = overrides.ToArray()
-		};
+		_profile ??= new KeybindProfile();
+		_profile.Overrides = overrides.ToArray();
+		_profile.ControlGroupOverrides = _controlGroupOverrides.Select(
+			entry => new ControlGroupOverride { ControlGroupId = entry.Key, OverridePath = entry.Value }
+		).ToArray();
 
 		string profilePath = Path.Combine(Application.persistentDataPath, "KeybindProfile.json");
 		string content = JsonUtility.ToJson(_profile);

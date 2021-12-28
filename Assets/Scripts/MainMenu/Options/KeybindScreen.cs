@@ -2,6 +2,9 @@
 using System.Linq;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Init;
+using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -31,7 +34,7 @@ public class KeybindScreen : MonoBehaviour
 	private void OnEnable()
 	{
 		_canRevert = false;
-		ResetButton.interactable = InputActions.Any(KeybindManager.HasOverride);
+		UpdateResetButton();
 	}
 
 	private void Start()
@@ -72,7 +75,16 @@ public class KeybindScreen : MonoBehaviour
 	public void AfterRebind()
 	{
 		_canRevert = true;
-		ResetButton.interactable = InputActions.Any(KeybindManager.HasOverride);
+		UpdateResetButton();
+	}
+
+	private void UpdateResetButton()
+	{
+		ResetButton.interactable =
+			InputActions.Any(KeybindManager.HasOverride)
+			|| ControlGroupDatabase.Instance.ListControlGroups().Any(
+				instance => KeybindManager.Instance.ControlGroupHasOverride(instance.Spec.ControlGroupId)
+			);
 	}
 
 	private void BackToMenu()
@@ -85,7 +97,7 @@ public class KeybindScreen : MonoBehaviour
 	{
 		KeybindManager.Instance.LoadKeybinds();
 
-		foreach (KeybindRow row in GetComponentsInChildren<KeybindRow>())
+		foreach (var row in GetComponentsInChildren<IKeybindRow>())
 		{
 			row.UpdateBindingDisplay();
 		}
@@ -107,7 +119,12 @@ public class KeybindScreen : MonoBehaviour
 			}
 		}
 
-		foreach (KeybindRow row in GetComponentsInChildren<KeybindRow>())
+		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
+		{
+			KeybindManager.Instance.RemoveControlGroupOverride(instance.Spec.ControlGroupId);
+		}
+
+		foreach (var row in GetComponentsInChildren<IKeybindRow>())
 		{
 			row.UpdateBindingDisplay();
 		}
