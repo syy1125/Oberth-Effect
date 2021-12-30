@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -57,7 +58,7 @@ public class GameInitializer : MonoBehaviour
 						LoadProgress.Progress = progress;
 						break;
 					case ModLoader.State.ParseDocuments:
-						LoadText.text = $"Parsing documents {progress.Item1} of {progress.Item2}";
+						LoadText.text = $"Parsing {ModLoader.LoadDescription} {progress.Item1} of {progress.Item2}";
 						LoadProgress.Progress = progress;
 						break;
 					case ModLoader.State.ValidateDocuments:

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
@@ -26,7 +27,7 @@ public class VehicleResourceDatabase : MonoBehaviour, IGameContentDatabase
 
 	public void Reload()
 	{
-		_specs = ModLoader.AllVehicleResources
+		_specs = ModLoader.VehicleResourcePipeline.Results
 			.ToDictionary(instance => instance.Spec.ResourceId, instance => instance);
 		Debug.Log($"Loaded {_specs.Count} vehicle resource specs");
 	}

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
@@ -28,10 +29,10 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 
 	public void Reload()
 	{
-		_specs = ModLoader.AllBlocks
+		_specs = ModLoader.BlockPipeline.Results
 			.Where(instance => instance.Spec.Enabled)
 			.ToDictionary(instance => instance.Spec.BlockId, instance => instance);
-		_categories = ModLoader.AllBlockCategories.OrderBy(instance => instance.Spec.Order).ToList();
+		_categories = ModLoader.BlockCategoryPipeline.Results.OrderBy(instance => instance.Spec.Order).ToList();
 		Debug.Log($"Loaded {_specs.Count} block specs");
 		Debug.Log($"Loaded {_categories.Count} block categories");
 	}

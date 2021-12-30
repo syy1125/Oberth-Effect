@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.ModLoading;
 
 namespace Syy1125.OberthEffect.Spec.ControlGroup
 {
@@ -13,6 +14,7 @@ public struct ControlGroupState
 
 public struct ControlGroupSpec
 {
+	[IdField]
 	public string ControlGroupId;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public string DisplayName;

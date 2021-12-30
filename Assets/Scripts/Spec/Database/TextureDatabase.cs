@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Database
@@ -32,7 +33,7 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 
 	public void Reload()
 	{
-		_specs = ModLoader.AllTextures
+		_specs = ModLoader.TexturePipeline.Results
 			.ToDictionary(instance => instance.Spec.TextureId, instance => instance);
 		_sprites = new Dictionary<string, Sprite>();
 		Debug.Log($"Loaded {_specs.Count} texture specs");

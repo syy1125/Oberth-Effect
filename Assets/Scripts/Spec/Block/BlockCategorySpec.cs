@@ -1,10 +1,12 @@
 ﻿using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.ModLoading;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
 public struct BlockCategorySpec
 {
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
+	[IdField]
 	public string BlockCategoryId;
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public int Order;

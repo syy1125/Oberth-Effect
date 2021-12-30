@@ -4,6 +4,7 @@ using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 using YamlDotNet.Serialization;
@@ -12,6 +13,7 @@ namespace Syy1125.OberthEffect.Spec.Block
 {
 public class BlockSpec : ICustomChecksum
 {
+	[IdField]
 	public string BlockId;
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public bool Enabled;

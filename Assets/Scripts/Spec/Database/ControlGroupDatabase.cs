@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,7 +29,7 @@ public class ControlGroupDatabase : MonoBehaviour, IGameContentDatabase
 
 	public void Reload()
 	{
-		_specs = ModLoader.AllControlGroups.ToDictionary(
+		_specs = ModLoader.ControlGroupPipeline.Results.ToDictionary(
 			instance => instance.Spec.ControlGroupId, instance => instance
 		);
 		Debug.Log($"Loaded {_specs.Count} control group specs");
