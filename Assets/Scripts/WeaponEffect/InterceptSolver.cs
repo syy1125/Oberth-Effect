@@ -1,4 +1,5 @@
 ﻿using System;
+using Syy1125.OberthEffect.Lib.Math;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -97,6 +98,74 @@ public static class InterceptSolver
 		}
 	}
 
+	public static bool MissileIntercept(
+		Vector2 targetPosition, Vector2 targetVelocity, float missileAcceleration,
+		out Vector2 accelerationVector, out float hitTime
+	)
+	{
+		// Find initial seed.
+		// Start by calculating a scale time, a very rough estimate of time to intercept.
+		float scaleTime = Mathf.Sqrt(2 * targetPosition.magnitude / missileAcceleration);
+		Vector2 correctedPosition = targetPosition + targetVelocity * scaleTime;
+		scaleTime = Mathf.Sqrt(2 * correctedPosition.magnitude / missileAcceleration);
+
+		var expression = new PolynomialExpression(
+			4 * targetPosition.sqrMagnitude,
+			8 * Vector2.Dot(targetPosition, targetVelocity),
+			4 * targetVelocity.sqrMagnitude,
+			0f,
+			-missileAcceleration * missileAcceleration
+		);
+
+		// This function finds a seed that should be no more than 0.1f away from a root.
+		float seed = FindMissileInterceptSeed(expression, scaleTime);
+
+		// Now solve for time using Halley's method
+		hitTime = HalleySolver.FindRoot(expression, seed);
+
+		Vector2 hitPosition = targetPosition + targetVelocity * hitTime;
+		accelerationVector = hitPosition.normalized * missileAcceleration;
+
+		// Always has a valid intercept
+		return true;
+	}
+
+	private static float FindMissileInterceptSeed(IExpression expression, float scaleTime, float targetInterval = 0.1f)
+	{
+		// Step through intervals from 0 up to 2.5 times the scale time to try to find an interval that crosses from positive to negative.
+		float stepSize = scaleTime / 10f;
+		int i = 1;
+
+		for (; i <= 25; i++)
+		{
+			if (expression.Evaluate(stepSize * i) < 0)
+			{
+				// If the interval is found, narrow down until the interval is less than targetInterval
+				float min = stepSize * (i - 1), max = stepSize * i;
+
+				while (max - min > targetInterval)
+				{
+					float mid = (min + max) / 2;
+					if (expression.Evaluate(mid) > 0)
+					{
+						min = mid;
+					}
+					else
+					{
+						max = mid;
+					}
+				}
+
+				return (min + max) / 2;
+			}
+		}
+
+		Debug.LogWarning("Failed to find seed for missile intercept. Using scaleTime as fallback.");
+		return scaleTime;
+	}
+
+	#region Internal Utlity Methods
+
 	private static bool BoundedMin(float left, float right, float min, out float result)
 	{
 		if (left < min)
@@ -126,5 +195,7 @@ public static class InterceptSolver
 			}
 		}
 	}
+
+	#endregion
 }
 }
