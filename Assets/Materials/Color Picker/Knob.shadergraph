@@ -5,6 +5,24 @@
     "m_Properties": [
         {
             "m_Id": "0d9d3df8e5b340b780790f9695a5bd25"
+        },
+        {
+            "m_Id": "c932afd5ee814825ab81e81ec69d205e"
+        },
+        {
+            "m_Id": "9bda599023144b09b891256dd6cb95f5"
+        },
+        {
+            "m_Id": "1bca6d3dcc8d4486b7e83a87fe5264cf"
+        },
+        {
+            "m_Id": "47f0209bc6044df48b83f29d76c57def"
+        },
+        {
+            "m_Id": "91c0d94972ca4fd48959b7a721476b07"
+        },
+        {
+            "m_Id": "ade71fbaba034760bf5100d91582f8a5"
         }
     ],
     "m_Keywords": [],
@@ -249,6 +267,29 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "1bca6d3dcc8d4486b7e83a87fe5264cf",
+    "m_Guid": {
+        "m_GuidSerialized": "6935f756-2de2-4bf4-8043-3c7c37d546a7"
+    },
+    "m_Name": "StencilOp",
+    "m_DefaultReferenceName": "Vector1_1bca6d3dcc8d4486b7e83a87fe5264cf",
+    "m_OverrideReferenceName": "_StencilOp",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "1d1dd30934854b7da1972679293620cc",
@@ -334,6 +375,29 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "SurfaceDescription.BaseColor"
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "47f0209bc6044df48b83f29d76c57def",
+    "m_Guid": {
+        "m_GuidSerialized": "90da2a6a-0b78-47f7-b7bf-bfcc6e9aaed7"
+    },
+    "m_Name": "StencilComp",
+    "m_DefaultReferenceName": "Vector1_47f0209bc6044df48b83f29d76c57def",
+    "m_OverrideReferenceName": "_StencilComp",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
 }
 
 {
@@ -706,6 +770,29 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "91c0d94972ca4fd48959b7a721476b07",
+    "m_Guid": {
+        "m_GuidSerialized": "c06d866f-f944-4ca5-9f2d-0599f36bac55"
+    },
+    "m_Name": "StencilReadMask",
+    "m_DefaultReferenceName": "",
+    "m_OverrideReferenceName": "_StencilReadMask",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "92cf58f825f3418c83eeb29416910cec",
@@ -747,6 +834,29 @@
         "g": 0.5,
         "b": 0.5,
         "a": 1.0
+    }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "9bda599023144b09b891256dd6cb95f5",
+    "m_Guid": {
+        "m_GuidSerialized": "bc12ed27-04af-4889-b612-fe10fc69e6b5"
+    },
+    "m_Name": "Stencil",
+    "m_DefaultReferenceName": "Vector1_9bda599023144b09b891256dd6cb95f5",
+    "m_OverrideReferenceName": "_Stencil",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
     }
 }
 
@@ -816,6 +926,29 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "ade71fbaba034760bf5100d91582f8a5",
+    "m_Guid": {
+        "m_GuidSerialized": "9e27a65e-1fde-4eeb-8dcf-b3b210466d7c"
+    },
+    "m_Name": "StencilWriteMask",
+    "m_DefaultReferenceName": "",
+    "m_OverrideReferenceName": "_StencilWriteMask",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.BlockNode",
     "m_ObjectId": "b2bd53501f3c407cb930b4a718f0dc2b",
@@ -870,6 +1003,30 @@
     },
     "m_Labels": [],
     "m_Space": 0
+}
+
+{
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "c932afd5ee814825ab81e81ec69d205e",
+    "m_Guid": {
+        "m_GuidSerialized": "0ee2aa73-2171-43da-b123-3fdc94e491f4"
+    },
+    "m_Name": "Color Mask",
+    "m_DefaultReferenceName": "",
+    "m_OverrideReferenceName": "_ColorMask",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 1.0
+    },
+    "m_ColorMode": 0
 }
 
 {

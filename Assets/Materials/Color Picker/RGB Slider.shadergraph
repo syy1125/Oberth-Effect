@@ -8,6 +8,21 @@
         },
         {
             "m_Id": "cd297ad9a535453590578e4eaaeeb44c"
+        },
+        {
+            "m_Id": "6c14de66a7704cd9ab375e7bd8f8a17d"
+        },
+        {
+            "m_Id": "dedac0b22ec246189cb3f066bf3c568b"
+        },
+        {
+            "m_Id": "ce6439029f2845f88facf9876fcd4e4d"
+        },
+        {
+            "m_Id": "91fdb16598da48ad93208a7c12f48dcf"
+        },
+        {
+            "m_Id": "fb8a31735f82404ebf08845269025a5e"
         }
     ],
     "m_Keywords": [],
@@ -814,6 +829,29 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "6c14de66a7704cd9ab375e7bd8f8a17d",
+    "m_Guid": {
+        "m_GuidSerialized": "a8cebb3f-e7d3-468c-a02e-74c38b94a045"
+    },
+    "m_Name": "Stencil",
+    "m_DefaultReferenceName": "Vector1_6c14de66a7704cd9ab375e7bd8f8a17d",
+    "m_OverrideReferenceName": "_Stencil",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "6c7b30a9d9054c96ba293638f2f14b1f",
@@ -956,6 +994,29 @@
     },
     "m_Labels": [],
     "m_Space": 0
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "91fdb16598da48ad93208a7c12f48dcf",
+    "m_Guid": {
+        "m_GuidSerialized": "9d2b8bc8-c4c8-4dc7-a958-cdb662f2ab72"
+    },
+    "m_Name": "StencilReadMask",
+    "m_DefaultReferenceName": "Vector1_91fdb16598da48ad93208a7c12f48dcf",
+    "m_OverrideReferenceName": "_StencilReadMask",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
 }
 
 {
@@ -1181,6 +1242,29 @@
 }
 
 {
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "ce6439029f2845f88facf9876fcd4e4d",
+    "m_Guid": {
+        "m_GuidSerialized": "17a26aa4-f81f-44b2-a6b2-f0686d2b2a6e"
+    },
+    "m_Name": "StencilComp",
+    "m_DefaultReferenceName": "Vector1_ce6439029f2845f88facf9876fcd4e4d",
+    "m_OverrideReferenceName": "_StencilComp",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicValueMaterialSlot",
     "m_ObjectId": "d85111a19b814067857ec2b6d88c59f6",
@@ -1251,6 +1335,29 @@
         "w": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "dedac0b22ec246189cb3f066bf3c568b",
+    "m_Guid": {
+        "m_GuidSerialized": "79dc7098-8843-45e1-94db-68622943ccc8"
+    },
+    "m_Name": "StencilOp",
+    "m_DefaultReferenceName": "Vector1_dedac0b22ec246189cb3f066bf3c568b",
+    "m_OverrideReferenceName": "_StencilOp",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
 }
 
 {
@@ -1360,6 +1467,29 @@
         "y": 0.0,
         "z": 0.0,
         "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "fb8a31735f82404ebf08845269025a5e",
+    "m_Guid": {
+        "m_GuidSerialized": "c5ef6403-99d2-43eb-9278-d8969c0cf0c9"
+    },
+    "m_Name": "StencilWriteMask",
+    "m_DefaultReferenceName": "Vector1_fb8a31735f82404ebf08845269025a5e",
+    "m_OverrideReferenceName": "_StencilWriteMask",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 0.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
     }
 }
 
