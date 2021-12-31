@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -10,7 +11,7 @@ namespace Syy1125.OberthEffect.Blocks
 public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipProvider
 {
 	private bool _alwaysExplode;
-	private ControlConditionSpec _activationCondition;
+	private IControlCondition _activationCondition;
 	private Vector2 _explosionOffset;
 	private float _maxRadius;
 	private float _maxDamage;
@@ -18,10 +19,13 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 	public void LoadSpec(VolatileSpec spec)
 	{
 		_alwaysExplode = spec.AlwaysExplode;
-		_activationCondition = spec.ActivationCondition;
+		_activationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_explosionOffset = spec.ExplosionOffset;
 		_maxRadius = spec.MaxRadius;
 		_maxDamage = spec.MaxDamage;
+
+		GetComponentInParent<IControlConditionProvider>()?
+			.MarkControlGroupsActive(_activationCondition.GetControlGroups());
 	}
 
 	public void OnDestroyedByDamage()

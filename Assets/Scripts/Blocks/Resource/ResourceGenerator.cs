@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
@@ -18,7 +19,7 @@ public class ResourceGenerator :
 
 	private Dictionary<string, float> _consumptionRate;
 	private Dictionary<string, float> _generationRate;
-	private ControlConditionSpec _activationCondition;
+	private IControlCondition _activationCondition;
 	private Transform _activeRenderersParent;
 
 	private bool _active = true;
@@ -35,7 +36,7 @@ public class ResourceGenerator :
 	{
 		_consumptionRate = spec.ConsumptionRate;
 		_generationRate = spec.GenerationRate;
-		_activationCondition = spec.ActivationCondition;
+		_activationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 
 		var provider = GetComponentInParent<IControlConditionProvider>();
 		if (provider != null)
@@ -55,6 +56,9 @@ public class ResourceGenerator :
 
 			_activeRenderersParent.gameObject.SetActive(_active);
 		}
+
+		GetComponentInParent<IControlConditionProvider>()?
+			.MarkControlGroupsActive(_activationCondition.GetControlGroups());
 	}
 
 	private void OnDisable()

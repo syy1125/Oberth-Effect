@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Common.ControlCondition;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
@@ -8,17 +8,19 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 public class VehicleControlGroupProxy : MonoBehaviour, IControlConditionProvider
 {
 	private List<IControlConditionReceiver> _receivers;
+	private HashSet<string> _activeControlGroups;
 
 	private void Awake()
 	{
 		_receivers = new List<IControlConditionReceiver>();
+		_activeControlGroups = new HashSet<string>();
 	}
 
 	private void OnEnable()
 	{
 		if (PlayerControlConfig.Instance != null)
 		{
-			PlayerControlConfig.Instance.AnyControlGroupChanged.AddListener(BroadcastControlChange);
+			PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(BroadcastControlChange);
 		}
 	}
 
@@ -37,6 +39,16 @@ public class VehicleControlGroupProxy : MonoBehaviour, IControlConditionProvider
 		}
 	}
 
+	public void MarkControlGroupsActive(IEnumerable<string> controlGroupIds)
+	{
+		foreach (string controlGroupId in controlGroupIds)
+		{
+			_activeControlGroups.Add(controlGroupId);
+		}
+
+		PlayerControlConfig.Instance.SetActiveControlGroups(_activeControlGroups);
+	}
+
 	private void BroadcastControlChange(List<string> _)
 	{
 		foreach (IControlConditionReceiver receiver in _receivers)
@@ -45,10 +57,9 @@ public class VehicleControlGroupProxy : MonoBehaviour, IControlConditionProvider
 		}
 	}
 
-	public bool IsConditionTrue(ControlConditionSpec condition)
+	public bool IsConditionTrue(IControlCondition condition)
 	{
-		return condition == null
-		       || PlayerControlConfig.Instance == null
+		return PlayerControlConfig.Instance == null
 		       || PlayerControlConfig.Instance.IsConditionTrue(condition);
 	}
 }

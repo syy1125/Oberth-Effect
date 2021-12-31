@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -9,6 +9,7 @@ using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation
 {
@@ -25,7 +26,9 @@ public class PlayerControlConfig : MonoBehaviour
 	public VehicleControlMode ControlMode { get; private set; }
 	public UnityEvent ControlModeChanged;
 
-	public UnityEvent<List<string>> AnyControlGroupChanged;
+	public UnityEvent<List<string>> ControlGroupStateChanged;
+	public UnityEvent ActiveControlGroupChanged;
+	private HashSet<string> _activeControlGroups;
 
 	private List<Tuple<string, InputAction>> _controlGroupActions;
 	private Dictionary<string, int> _controlGroupStates;
@@ -114,7 +117,7 @@ public class PlayerControlConfig : MonoBehaviour
 
 		if (_changed.Count > 0)
 		{
-			AnyControlGroupChanged.Invoke(_changed);
+			ControlGroupStateChanged.Invoke(_changed);
 		}
 	}
 
@@ -139,6 +142,17 @@ public class PlayerControlConfig : MonoBehaviour
 
 	#endregion
 
+	public void SetActiveControlGroups(IEnumerable<string> controlGroups)
+	{
+		_activeControlGroups = new HashSet<string>(controlGroups);
+		ActiveControlGroupChanged?.Invoke();
+	}
+
+	public bool IsControlGroupActive(string controlGroupId)
+	{
+		return _activeControlGroups == null || _activeControlGroups.Contains(controlGroupId);
+	}
+
 	public int GetStateIndex(string controlGroupId)
 	{
 		return _controlGroupStates[controlGroupId];
@@ -150,24 +164,9 @@ public class PlayerControlConfig : MonoBehaviour
 			.States[_controlGroupStates[controlGroupId]].StateId;
 	}
 
-	public bool IsConditionTrue(ControlConditionSpec condition)
+	public bool IsConditionTrue(IControlCondition condition)
 	{
-		if (condition.And != null)
-		{
-			return condition.And.All(IsConditionTrue);
-		}
-		else if (condition.Or != null)
-		{
-			return condition.Or.Any(IsConditionTrue);
-		}
-		else if (condition.Not != null)
-		{
-			return !IsConditionTrue(condition.Not);
-		}
-		else
-		{
-			return condition.MatchValues.Contains(GetStateId(condition.ControlGroupId));
-		}
+		return condition == null || condition.IsTrue(GetStateId);
 	}
 }
 }

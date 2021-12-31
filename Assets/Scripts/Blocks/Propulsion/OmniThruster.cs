@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -42,7 +43,7 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
-		ActivationCondition = spec.ActivationCondition;
+		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 
 		if (spec.Particles != null)
 		{
@@ -71,6 +72,9 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				_maxParticleSpeeds[i] = particleSpec.MaxSpeed;
 			}
 		}
+
+		GetComponentInParent<IControlConditionProvider>()?
+			.MarkControlGroupsActive(ActivationCondition.GetControlGroups());
 	}
 
 	private Transform CreateParticleParent(string objectName, float rotation)

@@ -27,7 +27,7 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private bool _started;
 	private Coroutine _initNotification;
-	private List<Tuple<string, Text>> _controlGroupDisplays;
+	private Dictionary<string, Text> _controlGroupDisplays;
 
 	private void OnEnable()
 	{
@@ -55,8 +55,10 @@ public class ControlInfoDisplay : MonoBehaviour
 		PlayerControlConfig.Instance.InertiaDampenerChanged.AddListener(NotifyInertiaDampenerChange);
 		PlayerControlConfig.Instance.ControlModeChanged.AddListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlModeChanged.AddListener(NotifyControlModeChange);
-		PlayerControlConfig.Instance.AnyControlGroupChanged.AddListener(UpdateDisplay);
-		PlayerControlConfig.Instance.AnyControlGroupChanged.AddListener(NotifyControlGroupChange);
+
+		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(NotifyControlGroupChange);
+		PlayerControlConfig.Instance.ActiveControlGroupChanged.AddListener(UpdateDisplay);
 	}
 
 	private void DetachControlListeners()
@@ -65,8 +67,10 @@ public class ControlInfoDisplay : MonoBehaviour
 		PlayerControlConfig.Instance.InertiaDampenerChanged.RemoveListener(NotifyInertiaDampenerChange);
 		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(NotifyControlModeChange);
-		PlayerControlConfig.Instance.AnyControlGroupChanged.RemoveListener(UpdateDisplay);
-		PlayerControlConfig.Instance.AnyControlGroupChanged.RemoveListener(NotifyControlGroupChange);
+
+		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(NotifyControlGroupChange);
+		PlayerControlConfig.Instance.ActiveControlGroupChanged.RemoveListener(UpdateDisplay);
 	}
 
 	private void AttachHealthBarListeners()
@@ -83,12 +87,12 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private void CreateDisplay()
 	{
-		_controlGroupDisplays = new List<Tuple<string, Text>>();
+		_controlGroupDisplays = new Dictionary<string, Text>();
 
 		foreach (SpecInstance<ControlGroupSpec> instance in ControlGroupDatabase.Instance.ListControlGroups())
 		{
 			var row = Instantiate(ControlGroupDisplayPrefab, transform);
-			_controlGroupDisplays.Add(new Tuple<string, Text>(instance.Spec.ControlGroupId, row.GetComponent<Text>()));
+			_controlGroupDisplays.Add(instance.Spec.ControlGroupId, row.GetComponent<Text>());
 		}
 	}
 
@@ -104,9 +108,10 @@ public class ControlInfoDisplay : MonoBehaviour
 		ControlNotification.text = GetHealthBarStatusText();
 		yield return new WaitForSecondsRealtime(delay);
 
-		foreach ((string controlGroupId, Text _) in _controlGroupDisplays)
+		foreach (var entry in _controlGroupDisplays)
 		{
-			ControlNotification.text = GetControlGroupText(controlGroupId);
+			if (!PlayerControlConfig.Instance.IsControlGroupActive(entry.Key)) continue;
+			ControlNotification.text = GetControlGroupText(entry.Key);
 			yield return new WaitForSecondsRealtime(delay);
 		}
 
@@ -126,9 +131,10 @@ public class ControlInfoDisplay : MonoBehaviour
 		ControlModeDisplay.text = GetControlModeText();
 		HealthBarModeDisplay.text = GetHealthBarStatusText();
 
-		foreach ((string controlGroupId, Text text) in _controlGroupDisplays)
+		foreach (var entry in _controlGroupDisplays)
 		{
-			text.text = GetControlGroupText(controlGroupId);
+			entry.Value.text = GetControlGroupText(entry.Key);
+			entry.Value.gameObject.SetActive(PlayerControlConfig.Instance.IsControlGroupActive(entry.Key));
 		}
 	}
 

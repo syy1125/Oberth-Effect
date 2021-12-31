@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	{
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
-		ActivationCondition = spec.ActivationCondition;
+		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_maxThrottleRate = spec.MaxThrottleRate;
 
 		if (spec.Particles != null)
@@ -49,6 +50,9 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
 			}
 		}
+
+		GetComponentInParent<IControlConditionProvider>()?
+			.MarkControlGroupsActive(ActivationCondition.GetControlGroups());
 	}
 
 	protected override void Start()
