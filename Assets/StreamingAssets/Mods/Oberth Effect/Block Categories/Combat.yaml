@@ -1,4 +1,5 @@
 ﻿BlockCategoryId: OberthEffect/Combat
+Enabled: true
 Order: 4
 DisplayName: Combat
 IconTextureId: OberthEffect/CombatCategoryIcon

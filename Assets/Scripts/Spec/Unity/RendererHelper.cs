@@ -10,7 +10,7 @@ public static class RendererHelper
 	{
 		foreach (RendererSpec rendererSpec in renderers)
 		{
-			if (!TextureDatabase.Instance.HasTexture(rendererSpec.TextureId)) continue;
+			if (!TextureDatabase.Instance.ContainsId(rendererSpec.TextureId)) continue;
 
 			var rendererObject = new GameObject("Renderer");
 

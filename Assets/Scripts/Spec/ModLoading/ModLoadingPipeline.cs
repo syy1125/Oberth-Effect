@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
 using YamlDotNet.Core;
@@ -215,6 +217,32 @@ public class ModLoadingPipeline<TSpec>
 		}
 
 		Results = instances;
+	}
+
+	public void ValidateResults()
+	{
+		FieldInfo idField = typeof(TSpec).GetField(_idField, BindingFlags.Public | BindingFlags.Instance);
+		Debug.Assert(idField != null, nameof(idField) + " != null");
+
+		foreach (SpecInstance<TSpec> instance in Results)
+		{
+			List<string> errors = ValidationHelper.ValidateRootObject(instance.Spec);
+
+			if (errors.Count > 0)
+			{
+				StringBuilder message = new StringBuilder()
+					.AppendLine(
+						$"{_name} {idField.GetValue(instance.Spec)} failed validation with {errors.Count} errors:"
+					);
+
+				foreach (string error in errors)
+				{
+					message.Append("  ").AppendLine(error);
+				}
+
+				Debug.LogWarning(message);
+			}
+		}
 	}
 }
 }

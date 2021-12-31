@@ -3,5 +3,7 @@
 public interface IGameContentDatabase
 {
 	void Reload();
+
+	bool ContainsId(string id);
 }
 }

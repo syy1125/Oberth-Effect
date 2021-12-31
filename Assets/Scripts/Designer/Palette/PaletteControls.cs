@@ -34,7 +34,7 @@ public class PaletteControls : MonoBehaviour
 
 			button.BlockCategoryId = category.Spec.BlockCategoryId;
 			button.NameDisplay.text = category.Spec.DisplayName;
-			if (TextureDatabase.Instance.HasTexture(category.Spec.IconTextureId))
+			if (TextureDatabase.Instance.ContainsId(category.Spec.IconTextureId))
 			{
 				button.Icon.sprite = TextureDatabase.Instance.GetSprite(category.Spec.IconTextureId);
 			}

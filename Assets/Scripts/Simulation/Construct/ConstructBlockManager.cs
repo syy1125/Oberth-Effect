@@ -73,7 +73,7 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 		for (var index = 0; index < blockInstances.Count; index++)
 		{
 			VehicleBlueprint.BlockInstance blockInstance = blockInstances[index];
-			if (!BlockDatabase.Instance.HasBlock(blockInstance.BlockId))
+			if (!BlockDatabase.Instance.ContainsId(blockInstance.BlockId))
 			{
 				Debug.LogError($"Failed to load block by ID: {blockInstance.BlockId}");
 				continue;

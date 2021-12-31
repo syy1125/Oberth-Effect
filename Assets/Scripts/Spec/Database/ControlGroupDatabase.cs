@@ -48,6 +48,11 @@ public class ControlGroupDatabase : MonoBehaviour, IGameContentDatabase
 		return _specs.Values;
 	}
 
+	public bool ContainsId(string id)
+	{
+		return id != null && _specs.ContainsKey(id);
+	}
+
 	public SpecInstance<ControlGroupSpec> GetSpecInstance(string controlGroupId)
 	{
 		return _specs[controlGroupId];

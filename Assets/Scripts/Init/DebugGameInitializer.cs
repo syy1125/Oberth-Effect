@@ -20,7 +20,7 @@ public class DebugGameInitializer : MonoBehaviour
 			{
 				database.Reload();
 			}
-
+			
 			ModLoader.ComputeChecksum();
 
 			KeybindManager.Instance.QuickLoadKeybinds();

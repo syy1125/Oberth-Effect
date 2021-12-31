@@ -13,52 +13,52 @@ public static class ChecksumHelper
 {
 	private const BindingFlags FIELD_FLAGS = BindingFlags.Public | BindingFlags.Instance;
 
-	public static void GetBytes(Stream stream, object target, ChecksumLevel level)
+	public static void GetBytes(Stream stream, object value, ChecksumLevel level)
 	{
-		GetBytes(stream, target.GetType(), target, level);
+		GetBytes(stream, value.GetType(), value, level);
 	}
 
-	public static void GetBytes(Stream stream, Type objectType, object value, ChecksumLevel level)
+	private static void GetBytes(Stream stream, Type valueType, object value, ChecksumLevel level)
 	{
 		if (value == null) return;
 
 		// Check for direct checksum computation
-		if (objectType == typeof(float))
+		if (valueType == typeof(float))
 		{
 			GetBytesFromPrimitive(stream, (float) value);
 		}
-		else if (objectType == typeof(int))
+		else if (valueType == typeof(int))
 		{
 			GetBytesFromPrimitive(stream, (int) value);
 		}
-		else if (objectType == typeof(bool))
+		else if (valueType == typeof(bool))
 		{
 			GetBytesFromPrimitive(stream, (bool) value);
 		}
-		else if (objectType.IsPrimitive)
+		else if (valueType.IsPrimitive)
 		{
-			throw new ArgumentException($"Unsupported primitive type in checksum: {objectType}");
+			throw new ArgumentException($"Unsupported primitive type in checksum: {valueType}");
 		}
-		else if (typeof(string).IsAssignableFrom(objectType))
+		else if (typeof(string).IsAssignableFrom(valueType))
 		{
 			GetBytesFromString(stream, (string) value);
 		}
-		else if (typeof(Vector2Int).IsAssignableFrom(objectType))
+		else if (typeof(Vector2Int).IsAssignableFrom(valueType))
 		{
 			GetBytesFromVector(stream, (Vector2Int) value);
 		}
-		else if (typeof(Vector2).IsAssignableFrom(objectType))
+		else if (typeof(Vector2).IsAssignableFrom(valueType))
 		{
 			GetBytesFromVector(stream, (Vector2) value);
 		}
-		else if (typeof(ICustomChecksum).IsAssignableFrom(objectType))
+		else if (typeof(ICustomChecksum).IsAssignableFrom(valueType))
 		{
 			((ICustomChecksum) value).GetBytes(stream, level);
 		}
 		else
 		{
 			// Special case for dictionary
-			var dictionaryType = objectType.GetInterfaces()
+			var dictionaryType = valueType.GetInterfaces()
 				.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDictionary<,>));
 
 			if (dictionaryType != null)
@@ -68,7 +68,7 @@ public static class ChecksumHelper
 			}
 
 			// Check for enumerable of checksum-capable objects
-			var enumerableType = objectType.GetInterfaces()
+			var enumerableType = valueType.GetInterfaces()
 				.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
 			if (enumerableType != null)
@@ -78,11 +78,16 @@ public static class ChecksumHelper
 			}
 
 			// No special case, do recursive checksum
-			GetBytesFromFields(stream, objectType, value, level);
+			GetBytesFromFields(stream, valueType, value, level);
 		}
 	}
 
-	public static void GetBytesFromFields(Stream stream, Type parentType, object parent, ChecksumLevel level)
+	public static void GetBytesFromFields(Stream stream, object parent, ChecksumLevel level)
+	{
+		GetBytesFromFields(stream, parent.GetType(), parent, level);
+	}
+
+	private static void GetBytesFromFields(Stream stream, Type parentType, object parent, ChecksumLevel level)
 	{
 		FieldInfo[] fields = parentType.GetFields(FIELD_FLAGS);
 

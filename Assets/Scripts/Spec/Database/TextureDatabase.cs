@@ -58,7 +58,7 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 		}
 	}
 
-	public bool HasTexture(string textureId)
+	public bool ContainsId(string textureId)
 	{
 		return textureId != null && _specs.ContainsKey(textureId);
 	}

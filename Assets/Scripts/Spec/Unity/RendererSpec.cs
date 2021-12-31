@@ -1,5 +1,6 @@
 ﻿using System;
 using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Unity
@@ -8,6 +9,7 @@ namespace Syy1125.OberthEffect.Spec.Unity
 public struct RendererSpec
 {
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	[ValidateTextureId]
 	public string TextureId;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public Vector2 Offset;

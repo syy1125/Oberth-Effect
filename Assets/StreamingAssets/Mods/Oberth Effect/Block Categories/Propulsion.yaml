@@ -1,4 +1,5 @@
 ﻿BlockCategoryId: OberthEffect/Propulsion
+Enabled: true
 Order: 3
 DisplayName: Propulsion
 IconTextureId: OberthEffect/PropulsionCategoryIcon

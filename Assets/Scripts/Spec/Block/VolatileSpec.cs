@@ -1,5 +1,6 @@
 ﻿using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block
@@ -11,7 +12,9 @@ public class VolatileSpec
 	public bool AlwaysExplode;
 	public ControlConditionSpec ActivationCondition;
 	public Vector2 ExplosionOffset;
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxRadius;
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxDamage;
 }
 }

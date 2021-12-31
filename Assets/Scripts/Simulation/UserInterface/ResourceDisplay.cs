@@ -23,7 +23,7 @@ public class ResourceDisplay : MonoBehaviour
 
 		foreach (string resourceId in DisplayResources)
 		{
-			if (!VehicleResourceDatabase.Instance.HasResource(resourceId))
+			if (!VehicleResourceDatabase.Instance.ContainsId(resourceId))
 			{
 				Debug.LogError($"Resource {resourceId} does not exist");
 				continue;

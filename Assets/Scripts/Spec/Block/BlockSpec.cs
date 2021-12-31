@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
@@ -18,8 +19,11 @@ public class BlockSpec : ICustomChecksum
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public bool Enabled;
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
+	[ValidateBlockCategoryId]
 	public string CategoryId;
+	[ValidateRangeInt(0, int.MaxValue)]
 	public int Cost;
+
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	public InfoSpec Info;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
@@ -44,7 +48,7 @@ public class BlockSpec : ICustomChecksum
 		}
 		else
 		{
-			ChecksumHelper.GetBytesFromFields(stream, GetType(), this, level);
+			ChecksumHelper.GetBytesFromFields(stream, this, level);
 		}
 	}
 }

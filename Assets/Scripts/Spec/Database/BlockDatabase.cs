@@ -32,7 +32,10 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 		_specs = ModLoader.BlockPipeline.Results
 			.Where(instance => instance.Spec.Enabled)
 			.ToDictionary(instance => instance.Spec.BlockId, instance => instance);
-		_categories = ModLoader.BlockCategoryPipeline.Results.OrderBy(instance => instance.Spec.Order).ToList();
+		_categories = ModLoader.BlockCategoryPipeline.Results
+			.Where(instance => instance.Spec.Enabled)
+			.OrderBy(instance => instance.Spec.Order)
+			.ToList();
 		Debug.Log($"Loaded {_specs.Count} block specs");
 		Debug.Log($"Loaded {_categories.Count} block categories");
 	}
@@ -50,9 +53,9 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 		return _specs.Values;
 	}
 
-	public bool HasBlock(string blockId)
+	public bool ContainsId(string blockId)
 	{
-		return _specs.ContainsKey(blockId);
+		return blockId != null && _specs.ContainsKey(blockId);
 	}
 
 	public BlockSpec GetBlockSpec(string blockId)

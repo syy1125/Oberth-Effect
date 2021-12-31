@@ -32,9 +32,9 @@ public class VehicleResourceDatabase : MonoBehaviour, IGameContentDatabase
 		Debug.Log($"Loaded {_specs.Count} vehicle resource specs");
 	}
 
-	public bool HasResource(string resourceId)
+	public bool ContainsId(string resourceId)
 	{
-		return _specs.ContainsKey(resourceId);
+		return resourceId != null && _specs.ContainsKey(resourceId);
 	}
 
 	public SpecInstance<VehicleResourceSpec> GetResourceSpec(string resourceId)
@@ -45,7 +45,7 @@ public class VehicleResourceDatabase : MonoBehaviour, IGameContentDatabase
 	public IEnumerable<string> FormatResourceDict(IReadOnlyDictionary<string, float> dict)
 	{
 		return dict
-			.Where(entry => HasResource(entry.Key))
+			.Where(entry => ContainsId(entry.Key))
 			.Select(entry => new Tuple<VehicleResourceSpec, float>(GetResourceSpec(entry.Key).Spec, entry.Value))
 			.Select(entry => entry.Item1.WrapColorTag($"{entry.Item2:0.###} {entry.Item1.DisplayName}"));
 	}

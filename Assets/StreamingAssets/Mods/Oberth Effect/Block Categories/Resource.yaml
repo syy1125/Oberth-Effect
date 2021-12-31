@@ -1,4 +1,5 @@
 ﻿BlockCategoryId: OberthEffect/Resource
+Enabled: true
 Order: 2
 DisplayName: Resource
 IconTextureId: OberthEffect/ResourceCategoryIcon

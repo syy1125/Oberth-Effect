@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Spec.Validation;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
 using YamlDotNet.RepresentationModel;
@@ -214,12 +217,6 @@ public static class ModLoader
 
 	public static bool DataReady { get; private set; }
 
-	private class GameSpecDocument
-	{
-		public YamlDocument SpecDocument;
-		public List<string> OverrideOrder;
-	}
-
 	#endregion
 
 	public static void LoadAllEnabledContent()
@@ -229,8 +226,6 @@ public static class ModLoader
 		ValidateData();
 		DataReady = true;
 	}
-
-	#region Load Documents
 
 	private static void LoadDocuments()
 	{
@@ -253,10 +248,6 @@ public static class ModLoader
 			ControlGroupPipeline.LoadModContent(mod);
 		}
 	}
-
-	#endregion
-
-	#region Parse Documents
 
 	private static void ParseDocuments()
 	{
@@ -283,10 +274,6 @@ public static class ModLoader
 		}
 	}
 
-	#endregion
-
-	#region Validate Documents
-
 	private static void ValidateData()
 	{
 		lock (LoadStateLock)
@@ -296,129 +283,28 @@ public static class ModLoader
 			LoadDescription = null;
 		}
 
-		ValidateBlocks();
-		ValidateTextures();
-		ValidateVehicleResources();
-	}
+		ValidateBlockIdAttribute.ValidIds =
+			new HashSet<string>(
+				BlockPipeline.Results.Where(instance => instance.Spec.Enabled).Select(instance => instance.Spec.BlockId)
+			);
+		ValidateBlockCategoryIdAttribute.ValidIds =
+			new HashSet<string>(
+				BlockCategoryPipeline.Results.Where(instance => instance.Spec.Enabled)
+					.Select(instance => instance.Spec.BlockCategoryId)
+			);
+		ValidateTextureIdAttribute.ValidIds =
+			new HashSet<string>(TexturePipeline.Results.Select(instance => instance.Spec.TextureId));
+		ValidateVehicleResourceIdAttribute.ValidIds =
+			new HashSet<string>(VehicleResourcePipeline.Results.Select(instance => instance.Spec.ResourceId));
+		ValidateControlGroupIdAttribute.ValidIds =
+			new HashSet<string>(ControlGroupPipeline.Results.Select(instance => instance.Spec.ControlGroupId));
 
-	private static void ValidateBlocks()
-	{
-		// HashSet<string> textureIds = new HashSet<string>(AllTextures.Select(instance => instance.Spec.TextureId));
-		// HashSet<string> resourceIds =
-		// 	new HashSet<string>(AllVehicleResources.Select(instance => instance.Spec.ResourceId));
-		//
-		// foreach (SpecInstance<BlockSpec> instance in AllBlocks)
-		// {
-		// 	foreach (RendererSpec renderer in instance.Spec.Renderers)
-		// 	{
-		// 		if (!textureIds.Contains(renderer.TextureId))
-		// 		{
-		// 			Debug.LogError(
-		// 				$"Block {instance.Spec.BlockId} references texture {renderer.TextureId} which does not exist"
-		// 			);
-		// 		}
-		// 	}
-		//
-		// 	if (instance.Spec.Propulsion?.Engine != null)
-		// 	{
-		// 		foreach (string resourceId in instance.Spec.Propulsion.Engine.MaxResourceUse.Keys)
-		// 		{
-		// 			ValidateVehicleResourceId(resourceId, instance.Spec.BlockId, resourceIds);
-		// 		}
-		//
-		// 		if (instance.Spec.Propulsion.Engine.Particles != null)
-		// 		{
-		// 			foreach (ParticleSystemSpec particle in instance.Spec.Propulsion.Engine.Particles)
-		// 			{
-		// 				ValidateColor(particle.Color, instance.Spec.BlockId, "ParticleSystem", true);
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	if (instance.Spec.Propulsion?.OmniThruster != null)
-		// 	{
-		// 		foreach (string resourceId in instance.Spec.Propulsion.OmniThruster.MaxResourceUse.Keys)
-		// 		{
-		// 			ValidateVehicleResourceId(resourceId, instance.Spec.BlockId, resourceIds);
-		// 		}
-		//
-		// 		if (instance.Spec.Propulsion.OmniThruster.Particles != null)
-		// 		{
-		// 			foreach (ParticleSystemSpec particle in instance.Spec.Propulsion.OmniThruster.Particles)
-		// 			{
-		// 				ValidateColor(particle.Color, instance.Spec.BlockId, "ParticleSystem", true);
-		// 			}
-		// 		}
-		// 	}
-		// }
+		BlockPipeline.ValidateResults();
+		BlockCategoryPipeline.ValidateResults();
+		TexturePipeline.ValidateResults();
+		VehicleResourcePipeline.ValidateResults();
+		ControlGroupPipeline.ValidateResults();
 	}
-
-	private static void ValidateVehicleResourceId(
-		string checkResourceId, string blockId, ICollection<string> validResourceIds
-	)
-	{
-		// if (!validResourceIds.Contains(checkResourceId))
-		// {
-		// 	Debug.LogError(
-		// 		$"Block {blockId} references VehicleResource {checkResourceId} which does not exist"
-		// 	);
-		// }
-	}
-
-	private static void ValidateColor(string color, string blockId, string component, bool acceptColorScheme)
-	{
-		// switch (color.ToLower())
-		// {
-		// 	case "primary":
-		// 	case "secondary":
-		// 	case "tertiary":
-		// 		if (!acceptColorScheme)
-		// 		{
-		// 			Debug.LogError($"{component} in {blockId} does not accept color scheme based color assignments");
-		// 		}
-		//
-		// 		break;
-		// 	default:
-		// 		// TODO ColorUtility.TryParseHtmlString cannot be called outside main thread
-		// 		// if (!ColorUtility.TryParseHtmlString(color, out Color _))
-		// 		// {
-		// 		// 	Debug.LogError(
-		// 		// 		$"{component} in {blockId} uses invalid color {color}"
-		// 		// 	);
-		// 		// }
-		//
-		// 		break;
-		// }
-	}
-
-	private static void ValidateTextures()
-	{
-		// foreach (SpecInstance<TextureSpec> instance in AllTextures)
-		// {
-		// 	if (!File.Exists(instance.Spec.ImagePath))
-		// 	{
-		// 		Debug.LogError(
-		// 			$"Texture {instance.Spec.TextureId} references image at {instance.Spec.ImagePath} which does not exist"
-		// 		);
-		// 	}
-		// }
-	}
-
-	private static void ValidateVehicleResources()
-	{
-		// foreach (SpecInstance<VehicleResourceSpec> instance in AllVehicleResources)
-		// {
-		// 	// TODO ColorUtility.TryParseHtmlString cannot be called outside main thread
-		// 	// if (!ColorUtility.TryParseHtmlString(instance.Spec.DisplayColor, out Color _))
-		// 	// {
-		// 	// 	Debug.LogError(
-		// 	// 		$"VehicleResource {instance.Spec.ResourceId} has invalid color {instance.Spec.DisplayColor}"
-		// 	// 	);
-		// 	// }
-		// }
-	}
-
-	#endregion
 
 	public static void ComputeChecksum()
 	{

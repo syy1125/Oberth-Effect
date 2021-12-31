@@ -1,4 +1,5 @@
 ﻿BlockCategoryId: OberthEffect/Structural
+Enabled: true
 Order: 1
 DisplayName: Structural
 IconTextureId: OberthEffect/StructuralCategoryIcon
