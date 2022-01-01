@@ -750,10 +750,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Target: {fileID: 1032580221}
-  MoveAction: {fileID: 0}
+  MoveAction: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   TargetPosition: {x: 0, y: 0}
   TargetVelocity: {x: 0, y: 0}
-  TargetAcceleration: 2
+  TargetAcceleration: 3
   Missile: {fileID: 2127278557}
   MissileAcceleration: 4
   MissilePosition: {x: 0, y: 0}
