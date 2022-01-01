@@ -50,9 +50,6 @@ public static class HalleySolver
 			}
 		}
 
-		Debug.LogWarning(
-			$"Halley solver failed to converge in {maxIter} iterations while trying to find roots of {expression} with seed {seed}"
-		);
 		converged = false;
 		return root;
 	}
