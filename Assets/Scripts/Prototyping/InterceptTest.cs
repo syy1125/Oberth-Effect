@@ -26,7 +26,7 @@ public class InterceptTest : MonoBehaviour
 	{
 		_timer = 0f;
 
-		// HalleySolver.FindRoot(new PolynomialExpression(103, -181, 79.3f, 0, -4), 2.23f);
+		// HalleySolver.FindRoot(new PolynomialExpression(88.45f, -173.4f, 85.16f, 0, -4), 1.15f, epsilon: 1e-3f);
 	}
 
 	private void Update()

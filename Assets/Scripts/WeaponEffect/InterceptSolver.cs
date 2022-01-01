@@ -6,9 +6,6 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public static class InterceptSolver
 {
-	private const int MAX_ITERATIONS = 5;
-	private const float SOLVE_THRESHOLD = 0.1f;
-
 	/// <returns>Whether an intercept is found. If false, the output values are best-effort closest approach solutions.</returns>
 	public static bool ProjectileIntercept(
 		Vector2 targetPosition, Vector2 targetVelocity, float projectileSpeed,
@@ -103,13 +100,7 @@ public static class InterceptSolver
 		out Vector2 accelerationVector, out float hitTime
 	)
 	{
-		// Find initial seed.
-		// Start by calculating a scale time, a very rough estimate of time to intercept.
-		float scaleTime = Mathf.Sqrt(2 * targetPosition.magnitude / missileAcceleration);
-		Vector2 correctedPosition = targetPosition + targetVelocity * scaleTime;
-		scaleTime = Mathf.Sqrt(2 * correctedPosition.magnitude / missileAcceleration);
-
-		var expression = new PolynomialExpression(
+		var marginExpression = new PolynomialExpression(
 			4 * targetPosition.sqrMagnitude,
 			8 * Vector2.Dot(targetPosition, targetVelocity),
 			4 * targetVelocity.sqrMagnitude,
@@ -117,28 +108,50 @@ public static class InterceptSolver
 			-missileAcceleration * missileAcceleration
 		);
 
-		// This function finds a seed that should be no more than 0.1f away from a root.
-		float seed = FindMissileInterceptSeed(expression, scaleTime);
-
-		// Now solve for time using Halley's method
-		hitTime = HalleySolver.FindRoot(expression, seed);
+		// Find a ballpark estimate of the intercept time and use it as seed for the Halley solver.
+		float seed = FindMissileInterceptSeed(
+			targetPosition, targetVelocity, missileAcceleration, marginExpression
+		);
+		hitTime = HalleySolver.FindRoot(marginExpression, seed, out bool converged, epsilon: 1e-3f);
 
 		Vector2 hitPosition = targetPosition + targetVelocity * hitTime;
 		accelerationVector = hitPosition.normalized * missileAcceleration;
 
-		// Always has a valid intercept
-		return true;
+		return converged;
 	}
 
-	private static float FindMissileInterceptSeed(IExpression expression, float scaleTime, float targetInterval = 0.1f)
+	private static float FindMissileInterceptSeed(
+		Vector2 targetPosition, Vector2 targetVelocity, float missileAcceleration, IExpression marginExpression
+	)
 	{
-		// Step through intervals from 0 up to 2.5 times the scale time to try to find an interval that crosses from positive to negative.
+		float accelerationTime = Mathf.Sqrt(2 * targetPosition.magnitude / missileAcceleration);
+		float velocityTime = -targetPosition.sqrMagnitude / Vector2.Dot(targetPosition, targetVelocity);
+
+		if (velocityTime < Mathf.Epsilon)
+		{
+			// This implies that the target is moving away, so acceleration has to be dominant.
+			// Correct for velocity once, then the seed should be good enough for Halley solver to converge.
+			Vector2 correctedPosition = targetPosition + targetVelocity * accelerationTime;
+			return Mathf.Sqrt(2 * correctedPosition.magnitude / missileAcceleration);
+		}
+		else
+		{
+			// The dominant term should naturally become dominant with this expression;
+			return 1 / (1 / velocityTime + 1 / accelerationTime);
+		}
+	}
+
+	private static float FindMissileInterceptSeedInterval(
+		IExpression marginExpression, float scaleTime, float targetInterval = 0.1f
+	)
+	{
+		// Step through intervals from 0-2 times the scale time to try to find an interval that crosses from positive to negative.
 		float stepSize = scaleTime / 10f;
 		int i = 1;
 
-		for (; i <= 25; i++)
+		for (; i <= 20; i++)
 		{
-			if (expression.Evaluate(stepSize * i) < 0)
+			if (marginExpression.Evaluate(stepSize * i) < 0)
 			{
 				// If the interval is found, narrow down until the interval is less than targetInterval
 				float min = stepSize * (i - 1), max = stepSize * i;
@@ -146,7 +159,8 @@ public static class InterceptSolver
 				while (max - min > targetInterval)
 				{
 					float mid = (min + max) / 2;
-					if (expression.Evaluate(mid) > 0)
+
+					if (marginExpression.Evaluate(mid) > 0)
 					{
 						min = mid;
 					}
@@ -160,7 +174,7 @@ public static class InterceptSolver
 			}
 		}
 
-		Debug.LogWarning("Failed to find seed for missile intercept. Using scaleTime as fallback.");
+		Debug.LogWarning($"Failed to find seed for {marginExpression}. Using scaleTime {scaleTime} as fallback.");
 		return scaleTime;
 	}
 

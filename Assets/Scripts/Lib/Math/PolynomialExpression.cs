@@ -55,17 +55,24 @@ public class PolynomialExpression : IExpression
 		if (_coefficients.Length == 0) return "0";
 
 		return string.Join(
-			"+", _coefficients.Select(
-				(coefficient, power) =>
-				{
-					return power switch
+			"+",
+			_coefficients
+				.Select(
+					(coefficient, power) =>
 					{
-						0 => coefficient.ToString("g5"),
-						1 => $"{coefficient:g5}x",
-						_ => $"{coefficient:g5}x^{power}"
-					};
-				}
-			)
+						return Tuple.Create(
+							coefficient,
+							power switch
+							{
+								0 => coefficient.ToString("g4"),
+								1 => $"{coefficient:g4}x",
+								_ => $"{coefficient:g4}x^{power}"
+							}
+						);
+					}
+				)
+				.Where(tuple => tuple.Item1 != 0)
+				.Select(tuple => tuple.Item2)
 		);
 	}
 }

@@ -5,7 +5,9 @@ namespace Syy1125.OberthEffect.Lib.Math
 {
 public static class HalleySolver
 {
-	public static float FindRoot(IExpression expression, float seed, int maxIter = 10, float epsilon = 1e-5f)
+	public static float FindRoot(
+		IExpression expression, float seed, out bool converged, int maxIter = 10, float epsilon = 1e-5f
+	)
 	{
 		if (!expression.IsDifferentiable())
 		{
@@ -14,6 +16,7 @@ public static class HalleySolver
 
 		IExpression derivative = expression.GetDerivative();
 		float root = seed;
+		converged = true;
 
 		if (derivative.IsDifferentiable())
 		{
@@ -46,9 +49,11 @@ public static class HalleySolver
 				root -= delta;
 			}
 		}
-		
-		Debug.LogWarning($"Halley solver hit max iteration {maxIter} while trying to find roots of {expression}. The root may diverge.");
 
+		Debug.LogWarning(
+			$"Halley solver failed to converge in {maxIter} iterations while trying to find roots of {expression} with seed {seed}"
+		);
+		converged = false;
 		return root;
 	}
 }
