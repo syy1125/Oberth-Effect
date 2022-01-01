@@ -20,6 +20,7 @@ public struct DebrisInfo
 	public DebrisBlockInfo[] Blocks;
 }
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 {
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -31,6 +32,7 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 			JsonUtility.FromJson<DebrisInfo>(CompressionUtils.Decompress((byte[]) instantiationData[0]));
 
 		PhotonView origin = PhotonView.Find(debrisInfo.OriginViewId);
+
 		if (origin == null)
 		{
 			Debug.LogError($"Debris got origin id {debrisInfo.OriginViewId} but PhotonView.Find returned null!");
@@ -40,6 +42,12 @@ public class DebrisCore : MonoBehaviour, IPunInstantiateMagicCallback
 		origin.GetComponent<ConstructBlockManager>().TransferDebrisBlocksTo(
 			GetComponent<ConstructBlockManager>(), debrisInfo.Blocks
 		);
+
+		var body = GetComponent<Rigidbody2D>();
+		var originBody = origin.GetComponent<Rigidbody2D>();
+
+		body.velocity = originBody.velocity;
+		body.angularVelocity = originBody.angularVelocity;
 	}
 }
 }
