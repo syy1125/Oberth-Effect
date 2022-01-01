@@ -3,76 +3,60 @@ using System.Threading;
 using Syy1125.OberthEffect.Lib.Math;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Prototyping
 {
 public class InterceptTest : MonoBehaviour
 {
-	public Transform StartPoint;
-	public Transform EndPoint;
 	public Transform Target;
-	public float MoveTime = 5f;
-	private float _timer;
+	public InputActionReference MoveAction;
+	public Vector2 TargetPosition;
+	public Vector2 TargetVelocity;
+	public float TargetAcceleration = 2f;
 
 	public Transform Missile;
 	public float MissileAcceleration = 2f;
-	public Vector2 AccelerationVector;
+	public Vector2 MissilePosition;
 	public Vector2 MissileVelocity;
 
 	public Text Countdown;
 
 	private void Start()
 	{
-		_timer = 0f;
+		MoveAction.action.Enable();
 
-		// HalleySolver.FindRoot(new PolynomialExpression(88.45f, -173.4f, 85.16f, 0, -4), 1.15f, epsilon: 1e-3f);
+		TargetPosition = Target.position;
+		MissilePosition = Missile.position;
 	}
 
 	private void Update()
 	{
-		_timer += Time.deltaTime;
-		
-		Vector2 targetPosition = Vector2.Lerp(StartPoint.position, EndPoint.position, _timer / MoveTime)
-		                         - (Vector2) Missile.transform.position;
-		Vector2 targetVelocity = (Vector2) (EndPoint.position - StartPoint.position) / MoveTime - MissileVelocity;
-		
-		Target.transform.position = Vector2.Lerp(StartPoint.position, EndPoint.position, _timer / MoveTime);
-		
-		InterceptSolver.MissileIntercept(
-			targetPosition, targetVelocity, MissileAcceleration, out Vector2 accelerationVector, out float hitTime
+		Vector2 input = MoveAction.action.ReadValue<Vector2>();
+		if (input.sqrMagnitude > 1f) input.Normalize();
+
+		TargetVelocity += input * Time.deltaTime;
+		TargetPosition += TargetVelocity * Time.deltaTime;
+		Target.position = TargetPosition;
+
+		bool converged = InterceptSolver.MissileIntercept(
+			TargetPosition - MissilePosition, TargetVelocity - MissileVelocity, MissileAcceleration,
+			out Vector2 accelerationVector, out float hitTime
 		);
-		
-		if (hitTime > 0f)
+
+		if (!converged)
 		{
-			AccelerationVector = accelerationVector;
-			Countdown.text = hitTime.ToString("F");
+			Debug.LogWarning("Failed to converge");
 		}
-		
-		MissileVelocity += AccelerationVector * Time.deltaTime;
-		Missile.position += (Vector3) MissileVelocity * Time.deltaTime;
+
+		MissileVelocity += accelerationVector * Time.deltaTime;
+		MissilePosition += MissileVelocity * Time.deltaTime;
+
+		Missile.position = MissilePosition;
 		Missile.rotation = Quaternion.LookRotation(Vector3.forward, accelerationVector);
+
+		Countdown.text = hitTime.ToString("F2");
 	}
-
-	// public float Speed = 2f;
-
-
-	// private void OnDrawGizmos()
-	// {
-	// 	if (Target == null || T1 == null) return;
-	//
-	// 	Vector2 targetVelocity = T1.position - Target.position;
-	// 	bool hit = InterceptSolver.ProjectileIntercept(
-	// 		Target.position, targetVelocity, Speed,
-	// 		out Vector2 projectileVelocity, out float time
-	// 	);
-	//
-	// 	Gizmos.matrix = Matrix4x4.identity;
-	// 	Gizmos.color = Color.yellow;
-	// 	Gizmos.DrawWireSphere(Target.position + (Vector3) targetVelocity * time, 0.5f);
-	//
-	// 	Gizmos.color = hit ? Color.cyan : Color.red;
-	// 	Gizmos.DrawWireSphere(projectileVelocity * time, 0.5f);
-	// }
 }
 }

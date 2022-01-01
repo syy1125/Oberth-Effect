@@ -452,7 +452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032580219}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 6.21, y: 1.2, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children: []
   m_Father: {fileID: 0}
@@ -749,13 +749,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcd0ed1d20c64b019fc48affbeac68d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartPoint: {fileID: 1114292533}
-  EndPoint: {fileID: 1667996815}
   Target: {fileID: 1032580221}
-  MoveTime: 5
+  MoveAction: {fileID: 0}
+  TargetPosition: {x: 0, y: 0}
+  TargetVelocity: {x: 0, y: 0}
+  TargetAcceleration: 2
   Missile: {fileID: 2127278557}
   MissileAcceleration: 4
-  AccelerationVector: {x: 0, y: 0}
+  MissilePosition: {x: 0, y: 0}
   MissileVelocity: {x: 0, y: 0}
   Countdown: {fileID: 321330188}
 --- !u!212 &1795509100
