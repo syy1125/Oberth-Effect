@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -16,9 +17,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private Rigidbody2D _body;
 	private ColorContext _colorContext;
 
-	private int _clusterCount;
 	private int _burstCount;
 	private float _burstInterval;
+	private float[] _clusterBaseAngles;
 
 	private float _spreadAngle;
 	private WeaponSpreadProfile _spreadProfile;
@@ -46,9 +47,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void LoadSpec(ProjectileWeaponEffectSpec spec)
 	{
-		_clusterCount = spec.ClusterCount;
 		_burstCount = spec.BurstCount;
 		_burstInterval = spec.BurstInterval;
+		_clusterBaseAngles = spec.ClusterBaseAngles;
 
 		_spreadAngle = spec.SpreadAngle;
 		_spreadProfile = spec.SpreadProfile;
@@ -114,7 +115,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			new FirepowerEntry
 			{
 				DamageType = _projectileConfig.DamageType,
-				DamagePerSecond = _projectileConfig.Damage * _clusterCount * _burstCount / _reloadTime,
+				DamagePerSecond = _projectileConfig.Damage * _clusterBaseAngles.Length * _burstCount / _reloadTime,
 				ArmorPierce = _projectileConfig.DamageType == DamageType.Explosive ? 1f : _projectileConfig.ArmorPierce
 			}
 		);
@@ -154,12 +155,12 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				: $"    Reload time {_reloadTime}"
 		);
 
-		if (_clusterCount > 1)
+		if (_clusterBaseAngles.Length > 1)
 		{
 			builder.AppendLine(
 				_burstCount > 1
-					? $"    {_clusterCount} shots per cluster, {_burstCount} clusters per burst, {_burstInterval}s between clusters in burst"
-					: $"    {_clusterCount} shots per cluster"
+					? $"    {_clusterBaseAngles.Length} shots per cluster, {_burstCount} clusters per burst, {_burstInterval}s between clusters in burst"
+					: $"    {_clusterBaseAngles.Length} shots per cluster"
 			);
 		}
 		else if (_burstCount > 1)
@@ -183,7 +184,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		if (_recoil > Mathf.Epsilon)
 		{
-			string shotOrCluster = _clusterCount > 1 ? "cluster" : "shot";
+			string shotOrCluster = _clusterBaseAngles.Length > 1 ? "cluster" : "shot";
 			builder.AppendLine(
 				$"    Recoil {_recoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kNs per {shotOrCluster}"
 			);
@@ -234,7 +235,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			);
 		}
 
-		for (int i = 0; i < _clusterCount; i++)
+		foreach (float baseAngle in _clusterBaseAngles)
 		{
 			float speed = _maxSpeed;
 			_projectileConfig.Lifetime = _maxLifetime;
@@ -253,12 +254,13 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					throw new ArgumentOutOfRangeException();
 			}
 
-			float deviationAngle = WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle) * Mathf.Deg2Rad;
+			float deviationAngle = (baseAngle + WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle))
+			                       * Mathf.Deg2Rad;
 			GameObject projectile = PhotonNetwork.Instantiate(
 				"Weapon Projectile", position, rotation,
 				data: new object[]
 				{
-					JsonUtility.ToJson(_projectileConfig),
+					CompressionUtils.Compress(JsonUtility.ToJson(_projectileConfig)),
 					JsonUtility.ToJson(_colorContext.ColorScheme)
 				}
 			);

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation;
@@ -18,11 +18,17 @@ public enum AimPointScalingMode
 public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 {
 	[ValidateRangeInt(1, int.MaxValue)]
-	public int ClusterCount = 1;
-	[ValidateRangeInt(1, int.MaxValue)]
 	public int BurstCount = 1;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float BurstInterval;
+	[ValidateRangeFloat(-180f, 180f)]
+	public float[] ClusterBaseAngles;
+
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float SpreadAngle;
+	public WeaponSpreadProfile SpreadProfile;
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float Recoil;
 
 	public Vector2 ColliderSize;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
@@ -48,7 +54,7 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	public override void Validate(List<string> path, List<string> errors)
 	{
 		base.Validate(path, errors);
-		
+
 		if (BurstCount > 1 && BurstInterval * (BurstCount - 1) > ReloadTime)
 		{
 			errors.Add(

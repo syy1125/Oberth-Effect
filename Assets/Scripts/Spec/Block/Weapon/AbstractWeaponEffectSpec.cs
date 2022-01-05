@@ -20,12 +20,6 @@ public abstract class AbstractWeaponEffectSpec : ICustomValidation
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float ExplosionRadius; // Only relevant for explosive damage
 
-	[ValidateRangeFloat(0f, float.PositiveInfinity)]
-	public float SpreadAngle;
-	public WeaponSpreadProfile SpreadProfile;
-	[ValidateRangeFloat(0f, float.PositiveInfinity)]
-	public float Recoil;
-
 	public Dictionary<string, float> MaxResourceUse;
 
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
