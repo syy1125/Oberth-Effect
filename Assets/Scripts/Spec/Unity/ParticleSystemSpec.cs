@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Unity
 {
+[Serializable]
 public struct ParticleSystemSpec
 {
 	public Vector2 Offset;

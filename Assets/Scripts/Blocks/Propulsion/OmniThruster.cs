@@ -64,10 +64,10 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			{
 				ParticleSystemSpec particleSpec = spec.Particles[i];
 
-				_upParticles[i] = CreateParticleSystem(_upParticleRoot, particleSpec);
-				_downParticles[i] = CreateParticleSystem(_downParticleRoot, particleSpec);
-				_leftParticles[i] = CreateParticleSystem(_leftParticleRoot, particleSpec);
-				_rightParticles[i] = CreateParticleSystem(_rightParticleRoot, particleSpec);
+				_upParticles[i] = RendererHelper.CreateParticleSystem(_upParticleRoot, particleSpec);
+				_downParticles[i] = RendererHelper.CreateParticleSystem(_downParticleRoot, particleSpec);
+				_leftParticles[i] = RendererHelper.CreateParticleSystem(_leftParticleRoot, particleSpec);
+				_rightParticles[i] = RendererHelper.CreateParticleSystem(_rightParticleRoot, particleSpec);
 
 				_maxParticleSpeeds[i] = particleSpec.MaxSpeed;
 			}

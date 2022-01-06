@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
@@ -46,7 +47,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 			for (var i = 0; i < spec.Particles.Length; i++)
 			{
-				_particles[i] = CreateParticleSystem(transform, spec.Particles[i]);
+				_particles[i] = RendererHelper.CreateParticleSystem(transform, spec.Particles[i]);
 				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
 			}
 		}

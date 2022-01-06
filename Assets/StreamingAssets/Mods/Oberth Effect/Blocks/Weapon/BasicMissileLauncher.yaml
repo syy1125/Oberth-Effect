@@ -54,3 +54,11 @@ FixedWeapon:
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.2, Y: 0.5 }
+    PropulsionParticles:
+      - Offset: { X: 0, Y: -0.25 }
+        Direction: { X: 0, Y: -1 }
+        Size: 0.15
+        MaxSpeed: 5
+        EmissionRateOverTime: 200
+        Lifetime: 0.2
+        Color: orange

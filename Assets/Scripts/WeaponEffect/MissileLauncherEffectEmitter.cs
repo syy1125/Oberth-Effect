@@ -60,7 +60,8 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			MaxAngularAcceleration = spec.MaxAngularAcceleration,
 			GuidanceAlgorithm = spec.GuidanceAlgorithm,
 			GuidanceActivationDelay = spec.GuidanceActivationDelay,
-			Renderers = spec.Renderers
+			Renderers = spec.Renderers,
+			PropulsionParticles = spec.PropulsionParticles
 		};
 
 		if (spec.PointDefenseTarget != null)

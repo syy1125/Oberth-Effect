@@ -41,21 +41,6 @@ public abstract class AbstractPropulsionBase :
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
-	protected static ParticleSystem CreateParticleSystem(Transform parent, ParticleSystemSpec spec)
-	{
-		GameObject particleHolder = new GameObject("ParticleSystem");
-
-		var holderTransform = particleHolder.transform;
-		holderTransform.SetParent(parent);
-		holderTransform.localPosition = new Vector3(spec.Offset.x, spec.Offset.y, 1f);
-		holderTransform.localRotation = Quaternion.LookRotation(spec.Direction);
-
-		var particles = particleHolder.AddComponent<ParticleSystem>();
-		particles.LoadSpec(spec);
-		particles.Stop();
-		return particles;
-	}
-
 	protected virtual void Start()
 	{
 		var photonView = GetComponentInParent<PhotonView>();

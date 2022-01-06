@@ -33,9 +33,9 @@ public struct MissileConfig
 	public float HealthDamageScaling;
 
 	public RendererSpec[] Renderers;
+	public ParticleSystemSpec[] PropulsionParticles;
 }
 
-// Represents either a missile or a drone. (Or both)
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -49,6 +49,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	private MissileConfig _config;
 	private Rigidbody2D _targetBody;
 	private PointDefenseTarget _pdTarget;
+	private ParticleSystem[] _propulsionParticles;
+	private float[] _maxParticleSpeeds;
 
 	private float _initTime;
 	private Vector2? _targetAcceleration;
@@ -58,7 +60,6 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	{
 		_body = GetComponent<Rigidbody2D>();
 	}
-
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
@@ -87,6 +88,19 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
 
+		if (_config.PropulsionParticles != null)
+		{
+			_propulsionParticles = new ParticleSystem[_config.PropulsionParticles.Length];
+			_maxParticleSpeeds = new float[_config.PropulsionParticles.Length];
+
+			for (var i = 0; i < _config.PropulsionParticles.Length; i++)
+			{
+				_propulsionParticles[i] =
+					RendererHelper.CreateParticleSystem(transform, _config.PropulsionParticles[i]);
+				_maxParticleSpeeds[i] = _config.PropulsionParticles[i].MaxSpeed;
+			}
+		}
+
 		Debug.Log($"Missile launched with HasTarget={_config.HasTarget} and TargetPhotonId={_config.TargetPhotonId}");
 		if (_config.HasTarget)
 		{
@@ -109,6 +123,14 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	{
 		StartCoroutine(LateFixedUpdate());
 		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
+
+		if (_propulsionParticles != null)
+		{
+			foreach (ParticleSystem particle in _propulsionParticles)
+			{
+				particle.Play();
+			}
+		}
 	}
 
 	private void FixedUpdate()
@@ -121,9 +143,21 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			float rotationResponse = Mathf.Clamp(_rotationPid.Output, -1f, 1f);
 			_body.angularVelocity -= rotationResponse * _config.MaxAngularAcceleration * Time.fixedDeltaTime;
 
-			float thrust = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+			float thrustFraction = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
 			_body.velocity += (Vector2) transform.up
-			                  * (thrust * _targetAcceleration.Value.magnitude * Time.fixedDeltaTime);
+			                  * (thrustFraction * _targetAcceleration.Value.magnitude * Time.fixedDeltaTime);
+
+			if (_propulsionParticles != null)
+			{
+				for (var i = 0; i < _propulsionParticles.Length; i++)
+				{
+					ParticleSystem.MainModule main = _propulsionParticles[i].main;
+					main.startSpeedMultiplier = thrustFraction * _maxParticleSpeeds[i];
+					Color startColor = main.startColor.color;
+					startColor.a = thrustFraction;
+					main.startColor = new ParticleSystem.MinMaxGradient(startColor);
+				}
+			}
 		}
 	}
 
@@ -135,28 +169,43 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 			if (Time.time - _initTime < _config.GuidanceActivationDelay) continue;
 
-			if (_targetBody == null)
+			switch (_config.GuidanceAlgorithm)
 			{
-				_targetAcceleration = transform.up * _config.MaxAcceleration;
+				case MissileGuidanceAlgorithm.DeadFire:
+					_targetAcceleration = transform.up * _config.MaxAcceleration;
+					break;
+				case MissileGuidanceAlgorithm.Predictive:
+					SolvePredictiveGuidance();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	private void SolvePredictiveGuidance()
+	{
+		if (_targetBody == null)
+		{
+			_targetAcceleration = transform.up * _config.MaxAcceleration;
+		}
+		else
+		{
+			Vector2 relativePosition = _targetBody.worldCenterOfMass - _body.worldCenterOfMass;
+			Vector2 relativeVelocity = _targetBody.velocity - _body.velocity;
+
+			if (
+				InterceptSolver.MissileIntercept(
+					relativePosition, relativeVelocity, _config.MaxAcceleration,
+					out Vector2 acceleration, out float hitTime
+				)
+			)
+			{
+				_targetAcceleration = acceleration;
 			}
 			else
 			{
-				Vector2 relativePosition = _targetBody.worldCenterOfMass - _body.worldCenterOfMass;
-				Vector2 relativeVelocity = _targetBody.velocity - _body.velocity;
-
-				if (
-					InterceptSolver.MissileIntercept(
-						relativePosition, relativeVelocity, _config.MaxAcceleration,
-						out Vector2 acceleration, out float hitTime
-					)
-				)
-				{
-					_targetAcceleration = acceleration;
-				}
-				else
-				{
-					_targetAcceleration = transform.up * _config.MaxAcceleration;
-				}
+				_targetAcceleration = transform.up * _config.MaxAcceleration;
 			}
 		}
 	}
