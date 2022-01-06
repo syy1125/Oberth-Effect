@@ -16,10 +16,10 @@ GameObject:
   - component: {fileID: 7920430724901968352}
   - component: {fileID: 3481248023059277270}
   - component: {fileID: 1195545175624516676}
-  - component: {fileID: 1551866117270348872}
+  - component: {fileID: 5455290349961236363}
   - component: {fileID: 5123786432896332026}
   m_Layer: 11
-  m_Name: Weapon Projectile
+  m_Name: Missile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eefcf20c0e64c8992a20f27cb3bf729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1551866117270348872
+--- !u!114 &5455290349961236363
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7789702252903111475}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12dfda2c044185a4699a5988bf4aae27, type: 3}
+  m_Script: {fileID: 11500000, guid: af46442e4a92482799f1771c475313e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5123786432896332026

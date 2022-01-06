@@ -42,6 +42,10 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		{
 			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
 		}
+		else if (spec.MissileLauncherEffect != null)
+		{
+			LoadMissileWeapon(spec.MissileLauncherEffect);
+		}
 
 		DefaultBinding = spec.DefaultBinding;
 	}
@@ -52,6 +56,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		weaponEffectTransform.SetParent(_turretTransform);
 		weaponEffectTransform.localPosition = spec.FiringPortOffset;
 		weaponEffectTransform.localRotation = Quaternion.identity;
+		weaponEffectTransform.localScale = Vector3.one;
 	}
 
 	private void Start()

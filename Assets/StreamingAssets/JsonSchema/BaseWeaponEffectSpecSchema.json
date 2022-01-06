@@ -20,12 +20,6 @@
         "ExplosionRadius": {
             "type": "number"
         },
-        "SpreadAngle": {
-            "type": "number"
-        },
-        "SpreadProfile": {
-            "enum": ["None", "Gaussian", "Uniform"]
-        },
         "Recoil": {
             "type": "number"
         },

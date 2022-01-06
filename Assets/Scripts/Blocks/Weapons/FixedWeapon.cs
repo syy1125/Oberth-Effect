@@ -25,6 +25,10 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		{
 			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
 		}
+		else if (spec.MissileLauncherEffect != null)
+		{
+			LoadMissileWeapon(spec.MissileLauncherEffect);
+		}
 
 		DefaultBinding = spec.DefaultBinding;
 	}
@@ -35,6 +39,7 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 		weaponEffectTransform.SetParent(transform);
 		weaponEffectTransform.localPosition = spec.FiringPortOffset;
 		weaponEffectTransform.localRotation = Quaternion.identity;
+		weaponEffectTransform.localScale = Vector3.one;
 	}
 
 	private void Start()

@@ -21,7 +21,7 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	public int BurstCount = 1;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float BurstInterval;
-	[ValidateRangeFloat(-180f, 180f)]
+	// [ValidateRangeFloat(-180f, 180f)]
 	public float[] ClusterBaseAngles;
 
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]

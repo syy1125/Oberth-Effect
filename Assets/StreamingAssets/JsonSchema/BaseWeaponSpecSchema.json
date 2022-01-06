@@ -19,39 +19,29 @@
                     "items": {
                         "type": "number"
                     },
-                    "default": [0]
+                    "default": [0],
+                    "description": "The base deviation angle for each projectile in a cluster."
                 },
-                "ColliderSize": {
-                    "$ref": "Vector2Schema.json",
-                    "description": "The size of the projectile's collider."
-                },
+                "SpreadAngle": { "type": "number" },
+                "SpreadProfile": { "enum": ["None", "Gaussian", "Uniform"] },
+                "ColliderSize": { "$ref": "Vector2Schema.json" },
                 "MaxSpeed": {
                     "type": "number",
                     "description": "The speed of the projectile, in game units per second."
                 },
-                "MaxLifetime": {
-                    "type": "number",
-                    "description": "Maximum lifetime, in seconds, of the projectile."
-                },
-                "AimPointScaling": {
-                    "enum": ["None", "Lifetime", "Velocity"]
-                },
+                "MaxLifetime": { "type": "number" },
+                "AimPointScaling": { "enum": ["None", "Lifetime", "Velocity"] },
                 "AimPointScaleFactor": {
                     "type": "number",
                     "description": "Detected aim point distance is multiplied by this number. For example, a scale factor of 2 would mean that the aim point being at 50% of the max projectile distance is treated as 100%.",
                     "default": 1
                 },
-                "PointDefenseTarget": {
-                    "$ref": "PointDefenseTargetSpecSchema.json"
-                },
+                "PointDefenseTarget": { "$ref": "PointDefenseTargetSpecSchema.json" },
                 "HealthDamageScaling": {
                     "type": "number",
                     "description": "How much the projectile health affects the damage output of the projectile. For example, a value of 1 means that at 10% health, the projectile can do 10% of its original damage."
                 },
-                "ReloadTime": {
-                    "type": "number",
-                    "description": "Time in seconds to reload this weapon"
-                },
+                "ReloadTime": { "type": "number" },
                 "Renderers": {
                     "$ref": "RendererSpecArraySchema.json",
                     "description": "Renderers for the projectile."
@@ -96,6 +86,38 @@
                 "HitParticles": {
                     "$ref": "ParticleSystemSpecArraySchema.json"
                 }
+            }
+        },
+        "MissileLauncherEffect": {
+            "description": "Specifies a missile launcher and the missile it launches.",
+            "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
+            "properties": {
+                "ColliderSize": { "$ref": "Vector2Schema.json" },
+                "LaunchTubes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "Position": { "$ref": "Vector2Schema.json" },
+                            "Rotation": { "type": "number" },
+                            "LaunchVelocity": { "$ref": "Vector2Schema.json" }
+                        }
+                    }
+                },
+                "LaunchInterval": {
+                    "type": "number",
+                    "description": "The interval, in seconds, between consecutive launches. Applies even when the tubes are loaded."
+                },
+                "MaxAcceleration": { "type": "number" },
+                "MaxAngularAcceleration": { "type": "number" },
+                "MaxLifetime": { "type": "number" },
+                "GuidanceAlgorithm": { "enum": ["Deadfire", "Predictive"] },
+                "GuidanceActivationDelay": { "type": "number" },
+                "PointDefenseTarget": { "$ref": "PointDefenseTargetSpecSchema.json" },
+                "HealthDamageScaling": { "type": "number" },
+                "ReloadTime": { "type": "number" },
+                "Renderers": { "$ref": "RendererSpecArraySchema.json" },
+                "PropulsionParticles": { "$ref": "ParticleSystemSpecArraySchema.json" }
             }
         },
         "DefaultBinding": {

@@ -73,6 +73,18 @@ public abstract class AbstractWeapon :
 		WeaponEmitter = weaponEmitter;
 	}
 
+	protected void LoadMissileWeapon(MissileLauncherEffectSpec spec)
+	{
+		var weaponEffectObject = new GameObject("MissileLauncherWeaponEffect");
+
+		SetWeaponEffectTransform(weaponEffectObject, spec);
+
+		var weaponEmitter = weaponEffectObject.AddComponent<MissileLauncherEffectEmitter>();
+		weaponEmitter.LoadSpec(spec);
+
+		WeaponEmitter = weaponEmitter;
+	}
+
 	protected abstract void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec);
 
 	#endregion
