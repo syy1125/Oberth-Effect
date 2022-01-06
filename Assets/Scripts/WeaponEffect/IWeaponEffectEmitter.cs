@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Common.Enums;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect
@@ -8,6 +7,10 @@ public interface IWeaponEffectEmitter
 {
 	void SetTargetPhotonId(int? targetId);
 	void SetAimPoint(Vector2? aimPoint);
+
+	public Vector2 GetInterceptAimPoint(
+		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
+	);
 
 	// Called from whatever's firing the weapon to ensure ordering of events.
 	// For example, rotate the turret before applying the effect.

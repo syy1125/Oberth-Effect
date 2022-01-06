@@ -1,5 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Spec.Checksum;
+﻿using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 

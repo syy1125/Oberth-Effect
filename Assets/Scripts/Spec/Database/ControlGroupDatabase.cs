@@ -3,7 +3,6 @@ using System.Linq;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Spec.Database
 {

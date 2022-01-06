@@ -18,7 +18,6 @@ using Syy1125.OberthEffect.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 

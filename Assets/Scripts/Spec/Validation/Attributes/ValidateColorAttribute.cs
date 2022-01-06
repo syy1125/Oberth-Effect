@@ -14,7 +14,7 @@ public class ValidateColorAttribute : AbstractValidationAttribute
 	public override void Validate(object value)
 	{
 		if (value == null) return;
-		
+
 		if (value is string stringValue)
 		{
 			switch (stringValue.ToLower())

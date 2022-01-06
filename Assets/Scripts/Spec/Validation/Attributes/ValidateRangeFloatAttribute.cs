@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Syy1125.OberthEffect.Spec.Validation.Attributes
+﻿namespace Syy1125.OberthEffect.Spec.Validation.Attributes
 {
 public class ValidateRangeFloatAttribute : AbstractValidationAttribute
 {
@@ -16,7 +14,7 @@ public class ValidateRangeFloatAttribute : AbstractValidationAttribute
 	public override void Validate(object value)
 	{
 		if (value == null) return;
-		
+
 		if (value is float floatValue)
 		{
 			if (floatValue < _min || floatValue > _max)

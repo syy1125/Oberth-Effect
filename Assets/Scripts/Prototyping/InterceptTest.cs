@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using Syy1125.OberthEffect.Lib.Math;
-using Syy1125.OberthEffect.WeaponEffect;
+﻿using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;

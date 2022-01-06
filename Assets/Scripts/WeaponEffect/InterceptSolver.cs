@@ -1,5 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Lib.Math;
+﻿using Syy1125.OberthEffect.Lib.Math;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect

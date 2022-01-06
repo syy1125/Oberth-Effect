@@ -9,7 +9,6 @@ using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Syy1125.OberthEffect.Simulation
 {

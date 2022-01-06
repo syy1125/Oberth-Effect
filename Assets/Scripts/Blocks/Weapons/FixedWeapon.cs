@@ -1,12 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
-using Syy1125.OberthEffect.Spec.Database;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons

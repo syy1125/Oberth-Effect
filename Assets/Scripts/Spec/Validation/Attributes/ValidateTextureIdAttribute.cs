@@ -9,7 +9,7 @@ public class ValidateTextureIdAttribute : AbstractValidationAttribute
 	public override void Validate(object value)
 	{
 		if (value == null) return;
-		
+
 		if (value is string stringValue)
 		{
 			if (!ValidIds.Contains(stringValue))

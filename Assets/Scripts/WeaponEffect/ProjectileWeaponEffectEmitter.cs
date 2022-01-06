@@ -201,6 +201,22 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public void SetTargetPhotonId(int? targetId)
 	{}
 
+	public Vector2 GetInterceptAimPoint(
+		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
+	)
+	{
+		Vector2 relativePosition = targetPosition - ownPosition;
+		Vector2 relativeVelocity = targetVelocity - ownVelocity;
+
+		InterceptSolver.ProjectileIntercept(
+			relativePosition, relativeVelocity, _maxSpeed,
+			out Vector2 interceptVelocity, out float hitTime
+		);
+
+		// Because of how aim point calculation is done, we actually should omit our own velocity here.
+		return ownPosition + interceptVelocity * hitTime;
+	}
+
 	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)

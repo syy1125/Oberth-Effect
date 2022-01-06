@@ -4,8 +4,6 @@ using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Spec.ControlGroup;
-using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion

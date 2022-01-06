@@ -123,6 +123,22 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_targetPhotonId = targetId;
 	}
 
+	public Vector2 GetInterceptAimPoint(
+		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
+	)
+	{
+		Vector2 relativePosition = targetPosition - ownPosition;
+		Vector2 relativeVelocity = targetVelocity - ownVelocity;
+
+		InterceptSolver.MissileIntercept(
+			relativePosition, relativeVelocity, _missileConfig.MaxAcceleration,
+			out Vector2 acceleration, out float hitTime
+		);
+
+		// Because of how aim point calculation is done, we actually should omit our own velocity here.
+		return ownPosition + 0.5f * acceleration * hitTime * hitTime;
+	}
+
 	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)

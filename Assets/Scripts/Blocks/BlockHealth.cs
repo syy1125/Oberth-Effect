@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;

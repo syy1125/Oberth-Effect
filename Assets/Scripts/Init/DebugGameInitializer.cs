@@ -1,5 +1,4 @@
-﻿using Syy1125.OberthEffect.Spec;
-using Syy1125.OberthEffect.Spec.Database;
+﻿using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 
@@ -20,7 +19,7 @@ public class DebugGameInitializer : MonoBehaviour
 			{
 				database.Reload();
 			}
-			
+
 			ModLoader.ComputeChecksum();
 
 			KeybindManager.Instance.QuickLoadKeybinds();

@@ -11,7 +11,7 @@ public interface IDamageable
 	bool IsMine { get; }
 
 	int OwnerId { get; }
-	
+
 	Tuple<Vector2, Vector2> GetExplosionDamageBounds();
 
 	int GetExplosionGridResolution();
@@ -41,7 +41,7 @@ public interface IDamageable
 	);
 }
 
-public interface IDirectDamageable:IDamageable
+public interface IDirectDamageable : IDamageable
 {
 	void RequestDirectDamage(DamageType damageType, float damage, float armorPierce);
 }

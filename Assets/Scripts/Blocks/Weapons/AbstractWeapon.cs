@@ -181,28 +181,19 @@ public abstract class AbstractWeapon :
 		if (bestIndex < 0) // No valid target
 		{
 			SetAimPoint(null);
+			SetTargetPhotonId(null);
 			SetFiring(false);
 			return;
 		}
 
 		var bestTarget = targets[bestIndex];
-		if (WeaponEmitter is ProjectileWeaponEffectEmitter projectileEmitter)
-		{
-			Vector2 relativePosition = (Vector2) bestTarget.transform.position - position;
-			Vector2 relativeVelocity = bestTarget.GetComponent<Rigidbody2D>().velocity - localVelocity;
-
-			InterceptSolver.ProjectileIntercept(
-				relativePosition, relativeVelocity, projectileEmitter.GetMaxSpeed(),
-				out Vector2 interceptVelocity, out float hitTime
-			);
-
-			SetAimPoint(position + interceptVelocity * hitTime);
-		}
-		else // Is some kind of beam weapon
-		{
-			SetAimPoint(bestTarget.transform.position);
-		}
-
+		SetAimPoint(
+			WeaponEmitter.GetInterceptAimPoint(
+				position, localVelocity,
+				bestTarget.transform.position, bestTarget.GetComponent<Rigidbody2D>().velocity
+			)
+		);
+		SetTargetPhotonId(bestTarget.photonView.ViewID);
 		SetFiring(true);
 	}
 

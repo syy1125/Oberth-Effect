@@ -3,7 +3,6 @@ using System.Collections;
 using System.Threading.Tasks;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
-using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;

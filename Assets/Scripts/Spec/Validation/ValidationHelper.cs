@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
-using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Validation
 {

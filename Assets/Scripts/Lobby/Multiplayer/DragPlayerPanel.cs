@@ -3,8 +3,6 @@ using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
-using Cursor = UnityEngine.Cursor;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {

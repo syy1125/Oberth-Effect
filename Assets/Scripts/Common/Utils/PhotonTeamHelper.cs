@@ -2,8 +2,8 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Match;
-using ColorScheme = Syy1125.OberthEffect.Common.Colors.ColorScheme;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common.Utils
