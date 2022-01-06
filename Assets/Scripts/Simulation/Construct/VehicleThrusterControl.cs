@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Input;
+using Syy1125.OberthEffect.Lib;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -50,12 +51,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
-		_rotationPid = new Pid<float>(
-			RotationPidConfig,
-			(a, b) => a + b,
-			(a, b) => Mathf.DeltaAngle(b, a),
-			(a, b) => a * b
-		);
+		_rotationPid = new RotationPid(RotationPidConfig);
 	}
 
 	private void OnEnable()

@@ -183,7 +183,9 @@ public class DamagingProjectile : MonoBehaviourPun
 				hit.point, _explosionRadius, _damage * damageModifier, photonView.OwnerActorNr,
 				hitTransform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
 			);
+			gameObject.SetActive(false);
 			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
+
 			return HitResult.Stop;
 		}
 		else

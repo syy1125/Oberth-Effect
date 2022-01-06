@@ -35,6 +35,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	// State
 	private Vector2? _aimPoint;
+	private int? _targetPhotonId;
 	private float _resourceSatisfaction;
 	private int _activeLauncherIndex;
 	private float _launchCooldown;
@@ -116,6 +117,11 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_aimPoint = aimPoint;
 	}
 
+	public void SetTargetPhotonId(int? targetId)
+	{
+		_targetPhotonId = targetId;
+	}
+
 	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
@@ -150,8 +156,21 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private void FireCurrentLauncher()
 	{
+		if (_aimPoint == null) return;
+
 		var firingPort = _launchTubes[_activeLauncherIndex].FiringPort;
 		Vector3 localLaunchVelocity = _launchTubes[_activeLauncherIndex].LaunchVelocity;
+
+		if (_targetPhotonId == null)
+		{
+			_missileConfig.HasTarget = false;
+			_missileConfig.TargetPhotonId = 0;
+		}
+		else
+		{
+			_missileConfig.HasTarget = true;
+			_missileConfig.TargetPhotonId = _targetPhotonId.Value;
+		}
 
 		GameObject missile = PhotonNetwork.Instantiate(
 			"Missile", firingPort.position, firingPort.rotation,

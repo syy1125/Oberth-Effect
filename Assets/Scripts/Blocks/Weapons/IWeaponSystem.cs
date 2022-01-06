@@ -6,7 +6,9 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>
-{}
+{
+	int? GetTargetPhotonId();
+}
 
 public interface IWeaponSystem
 {
@@ -14,6 +16,7 @@ public interface IWeaponSystem
 	public WeaponBindingGroup WeaponBinding { get; }
 
 	void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTarget> targets);
+	void SetTargetPhotonId(int? targetId);
 	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);
 

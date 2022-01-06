@@ -6,6 +6,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public interface IWeaponEffectEmitter
 {
+	void SetTargetPhotonId(int? targetId);
 	void SetAimPoint(Vector2? aimPoint);
 
 	// Called from whatever's firing the weapon to ensure ordering of events.

@@ -198,6 +198,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_aimPoint = aimPoint;
 	}
 
+	public void SetTargetPhotonId(int? targetId)
+	{}
+
 	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)

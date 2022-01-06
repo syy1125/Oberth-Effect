@@ -44,7 +44,8 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		);
 
 		GetComponent<DamagingProjectile>().Init(
-			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius, GetHealthDamageModifier
+			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius,
+			GetHealthDamageModifier
 		);
 
 		GetComponent<BoxCollider2D>().size = _config.ColliderSize;

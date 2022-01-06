@@ -48,6 +48,11 @@ public static class PhotonTeamHelper
 		}
 	}
 
+	public static int GetPlayerTeamIndex(int playerActorNumber)
+	{
+		return GetPlayerTeamIndex(PhotonNetwork.CurrentRoom.Players[playerActorNumber]);
+	}
+
 	public static bool IsValidTeam(int teamIndex)
 	{
 		return teamIndex >= 0;

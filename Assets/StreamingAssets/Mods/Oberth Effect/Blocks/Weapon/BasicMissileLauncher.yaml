@@ -43,7 +43,7 @@ FixedWeapon:
         LaunchVelocity: { X: 0, Y: 2 }
     MaxAcceleration: 5
     MaxAngularAcceleration: 90
-    MaxLifetime: 5
+    MaxLifetime: 10
     GuidanceAlgorithm: Predictive
     GuidanceActivationDelay: 0.1
     PointDefenseTarget:

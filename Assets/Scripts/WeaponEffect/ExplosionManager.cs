@@ -116,7 +116,7 @@ public class ExplosionManager : MonoBehaviourPun
 			.ToList();
 
 #if UNITY_EDITOR
-		Debug.Log($"Query found {colliderCount} colliders, mapped to {targets.Count} targets");
+		Debug.Log($"Explosion query found {colliderCount} colliders, mapped to {targets.Count} targets");
 #endif
 
 		float d = damage * 100 / (19 * Mathf.PI * radius * radius);

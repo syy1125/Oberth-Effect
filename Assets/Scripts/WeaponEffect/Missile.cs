@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Lib;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -19,6 +20,7 @@ public struct MissileConfig
 	public float ExplosionRadius;
 	public float Lifetime;
 
+	public bool HasTarget;
 	public int TargetPhotonId;
 	public float MaxAcceleration;
 	public float MaxAngularAcceleration;
@@ -40,10 +42,23 @@ public struct MissileConfig
 [RequireComponent(typeof(DamagingProjectile))]
 public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
+	public float RotationPidResponse = 2f;
+	public float RotationPidBaseDerivativeTime = 5f;
+
+	private Rigidbody2D _body;
 	private MissileConfig _config;
+	private Rigidbody2D _targetBody;
 	private PointDefenseTarget _pdTarget;
 
 	private float _initTime;
+	private Vector2? _targetAcceleration;
+	private Pid<float> _rotationPid;
+
+	private void Awake()
+	{
+		_body = GetComponent<Rigidbody2D>();
+	}
+
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
@@ -51,7 +66,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		_config = JsonUtility.FromJson<MissileConfig>(CompressionUtils.Decompress((byte[]) instantiationData[0]));
 
 		GetComponent<DamagingProjectile>().Init(
-			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius, null
+			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius,
+			GetHealthDamageModifier
 		);
 
 		GetComponent<BoxCollider2D>().size = _config.ColliderSize;
@@ -71,7 +87,103 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
 
+		Debug.Log($"Missile launched with HasTarget={_config.HasTarget} and TargetPhotonId={_config.TargetPhotonId}");
+		if (_config.HasTarget)
+		{
+			_targetBody = PhotonView.Find(_config.TargetPhotonId)?.GetComponent<Rigidbody2D>();
+			Debug.Log($"Target body is {_targetBody}");
+		}
+
 		_initTime = Time.time;
+		_targetAcceleration = null;
+		_rotationPid = new RotationPid(
+			new PidConfig
+			{
+				Response = RotationPidResponse,
+				DerivativeTime = RotationPidBaseDerivativeTime / _config.MaxAngularAcceleration
+			}
+		);
+	}
+
+	private void Start()
+	{
+		StartCoroutine(LateFixedUpdate());
+		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
+	}
+
+	private void FixedUpdate()
+	{
+		if (_targetAcceleration != null)
+		{
+			float angle = Vector2.SignedAngle(_targetAcceleration.Value, transform.up);
+			_rotationPid.Update(angle, Time.fixedDeltaTime);
+
+			float rotationResponse = Mathf.Clamp(_rotationPid.Output, -1f, 1f);
+			_body.angularVelocity -= rotationResponse * _config.MaxAngularAcceleration * Time.fixedDeltaTime;
+
+			float thrust = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+			_body.velocity += (Vector2) transform.up
+			                  * (thrust * _targetAcceleration.Value.magnitude * Time.fixedDeltaTime);
+		}
+	}
+
+	private IEnumerator LateFixedUpdate()
+	{
+		while (enabled)
+		{
+			yield return new WaitForFixedUpdate();
+
+			if (Time.time - _initTime < _config.GuidanceActivationDelay) continue;
+
+			if (_targetBody == null)
+			{
+				_targetAcceleration = transform.up * _config.MaxAcceleration;
+			}
+			else
+			{
+				Vector2 relativePosition = _targetBody.worldCenterOfMass - _body.worldCenterOfMass;
+				Vector2 relativeVelocity = _targetBody.velocity - _body.velocity;
+
+				if (
+					InterceptSolver.MissileIntercept(
+						relativePosition, relativeVelocity, _config.MaxAcceleration,
+						out Vector2 acceleration, out float hitTime
+					)
+				)
+				{
+					_targetAcceleration = acceleration;
+				}
+				else
+				{
+					_targetAcceleration = transform.up * _config.MaxAcceleration;
+				}
+			}
+		}
+	}
+
+	private float GetHealthDamageModifier()
+	{
+		return _pdTarget == null
+			? 1f
+			: MathUtils.Remap(
+				_pdTarget.HealthFraction,
+				0f, 1f, 1f - _config.HealthDamageScaling, 1f
+			);
+	}
+
+	private void EndOfLifeDespawn()
+	{
+		GetComponent<DamagingProjectile>().OnLifetimeDespawn();
+	}
+
+	private void OnDrawGizmos()
+	{
+		if (_targetAcceleration != null)
+		{
+			Gizmos.color = Color.red;
+			Gizmos.matrix = Matrix4x4.identity;
+			Gizmos.DrawLine(transform.position, transform.position + (Vector3) _targetAcceleration.Value);
+		}
 	}
 }
 }

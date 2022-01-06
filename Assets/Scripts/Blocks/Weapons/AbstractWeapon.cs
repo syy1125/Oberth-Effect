@@ -25,6 +25,7 @@ public abstract class AbstractWeapon :
 
 	protected bool Firing;
 	protected Vector2? AimPoint;
+	protected int? TargetPhotonId;
 	protected Tuple<Vector2, Vector2> PointDefenseTarget;
 
 	protected WeaponBindingGroup DefaultBinding;
@@ -209,6 +210,12 @@ public abstract class AbstractWeapon :
 	{
 		AimPoint = aimPoint;
 		WeaponEmitter.SetAimPoint(aimPoint);
+	}
+
+	public void SetTargetPhotonId(int? targetId)
+	{
+		TargetPhotonId = targetId;
+		WeaponEmitter.SetTargetPhotonId(targetId);
 	}
 
 	public void SetFiring(bool firing)

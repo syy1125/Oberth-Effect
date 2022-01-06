@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common
+namespace Syy1125.OberthEffect.Lib
 {
 [Serializable]
 public struct PidConfig

@@ -146,6 +146,9 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public void SetAimPoint(Vector2? aimPoint)
 	{}
 
+	public void SetTargetPhotonId(int? targetId)
+	{}
+
 	public void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)

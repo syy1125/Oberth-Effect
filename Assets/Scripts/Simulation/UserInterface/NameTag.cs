@@ -36,7 +36,7 @@ public class NameTag : MonoBehaviour
 
 	private void Update()
 	{
-		if (Target == null || Target.Dead)
+		if (Target == null || Target.IsDead)
 		{
 			Destroy(gameObject);
 		}
