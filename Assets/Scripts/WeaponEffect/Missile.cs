@@ -24,6 +24,7 @@ public struct MissileConfig
 	public int TargetPhotonId;
 	public float MaxAcceleration;
 	public float MaxAngularAcceleration;
+	public float ThrustActivationDelay;
 	public MissileGuidanceAlgorithm GuidanceAlgorithm;
 	public float GuidanceActivationDelay;
 
@@ -77,7 +78,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		{
 			_pdTarget = gameObject.AddComponent<PointDefenseTarget>();
 			_pdTarget.Init(_config.MaxHealth, _config.ArmorValue, _config.ColliderSize);
-			// _pdTarget.OnDestroyedByDamage.AddListener(EndOfLifeDespawn);
+			_pdTarget.OnDestroyedByDamage.AddListener(EndOfLifeDespawn);
 
 			gameObject.AddComponent<ReferenceFrameProvider>();
 			var radiusProvider = gameObject.AddComponent<ConstantCollisionRadiusProvider>();
@@ -135,7 +136,14 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private void FixedUpdate()
 	{
-		if (_targetAcceleration != null)
+		if (_targetAcceleration == null)
+		{
+			if (Time.time - _initTime >= _config.ThrustActivationDelay)
+			{
+				ApplyThrust(_config.MaxAcceleration);
+			}
+		}
+		else
 		{
 			float angle = Vector2.SignedAngle(_targetAcceleration.Value, transform.up);
 			_rotationPid.Update(angle, Time.fixedDeltaTime);
@@ -143,20 +151,29 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			float rotationResponse = Mathf.Clamp(_rotationPid.Output, -1f, 1f);
 			_body.angularVelocity -= rotationResponse * _config.MaxAngularAcceleration * Time.fixedDeltaTime;
 
-			float thrustFraction = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
-			_body.velocity += (Vector2) transform.up
-			                  * (thrustFraction * _targetAcceleration.Value.magnitude * Time.fixedDeltaTime);
-
-			if (_propulsionParticles != null)
+			if (Time.time - _initTime >= _config.ThrustActivationDelay)
 			{
-				for (var i = 0; i < _propulsionParticles.Length; i++)
-				{
-					ParticleSystem.MainModule main = _propulsionParticles[i].main;
-					main.startSpeedMultiplier = thrustFraction * _maxParticleSpeeds[i];
-					Color startColor = main.startColor.color;
-					startColor.a = thrustFraction;
-					main.startColor = new ParticleSystem.MinMaxGradient(startColor);
-				}
+				float thrustFraction = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+				ApplyThrust(thrustFraction * _targetAcceleration.Value.magnitude);
+			}
+		}
+	}
+
+	private void ApplyThrust(float acceleration)
+	{
+		_body.velocity += (Vector2) transform.up * (acceleration * Time.deltaTime);
+
+		float thrustFraction = acceleration / _config.MaxAcceleration;
+
+		if (_propulsionParticles != null)
+		{
+			for (var i = 0; i < _propulsionParticles.Length; i++)
+			{
+				ParticleSystem.MainModule main = _propulsionParticles[i].main;
+				main.startSpeedMultiplier = thrustFraction * _maxParticleSpeeds[i];
+				Color startColor = main.startColor.color;
+				startColor.a = thrustFraction;
+				main.startColor = new ParticleSystem.MinMaxGradient(startColor);
 			}
 		}
 	}

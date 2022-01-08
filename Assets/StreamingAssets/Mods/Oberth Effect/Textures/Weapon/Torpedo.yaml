@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/Torpedo
+ImagePath: ./Torpedo.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

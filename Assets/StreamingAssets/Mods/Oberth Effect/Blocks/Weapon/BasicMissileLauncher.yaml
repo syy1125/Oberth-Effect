@@ -1,5 +1,5 @@
 ﻿BlockId: OberthEffect/BasicMissileLauncher
-Enabled: true
+Enabled: false
 CategoryId: OberthEffect/Combat
 Cost: 100
 Info:

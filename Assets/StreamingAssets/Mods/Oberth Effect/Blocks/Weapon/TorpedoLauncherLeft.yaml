@@ -1,0 +1,68 @@
+﻿BlockId: OberthEffect/TorpedoLauncherLeft
+Enabled: true
+CategoryId: OberthEffect/Combat
+Cost: 250
+Info:
+  ShortName: L Torpedo
+  FullName: Left Torpedo Launcher
+  Description: |
+    Torpedos are weapons intended to quickly damage or destroy enemy crafts at long range.
+    However, they are quite resource intensive to use, and the torpedos themselves are vulnerable to point defense.
+Renderers:
+  - TextureId: OberthEffect/TorpedoLauncherLeft
+    Offset: { X: 0, Y: 0.5 }
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 2 }
+  AttachmentPoints:
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 2 }
+    - { X: 1, Y: 0 }
+    - { X: 1, Y: 1 }
+  MirrorBlockId: OberthEffect/TorpedoLauncherRight
+Physics:
+  CenterOfMass: { X: 0, Y: 0.5 }
+  Mass: 5
+  MomentOfInertia: 2.0833333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 200
+  ArmorValue: 8
+FixedWeapon:
+  MissileLauncherEffect:
+    FiringPortOffset: { X: 0, Y: 0.5 }
+    DamageType: Kinetic
+    Damage: 200
+    ArmorPierce: 10
+    MaxResourceUse:
+      OberthEffect/Energy: 300
+    ColliderSize: { X: 0.16, Y: 1.4 }
+    LaunchTubes:
+      - Position: { X: -0.25, Y: 0 }
+        Rotation: 0
+        LaunchVelocity: { X: -5, Y: 0 }
+    MaxAcceleration: 10
+    MaxAngularAcceleration: 30
+    MaxLifetime: 30
+    ThrustActivationDelay: 0.5
+    GuidanceAlgorithm: Predictive
+    GuidanceActivationDelay: 0.1
+    PointDefenseTarget:
+      MaxHealth: 10
+      ArmorValue: 2
+    HealthDamageScaling: 0.8
+    ReloadTime: 2.5
+    Renderers:
+      - TextureId: OberthEffect/Torpedo
+    PropulsionParticles:
+      - Offset: { X: 0, Y: -0.7 }
+        Direction: { X: 0, Y: -1 }
+        Size: 0.16
+        MaxSpeed: 10
+        EmissionRateOverTime: 200
+        Lifetime: 0.2
+        Color: orange

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Common.Colors
 {
@@ -20,11 +21,14 @@ public class ColorSchemePainter : MonoBehaviour
 
 	private void OnEnable()
 	{
-		ApplyColorScheme();
-
 		_context.OnPrimaryColorChanged += UpdatePrimaryColor;
 		_context.OnSecondaryColorChanged += UpdateSecondaryColor;
 		_context.OnTertiaryColorChanged += UpdateTertiaryColor;
+	}
+
+	private void Start()
+	{
+		ApplyColorScheme();
 	}
 
 	public void ApplyColorScheme()

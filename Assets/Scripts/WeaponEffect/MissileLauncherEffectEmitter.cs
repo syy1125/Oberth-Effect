@@ -58,6 +58,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			Lifetime = spec.MaxLifetime,
 			MaxAcceleration = spec.MaxAcceleration,
 			MaxAngularAcceleration = spec.MaxAngularAcceleration,
+			ThrustActivationDelay = spec.ThrustActivationDelay,
 			GuidanceAlgorithm = spec.GuidanceAlgorithm,
 			GuidanceActivationDelay = spec.GuidanceActivationDelay,
 			Renderers = spec.Renderers,
@@ -255,6 +256,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					? $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {_missileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
 					: $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
 			)
+			.AppendLine($"    Max acceleration {_missileConfig.MaxAcceleration * PhysicsConstants.METERS_PER_UNIT_LENGTH}m/s², max angular acceleration {_missileConfig.MaxAngularAcceleration:0.#}°/s²")
 			.AppendLine($"    Max range {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH}m");
 
 		if (_missileConfig.IsPointDefenseTarget)

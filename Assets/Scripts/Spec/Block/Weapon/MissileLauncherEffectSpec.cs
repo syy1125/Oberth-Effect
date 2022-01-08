@@ -29,6 +29,8 @@ public class MissileLauncherEffectSpec : AbstractWeaponEffectSpec
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxLifetime;
 
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float ThrustActivationDelay;
 	public MissileGuidanceAlgorithm GuidanceAlgorithm;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float GuidanceActivationDelay;

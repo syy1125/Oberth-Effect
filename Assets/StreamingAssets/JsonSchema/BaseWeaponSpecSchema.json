@@ -111,6 +111,7 @@
                 "MaxAcceleration": { "type": "number" },
                 "MaxAngularAcceleration": { "type": "number" },
                 "MaxLifetime": { "type": "number" },
+                "ThrustActivationDelay": { "type": "number" },
                 "GuidanceAlgorithm": { "enum": ["Deadfire", "Predictive"] },
                 "GuidanceActivationDelay": { "type": "number" },
                 "PointDefenseTarget": { "$ref": "PointDefenseTargetSpecSchema.json" },
