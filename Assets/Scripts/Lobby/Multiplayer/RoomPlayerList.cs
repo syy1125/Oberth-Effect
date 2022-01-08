@@ -72,13 +72,12 @@ public class RoomPlayerList : MonoBehaviourPunCallbacks
 	public override void OnDisable()
 	{
 		base.OnDisable();
-
-		foreach (GameObject go in _playerPanels.Values)
-		{
-			Destroy(go);
-		}
+		
+		foreach (GameObject panel in _playerPanels.Values) Destroy(panel);
+		foreach (GameObject panel in _teamPanels.Values) Destroy(panel);
 
 		_playerPanels.Clear();
+		_teamPanels.Clear();
 	}
 
 	private void InstantiatePlayerPanel(Player player, GameObject prefab, Transform parent)
