@@ -84,7 +84,11 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 		var instance = _specs[textureId];
 
 		// Reference: https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html
-		var texture = new Texture2D(2, 2);
+		var texture = new Texture2D(2, 2)
+		{
+			wrapMode = TextureWrapMode.Clamp
+		};
+
 		texture.LoadImage(File.ReadAllBytes(instance.Spec.ImagePath));
 
 		var sprite = Sprite.Create(
