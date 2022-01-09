@@ -27,6 +27,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public ResourceDisplay ResourceDisplay;
 	public BlockHealthBarControl HealthBarControl;
 	public Radar Radar;
+	public TargetInterface TargetInterface;
 
 	public GameObject VehiclePrefab;
 
@@ -129,6 +130,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		ResourceDisplay.ResourceManager = Vehicle.GetComponent<VehicleResourceManager>();
 		HealthBarControl.SetTarget(Vehicle.GetComponent<VehicleCore>());
 		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
+		TargetInterface.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();
 
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
 

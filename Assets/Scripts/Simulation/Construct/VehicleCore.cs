@@ -24,6 +24,8 @@ public class VehicleCore :
 	private VehicleBlueprint _blueprint;
 	public bool IsDead { get; private set; }
 
+	public string VehicleName => _blueprint.Name;
+
 	private void Awake()
 	{
 		_controlCores = new List<ControlCore>();

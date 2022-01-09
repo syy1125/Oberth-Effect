@@ -6,9 +6,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Blocks.Weapons
 {
 public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>
-{
-	int? GetTargetPhotonId();
-}
+{}
 
 public interface IWeaponSystem
 {

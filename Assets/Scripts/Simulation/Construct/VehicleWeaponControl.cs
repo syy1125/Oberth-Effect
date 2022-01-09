@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
@@ -12,19 +13,23 @@ using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
+[RequireComponent(typeof(Rigidbody2D))]
 public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
 {
 	public InputActionReference LookAction;
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;
+	public InputActionReference TargetLockAction;
 
 	private Camera _mainCamera;
+	private Rigidbody2D _body;
 	private Vector2 _localAimPoint;
 
 	private List<IWeaponSystem> _weapons;
 	private bool _weaponListChanged;
 
-	private int? _targetPhotonId;
+	public bool TargetLock { get; private set; }
+	public int? TargetPhotonId { get; private set; }
 
 	private float _pdRange;
 	private ContactFilter2D _pdFilter;
@@ -33,6 +38,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	private void Awake()
 	{
 		_mainCamera = Camera.main;
+		_body = GetComponent<Rigidbody2D>();
 		_weapons = new List<IWeaponSystem>();
 
 		_pdFilter = new ContactFilter2D
@@ -44,9 +50,19 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		_pdHits = new List<Collider2D>();
 	}
 
+	private void OnEnable()
+	{
+		TargetLockAction.action.performed += ToggleTargetLock;
+	}
+
 	private void Start()
 	{
 		StartCoroutine(LateFixedUpdate());
+	}
+
+	private void OnDisable()
+	{
+		TargetLockAction.action.performed -= ToggleTargetLock;
 	}
 
 	public void OnVehicleDeath()
@@ -123,9 +139,11 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		return aimPoint;
 	}
 
-	private void FindTarget(Vector2 aimPoint)
+	private void FindTarget(Vector2 cursorPosition)
 	{
-		_targetPhotonId = null;
+		if (TargetLock) return;
+
+		TargetPhotonId = null;
 		float minDistance = float.PositiveInfinity;
 		int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
 
@@ -134,11 +152,37 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			if (!vehicle.enabled || vehicle.IsDead) continue;
 			if (PhotonTeamHelper.GetPlayerTeamIndex(vehicle.photonView.Owner) == ownerTeamIndex) continue;
 
-			float distance = Vector2.Distance(aimPoint, vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass);
-			if (_targetPhotonId == null || distance < minDistance)
+			float distance = Vector2.Distance(cursorPosition, vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass);
+			if (TargetPhotonId == null || distance < minDistance)
 			{
-				_targetPhotonId = vehicle.photonView.ViewID;
+				TargetPhotonId = vehicle.photonView.ViewID;
 				minDistance = distance;
+			}
+		}
+
+		if (TargetPhotonId != null)
+		{
+			// Try to make targeting more natural. When the cursor is far from the detected target,
+			// only set target if the ratio of target-cursor distance to cursor-vehicle distance is smaller than ratio of vehicle-cursor distance to cursor-edge distance.
+			Vector2 minCorner = _mainCamera.ViewportToWorldPoint(Vector3.zero);
+			Vector2 maxCorner = _mainCamera.ViewportToWorldPoint(Vector3.one);
+			Vector2 com = _body.worldCenterOfMass;
+
+			float xRatio = cursorPosition.x > com.x
+				? (cursorPosition.x - com.x) / (maxCorner.x - cursorPosition.x)
+				: (com.x - cursorPosition.x) / (cursorPosition.x - minCorner.x);
+			float yRatio = cursorPosition.y > com.y
+				? (cursorPosition.y - com.y) / (maxCorner.y - cursorPosition.y)
+				: (com.y - cursorPosition.y) / (cursorPosition.y - minCorner.y);
+
+			float halfScreenSize = Mathf.Min(maxCorner.x - minCorner.x, maxCorner.y - minCorner.y) / 2;
+			float threshold = Mathf.Max(
+				halfScreenSize, Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio)
+			);
+
+			if (minDistance > threshold)
+			{
+				TargetPhotonId = null;
 			}
 		}
 	}
@@ -184,7 +228,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			{
 				case WeaponBindingGroup.Manual1:
 					weapon.SetAimPoint(aimPoint);
-					weapon.SetTargetPhotonId(_targetPhotonId);
+					weapon.SetTargetPhotonId(TargetPhotonId);
 
 					if (isMine)
 					{
@@ -194,7 +238,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 					break;
 				case WeaponBindingGroup.Manual2:
 					weapon.SetAimPoint(aimPoint);
-					weapon.SetTargetPhotonId(_targetPhotonId);
+					weapon.SetTargetPhotonId(TargetPhotonId);
 
 					if (isMine)
 					{
@@ -213,9 +257,20 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		}
 	}
 
-	public int? GetTargetPhotonId()
+	private void ToggleTargetLock(InputAction.CallbackContext context)
 	{
-		return _targetPhotonId;
+		if (!photonView.IsMine) return;
+
+		if (TargetLock)
+		{
+			Debug.Log("Turning off target lock");
+			TargetLock = false;
+		}
+		else if (TargetPhotonId != null)
+		{
+			Debug.Log($"Locking onto {TargetPhotonId.Value}");
+			TargetLock = true;
+		}
 	}
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -223,10 +278,12 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		if (stream.IsWriting)
 		{
 			stream.SendNext(_localAimPoint);
+			stream.SendNext(TargetPhotonId);
 		}
 		else
 		{
 			_localAimPoint = (Vector2) stream.ReceiveNext();
+			TargetPhotonId = (int?) stream.ReceiveNext();
 		}
 	}
 }

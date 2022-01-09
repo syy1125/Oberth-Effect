@@ -20,8 +20,10 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ColorContext))]
-public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBlockLifecycleListener,
-	ICollisionRadiusProvider
+public class ConstructBlockManager : MonoBehaviourPun,
+	IBlockCoreRegistry, IBlockLifecycleListener,
+	ICollisionRadiusProvider,
+	IPunObservable
 {
 	public string DebrisPrefabName = "Debris";
 
@@ -378,33 +380,15 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 
 	#endregion
 
-	public IEnumerable<GameObject> GetAllBlocks() => _blockTable.GetAllObjects();
+	#region Unity Callbacks
 
-	public GameObject GetBlockOccupying(Vector2Int position)
+	private void Update()
 	{
-		return _blockTable.GetObjectOccupying(position);
-	}
-
-	public BoundsInt GetBounds()
-	{
-		if (_blocksChanged)
+		if (photonView.IsMine && _blocksChanged)
 		{
 			UpdateBounds();
 			_blocksChanged = false;
 		}
-
-		return _bounds;
-	}
-
-	public float GetCollisionRadius()
-	{
-		if (_blocksChanged)
-		{
-			UpdateBounds();
-			_blocksChanged = false;
-		}
-
-		return _collisionRadius;
 	}
 
 	private void UpdateBounds()
@@ -440,6 +424,46 @@ public class ConstructBlockManager : MonoBehaviourPun, IBlockCoreRegistry, IBloc
 			{
 				return;
 			}
+		}
+	}
+
+	#endregion
+
+	public IEnumerable<GameObject> GetAllBlocks() => _blockTable.GetAllObjects();
+
+	public GameObject GetBlockOccupying(Vector2Int position)
+	{
+		return _blockTable.GetObjectOccupying(position);
+	}
+
+	public BoundsInt GetBounds()
+	{
+		return _bounds;
+	}
+
+	public float GetCollisionRadius()
+	{
+		return _collisionRadius;
+	}
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			stream.SendNext(_collisionRadius);
+			stream.SendNext(_bounds.xMin);
+			stream.SendNext(_bounds.yMin);
+			stream.SendNext(_bounds.xMax);
+			stream.SendNext(_bounds.yMax);
+		}
+		else
+		{
+			_collisionRadius = (float) stream.ReceiveNext();
+			int xMin = (int) stream.ReceiveNext();
+			int yMin = (int) stream.ReceiveNext();
+			int xMax = (int) stream.ReceiveNext();
+			int yMax = (int) stream.ReceiveNext();
+			_bounds.SetMinMax(new Vector3Int(xMin, yMin, 0), new Vector3Int(xMax, yMax, 1));
 		}
 	}
 

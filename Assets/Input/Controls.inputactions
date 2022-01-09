@@ -62,6 +62,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Target Lock",
+                    "type": "Button",
+                    "id": "99bb5eaf-f6e8-4620-ab87-24df87c2bef2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Zoom",
                     "type": "Value",
                     "id": "030e9137-61bc-4876-9455-111081c3559c",
@@ -504,6 +512,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Fire4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4839f6cc-1699-4552-9465-59f3830e63e9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Target Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8b54085-7a7f-407c-8a57-7a45828a24c8",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Target Lock",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
