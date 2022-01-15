@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
@@ -253,11 +254,13 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		builder.AppendLine("  Missile")
 			.AppendLine(
 				_missileConfig.DamageType == DamageType.Explosive
-					? $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {_missileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH}m radius"
+					? $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_missileConfig.ExplosionRadius)} radius"
 					: $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Max acceleration {_missileConfig.MaxAcceleration * PhysicsConstants.METERS_PER_UNIT_LENGTH}m/s², max angular acceleration {_missileConfig.MaxAngularAcceleration:0.#}°/s²")
-			.AppendLine($"    Max range {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH}m");
+			.AppendLine(
+				$"    Max acceleration {PhysicsUnitUtils.FormatAcceleration(_missileConfig.MaxAcceleration)}, max angular acceleration {_missileConfig.MaxAngularAcceleration:0.#}°/s²"
+			)
+			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(_maxRange)}");
 
 		if (_missileConfig.IsPointDefenseTarget)
 		{

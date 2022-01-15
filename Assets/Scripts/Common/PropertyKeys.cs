@@ -11,6 +11,7 @@ public static class PropertyKeys
 	public const string SECONDARY_COLOR = "SecondaryColor";
 	public const string TERTIARY_COLOR = "TertiaryColor";
 	public const string ANALYSIS_USE_ACC_MODE = "AnalysisUseAccelerationMode";
+	public const string PHYSICS_UNIT_MODE = "PhysicsUnitMode";
 	public const string DESIGNER_GRID_OPACITY = "DesignerGridOpacity";
 
 	// Photon room custom properties

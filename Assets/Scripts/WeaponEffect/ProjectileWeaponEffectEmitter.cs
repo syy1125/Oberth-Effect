@@ -5,6 +5,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
@@ -134,11 +135,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			.AppendLine("  Projectile")
 			.AppendLine(
 				_projectileConfig.DamageType == DamageType.Explosive
-					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {_projectileConfig.ExplosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
+					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_projectileConfig.ExplosionRadius)} radius"
 					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(
-				$"    Max range {_maxSpeed * PhysicsConstants.METERS_PER_UNIT_LENGTH:0.#}m/s × {_maxLifetime}s = {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m"
+				$"    Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(_maxRange)}"
 			);
 
 		if (_projectileConfig.IsPointDefenseTarget)
@@ -186,7 +187,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		{
 			string shotOrCluster = _clusterBaseAngles.Length > 1 ? "cluster" : "shot";
 			builder.AppendLine(
-				$"    Recoil {_recoil * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kNs per {shotOrCluster}"
+				$"    Recoil {PhysicsUnitUtils.FormatImpulse(_recoil)} per {shotOrCluster}"
 			);
 		}
 

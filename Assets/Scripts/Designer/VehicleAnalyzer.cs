@@ -253,8 +253,8 @@ public class VehicleAnalyzer : MonoBehaviour
 				DictionaryUtils.AddDictionary(maxResourceUse, _result.MaxResourceUse);
 
 				if (!_result.MaxCategoryResourceUse.TryGetValue(
-					spec.CategoryId, out Dictionary<string, float> categoryResourceUse
-				))
+					    spec.CategoryId, out Dictionary<string, float> categoryResourceUse
+				    ))
 				{
 					categoryResourceUse = new Dictionary<string, float>();
 					_result.MaxCategoryResourceUse.Add(spec.CategoryId, categoryResourceUse);
@@ -389,8 +389,8 @@ public class VehicleAnalyzer : MonoBehaviour
 			"\n",
 			"<b>Physics</b>",
 			$"  Block count {Designer.Blueprint.Blocks.Count}",
-			$"  Total mass {_result.Mass * PhysicsConstants.KG_PER_UNIT_MASS:#,0.#}kg",
-			$"  Moment of inertia {_result.MomentOfInertia * PhysicsConstants.KG_PER_UNIT_MASS * PhysicsConstants.METERS_PER_UNIT_LENGTH * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}kgm²",
+			$"  Total mass {PhysicsUnitUtils.FormatMass(_result.Mass)}",
+			$"  Moment of inertia {PhysicsUnitUtils.FormatMomentOfInertia(_result.MomentOfInertia)}",
 			$"  <color=\"#{ColorUtility.ToHtmlStringRGB(CenterOfMassIndicator.GetComponent<SpriteRenderer>().color)}\">• Center of mass</color>"
 		);
 		PhysicsOutput.gameObject.SetActive(true);
@@ -455,15 +455,15 @@ public class VehicleAnalyzer : MonoBehaviour
 	{
 		if (_accelerationMode)
 		{
-			TranslationLabel.text = "Theoretical maximum acceleration (m/s²)";
+			TranslationLabel.text = $"Theoretical maximum acceleration ({PhysicsUnitUtils.GetAccelerationUnits()})";
 			TranslationUpOutput.text =
-				$"{_result.PropulsionUp / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionUp / _result.Mass)}";
 			TranslationDownOutput.text =
-				$"{_result.PropulsionDown / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionDown / _result.Mass)}";
 			TranslationLeftOutput.text =
-				$"{_result.PropulsionLeft / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionLeft / _result.Mass)}";
 			TranslationRightOutput.text =
-				$"{_result.PropulsionRight / _result.Mass * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionRight / _result.Mass)}";
 
 			RotationLabel.text = "Theoretical maximum angular acceleration (deg/s²)";
 			RotationCcwOutput.text = $"{_result.PropulsionCcw / _result.MomentOfInertia * Mathf.Rad2Deg:#,0.#}";
@@ -478,17 +478,15 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 		else
 		{
-			TranslationLabel.text = "Theoretical maximum force (kN)";
-			TranslationUpOutput.text = $"{_result.PropulsionUp * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-			TranslationDownOutput.text = $"{_result.PropulsionDown * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-			TranslationLeftOutput.text = $"{_result.PropulsionLeft * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
-			TranslationRightOutput.text = $"{_result.PropulsionRight * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}";
+			TranslationLabel.text = $"Theoretical maximum force ({PhysicsUnitUtils.GetForceUnits()})";
+			TranslationUpOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionUp)}";
+			TranslationDownOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionDown)}";
+			TranslationLeftOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionLeft)}";
+			TranslationRightOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionRight)}";
 
-			RotationLabel.text = "Theoretical maximum torque (kNm)";
-			RotationCcwOutput.text =
-				$"{_result.PropulsionCcw * PhysicsConstants.KN_PER_UNIT_FORCE * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
-			RotationCwOutput.text =
-				$"{_result.PropulsionCw * PhysicsConstants.KN_PER_UNIT_FORCE * PhysicsConstants.METERS_PER_UNIT_LENGTH:#,0.#}";
+			RotationLabel.text = $"Theoretical maximum torque ({PhysicsUnitUtils.GetTorqueUnits()})";
+			RotationCcwOutput.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(_result.PropulsionCcw)}";
+			RotationCwOutput.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(_result.PropulsionCw)}";
 
 			ForceModeButton.GetComponentInChildren<Text>().color = Color.yellow;
 			ForceModeButton.GetComponentInChildren<Image>().enabled = true;
@@ -606,8 +604,8 @@ public class VehicleAnalyzer : MonoBehaviour
 					// The block is attached in this direction if we can form a two-way attachment
 					bool attached = false;
 					foreach (Vector2Int reverseAttachPoint in VehicleBlockUtils.GetAttachmentPoints(
-						Builder.GetBlockInstanceAt(attachmentPoint)
-					))
+						         Builder.GetBlockInstanceAt(attachmentPoint)
+					         ))
 					{
 						if (
 							Builder.HasBlockAt(reverseAttachPoint)

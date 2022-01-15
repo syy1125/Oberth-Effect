@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
 using UnityEngine;
@@ -99,8 +96,7 @@ public class Radar : MonoBehaviour
 		Vector2 offsetMax = RulerTransform.offsetMax;
 		offsetMax.x = _rulerUnit * _scale;
 		RulerTransform.offsetMax = offsetMax;
-		(float value, string prefix) = UnitUtils.GetMetricPrefix(_rulerUnit * PhysicsConstants.METERS_PER_UNIT_LENGTH);
-		RulerText.text = $"{value:G2}{prefix}m";
+		RulerText.text = PhysicsUnitUtils.FormatDistance(_rulerUnit);
 	}
 
 	private void UpdatePings()

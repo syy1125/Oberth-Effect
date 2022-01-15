@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -128,10 +129,10 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			.Append(", ")
 			.AppendLine(
 				_damageType == DamageType.Explosive
-					? $"{_explosionRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius"
+					? $"{PhysicsUnitUtils.FormatLength(_explosionRadius)} radius"
 					: $"<color=\"lightblue\">{_armorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Max range {_maxRange * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m");
+			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(_maxRange)}");
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(

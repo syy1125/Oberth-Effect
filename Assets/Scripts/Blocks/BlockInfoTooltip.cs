@@ -1,4 +1,5 @@
 ﻿using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using UnityEngine;
 
@@ -32,14 +33,14 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipProvider
 
 	public string GetTooltip()
 	{
-		float width = _bounds.Size.x * PhysicsConstants.METERS_PER_UNIT_LENGTH;
-		float height = _bounds.Size.y * PhysicsConstants.METERS_PER_UNIT_LENGTH;
+		string width = PhysicsUnitUtils.FormatLength(_bounds.Size.x, "F0");
+		string height = PhysicsUnitUtils.FormatLength(_bounds.Size.y, "F0");
 
 		return string.Join(
 			"\n",
 			_fullName,
-			$"  <color=\"lime\">Cost {_cost}</color>",
-			$"  {_mass * PhysicsConstants.KG_PER_UNIT_MASS:#,0.##}kg, {width:F0}m × {height:F0}m",
+			$"  <color=\"lime\">{_cost} cost</color>",
+			$"  {PhysicsUnitUtils.FormatMass(_mass)} mass, {width} × {height}",
 			$"  <color=\"red\">{_maxHealth} health</color>, <color=\"lightblue\">{_armorValue} armor</color>"
 		).Trim();
 	}

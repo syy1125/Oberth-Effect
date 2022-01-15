@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
@@ -196,7 +197,7 @@ public class LinearEngine : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		return string.Join(
 			"\n",
 			"Engine",
-			$"  Max thrust {MaxForce * PhysicsConstants.KN_PER_UNIT_FORCE:#,0.#}kN",
+			$"  Max thrust {PhysicsUnitUtils.FormatForce(MaxForce)}",
 			"  Max resource usage per second "
 			+ string.Join(
 				", ",

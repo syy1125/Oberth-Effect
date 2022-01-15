@@ -1,6 +1,7 @@
 ﻿using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.WeaponEffect;
@@ -51,8 +52,8 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 	public string GetTooltip()
 	{
 		return _alwaysExplode
-			? $"<color=\"red\">Volatile</color>: Explodes for {_maxDamage:F0} damage in a {_maxRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed."
-			: $"<color=\"orange\">Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {_maxRadius * PhysicsConstants.METERS_PER_UNIT_LENGTH:F0}m radius when destroyed.";
+			? $"<color=\"red\">Volatile</color>: Explodes for {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed."
+			: $"<color=\"orange\">Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed.";
 	}
 }
 }
