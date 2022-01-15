@@ -49,6 +49,10 @@ TurretedWeapon:
     MaxSpeed: 40
     MaxLifetime: 2
     ReloadTime: 1
+    ScreenShake:
+      Strength: 0.4
+      Duration: 0.4
+      DecayCurve: Quadratic
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.1, Y: 0.2 }

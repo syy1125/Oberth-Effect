@@ -50,6 +50,10 @@ TurretedWeapon:
     MaxLifetime: 0.4
     AimPointScaling: Lifetime
     ReloadTime: 0.15
+    ScreenShake:
+      Strength: 0.1
+      Duration: 0.1
+      DecayCurve: Linear
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.05, Y: 0.1 }

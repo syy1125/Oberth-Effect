@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 {
+	private Camera _camera;
 	private OwnerContext _ownerContext;
 	private ColorContext _colorContext;
 
@@ -34,6 +36,9 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private float _reloadProgress;
 	private float _resourceSatisfaction;
 
+	private ScreenShakeSpec _screenShake;
+
+	// State
 	private int _beamTicksRemaining;
 	private float _beamSecondsRemaining;
 
@@ -43,6 +48,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private void Awake()
 	{
+		_camera = Camera.main;
 		_ownerContext = GetComponentInParent<OwnerContext>();
 		_colorContext = GetComponentInParent<ColorContext>();
 	}
@@ -78,6 +84,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_visual.Init(beamWidth, beamColor, spec.HitParticles);
 
 		_reloadResourceUse = spec.MaxResourceUse;
+		_screenShake = spec.ScreenShake;
+
 		_raycastHits = new List<RaycastHit2D>();
 	}
 
@@ -244,34 +252,44 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
 
-		if (isMine && damageThisTick > Mathf.Epsilon && hitTarget != null)
+		if (isMine && damageThisTick > Mathf.Epsilon)
 		{
-			switch (_damageType)
+			if (hitTarget != null)
 			{
-				case DamageType.Kinetic:
-				case DamageType.Energy:
-					if (hitTarget is IDirectDamageable directTarget)
-					{
-						directTarget.RequestDirectDamage(_damageType, damageThisTick, _armorPierce);
-					}
-					else
-					{
-						hitTarget.RequestBeamDamage(
-							_damageType, damageThisTick, _armorPierce,
-							_ownerContext.OwnerId,
-							transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
-						);
-					}
+				switch (_damageType)
+				{
+					case DamageType.Kinetic:
+					case DamageType.Energy:
+						if (hitTarget is IDirectDamageable directTarget)
+						{
+							directTarget.RequestDirectDamage(_damageType, damageThisTick, _armorPierce);
+						}
+						else
+						{
+							hitTarget.RequestBeamDamage(
+								_damageType, damageThisTick, _armorPierce,
+								_ownerContext.OwnerId,
+								transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
+							);
+						}
 
-					break;
-				case DamageType.Explosive:
-					ExplosionManager.Instance.CreateExplosionAt(
-						worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId,
-						hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
-					);
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+						break;
+					case DamageType.Explosive:
+						ExplosionManager.Instance.CreateExplosionAt(
+							worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId,
+							hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
+						);
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+
+			if (_screenShake != null)
+			{
+				_camera.GetComponentInParent<CameraScreenShake>()?.AddInstance(
+					_screenShake.Strength, _screenShake.Duration, _screenShake.DecayCurve
+				);
 			}
 		}
 	}

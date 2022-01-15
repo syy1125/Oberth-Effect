@@ -1,3 +1,6 @@
+using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Components;
 using Syy1125.OberthEffect.Simulation;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,17 +30,17 @@ public class ScreenShakeTest : MonoBehaviour
 	{
 		if (Linear.triggered)
 		{
-			_screenShake.AddInstance(1f, 0.5f, CameraScreenShake.DecayCurve.Linear);
+			_screenShake.AddInstance(1f, 0.5f, ScreenShakeDecayCurve.Linear);
 		}
 
 		if (Quadratic.triggered)
 		{
-			_screenShake.AddInstance(1f, 0.5f, CameraScreenShake.DecayCurve.Quadratic);
+			_screenShake.AddInstance(1f, 0.5f, ScreenShakeDecayCurve.Quadratic);
 		}
 
 		if (Cubic.triggered)
 		{
-			_screenShake.AddInstance(1f, 0.5f, CameraScreenShake.DecayCurve.Cubic);
+			_screenShake.AddInstance(1f, 0.5f, ScreenShakeDecayCurve.Cubic);
 		}
 	}
 }

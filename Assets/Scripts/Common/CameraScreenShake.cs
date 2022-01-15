@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Generic;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.Common
 {
 public class CameraScreenShake : MonoBehaviour
 {
-	public enum DecayCurve
-	{
-		Linear,
-		Quadratic,
-		Cubic
-	}
-
 	private struct ScreenShakeInstance
 	{
 		public float StartTime;
 		public float EndTime;
 		public float Strength;
-		public DecayCurve Decay;
+		public ScreenShakeDecayCurve Decay;
 	}
 
 	public float Frequency = 5f;
@@ -41,7 +34,7 @@ public class CameraScreenShake : MonoBehaviour
 		_screenShakeMultiplier = PlayerPrefs.GetFloat(PropertyKeys.SCREEN_SHAKE_MULTIPLIER, 1f);
 	}
 
-	public void AddInstance(float strength, float duration, DecayCurve decay)
+	public void AddInstance(float strength, float duration, ScreenShakeDecayCurve decay)
 	{
 		float startTime = Time.time;
 		float endTime = startTime + duration;
@@ -56,6 +49,7 @@ public class CameraScreenShake : MonoBehaviour
 		if (_instances.Count > 0)
 		{
 			float time = Time.time;
+			// Strength is added in quadrature to reduce extreme cases of screen shake
 			float totalStrength = 0f;
 
 			for (var node = _instances.First; node != null;)
@@ -65,14 +59,16 @@ public class CameraScreenShake : MonoBehaviour
 				if (time < node.Value.EndTime)
 				{
 					float decay = MathUtils.Remap(time, node.Value.StartTime, node.Value.EndTime, 1f, 0f);
-					totalStrength += node.Value.Strength
-					                 * node.Value.Decay switch
-					                 {
-						                 DecayCurve.Linear => decay,
-						                 DecayCurve.Quadratic => decay * decay,
-						                 DecayCurve.Cubic => decay * decay * decay,
-						                 _ => throw new ArgumentOutOfRangeException()
-					                 };
+					float instanceStrength = node.Value.Strength
+					                         * node.Value.Decay switch
+					                         {
+						                         ScreenShakeDecayCurve.Linear => decay,
+						                         ScreenShakeDecayCurve.Quadratic => decay * decay,
+						                         ScreenShakeDecayCurve.Cubic => decay * decay * decay,
+						                         _ => throw new ArgumentOutOfRangeException()
+					                         };
+
+					totalStrength += instanceStrength * instanceStrength;
 				}
 				else
 				{
@@ -81,6 +77,8 @@ public class CameraScreenShake : MonoBehaviour
 
 				node = next;
 			}
+
+			totalStrength = Mathf.Sqrt(totalStrength);
 
 			Vector2 displacement = new Vector2(
 				Mathf.PerlinNoise(time * Frequency, _perlinOffset) - 0.5f,

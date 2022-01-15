@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
@@ -23,6 +24,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		public float ReloadProgress;
 	}
 
+	private Camera _camera;
 	private Rigidbody2D _body;
 	private ColorContext _colorContext;
 
@@ -34,6 +36,8 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private float _maxRange;
 
+	private ScreenShakeSpec _screenShake;
+
 	// State
 	private Vector2? _aimPoint;
 	private int? _targetPhotonId;
@@ -43,6 +47,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private void Awake()
 	{
+		_camera = Camera.main;
 		_body = GetComponentInParent<Rigidbody2D>();
 		_colorContext = GetComponentInParent<ColorContext>();
 	}
@@ -97,6 +102,8 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_reloadTime = spec.ReloadTime;
 		_reloadResourceUse = spec.MaxResourceUse;
+
+		_screenShake = spec.ScreenShake;
 
 		// r = v * t + 1/2 * a * t^2
 		_maxRange = spec.LaunchTubes.Max(tube => tube.LaunchVelocity.magnitude) * _missileConfig.Lifetime
@@ -207,6 +214,13 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		firingPort.gameObject.SetActive(false);
 		_launchTubes[_activeLauncherIndex].ReloadProgress -= _reloadTime;
+
+		if (_screenShake != null)
+		{
+			_camera.GetComponentInParent<CameraScreenShake>()?.AddInstance(
+				_screenShake.Strength, _screenShake.Duration, _screenShake.DecayCurve
+			);
+		}
 	}
 
 	private void ProgressReload()

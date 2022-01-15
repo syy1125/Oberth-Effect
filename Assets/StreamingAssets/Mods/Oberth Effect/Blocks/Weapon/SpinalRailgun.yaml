@@ -47,6 +47,10 @@ FixedWeapon:
     MaxSpeed: 250
     MaxLifetime: 4
     ReloadTime: 3
+    ScreenShake: 
+      Strength: 2.5
+      Duration: 0.4
+      DecayCurve: Cubic
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.15, Y: 0.3 }

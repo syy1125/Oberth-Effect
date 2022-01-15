@@ -28,6 +28,14 @@
                 "^.*$": { "type": "number" }
             }
         },
+        "ScreenShake": {
+            "type": "object",
+            "properties": {
+                "Strength": { "type": "number" },
+                "Duration": { "type": "number" },
+                "DecayCurve": { "enum": ["Linear", "Quadratic", "Cubic"] }
+            }
+        },
         "FireParticles": {
             "$ref": "ParticleSystemSpecArraySchema.json"
         }

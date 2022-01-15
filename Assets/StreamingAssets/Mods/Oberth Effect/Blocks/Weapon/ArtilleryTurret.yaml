@@ -53,6 +53,10 @@ TurretedWeapon:
       ArmorValue: 2
     HealthDamageScaling: 0.8
     ReloadTime: 2.5
+    ScreenShake:
+      Strength: 1
+      Duration: 0.8
+      DecayCurve: Quadratic
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.2, Y: 0.5 }

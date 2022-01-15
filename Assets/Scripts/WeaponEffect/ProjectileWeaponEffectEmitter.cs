@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 {
+	private Camera _camera;
 	private Rigidbody2D _body;
 	private ColorContext _colorContext;
 
@@ -40,8 +42,11 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private float _reloadProgress;
 	private float _resourceSatisfaction;
 
+	private ScreenShakeSpec _screenShake;
+
 	private void Awake()
 	{
+		_camera = Camera.main;
 		_body = GetComponentInParent<Rigidbody2D>();
 		_colorContext = GetComponentInParent<ColorContext>();
 	}
@@ -83,6 +88,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		}
 
 		_reloadResourceUse = spec.MaxResourceUse;
+
+		_screenShake = spec.ScreenShake;
 	}
 
 	private void Start()
@@ -295,6 +302,13 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		if (_recoil > Mathf.Epsilon)
 		{
 			_body.AddForceAtPosition(-firingPort.up * _recoil, position, ForceMode2D.Impulse);
+		}
+
+		if (_screenShake != null)
+		{
+			_camera.GetComponentInParent<CameraScreenShake>()?.AddInstance(
+				_screenShake.Strength, _screenShake.Duration, _screenShake.DecayCurve
+			);
 		}
 	}
 }
