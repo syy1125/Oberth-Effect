@@ -13,6 +13,7 @@ public static class PropertyKeys
 	public const string ANALYSIS_USE_ACC_MODE = "AnalysisUseAccelerationMode";
 	public const string PHYSICS_UNIT_MODE = "PhysicsUnitMode";
 	public const string DESIGNER_GRID_OPACITY = "DesignerGridOpacity";
+	public const string SCREEN_SHAKE_MULTIPLIER = "ScreenShakeMultiplier";
 
 	// Photon room custom properties
 	public const string ROOM_NAME = "n";
