@@ -93,7 +93,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7430282570672395253, guid: f0e0ab216852aad48979574f944c851e, type: 3}
       propertyPath: m_Name
-      value: Switch Select Option Text
+      value: Compact Switch Option Text
+      objectReference: {fileID: 0}
+    - target: {fileID: 7430282570672395255, guid: f0e0ab216852aad48979574f944c851e, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0e0ab216852aad48979574f944c851e, type: 3}
