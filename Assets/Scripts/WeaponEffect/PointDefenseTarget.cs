@@ -116,6 +116,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 		photonView.RPC(nameof(TakeDirectDamageRpc), photonView.Owner, damageType, damage, armorPierce);
 	}
 
+	[PunRPC]
 	private void TakeDirectDamageRpc(DamageType damageType, float damage, float armorPierce)
 	{
 		if (!IsMine) return;
