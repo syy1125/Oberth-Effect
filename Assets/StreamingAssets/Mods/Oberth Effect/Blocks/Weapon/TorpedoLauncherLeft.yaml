@@ -57,7 +57,7 @@ FixedWeapon:
     HealthDamageScaling: 0.8
     ReloadTime: 2.5
     ScreenShake:
-      Strength: 0.8
+      Strength: 0.5
       Duration: 1
       DecayCurve: Linear
     Renderers:

@@ -131,8 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ZoomAction: {fileID: 8767603407121192922, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  MinExponent: -2
-  MaxExponent: 2
+  MinExponent: -1.5
+  MaxExponent: 2.5
   SmoothTime: 0.2
 --- !u!114 &3966506012449697520
 MonoBehaviour:
@@ -146,6 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1a677df22e767a4289028ecbbcf10cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Frequency: 5
 --- !u!1 &6029063041555485734
 GameObject:
   m_ObjectHideFlags: 0

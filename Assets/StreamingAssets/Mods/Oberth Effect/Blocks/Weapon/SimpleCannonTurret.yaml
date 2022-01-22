@@ -50,7 +50,7 @@ TurretedWeapon:
     MaxLifetime: 2
     ReloadTime: 1
     ScreenShake:
-      Strength: 0.4
+      Strength: 0.2
       Duration: 0.4
       DecayCurve: Quadratic
     Renderers:

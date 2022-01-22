@@ -54,7 +54,7 @@ TurretedWeapon:
     HealthDamageScaling: 0.8
     ReloadTime: 2.5
     ScreenShake:
-      Strength: 1
+      Strength: 0.5
       Duration: 0.8
       DecayCurve: Quadratic
     Renderers:

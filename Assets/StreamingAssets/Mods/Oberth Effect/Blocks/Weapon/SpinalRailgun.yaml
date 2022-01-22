@@ -48,7 +48,7 @@ FixedWeapon:
     MaxLifetime: 4
     ReloadTime: 3
     ScreenShake: 
-      Strength: 2.5
+      Strength: 1.5
       Duration: 0.4
       DecayCurve: Cubic
     Renderers:
