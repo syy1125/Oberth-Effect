@@ -161,6 +161,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				}
 			}
 
+			_launchCooldown -= Time.fixedDeltaTime;
 			ProgressReload();
 		}
 	}
@@ -213,6 +214,9 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			+ (Vector2) transform.TransformVector(localLaunchVelocity);
 
 		firingPort.gameObject.SetActive(false);
+		GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(
+			nameof(SetLaunchTubeVisualFull), RpcTarget.Others, _activeLauncherIndex, false
+		);
 		_launchTubes[_activeLauncherIndex].ReloadProgress -= _reloadTime;
 
 		if (_screenShake != null)
@@ -234,9 +238,17 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				if (_launchTubes[i].ReloadProgress >= _reloadTime)
 				{
 					_launchTubes[i].FiringPort.gameObject.SetActive(true);
+					GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(
+						nameof(SetLaunchTubeVisualFull), RpcTarget.Others, i, true
+					);
 				}
 			}
 		}
+	}
+
+	public void SetLaunchTubeVisualFull(int tubeIndex, bool active)
+	{
+		_launchTubes[tubeIndex].FiringPort.gameObject.SetActive(active);
 	}
 
 	public float GetMaxRange()
