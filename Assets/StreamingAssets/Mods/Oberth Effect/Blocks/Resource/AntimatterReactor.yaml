@@ -6,9 +6,9 @@ Info:
   ShortName: Antimatter Reactor
   FullName: Matter-Antimatter Annihilation Reactor
   Description: |
-    The antimatter reactor is a powerful energy provider, but using it comes at quite a risk.
+    The antimatter reactor is a powerful energy provider, but using it comes at a risk.
     When destroyed by enemy fire, the stored antimatter fuel rapidly annihilates with nearby matter, creating a large explosion.
-    The reactor is hardened somewhat against enemy fire to help with this issue, but it is still quite fragile when subjected to concentrated fire.
+    Compared to other reactors, the antimatter reactor is hardened somewhat against enemy fire, but it is still quite fragile overall.
 Renderers:
   - TextureId: OberthEffect/AntimatterReactor
 Construction:
@@ -36,5 +36,5 @@ Resource:
       OberthEffect/Energy: 500
 Volatile:
   AlwaysExplode: true
-  MaxDamage: 500
+  MaxDamage: 2000
   MaxRadius: 10

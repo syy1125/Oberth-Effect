@@ -47,6 +47,6 @@ Volatile:
   ActivationCondition:
     ControlGroupId: OberthEffect/FusionReactor
     MatchValues: [ On ]
-  MaxDamage: 100
+  MaxDamage: 500
   MaxRadius: 4
     
