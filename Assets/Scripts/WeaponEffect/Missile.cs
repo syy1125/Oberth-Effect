@@ -157,7 +157,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 			if (Time.time - _initTime >= _config.ThrustActivationDelay)
 			{
-				float thrustFraction = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+				float cos = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+				float thrustFraction = cos * cos;
 				ApplyThrust(thrustFraction * _targetAcceleration.Value.magnitude);
 			}
 		}
@@ -224,10 +225,6 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			{
 				_targetAcceleration = acceleration;
 			}
-			else
-			{
-				_targetAcceleration = transform.up * _config.MaxAcceleration;
-			}
 		}
 	}
 
@@ -250,9 +247,16 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	{
 		if (_targetAcceleration != null)
 		{
-			Gizmos.color = Color.red;
 			Gizmos.matrix = Matrix4x4.identity;
+			Gizmos.color = Color.green;
 			Gizmos.DrawLine(transform.position, transform.position + (Vector3) _targetAcceleration.Value);
+			Gizmos.color = new Color(1f, 0.5f, 0f);
+			float angle = Vector2.SignedAngle(_targetAcceleration.Value, transform.up);
+			float cos = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+			Gizmos.DrawLine(
+				transform.position,
+				transform.TransformPoint(new Vector2(0f, cos * cos * _targetAcceleration.Value.magnitude))
+			);
 		}
 	}
 }

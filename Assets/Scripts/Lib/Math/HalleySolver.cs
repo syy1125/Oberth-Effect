@@ -6,7 +6,7 @@ namespace Syy1125.OberthEffect.Lib.Math
 public static class HalleySolver
 {
 	public static float FindRoot(
-		IExpression expression, float seed, out bool converged, int maxIter = 10, float epsilon = 1e-5f
+		IExpression expression, float seed, out bool converged, int maxIter = 10, float epsilon = 1e-4f
 	)
 	{
 		if (!expression.IsDifferentiable())
@@ -27,13 +27,14 @@ public static class HalleySolver
 			for (int i = 0; i < maxIter; i++)
 			{
 				float expressionValue = expression.Evaluate(root);
-				if (Mathf.Abs(expressionValue) < epsilon) return root;
 				float derivativeValue = derivative.Evaluate(root);
 				float secondOrderValue = secondOrder.Evaluate(root);
 
 				float delta = (2 * expressionValue * derivativeValue)
 				              / (2 * derivativeValue * derivativeValue - expressionValue * secondOrderValue);
 				root -= delta;
+
+				if (Mathf.Abs(delta) < epsilon) return root;
 			}
 		}
 		else
@@ -47,6 +48,8 @@ public static class HalleySolver
 
 				float delta = expressionValue / derivativeValue;
 				root -= delta;
+
+				if (Mathf.Abs(delta) < epsilon) return root;
 			}
 		}
 

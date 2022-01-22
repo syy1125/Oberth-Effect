@@ -111,7 +111,7 @@ public static class InterceptSolver
 		float seed = FindMissileInterceptSeed(
 			targetPosition, targetVelocity, missileAcceleration, marginExpression
 		);
-		hitTime = HalleySolver.FindRoot(marginExpression, seed, out bool converged, epsilon: 1e-3f);
+		hitTime = HalleySolver.FindRoot(marginExpression, seed, out bool converged);
 
 		Vector2 hitPosition = targetPosition + targetVelocity * hitTime;
 		accelerationVector = hitPosition.normalized * missileAcceleration;

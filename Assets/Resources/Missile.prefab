@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RotationPidResponse: 0.1
-  RotationPidBaseDerivativeTime: 5
+  RotationPidBaseDerivativeTime: 30
 --- !u!114 &5123786432896332026
 MonoBehaviour:
   m_ObjectHideFlags: 0
