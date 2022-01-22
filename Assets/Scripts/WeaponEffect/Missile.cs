@@ -85,8 +85,6 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			radiusProvider.Radius = _config.ColliderSize.magnitude / 2;
 		}
 
-		GetComponent<ConstantCollisionRadiusProvider>().Radius = _config.ColliderSize.magnitude / 2;
-
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
 
 		if (_config.PropulsionParticles != null)
