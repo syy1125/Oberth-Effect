@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -106,6 +107,8 @@ public class PlayerControlConfig : MonoBehaviour
 
 		foreach (Tuple<string, InputAction> action in _controlGroupActions)
 		{
+			if (!IsControlGroupActive(action.Item1)) continue;
+
 			if (action.Item2.triggered)
 			{
 				int stateCount = ControlGroupDatabase.Instance.GetSpecInstance(action.Item1).Spec.States.Length;
