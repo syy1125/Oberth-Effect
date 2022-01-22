@@ -270,7 +270,8 @@ public class MainLobby : MonoBehaviourPunCallbacks
 					{ PropertyKeys.TEAM_COLORS, new[] { "FF5349;FF9000;FFEB04", "0080FF;0000FF;FFEB04" } },
 					{ PropertyKeys.USE_TEAM_COLORS, false },
 					{ PropertyKeys.COST_LIMIT_OPTION, 0 },
-					{ PropertyKeys.COST_LIMIT, 1000 }
+					{ PropertyKeys.COST_LIMIT, 1000 },
+					{ PropertyKeys.SHIPYARD_HEALTH_MULTIPLIER, 1f }
 				},
 				CustomRoomPropertiesForLobby = new[] { PropertyKeys.ROOM_NAME, PropertyKeys.GAME_MODE }
 			}

@@ -36,6 +36,8 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 
 	private Bounds _explosionHull;
 
+	public float MaxHealth { get; private set; }
+
 	public float Health { get; private set; }
 
 	private void Awake()
@@ -67,7 +69,8 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 	{
 		_gameMode = PhotonHelper.GetRoomGameMode();
 		_damageable = _gameMode.CanDamageShipyards();
-		Health = BaseMaxHealth;
+		Health = MaxHealth = BaseMaxHealth * PhotonHelper.GetShipyardHealthMultiplier();
+		Debug.Log($"Shipyard for team index {TeamIndex} starts with {Health}/{MaxHealth} health");
 
 		Color teamColor = PhotonTeamHelper.GetTeamColors(TeamIndex).PrimaryColor;
 		foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())

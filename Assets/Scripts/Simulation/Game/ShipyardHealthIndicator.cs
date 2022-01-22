@@ -29,7 +29,7 @@ public class ShipyardHealthIndicator : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		_image.fillAmount = Shipyard.Health / Shipyard.BaseMaxHealth;
+		_image.fillAmount = Shipyard.Health / Shipyard.MaxHealth;
 	}
 }
 }

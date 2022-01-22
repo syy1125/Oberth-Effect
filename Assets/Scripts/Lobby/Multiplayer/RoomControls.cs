@@ -33,6 +33,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	public SwitchSelect GameModeSelect;
 	public SwitchSelect CostLimitSelect;
 	public InputField CostLimitInput;
+	public InputField ShipyardHealthInput;
 	public Button StartGameButton;
 	public Tooltip StartGameTooltip;
 
@@ -74,6 +75,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
 		CostLimitSelect.OnValueChanged.AddListener(SetCostLimitPresetOption);
 		CostLimitInput.onEndEdit.AddListener(SetCostLimitText);
+		ShipyardHealthInput.onEndEdit.AddListener(SetShipyardHealthMultiplier);
 
 		SelectVehicleButton.interactable = true;
 		ReadyButton.interactable = false;
@@ -106,6 +108,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		GameModeSelect.OnValueChanged.RemoveListener(SetGameMode);
 		CostLimitSelect.OnValueChanged.RemoveListener(SetCostLimitPresetOption);
 		CostLimitInput.onEndEdit.RemoveListener(SetCostLimitText);
+		ShipyardHealthInput.onEndEdit.RemoveListener(SetShipyardHealthMultiplier);
 
 		SelectVehicleButton.onClick.RemoveListener(OpenVehicleSelection);
 		ReadyButton.onClick.RemoveListener(ToggleReady);
@@ -215,29 +218,42 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		UnreadyPlayers();
 	}
 
-	private void SetCostLimitPresetOption(int index)
+	private void SetCostLimitPresetOption(int optionIndex)
 	{
 		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
 
-		int costLimit = index switch
+		int teamPlayerCount = Mathf.Max(PhotonNetwork.CurrentRoom.PlayerCount / 2, 1);
+
+		int costLimit = optionIndex switch
 		{
 			0 => 1000,
 			1 => 3000,
 			2 => 10000,
 			3 => 1000,
-			_ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+			_ => throw new ArgumentOutOfRangeException(nameof(optionIndex), optionIndex, null)
+		};
+
+		float shipyardHealthMultiplier = optionIndex switch
+		{
+			0 => 1f * teamPlayerCount,
+			1 => 3f * teamPlayerCount,
+			2 => 10f * teamPlayerCount,
+			3 => 1f * teamPlayerCount,
+			_ => throw new ArgumentOutOfRangeException(nameof(optionIndex), optionIndex, null)
 		};
 
 		PhotonNetwork.CurrentRoom.SetCustomProperties(
 			new Hashtable
 			{
-				{ PropertyKeys.COST_LIMIT_OPTION, index },
-				{ PropertyKeys.COST_LIMIT, costLimit }
+				{ PropertyKeys.COST_LIMIT_OPTION, optionIndex },
+				{ PropertyKeys.COST_LIMIT, costLimit },
+				{ PropertyKeys.SHIPYARD_HEALTH_MULTIPLIER, shipyardHealthMultiplier }
 			}
 		);
 
 		CostLimitInput.text = costLimit.ToString();
-		CostLimitInput.interactable = index == 3;
+		CostLimitInput.interactable = optionIndex == 3;
+		ShipyardHealthInput.text = shipyardHealthMultiplier.ToString("0.##");
 
 		UnreadyPlayers();
 	}
@@ -248,7 +264,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 
 		int currentLimit = PhotonHelper.GetRoomCostLimit();
 
-		if (int.TryParse(text, out int value))
+		if (int.TryParse(text, out int value) && value > 0)
 		{
 			if (value != currentLimit)
 			{
@@ -267,6 +283,26 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		}
 	}
 
+	private void SetShipyardHealthMultiplier(string multiplier)
+	{
+		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
+
+		if (float.TryParse(multiplier, out float value) && value > Mathf.Epsilon)
+		{
+			PhotonNetwork.CurrentRoom.SetCustomProperties(
+				new Hashtable { { PropertyKeys.SHIPYARD_HEALTH_MULTIPLIER, value } }
+			);
+		}
+		else
+		{
+			float currentValue = PhotonHelper.GetShipyardHealthMultiplier();
+			PhotonNetwork.CurrentRoom.SetCustomProperties(
+				new Hashtable { { PropertyKeys.SHIPYARD_HEALTH_MULTIPLIER, currentValue } }
+			);
+			ShipyardHealthInput.text = currentValue.ToString("0.##");
+		}
+	}
+
 	#endregion
 
 	#region Update Controls
@@ -282,6 +318,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		CostLimitInput.interactable = Equals(
 			PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION], 3
 		);
+		ShipyardHealthInput.interactable = true;
 
 		ReadyButton.gameObject.SetActive(false);
 		StartGameButton.gameObject.SetActive(true);
@@ -296,6 +333,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		GameModeSelect.Interactable = false;
 		CostLimitSelect.Interactable = false;
 		CostLimitInput.interactable = false;
+		ShipyardHealthInput.interactable = true;
 
 		ReadyButton.gameObject.SetActive(true);
 		StartGameButton.gameObject.SetActive(false);
@@ -310,6 +348,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		);
 		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
 		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
+		ShipyardHealthInput.text = PhotonHelper.GetShipyardHealthMultiplier().ToString("0.##");
 
 		bool allReady = PhotonNetwork.CurrentRoom.Players.Values.All(PhotonHelper.IsPlayerReady);
 		StartGameButton.interactable = allReady;
@@ -326,6 +365,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		);
 		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
 		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
+		ShipyardHealthInput.text = PhotonHelper.GetShipyardHealthMultiplier().ToString("0.##");
 
 		ReadyButton.interactable = VehicleSelection.SerializedVehicle != null;
 		ReadyButton.GetComponentInChildren<Text>().text = ready ? "Unready" : "Ready";

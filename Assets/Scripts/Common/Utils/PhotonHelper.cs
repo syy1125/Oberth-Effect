@@ -40,5 +40,14 @@ public static class PhotonHelper
 			? (int) costLimit
 			: 1000;
 	}
+
+	public static float GetShipyardHealthMultiplier()
+	{
+		return PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(
+			PropertyKeys.SHIPYARD_HEALTH_MULTIPLIER, out object multiplier
+		)
+			? (float) multiplier
+			: 1f;
+	}
 }
 }

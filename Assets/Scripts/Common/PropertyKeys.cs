@@ -23,6 +23,7 @@ public static class PropertyKeys
 	public const string USE_TEAM_COLORS = "utc";
 	public const string COST_LIMIT_OPTION = "clo";
 	public const string COST_LIMIT = "cl";
+	public const string SHIPYARD_HEALTH_MULTIPLIER = "shm";
 
 	// Photon player custom properties
 	public const string VEHICLE_NAME = "vn";

@@ -46,9 +46,9 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	public float RotationPidResponse = 2f;
 	public float RotationPidBaseDerivativeTime = 5f;
 
-	private Rigidbody2D _body;
+	private Rigidbody2D _ownBody;
 	private MissileConfig _config;
-	private Rigidbody2D _targetBody;
+	private TargetLockTarget _target;
 	private PointDefenseTarget _pdTarget;
 	private ParticleSystem[] _propulsionParticles;
 	private float[] _maxParticleSpeeds;
@@ -59,7 +59,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private void Awake()
 	{
-		_body = GetComponent<Rigidbody2D>();
+		_ownBody = GetComponent<Rigidbody2D>();
 	}
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -105,8 +105,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		Debug.Log($"Missile launched with HasTarget={_config.HasTarget} and TargetPhotonId={_config.TargetPhotonId}");
 		if (_config.HasTarget)
 		{
-			_targetBody = PhotonView.Find(_config.TargetPhotonId)?.GetComponent<Rigidbody2D>();
-			Debug.Log($"Target body is {_targetBody}");
+			_target = PhotonView.Find(_config.TargetPhotonId)?.GetComponent<TargetLockTarget>();
+			Debug.Log($"Target is {_target}");
 		}
 
 		_initTime = Time.time;
@@ -142,6 +142,10 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			{
 				ApplyThrust(_config.MaxAcceleration);
 			}
+			else
+			{
+				ApplyThrust(0f);
+			}
 		}
 		else
 		{
@@ -149,7 +153,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			_rotationPid.Update(angle, Time.fixedDeltaTime);
 
 			float rotationResponse = Mathf.Clamp(_rotationPid.Output, -1f, 1f);
-			_body.angularVelocity -= rotationResponse * _config.MaxAngularAcceleration * Time.fixedDeltaTime;
+			_ownBody.angularVelocity -= rotationResponse * _config.MaxAngularAcceleration * Time.fixedDeltaTime;
 
 			if (Time.time - _initTime >= _config.ThrustActivationDelay)
 			{
@@ -161,7 +165,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private void ApplyThrust(float acceleration)
 	{
-		_body.velocity += (Vector2) transform.up * (acceleration * Time.deltaTime);
+		_ownBody.velocity += (Vector2) transform.up * (acceleration * Time.deltaTime);
 
 		float thrustFraction = acceleration / _config.MaxAcceleration;
 
@@ -202,14 +206,14 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private void SolvePredictiveGuidance()
 	{
-		if (_targetBody == null)
+		if (_target == null)
 		{
 			_targetAcceleration = transform.up * _config.MaxAcceleration;
 		}
 		else
 		{
-			Vector2 relativePosition = _targetBody.worldCenterOfMass - _body.worldCenterOfMass;
-			Vector2 relativeVelocity = _targetBody.velocity - _body.velocity;
+			Vector2 relativePosition = _target.GetEffectivePosition() - _ownBody.worldCenterOfMass;
+			Vector2 relativeVelocity = _target.GetEffectiveVelocity() - _ownBody.velocity;
 
 			if (
 				InterceptSolver.MissileIntercept(

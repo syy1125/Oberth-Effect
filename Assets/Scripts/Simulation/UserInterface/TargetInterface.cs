@@ -2,6 +2,7 @@
 using Photon.Pun;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,7 +54,7 @@ public class TargetInterface : MonoBehaviour
 
 		if (_target != null)
 		{
-			string targetName = _target.GetComponent<ITargetNameProvider>().GetName();
+			string targetName = _target.GetComponentInParent<ITargetNameProvider>()?.GetName() ?? string.Empty;
 			float distance = Vector2.Distance(
 				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
 				_target.GetComponent<TargetLockTarget>().GetEffectivePosition()

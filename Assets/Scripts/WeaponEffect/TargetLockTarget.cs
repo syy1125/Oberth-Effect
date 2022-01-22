@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Simulation
+namespace Syy1125.OberthEffect.WeaponEffect
 {
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
-[RequireComponent(typeof(ITargetNameProvider))]
 public class TargetLockTarget : MonoBehaviourPun
 {
 	public static readonly List<TargetLockTarget> ActiveTargets = new List<TargetLockTarget>();
@@ -30,7 +29,12 @@ public class TargetLockTarget : MonoBehaviourPun
 
 	public Vector2 GetEffectivePosition()
 	{
-		return _body == null ? (Vector2) transform.position : _body.worldCenterOfMass;
+		return _body.bodyType == RigidbodyType2D.Static ? (Vector2) transform.position : _body.worldCenterOfMass;
+	}
+
+	public Vector2 GetEffectiveVelocity()
+	{
+		return _body.velocity;
 	}
 }
 }

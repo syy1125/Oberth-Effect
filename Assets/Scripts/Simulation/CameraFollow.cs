@@ -55,9 +55,7 @@ public class CameraFollow : MonoBehaviour
 
 		var body = Target.GetComponent<Rigidbody2D>();
 
-		_targetPosition = FollowCenterOfMass && body != null
-			? body.worldCenterOfMass
-			: new Vector2(Target.position.x, Target.position.y);
+		_targetPosition = GetTargetPosition(body);
 		Vector2 currentPosition = new Vector2(transform.position.x, transform.position.y);
 
 		if (_initTimer > 0)
@@ -76,15 +74,20 @@ public class CameraFollow : MonoBehaviour
 	{
 		var body = Target.GetComponent<Rigidbody2D>();
 
-		Vector2 targetPosition = FollowCenterOfMass && body != null
-			? body.worldCenterOfMass
-			: new Vector2(Target.position.x, Target.position.y);
+		Vector2 targetPosition = GetTargetPosition(body);
 
 		transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);
 
 		_pid.Reset();
 		_velocity = body != null ? body.velocity : Vector2.zero;
 		_initTimer = InitTime;
+	}
+
+	private Vector2 GetTargetPosition(Rigidbody2D body)
+	{
+		return FollowCenterOfMass && body != null && body.bodyType != RigidbodyType2D.Static
+			? body.worldCenterOfMass
+			: new Vector2(Target.position.x, Target.position.y);
 	}
 }
 }
