@@ -1,0 +1,88 @@
+﻿BlockId: OberthEffect/MicroMissileLauncher
+Enabled: true
+CategoryId: OberthEffect/Combat
+Cost: 100
+Info:
+  ShortName: Micro Missiles
+  FullName: Micro Missile Launcher
+  Description: |
+    The Micro Missile Launcher is designed to be a harrasement weapon, with limited range and damage.
+    They are effective against lightly armored targets as well as incoming projectiles, but struggle against hardened vehicles.
+Renderers:
+  - TextureId: OberthEffect/MicroMissileLauncher
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 2
+  MomentOfInertia: 0.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 200
+  ArmorValue: 8
+FixedWeapon:
+  MissileLauncherEffect:
+    FiringPortOffset: { X: 0, Y: 0 }
+    DamageType: Explosive
+    Damage: 40
+    ExplosionRadius: 2
+    MaxResourceUse:
+      OberthEffect/Energy: 100
+    ColliderSize: { X: 0.1, Y: 0.2 }
+    LaunchTubes:
+      - Position: { X: -0.3, Y: 0.3 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: -0.15, Y: 0.3 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: 0.15, Y: 0.3 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: 0.3, Y: 0.3 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: -0.3, Y: -0.1 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: -0.15, Y: -0.1 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: 0.15, Y: -0.1 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+      - Position: { X: 0.3, Y: -0.1 }
+        Rotation: 0
+        LaunchVelocity: { X: 0, Y: 5 }
+    LaunchInterval: 0.1
+    MaxAcceleration: 15
+    MaxAngularAcceleration: 180
+    MaxLifetime: 5
+    ThrustActivationDelay: 0.2
+    GuidanceAlgorithm: Predictive
+    GuidanceActivationDelay: 0
+    ReloadTime: 1.5
+    ScreenShake:
+      Strength: 0.2
+      Duration: 0.2
+      DecayCurve: Linear
+    Renderers:
+      - TextureId: OberthEffect/Square
+        Scale: { X: 0.1, Y: 0.2 }
+    PropulsionParticles:
+      - Offset: { X: 0, Y: -0.1 }
+        Direction: { X: 0, Y: -1 }
+        Size: 0.08
+        MaxSpeed: 15
+        EmissionRateOverTime: 500
+        Lifetime: 0.1
+        Color: orange

@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/MicroMissileLauncher
+ImagePath: ./MicroMissileLauncher.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

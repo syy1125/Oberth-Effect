@@ -37,7 +37,7 @@ TurretedWeapon:
         Scale: { X: 0.8, Y: 0.8 }
   ProjectileWeaponEffect:
     FiringPortOffset: { X: 0, Y: 0.4 }
-    Damage: 20
+    Damage: 25
     DamageType: Explosive
     ExplosionRadius: 1.5
     SpreadAngle: 2.5
@@ -49,7 +49,7 @@ TurretedWeapon:
     MaxSpeed: 100
     MaxLifetime: 0.4
     AimPointScaling: Lifetime
-    ReloadTime: 0.15
+    ReloadTime: 0.1
     ScreenShake:
       Strength: 0.1
       Duration: 0.1
