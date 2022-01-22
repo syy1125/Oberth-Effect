@@ -12,9 +12,9 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
-public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
+[RequireComponent(typeof(RoomViewTeamProvider))]
+public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNameProvider
 {
-	public int TeamIndex;
 	public float BaseMaxHealth;
 	public Transform[] SpawnPoints;
 	public Bounds[] ExplosionBounds;
@@ -27,7 +27,9 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	public bool IsMine => PhotonNetwork.LocalPlayer.IsMasterClient;
 	public int OwnerId => -1;
+	public int TeamIndex => _teamProvider.TeamIndex;
 
+	private RoomViewTeamProvider _teamProvider;
 	private GameMode _gameMode;
 	private bool _damageable;
 	private GameObject _indicator;
@@ -38,6 +40,8 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 
 	private void Awake()
 	{
+		_teamProvider = GetComponent<RoomViewTeamProvider>();
+
 		ActiveShipyards.Add(TeamIndex, this);
 		_explosionHull = new Bounds();
 		foreach (Bounds bounds in ExplosionBounds) _explosionHull.Encapsulate(bounds);
@@ -163,6 +167,11 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable
 		// Shipyard's dead and that's the most important part. In a 2-team game that's game over.
 		// TODO in the future we could do overpenetration, especially if there are more than 2 teams.
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);
+	}
+
+	public string GetName()
+	{
+		return $"Team {TeamIndex + 1} Shipyard";
 	}
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

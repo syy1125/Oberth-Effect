@@ -11,6 +11,7 @@ using Random = UnityEngine.Random;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
+[RequireComponent(typeof(RoomViewTeamProvider))]
 public class ResourceDepot : MonoBehaviour
 {
 	[Serializable]
@@ -20,13 +21,13 @@ public class ResourceDepot : MonoBehaviour
 		public float Amount;
 	}
 
-	public int TeamIndex;
 	public float ResupplyRange;
 	public List<ResourceEntry> ResourceEmissionRate;
 
 	public GameObject ResourceParticlePrefab;
 	public float BaseParticleRate = 20f;
 
+	private RoomViewTeamProvider _teamProvider;
 	private float _sqrRange;
 	private Dictionary<string, float> _transferResources;
 
@@ -35,6 +36,7 @@ public class ResourceDepot : MonoBehaviour
 
 	private void Awake()
 	{
+		_teamProvider = GetComponent<RoomViewTeamProvider>();
 		_sqrRange = ResupplyRange * ResupplyRange;
 		_transferResources = new Dictionary<string, float>();
 		_vehicleToEmitter = new Dictionary<GameObject, GameObject>();
@@ -47,7 +49,7 @@ public class ResourceDepot : MonoBehaviour
 		{
 			if (vehicle == null) continue;
 			Player owner = vehicle.GetComponent<PhotonView>().Owner;
-			if (PhotonTeamHelper.GetPlayerTeamIndex(owner) != TeamIndex) continue;
+			if (PhotonTeamHelper.GetPlayerTeamIndex(owner) != _teamProvider.TeamIndex) continue;
 
 			Vector2 relativePosition = vehicle.transform.position - transform.position;
 			if (relativePosition.sqrMagnitude > _sqrRange) continue;

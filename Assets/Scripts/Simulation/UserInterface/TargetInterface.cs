@@ -1,5 +1,6 @@
 ﻿using System;
 using Photon.Pun;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ public class TargetInterface : MonoBehaviour
 	public CameraFollow CameraFollow;
 	public Image Frame;
 	public Text TargetText;
+	public HighlightTarget TargetLockHighlight;
 
 	[Header("Config")]
 	public Color TargetColor = new Color(0.75f, 0f, 0f);
@@ -24,6 +26,7 @@ public class TargetInterface : MonoBehaviour
 	private CanvasGroup _group;
 	private int? _targetId;
 	private bool _targetLock;
+	private GameObject _target;
 
 	private void Awake()
 	{
@@ -32,24 +35,42 @@ public class TargetInterface : MonoBehaviour
 
 	private void Start()
 	{
-		SetTargetId(null, false);
+		UpdateTarget(null, false);
 	}
 
 	private void Update()
 	{
 		if (WeaponControl == null || !WeaponControl.enabled)
 		{
-			SetTargetId(null, false);
+			UpdateTarget(null, false);
 			return;
 		}
 
 		if (WeaponControl.TargetPhotonId != _targetId || WeaponControl.TargetLock != _targetLock)
 		{
-			SetTargetId(WeaponControl.TargetPhotonId, WeaponControl.TargetLock);
+			UpdateTarget(WeaponControl.TargetPhotonId, WeaponControl.TargetLock);
+		}
+
+		if (_target != null)
+		{
+			string targetName = _target.GetComponent<ITargetNameProvider>().GetName();
+			float distance = Vector2.Distance(
+				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
+				_target.GetComponent<TargetLockTarget>().GetEffectivePosition()
+			);
+
+			if (WeaponControl.TargetLock)
+			{
+				TargetText.text = $"Target locked: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}";
+			}
+			else
+			{
+				TargetText.text = $"Target: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}";
+			}
 		}
 	}
 
-	private void SetTargetId(int? targetId, bool targetLock)
+	private void UpdateTarget(int? targetId, bool targetLock)
 	{
 		_targetId = targetId;
 		_targetLock = targetLock;
@@ -59,30 +80,43 @@ public class TargetInterface : MonoBehaviour
 			_group.alpha = 0f;
 			_group.interactable = false;
 			_group.blocksRaycasts = false;
+			TargetLockHighlight.gameObject.SetActive(false);
 		}
 		else
 		{
-			GameObject target = PhotonView.Find(_targetId.Value).gameObject;
+			_target = PhotonView.Find(_targetId.Value).gameObject;
 
-			CameraFollow.Target = target.transform;
+			CameraFollow.Target = _target.transform;
 			_group.alpha = 1f;
 			_group.interactable = true;
 			_group.blocksRaycasts = true;
 
-			string targetName =
-				$"{target.GetComponent<PhotonView>().Owner.NickName} ({target.GetComponent<VehicleCore>().VehicleName})";
+			TargetLockHighlight.Target = _target.transform;
+			TargetLockHighlight.gameObject.SetActive(true);
 
 			if (WeaponControl.TargetLock)
 			{
 				Frame.color = TargetLockColor;
-				TargetText.text =
-					$"<b><color=\"#{ColorUtility.ToHtmlStringRGB(TargetLockColor)}\">Target locked: {targetName}</color></b>";
+				TargetText.fontStyle = FontStyle.Bold;
+				TargetText.color = TargetLockColor;
+
+				foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
+				{
+					image.color = TargetLockColor;
+					image.pixelsPerUnitMultiplier = 0.5f;
+				}
 			}
 			else
 			{
 				Frame.color = TargetColor;
-				TargetText.text =
-					$"<color=\"#{ColorUtility.ToHtmlStringRGB(TargetColor)}\">Target: {targetName}</color>";
+				TargetText.fontStyle = FontStyle.Normal;
+				TargetText.color = TargetColor;
+
+				foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
+				{
+					image.color = TargetColor;
+					image.pixelsPerUnitMultiplier = 1f;
+				}
 			}
 		}
 	}

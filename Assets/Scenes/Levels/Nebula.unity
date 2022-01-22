@@ -195,6 +195,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6338023137483929404, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
+      propertyPath: TeamIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8948629978889915057, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: TeamIndex
       value: 1
@@ -533,6 +537,10 @@ PrefabInstance:
       propertyPath: IndicatorCanvas
       value: 
       objectReference: {fileID: 1943348017}
+    - target: {fileID: 6338023137483929404, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
+      propertyPath: TeamIndex
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8948629978889915057, guid: 7eefa2f6bc12ab841a2cefec0e84ffdc, type: 3}
       propertyPath: TeamIndex
       value: 0

@@ -52,9 +52,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
-  Highlight: {fileID: 4749146012588392220}
   Label: {fileID: 7001045480857242958}
-  TargetSize: 12
+  TargetSizeMultiplier: 1.2
   OffScreenSize: 20
 --- !u!225 &5201772538608518053
 CanvasGroup:

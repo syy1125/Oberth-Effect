@@ -14,11 +14,12 @@ public class ShipyardHealthIndicator : MonoBehaviour
 	private void Awake()
 	{
 		_image = GetComponent<Image>();
-		_image.color = PhotonTeamHelper.GetTeamColors(Shipyard.TeamIndex).PrimaryColor;
 	}
 
 	private void Start()
 	{
+		_image.color = PhotonTeamHelper.GetTeamColors(Shipyard.TeamIndex).PrimaryColor;
+
 		var gameMode = PhotonHelper.GetRoomGameMode();
 		if (!gameMode.CanDamageShipyards())
 		{

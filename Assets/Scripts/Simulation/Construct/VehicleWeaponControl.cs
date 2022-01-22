@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
@@ -7,6 +6,7 @@ using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -110,7 +110,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 			Vector3 aimPoint = GetAimPoint(isMine);
 
-			if (isMine)
+			if (isMine && !TargetLock)
 			{
 				FindTarget(aimPoint);
 			}
@@ -141,26 +141,30 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private void FindTarget(Vector2 cursorPosition)
 	{
-		if (TargetLock) return;
-
 		TargetPhotonId = null;
 		float minDistance = float.PositiveInfinity;
 		int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
 
-		foreach (VehicleCore vehicle in VehicleCore.ActiveVehicles)
+		foreach (var target in TargetLockTarget.ActiveTargets)
 		{
-			if (!vehicle.enabled || vehicle.IsDead) continue;
-			if (PhotonTeamHelper.GetPlayerTeamIndex(vehicle.photonView.Owner) == ownerTeamIndex) continue;
+			if (target.photonView.IsRoomView)
+			{
+				if (target.GetComponent<RoomViewTeamProvider>().TeamIndex == ownerTeamIndex) continue;
+			}
+			else
+			{
+				if (PhotonTeamHelper.GetPlayerTeamIndex(target.photonView.Owner) == ownerTeamIndex) continue;
+			}
 
-			float distance = Vector2.Distance(cursorPosition, vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass);
+			float distance = Vector2.Distance(cursorPosition, target.GetEffectivePosition());
 			if (TargetPhotonId == null || distance < minDistance)
 			{
-				TargetPhotonId = vehicle.photonView.ViewID;
+				TargetPhotonId = target.photonView.ViewID;
 				minDistance = distance;
 			}
 		}
 
-		if (TargetPhotonId != null)
+		if (TargetPhotonId != null && minDistance > _mainCamera.orthographicSize)
 		{
 			// Try to make targeting more natural. When the cursor is far from the detected target,
 			// only set target if the ratio of target-cursor distance to cursor-vehicle distance is smaller than ratio of vehicle-cursor distance to cursor-edge distance.
@@ -175,12 +179,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				? (cursorPosition.y - com.y) / (maxCorner.y - cursorPosition.y)
 				: (com.y - cursorPosition.y) / (cursorPosition.y - minCorner.y);
 
-			float halfScreenSize = Mathf.Min(maxCorner.x - minCorner.x, maxCorner.y - minCorner.y) / 2;
-			float threshold = Mathf.Max(
-				halfScreenSize, Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio)
-			);
-
-			if (minDistance > threshold)
+			if (minDistance > Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio))
 			{
 				TargetPhotonId = null;
 			}

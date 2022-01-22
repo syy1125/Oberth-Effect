@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7198047487350917203}
   - component: {fileID: 8672669275091155175}
   - component: {fileID: 1328792929484317825}
-  m_Layer: 7
+  m_Layer: 5
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 7755410601836112887}
   - component: {fileID: 5349195863572556096}
   - component: {fileID: 3496706749630688837}
-  m_Layer: 7
+  m_Layer: 5
   m_Name: Health Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5471543835181269463}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Renderers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -257,7 +257,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3490054970138778478}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Spawn Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 3882299210583740431}
   - component: {fileID: 3882299210583740429}
   - component: {fileID: 3882299210583740428}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -400,7 +400,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3882299210711870751}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -431,11 +431,13 @@ GameObject:
   m_Component:
   - component: {fileID: 3882299210713092933}
   - component: {fileID: 3882299210713092955}
+  - component: {fileID: 6338023137483929404}
   - component: {fileID: 3882299210713092954}
   - component: {fileID: 8948629978889915057}
   - component: {fileID: 3828406825742681355}
   - component: {fileID: 8406364764567915369}
-  m_Layer: 7
+  - component: {fileID: 3863856818823203035}
+  m_Layer: 12
   m_Name: Shipyard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -482,6 +484,19 @@ MonoBehaviour:
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &6338023137483929404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3882299210713092932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bfdc17c595f46c1ae33b509927d735a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TeamIndex: 0
 --- !u!114 &3882299210713092954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,7 +509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c95cfd710f40c2b52dc0b187e40f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TeamIndex: 0
   BaseMaxHealth: 50000
   SpawnPoints:
   - {fileID: 3882299211580952301}
@@ -523,7 +537,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bdb5c151304f2aa99710160095fd9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TeamIndex: 0
   ResupplyRange: 30
   ResourceEmissionRate:
   - Resource: OberthEffect/Energy
@@ -557,6 +570,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Radius: 10
+--- !u!114 &3863856818823203035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3882299210713092932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d35290b43f2540179e8524fbf0f4b6fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3882299210785161360
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,7 +591,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3882299210785161361}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -596,7 +621,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3882299210917409335}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,7 +651,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3882299211580952301}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -658,7 +683,7 @@ GameObject:
   - component: {fileID: 3882299211593379715}
   - component: {fileID: 3882299211593379712}
   - component: {fileID: 3882299211593379713}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -767,7 +792,7 @@ GameObject:
   - component: {fileID: 3882299211658595251}
   - component: {fileID: 3882299211658595249}
   - component: {fileID: 3882299211658595248}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

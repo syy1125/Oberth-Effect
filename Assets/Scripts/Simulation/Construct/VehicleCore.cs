@@ -11,7 +11,7 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ConstructBlockManager))]
 public class VehicleCore :
-	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry
+	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry, ITargetNameProvider
 {
 	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
 
@@ -129,6 +129,11 @@ public class VehicleCore :
 		}
 
 		OnVehicleDeath.Invoke();
+	}
+
+	public string GetName()
+	{
+		return $"{photonView.Owner.NickName} ({VehicleName})";
 	}
 }
 }
