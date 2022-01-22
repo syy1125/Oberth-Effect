@@ -28,6 +28,11 @@ public class ColorSchemePainter : MonoBehaviour
 		_context.OnTertiaryColorChanged += UpdateTertiaryColor;
 	}
 
+	private void Start()
+	{
+		ApplyColorScheme();
+	}
+
 	public void ApplyColorScheme()
 	{
 		foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
