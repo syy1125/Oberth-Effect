@@ -250,9 +250,9 @@ public class DesignerPaletteUse : MonoBehaviour
 		BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 		BlockBounds blockBounds = new BlockBounds(
 			blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax
-		);
+		).Transformed(blockInstance.Position, blockInstance.Rotation);
 
-		Vector2 center = blockInstance.Position + blockBounds.Center - new Vector2(0.5f, 0.5f);
+		Vector2 center = blockBounds.Center - new Vector2(0.5f, 0.5f);
 		indicator.transform.localPosition = center;
 		indicator.GetComponent<SpriteRenderer>().size = blockBounds.Size;
 
