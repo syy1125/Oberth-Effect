@@ -306,6 +306,9 @@ public class VehicleAnalyzer : MonoBehaviour
 		{
 			if (behaviour is IPropulsionBlock propulsion)
 			{
+				_result.PropulsionCcw += propulsion.GetMaxFreeTorqueCcw();
+				_result.PropulsionCw += propulsion.GetMaxFreeTorqueCw();
+
 				Vector2 forceOrigin = blockInstance.Position
 				                      + TransformUtils.RotatePoint(
 					                      propulsion.GetPropulsionForceOrigin(), blockInstance.Rotation

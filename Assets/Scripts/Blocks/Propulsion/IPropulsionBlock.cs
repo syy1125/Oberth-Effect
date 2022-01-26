@@ -14,5 +14,9 @@ public interface IPropulsionBlock
 	Vector2 GetPropulsionForceOrigin();
 
 	float GetMaxPropulsionForce(CardinalDirection localDirection);
+
+	float GetMaxFreeTorqueCcw();
+
+	float GetMaxFreeTorqueCw();
 }
 }

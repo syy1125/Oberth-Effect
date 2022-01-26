@@ -5,5 +5,6 @@ public class PropulsionSpec
 	public LinearEngineSpec Engine;
 	public OmniThrusterSpec OmniThruster;
 	public DirectionalThrusterSpec DirectionalThruster;
+	public ReactionWheelSpec ReactionWheel;
 }
 }

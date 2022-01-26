@@ -11,11 +11,12 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public abstract class AbstractPropulsionBase :
+public abstract class AbstractThrusterBase :
 	MonoBehaviour,
 	IPropulsionBlock,
 	IResourceConsumer,
-	IControlConditionReceiver
+	IControlConditionReceiver,
+	IConfigComponent
 {
 	protected float MaxForce;
 	protected Dictionary<string, float> MaxResourceUse;
@@ -27,7 +28,7 @@ public abstract class AbstractPropulsionBase :
 	protected bool PropulsionActive;
 	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
-	
+
 	[NonSerialized]
 	public bool RespondToTranslation;
 	[NonSerialized]
@@ -113,6 +114,16 @@ public abstract class AbstractPropulsionBase :
 	}
 
 	public abstract float GetMaxPropulsionForce(CardinalDirection localDirection);
+
+	public float GetMaxFreeTorqueCcw()
+	{
+		return 0f;
+	}
+
+	public float GetMaxFreeTorqueCw()
+	{
+		return 0f;
+	}
 
 	public virtual IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{

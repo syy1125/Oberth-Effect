@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigComponent
+public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "OmniThruster";
 

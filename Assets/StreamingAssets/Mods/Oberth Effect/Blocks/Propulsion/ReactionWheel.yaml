@@ -1,0 +1,35 @@
+﻿BlockId: OberthEffect/ReactionWheel
+Enabled: true
+CategoryId: OberthEffect/Propulsion
+Cost: 10
+Info: 
+  ShortName: Reaction Wheel
+  FullName: Reaction Wheel
+  Description: A reaction wheel provides torque to help orient your vehicle.
+Renderers:
+  - TextureId: OberthEffect/ReactionWheel
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: 1 }
+    - { X: 0, Y: -1 }
+Physics: 
+  CenterOfMass: {X: 0, Y: 0 }
+  Mass: 1
+  MomentOfInertia: 0.166667
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat: 
+  MaxHealth: 50
+  ArmorValue: 1
+Propulsion: 
+  ReactionWheel: 
+    MaxTorque: 100
+    MaxResourceUse: 
+      OberthEffect/Energy: 50

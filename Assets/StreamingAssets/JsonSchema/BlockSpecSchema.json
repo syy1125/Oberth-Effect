@@ -224,6 +224,24 @@
                         "ActivationCondition": { "$ref": "ControlConditionSpecSchema.json" }
                     },
                     "description": "A directional thruster allows specifying different outputs for the 4 different cardinal directions."
+                },
+                "ReactionWheel": {
+                    "type": "object",
+                    "properties": {
+                        "MaxTorque": {
+                            "type": "number",
+                            "description": "Maximum torque that the reaction wheel can output in either direction."
+                        },
+                        "MaxResourceUse": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^.*$": { "type": "number" }
+                            }
+                        },
+                        "ActivationCondition": {
+                            "$ref": "ControlConditionSpecSchema.json"
+                        }
+                    }
                 }
             }
         },

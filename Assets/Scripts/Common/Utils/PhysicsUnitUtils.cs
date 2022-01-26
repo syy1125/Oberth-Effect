@@ -18,6 +18,7 @@ public static class PhysicsUnitUtils
 	public const float GRAMS_PER_UNIT_MASS = 1e6f;
 	public const float NEWTONS_PER_UNIT_FORCE = 1e4f;
 	public const float GM2_PER_UNIT_MOMENT = 1e5f;
+	public const float NM_PER_UNIT_TORQUE = 1e5f;
 	public const float KNM_PER_UNIT_TORQUE = 100f;
 
 	private static readonly List<Tuple<float, string>> MetricPrefixes = new List<Tuple<float, string>>
@@ -57,7 +58,7 @@ public static class PhysicsUnitUtils
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}
-	
+
 	public static string FormatDistance(float distance, string format = "G3")
 	{
 		return UnitMode switch
@@ -164,6 +165,16 @@ public static class PhysicsUnitUtils
 		{
 			PhysicsUnitMode.Game => FormatValue(moment, format, "u"),
 			PhysicsUnitMode.Metric => FormatValue(moment * GM2_PER_UNIT_MOMENT, format, "gm²"),
+			_ => throw new ArgumentOutOfRangeException()
+		};
+	}
+
+	public static string FormatTorque(float torque, string format = "0.#")
+	{
+		return UnitMode switch
+		{
+			PhysicsUnitMode.Game => FormatValue(torque, format, "u"),
+			PhysicsUnitMode.Metric => FormatValue(torque * NM_PER_UNIT_TORQUE, format, "Nm"),
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}

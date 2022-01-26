@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
@@ -14,7 +13,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class DirectionalThruster : AbstractPropulsionBase, IConfigComponent, ITooltipProvider
+public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "DirectionalThruster";
 
@@ -188,8 +187,6 @@ public class DirectionalThruster : AbstractPropulsionBase, IConfigComponent, ITo
 			Mathf.Clamp(rawResponse.x, -1f, 1f),
 			Mathf.Clamp(rawResponse.y, -1f, 1f)
 		);
-
-		Debug.Log($"{horizontal:0.00} {vertical:0.00} {rotate:0.00} -> {rawResponse:0.00}");
 	}
 
 	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()

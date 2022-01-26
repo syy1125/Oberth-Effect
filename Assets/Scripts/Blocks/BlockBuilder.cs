@@ -88,6 +88,12 @@ public static class BlockBuilder
 			directionalThruster.LoadSpec(blockSpec.Propulsion.DirectionalThruster);
 		}
 
+		if (blockSpec.Propulsion?.ReactionWheel != null)
+		{
+			var reactionWheel = blockObject.AddComponent<ReactionWheel>();
+			reactionWheel.LoadSpec(blockSpec.Propulsion.ReactionWheel);
+		}
+
 		if (blockSpec.TurretedWeapon != null)
 		{
 			var turretedWeapon = blockObject.AddComponent<TurretedWeapon>();
