@@ -1,0 +1,67 @@
+﻿BlockId: OberthEffect/IonThreeWayThruster
+Enabled: true
+CategoryId: OberthEffect/Propulsion
+Cost: 10
+Info:
+  ShortName: Ion 3-Way Thruster
+  FullName: Threey-Way Ion Thruster
+  Description: A three-way ion thruster, with slightly improved thrust strength over the omni thruster.
+Renderers:
+  - TextureId: OberthEffect/ThreeWayThruster
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: 1 }
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 1
+  MomentOfInertia: 0.1666667
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 1
+Propulsion:
+  DirectionalThruster:
+    Up:
+      MaxForce: 20
+      MaxResourceUse:
+        OberthEffect/Energy: 20
+      Particles:
+        - Offset: { X: 0, Y: 0 }
+          Direction: { X: 0, Y: -1 }
+          Size: 0.2
+          MaxSpeed: 2.5
+          Lifetime: 0.5
+          Color: lightblue
+    Left:
+      MaxForce: 20
+      MaxResourceUse:
+        OberthEffect/Energy: 20
+      Particles:
+        - Offset: { X: 0, Y: 0 }
+          Direction: { X: 1, Y: 0 }
+          Size: 0.2
+          MaxSpeed: 2.5
+          Lifetime: 0.5
+          Color: lightblue
+    Right:
+      MaxForce: 20
+      MaxResourceUse:
+        OberthEffect/Energy: 20
+      Particles:
+        - Offset: { X: 0, Y: 0 }
+          Direction: { X: -1, Y: 0 }
+          Size: 0.2
+          MaxSpeed: 2.5
+          Lifetime: 0.5
+          Color: lightblue
+      
+  

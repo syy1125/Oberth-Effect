@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/LinearThruster
+ImagePath: ./LinearThruster.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

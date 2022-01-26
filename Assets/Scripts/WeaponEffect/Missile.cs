@@ -4,6 +4,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
@@ -166,18 +167,11 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	{
 		_ownBody.velocity += (Vector2) transform.up * (acceleration * Time.deltaTime);
 
-		float thrustFraction = acceleration / _config.MaxAcceleration;
+		float thrustScale = acceleration / _config.MaxAcceleration;
 
 		if (_propulsionParticles != null)
 		{
-			for (var i = 0; i < _propulsionParticles.Length; i++)
-			{
-				ParticleSystem.MainModule main = _propulsionParticles[i].main;
-				main.startSpeedMultiplier = thrustFraction * _maxParticleSpeeds[i];
-				Color startColor = main.startColor.color;
-				startColor.a = thrustFraction;
-				main.startColor = new ParticleSystem.MinMaxGradient(startColor);
-			}
+			ParticleSystemUtils.ScaleThrustParticles(_propulsionParticles, thrustScale);
 		}
 	}
 

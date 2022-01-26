@@ -213,6 +213,17 @@
                         }
                     },
                     "description": "An omni thruster is capable of outputting the specified amount of force in any cardinal direction."
+                },
+                "DirectionalThruster": {
+                    "type": "object",
+                    "properties": {
+                        "Up": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
+                        "Down": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
+                        "Left": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
+                        "Right": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
+                        "ActivationCondition": { "$ref": "ControlConditionSpecSchema.json" }
+                    },
+                    "description": "A directional thruster allows specifying different outputs for the 4 different cardinal directions."
                 }
             }
         },

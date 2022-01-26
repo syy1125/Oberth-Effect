@@ -82,6 +82,12 @@ public static class BlockBuilder
 			omniThruster.LoadSpec(blockSpec.Propulsion.OmniThruster);
 		}
 
+		if (blockSpec.Propulsion?.DirectionalThruster != null)
+		{
+			var directionalThruster = blockObject.AddComponent<DirectionalThruster>();
+			directionalThruster.LoadSpec(blockSpec.Propulsion.DirectionalThruster);
+		}
+
 		if (blockSpec.TurretedWeapon != null)
 		{
 			var turretedWeapon = blockObject.AddComponent<TurretedWeapon>();

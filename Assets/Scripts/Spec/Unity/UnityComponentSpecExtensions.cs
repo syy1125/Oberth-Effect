@@ -43,6 +43,7 @@ public static class UnityComponentSpecExtensions
 		var main = particles.main;
 		main.startSize = spec.Size;
 		main.startLifetime = spec.Lifetime;
+		main.startSpeed = spec.MaxSpeed;
 		main.playOnAwake = false;
 
 		var colorContext = particles.GetComponentInParent<ColorContext>();

@@ -30,7 +30,7 @@ Combat:
   ArmorValue: 1
 Propulsion:
   Engine:
-    MaxForce: 200
+    MaxForce: 250
     MaxResourceUse:
       OberthEffect/Fuel: 5
     ActivationCondition:

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text;
 using Syy1125.OberthEffect.Blocks.Config;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
@@ -18,11 +17,6 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 {
 	public const string CLASS_KEY = "OmniThruster";
 
-	[NonSerialized]
-	public bool RespondToTranslation;
-	[NonSerialized]
-	public bool RespondToRotation;
-
 	private Transform _upParticleRoot;
 	private ParticleSystem[] _upParticles;
 	private Transform _downParticleRoot;
@@ -31,7 +25,6 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 	private ParticleSystem[] _leftParticles;
 	private Transform _rightParticleRoot;
 	private ParticleSystem[] _rightParticles;
-	private float[] _maxParticleSpeeds;
 
 	private Vector3 _localRight;
 	private Vector3 _localUp;
@@ -59,8 +52,6 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 			_rightParticleRoot = CreateParticleParent("RightParticles", -90f);
 			_rightParticles = new ParticleSystem[particleCount];
 
-			_maxParticleSpeeds = new float[particleCount];
-
 			for (int i = 0; i < particleCount; i++)
 			{
 				ParticleSystemSpec particleSpec = spec.Particles[i];
@@ -69,8 +60,6 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 				_downParticles[i] = RendererHelper.CreateParticleSystem(_downParticleRoot, particleSpec);
 				_leftParticles[i] = RendererHelper.CreateParticleSystem(_leftParticleRoot, particleSpec);
 				_rightParticles[i] = RendererHelper.CreateParticleSystem(_rightParticleRoot, particleSpec);
-
-				_maxParticleSpeeds[i] = particleSpec.MaxSpeed;
 			}
 		}
 
@@ -116,54 +105,11 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		}
 	}
 
-	#region Config
-
-	public JObject ExportConfig()
-	{
-		return new JObject
-		{
-			{ "RespondToTranslation", new JValue(RespondToTranslation) },
-			{ "RespondToRotation", new JValue(RespondToRotation) }
-		};
-	}
-
-	public void InitDefaultConfig()
+	public override void InitDefaultConfig()
 	{
 		RespondToTranslation = true;
 		RespondToRotation = true;
 	}
-
-	public void ImportConfig(JObject config)
-	{
-		if (config.ContainsKey("RespondToTranslation"))
-		{
-			RespondToTranslation = config["RespondToTranslation"].Value<bool>();
-		}
-
-		if (config.ContainsKey("RespondToRotation"))
-		{
-			RespondToRotation = config["RespondToRotation"].Value<bool>();
-		}
-	}
-
-	public List<ConfigItemBase> GetConfigItems()
-	{
-		return new List<ConfigItemBase>
-		{
-			new ToggleConfigItem
-			{
-				Key = "RespondToTranslation",
-				Label = "Respond to translation"
-			},
-			new ToggleConfigItem
-			{
-				Key = "RespondToRotation",
-				Label = "Respond to rotation"
-			}
-		};
-	}
-
-	#endregion
 
 	protected override void SetPropulsionCommands(float horizontal, float vertical, float rotate)
 	{
@@ -247,18 +193,9 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 		}
 	}
 
-	private void SetParticlesStrength(ParticleSystem[] particles, float strength)
+	private static void SetParticlesStrength(ParticleSystem[] particles, float thrustScale)
 	{
-		if (particles == null) return;
-
-		for (int i = 0; i < particles.Length; i++)
-		{
-			var main = particles[i].main;
-			main.startSpeedMultiplier = strength * _maxParticleSpeeds[i];
-			var startColor = main.startColor.color;
-			startColor.a = strength;
-			main.startColor = startColor;
-		}
+		if (particles != null) ParticleSystemUtils.ScaleThrustParticles(particles, thrustScale);
 	}
 
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)
@@ -268,17 +205,19 @@ public class OmniThruster : AbstractPropulsionBase, ITooltipProvider, IConfigCom
 
 	public string GetTooltip()
 	{
-		return string.Join(
-			"\n",
-			"Maneuvering thruster",
-			"  Omni-directional",
-			$"  Max thrust per direction {PhysicsUnitUtils.FormatForce(MaxForce)}",
-			"  Max resource usage per second "
-			+ string.Join(
-				", ",
-				VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)
-			)
-		);
+		StringBuilder builder = new StringBuilder();
+		builder.AppendLine("Maneuvering thruster")
+			.AppendLine("  Omni-directional")
+			.Append($"  Max thrust per direction {PhysicsUnitUtils.FormatForce(MaxForce)}");
+
+		if (MaxResourceUse != null && MaxResourceUse.Count > 0)
+		{
+			builder.AppendLine()
+				.Append("  Max resource usage per second ")
+				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)));
+		}
+
+		return builder.ToString();
 	}
 }
 }

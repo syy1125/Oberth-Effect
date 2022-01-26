@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
@@ -24,6 +27,11 @@ public abstract class AbstractPropulsionBase :
 	protected bool PropulsionActive;
 	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
+	
+	[NonSerialized]
+	public bool RespondToTranslation;
+	[NonSerialized]
+	public bool RespondToRotation;
 
 	protected virtual void Awake()
 	{
@@ -109,6 +117,47 @@ public abstract class AbstractPropulsionBase :
 	public virtual IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
 		return MaxResourceUse;
+	}
+
+	public JObject ExportConfig()
+	{
+		return new JObject
+		{
+			{ "RespondToTranslation", new JValue(RespondToTranslation) },
+			{ "RespondToRotation", new JValue(RespondToRotation) }
+		};
+	}
+
+	public abstract void InitDefaultConfig();
+
+	public void ImportConfig(JObject config)
+	{
+		if (config.ContainsKey("RespondToTranslation"))
+		{
+			RespondToTranslation = config["RespondToTranslation"].Value<bool>();
+		}
+
+		if (config.ContainsKey("RespondToRotation"))
+		{
+			RespondToRotation = config["RespondToRotation"].Value<bool>();
+		}
+	}
+
+	public List<ConfigItemBase> GetConfigItems()
+	{
+		return new List<ConfigItemBase>
+		{
+			new ToggleConfigItem
+			{
+				Key = "RespondToTranslation",
+				Label = "Respond to translation"
+			},
+			new ToggleConfigItem
+			{
+				Key = "RespondToRotation",
+				Label = "Respond to rotation"
+			}
+		};
 	}
 }
 }

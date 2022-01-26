@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/SingleThruster
+ImagePath: ./SingleThruster.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

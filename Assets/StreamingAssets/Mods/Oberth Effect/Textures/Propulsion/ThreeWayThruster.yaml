@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/ThreeWayThruster
+ImagePath: ./ThreeWayThruster.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true

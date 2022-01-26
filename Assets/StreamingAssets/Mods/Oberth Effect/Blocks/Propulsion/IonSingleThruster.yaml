@@ -1,0 +1,45 @@
+﻿BlockId: OberthEffect/IonMonoThruster
+Enabled: true
+CategoryId: OberthEffect/Propulsion
+Cost: 10
+Info:
+  ShortName: Ion Mono Thruster
+  FullName: Mono-Directional Ion Thruster
+  Description: An ion thruster that can only output thrust in one direction. It can produce a significant amount of thrust for its size.
+Renderers:
+  - TextureId: OberthEffect/SingleThruster
+Construction:
+  ShowInDesigner: true
+  AllowErase: true
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: 1 }
+    - { X: 0, Y: -1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 1
+  MomentOfInertia: 0.1666667
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 50
+  ArmorValue: 1
+Propulsion:
+  DirectionalThruster:
+    Up:
+      MaxForce: 30
+      MaxResourceUse:
+        OberthEffect/Energy: 30
+      Particles:
+        - Offset: { X: 0, Y: 0 }
+          Direction: { X: 0, Y: -1 }
+          Size: 0.25
+          MaxSpeed: 3
+          Lifetime: 0.5
+          Color: lightblue
+      
+  

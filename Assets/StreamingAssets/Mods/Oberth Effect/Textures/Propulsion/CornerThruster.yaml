@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/CornerThruster
+ImagePath: ./CornerThruster.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true
