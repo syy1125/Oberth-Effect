@@ -9,6 +9,9 @@ public interface IPropulsionBlockRegistry : IBlockRegistry<IPropulsionBlock>
 
 public interface IPropulsionBlock
 {
+	bool RespondToTranslation { get; }
+	bool RespondToRotation { get; }
+
 	void SetPropulsionCommands(InputCommand horizontal, InputCommand vertical, InputCommand rotate);
 
 	Vector2 GetPropulsionForceOrigin();

@@ -125,6 +125,9 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 		}
 	}
 
+	public bool RespondToTranslation => false;
+	public bool RespondToRotation => true;
+
 	public Vector2 GetPropulsionForceOrigin()
 	{
 		return Vector2.zero;

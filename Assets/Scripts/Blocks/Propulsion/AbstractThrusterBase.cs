@@ -29,10 +29,8 @@ public abstract class AbstractThrusterBase :
 	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
 
-	[NonSerialized]
-	public bool RespondToTranslation;
-	[NonSerialized]
-	public bool RespondToRotation;
+	public bool RespondToTranslation { get; protected set; }
+	public bool RespondToRotation { get; protected set; }
 
 	protected virtual void Awake()
 	{

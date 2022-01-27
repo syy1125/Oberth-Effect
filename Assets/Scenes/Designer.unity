@@ -7782,6 +7782,7 @@ GameObject:
   - component: {fileID: 1320765783}
   - component: {fileID: 1320765785}
   - component: {fileID: 1320765784}
+  - component: {fileID: 1320765786}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -7850,6 +7851,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1320765782}
   m_CullTransparentMesh: 1
+--- !u!114 &1320765786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320765782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 'Some blocks can be configured to ignore rotational commands. By default,
+    only thrusters are used in rotational commands.
+
+    The value shown for"current"
+    takes that into accout, while the value for "max" shows the hypothetical maximum
+    if all propulsion components are configured to respond to rotational commands.'
 --- !u!1001 &1323217414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11666,6 +11686,7 @@ GameObject:
   - component: {fileID: 2042531832}
   - component: {fileID: 2042531834}
   - component: {fileID: 2042531833}
+  - component: {fileID: 2042531835}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -11734,6 +11755,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2042531831}
   m_CullTransparentMesh: 1
+--- !u!114 &2042531835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042531831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2044ece55787544862812841845b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Delay: 0.2
+  TooltipText: 'Some blocks can be configured to ignore translational commands.
+
+    The
+    value shown for"current" takes that into accout, while the value for "max" shows
+    the hypothetical maximum if all propulsion components are configured to respond
+    to translational commands.'
 --- !u!1 &2060839461
 GameObject:
   m_ObjectHideFlags: 0

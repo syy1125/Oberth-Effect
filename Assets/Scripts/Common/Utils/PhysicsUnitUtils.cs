@@ -19,7 +19,7 @@ public static class PhysicsUnitUtils
 	public const float NEWTONS_PER_UNIT_FORCE = 1e4f;
 	public const float GM2_PER_UNIT_MOMENT = 1e5f;
 	public const float NM_PER_UNIT_TORQUE = 1e5f;
-	public const float KNM_PER_UNIT_TORQUE = 100f;
+	public const float MNM_PER_UNIT_TORQUE = 0.1f;
 
 	private static readonly List<Tuple<float, string>> MetricPrefixes = new List<Tuple<float, string>>
 	{
@@ -184,7 +184,7 @@ public static class PhysicsUnitUtils
 		return UnitMode switch
 		{
 			PhysicsUnitMode.Game => torque.ToString(format),
-			PhysicsUnitMode.Metric => (torque * KNM_PER_UNIT_TORQUE).ToString(format),
+			PhysicsUnitMode.Metric => (torque * MNM_PER_UNIT_TORQUE).ToString(format),
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}
@@ -194,7 +194,7 @@ public static class PhysicsUnitUtils
 		return UnitMode switch
 		{
 			PhysicsUnitMode.Game => "u",
-			PhysicsUnitMode.Metric => "kNm",
+			PhysicsUnitMode.Metric => "MNm",
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}

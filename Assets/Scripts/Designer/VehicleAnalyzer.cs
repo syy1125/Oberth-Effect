@@ -31,12 +31,12 @@ public struct VehicleAnalysisResult
 	public float MomentOfInertia;
 
 	// Propulsion
-	public float PropulsionUp;
-	public float PropulsionDown;
-	public float PropulsionRight;
-	public float PropulsionLeft;
-	public float PropulsionCcw;
-	public float PropulsionCw;
+	public Dictionary<CardinalDirection, float> MaxPropulsion;
+	public Dictionary<CardinalDirection, float> CurrentPropulsion;
+	public float MaxTorqueCcw;
+	public float CurrentTorqueCcw;
+	public float MaxTorqueCw;
+	public float CurrentTorqueCw;
 
 	// Resource
 	public Dictionary<string, float> MaxResourceStorage;
@@ -158,10 +158,24 @@ public class VehicleAnalyzer : MonoBehaviour
 			Mass = 0f,
 			CenterOfMass = Vector2.zero,
 			MomentOfInertia = 0f,
-			PropulsionUp = 0f,
-			PropulsionDown = 0f,
-			PropulsionLeft = 0f,
-			PropulsionRight = 0f,
+			MaxPropulsion = new Dictionary<CardinalDirection, float>
+			{
+				{ CardinalDirection.Up, 0f },
+				{ CardinalDirection.Down, 0f },
+				{ CardinalDirection.Left, 0f },
+				{ CardinalDirection.Right, 0f }
+			},
+			CurrentPropulsion = new Dictionary<CardinalDirection, float>
+			{
+				{ CardinalDirection.Up, 0f },
+				{ CardinalDirection.Down, 0f },
+				{ CardinalDirection.Left, 0f },
+				{ CardinalDirection.Right, 0f }
+			},
+			MaxTorqueCcw = 0f,
+			CurrentTorqueCcw = 0f,
+			MaxTorqueCw = 0f,
+			CurrentTorqueCw = 0f,
 			MaxResourceStorage = new Dictionary<string, float>(),
 			MaxResourceGeneration = new Dictionary<string, float>(),
 			MaxResourceUse = new Dictionary<string, float>(),
@@ -270,18 +284,27 @@ public class VehicleAnalyzer : MonoBehaviour
 
 			if (behaviour is IPropulsionBlock propulsion)
 			{
-				_result.PropulsionUp += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
-				);
-				_result.PropulsionDown += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
-				);
-				_result.PropulsionLeft += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
-				);
-				_result.PropulsionRight += propulsion.GetMaxPropulsionForce(
-					CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
-				);
+				foreach (
+					var direction in new[]
+					{
+						CardinalDirection.Up,
+						CardinalDirection.Down,
+						CardinalDirection.Left,
+						CardinalDirection.Right
+					}
+				)
+				{
+					float maxForce = propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(direction, blockInstance.Rotation)
+					);
+
+					_result.MaxPropulsion[direction] += maxForce;
+
+					if (propulsion.RespondToTranslation)
+					{
+						_result.CurrentPropulsion[direction] += maxForce;
+					}
+				}
 			}
 
 			if (behaviour is IWeaponSystem weaponSystem)
@@ -306,8 +329,8 @@ public class VehicleAnalyzer : MonoBehaviour
 		{
 			if (behaviour is IPropulsionBlock propulsion)
 			{
-				_result.PropulsionCcw += propulsion.GetMaxFreeTorqueCcw();
-				_result.PropulsionCw += propulsion.GetMaxFreeTorqueCw();
+				float torqueCcw = propulsion.GetMaxFreeTorqueCcw();
+				float torqueCw = propulsion.GetMaxFreeTorqueCw();
 
 				Vector2 forceOrigin = blockInstance.Position
 				                      + TransformUtils.RotatePoint(
@@ -316,12 +339,12 @@ public class VehicleAnalyzer : MonoBehaviour
 
 				if (forceOrigin.x > Mathf.Epsilon)
 				{
-					_result.PropulsionCcw +=
+					torqueCcw +=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
 						);
-					_result.PropulsionCw +=
+					torqueCw +=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
@@ -329,12 +352,12 @@ public class VehicleAnalyzer : MonoBehaviour
 				}
 				else if (forceOrigin.x < -Mathf.Epsilon)
 				{
-					_result.PropulsionCcw -=
+					torqueCcw -=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Down, blockInstance.Rotation)
 						);
-					_result.PropulsionCw -=
+					torqueCw -=
 						forceOrigin.x
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Up, blockInstance.Rotation)
@@ -343,12 +366,12 @@ public class VehicleAnalyzer : MonoBehaviour
 
 				if (forceOrigin.y > Mathf.Epsilon)
 				{
-					_result.PropulsionCcw +=
+					torqueCcw +=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
 						);
-					_result.PropulsionCw +=
+					torqueCw +=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
@@ -356,16 +379,25 @@ public class VehicleAnalyzer : MonoBehaviour
 				}
 				else if (forceOrigin.y < -Mathf.Epsilon)
 				{
-					_result.PropulsionCcw -=
+					torqueCcw -=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Right, blockInstance.Rotation)
 						);
-					_result.PropulsionCw -=
+					torqueCw -=
 						forceOrigin.y
 						* propulsion.GetMaxPropulsionForce(
 							CardinalDirectionUtils.InverseRotate(CardinalDirection.Left, blockInstance.Rotation)
 						);
+				}
+
+				_result.MaxTorqueCcw += torqueCcw;
+				_result.MaxTorqueCw += torqueCw;
+
+				if (propulsion.RespondToRotation)
+				{
+					_result.CurrentTorqueCcw += torqueCcw;
+					_result.CurrentTorqueCw += torqueCw;
 				}
 			}
 		}
@@ -458,45 +490,132 @@ public class VehicleAnalyzer : MonoBehaviour
 	{
 		if (_accelerationMode)
 		{
-			TranslationLabel.text = $"Theoretical maximum acceleration ({PhysicsUnitUtils.GetAccelerationUnits()})";
-			TranslationUpOutput.text =
-				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionUp / _result.Mass)}";
-			TranslationDownOutput.text =
-				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionDown / _result.Mass)}";
-			TranslationLeftOutput.text =
-				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionLeft / _result.Mass)}";
-			TranslationRightOutput.text =
-				$"{PhysicsUnitUtils.FormatAccelerationNumeric(_result.PropulsionRight / _result.Mass)}";
+			TranslationLabel.text = $"Acceleration ({PhysicsUnitUtils.GetAccelerationUnits()}, current/max)";
+			DisplayPropulsionAcceleration(TranslationUpOutput, CardinalDirection.Up, 2f, 5f);
+			DisplayPropulsionAcceleration(TranslationDownOutput, CardinalDirection.Down, 1f, 2f);
+			DisplayPropulsionAcceleration(TranslationLeftOutput, CardinalDirection.Left, 1f, 2f);
+			DisplayPropulsionAcceleration(TranslationRightOutput, CardinalDirection.Right, 1f, 2f);
 
-			RotationLabel.text = "Theoretical maximum angular acceleration (deg/s²)";
-			RotationCcwOutput.text = $"{_result.PropulsionCcw / _result.MomentOfInertia * Mathf.Rad2Deg:#,0.#}";
-			RotationCwOutput.text = $"{_result.PropulsionCw / _result.MomentOfInertia * Mathf.Rad2Deg:#,0.#}";
+			RotationLabel.text = "Angular acceleration\n(deg/s², current/max)";
+			DisplayPropulsionAngularAcceleration(
+				RotationCcwOutput, _result.CurrentTorqueCcw, _result.MaxTorqueCcw, 30f, 60f
+			);
+			DisplayPropulsionAngularAcceleration(
+				RotationCwOutput, _result.CurrentTorqueCw, _result.MaxTorqueCw, 30f, 60f
+			);
 
 			ForceModeButton.GetComponentInChildren<Text>().color = Color.gray;
 			ForceModeButton.GetComponentInChildren<Image>().enabled = false;
 			AccelerationModeButton.GetComponentInChildren<Text>().color = Color.cyan;
 			AccelerationModeButton.GetComponentInChildren<Image>().enabled = true;
-
-			PropulsionOutput.SetActive(true);
 		}
 		else
 		{
-			TranslationLabel.text = $"Theoretical maximum force ({PhysicsUnitUtils.GetForceUnits()})";
-			TranslationUpOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionUp)}";
-			TranslationDownOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionDown)}";
-			TranslationLeftOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionLeft)}";
-			TranslationRightOutput.text = $"{PhysicsUnitUtils.FormatForceNumeric(_result.PropulsionRight)}";
+			TranslationLabel.text = $"Force ({PhysicsUnitUtils.GetForceUnits()}, current/max)";
+			DisplayPropulsionForce(TranslationUpOutput, CardinalDirection.Up, 2f, 5f);
+			DisplayPropulsionForce(TranslationDownOutput, CardinalDirection.Down, 1f, 2f);
+			DisplayPropulsionForce(TranslationLeftOutput, CardinalDirection.Left, 1f, 2f);
+			DisplayPropulsionForce(TranslationRightOutput, CardinalDirection.Right, 1f, 2f);
 
-			RotationLabel.text = $"Theoretical maximum torque ({PhysicsUnitUtils.GetTorqueUnits()})";
-			RotationCcwOutput.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(_result.PropulsionCcw)}";
-			RotationCwOutput.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(_result.PropulsionCw)}";
+			RotationLabel.text = $"Torque ({PhysicsUnitUtils.GetTorqueUnits()}, current/max)";
+			DisplayPropulsionTorque(RotationCcwOutput, _result.CurrentTorqueCcw, _result.MaxTorqueCcw, 30f, 60f);
+			DisplayPropulsionTorque(RotationCwOutput, _result.CurrentTorqueCw, _result.MaxTorqueCw, 30f, 60f);
 
 			ForceModeButton.GetComponentInChildren<Text>().color = Color.yellow;
 			ForceModeButton.GetComponentInChildren<Image>().enabled = true;
 			AccelerationModeButton.GetComponentInChildren<Text>().color = Color.gray;
 			AccelerationModeButton.GetComponentInChildren<Image>().enabled = false;
+		}
 
-			PropulsionOutput.SetActive(true);
+		PropulsionOutput.SetActive(true);
+	}
+
+	private void DisplayPropulsionAcceleration(
+		Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
+	)
+	{
+		float current = _result.CurrentPropulsion[direction] / _result.Mass;
+		float max = _result.MaxPropulsion[direction] / _result.Mass;
+		output.text =
+			$"{PhysicsUnitUtils.FormatAccelerationNumeric(current)}/{PhysicsUnitUtils.FormatAccelerationNumeric(max)}";
+
+		if (current < redThreshold)
+		{
+			output.color = Color.red;
+		}
+		else if (current < yellowThreshold)
+		{
+			output.color = Color.yellow;
+		}
+		else
+		{
+			output.color = Color.white;
+		}
+	}
+
+	private void DisplayPropulsionAngularAcceleration(
+		Text output, float current, float max, float redThreshold, float yellowThreshold
+	)
+	{
+		current = current / _result.MomentOfInertia * Mathf.Rad2Deg;
+		max = max / _result.MomentOfInertia * Mathf.Rad2Deg;
+		output.text = $"{current:#,0.#}/{max:#,0.#}";
+
+		if (current < redThreshold)
+		{
+			output.color = Color.red;
+		}
+		else if (current < yellowThreshold)
+		{
+			output.color = Color.yellow;
+		}
+		else
+		{
+			output.color = Color.white;
+		}
+	}
+
+	private void DisplayPropulsionForce(
+		Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
+	)
+	{
+		float current = _result.CurrentPropulsion[direction];
+		float max = _result.MaxPropulsion[direction];
+		output.text = $"{PhysicsUnitUtils.FormatForceNumeric(current)}/{PhysicsUnitUtils.FormatForceNumeric(max)}";
+
+		if (current < redThreshold * _result.Mass)
+		{
+			output.color = Color.red;
+		}
+		else if (current < yellowThreshold * _result.Mass)
+		{
+			output.color = Color.yellow;
+		}
+		else
+		{
+			output.color = Color.white;
+		}
+	}
+
+	private void DisplayPropulsionTorque(
+		Text output, float current, float max, float redThreshold, float yellowThreshold
+	)
+	{
+		output.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(current)}/{PhysicsUnitUtils.FormatTorqueNumeric(max)}";
+
+		float angularAcceleration = current / _result.MomentOfInertia * Mathf.Rad2Deg;
+
+		if (angularAcceleration < redThreshold)
+		{
+			output.color = Color.red;
+		}
+		else if (angularAcceleration < yellowThreshold)
+		{
+			output.color = Color.yellow;
+		}
+		else
+		{
+			output.color = Color.white;
 		}
 	}
 
