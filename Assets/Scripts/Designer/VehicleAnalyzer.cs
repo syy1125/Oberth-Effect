@@ -488,6 +488,98 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	private void DisplayPropulsionResults()
 	{
+		float warnThresholdScale = 1 / Mathf.Sqrt(Mathf.Max(_result.Mass / 100, 1));
+
+		void DisplayPropulsionAcceleration(
+			Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
+		)
+		{
+			float current = _result.CurrentPropulsion[direction] / _result.Mass;
+			float max = _result.MaxPropulsion[direction] / _result.Mass;
+			output.text =
+				$"{PhysicsUnitUtils.FormatAccelerationNumeric(current)}/{PhysicsUnitUtils.FormatAccelerationNumeric(max)}";
+
+			if (current < redThreshold * warnThresholdScale)
+			{
+				output.color = Color.red;
+			}
+			else if (current < yellowThreshold * warnThresholdScale)
+			{
+				output.color = Color.yellow;
+			}
+			else
+			{
+				output.color = Color.white;
+			}
+		}
+
+		void DisplayPropulsionAngularAcceleration(
+			Text output, float current, float max, float redThreshold, float yellowThreshold
+		)
+		{
+			current = current / _result.MomentOfInertia * Mathf.Rad2Deg;
+			max = max / _result.MomentOfInertia * Mathf.Rad2Deg;
+			output.text = $"{current:#,0.#}/{max:#,0.#}";
+
+			if (current < redThreshold * warnThresholdScale)
+			{
+				output.color = Color.red;
+			}
+			else if (current < yellowThreshold * warnThresholdScale)
+			{
+				output.color = Color.yellow;
+			}
+			else
+			{
+				output.color = Color.white;
+			}
+		}
+
+		void DisplayPropulsionForce(
+			Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
+		)
+		{
+			float current = _result.CurrentPropulsion[direction];
+			float max = _result.MaxPropulsion[direction];
+			output.text = $"{PhysicsUnitUtils.FormatForceNumeric(current)}/{PhysicsUnitUtils.FormatForceNumeric(max)}";
+
+			if (current < redThreshold * _result.Mass * warnThresholdScale)
+			{
+				output.color = Color.red;
+			}
+			else if (current < yellowThreshold * _result.Mass * warnThresholdScale)
+			{
+				output.color = Color.yellow;
+			}
+			else
+			{
+				output.color = Color.white;
+			}
+		}
+
+		void DisplayPropulsionTorque(
+			Text output, float current, float max, float redThreshold, float yellowThreshold
+		)
+		{
+			output.text =
+				$"{PhysicsUnitUtils.FormatTorqueNumeric(current)}/{PhysicsUnitUtils.FormatTorqueNumeric(max)}";
+
+			float angularAcceleration = current / _result.MomentOfInertia * Mathf.Rad2Deg;
+
+			if (angularAcceleration < redThreshold * warnThresholdScale)
+			{
+				output.color = Color.red;
+			}
+			else if (angularAcceleration < yellowThreshold * warnThresholdScale)
+			{
+				output.color = Color.yellow;
+			}
+			else
+			{
+				output.color = Color.white;
+			}
+		}
+
 		if (_accelerationMode)
 		{
 			TranslationLabel.text = $"Acceleration ({PhysicsUnitUtils.GetAccelerationUnits()}, current/max)";
@@ -528,95 +620,6 @@ public class VehicleAnalyzer : MonoBehaviour
 		}
 
 		PropulsionOutput.SetActive(true);
-	}
-
-	private void DisplayPropulsionAcceleration(
-		Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
-	)
-	{
-		float current = _result.CurrentPropulsion[direction] / _result.Mass;
-		float max = _result.MaxPropulsion[direction] / _result.Mass;
-		output.text =
-			$"{PhysicsUnitUtils.FormatAccelerationNumeric(current)}/{PhysicsUnitUtils.FormatAccelerationNumeric(max)}";
-
-		if (current < redThreshold)
-		{
-			output.color = Color.red;
-		}
-		else if (current < yellowThreshold)
-		{
-			output.color = Color.yellow;
-		}
-		else
-		{
-			output.color = Color.white;
-		}
-	}
-
-	private void DisplayPropulsionAngularAcceleration(
-		Text output, float current, float max, float redThreshold, float yellowThreshold
-	)
-	{
-		current = current / _result.MomentOfInertia * Mathf.Rad2Deg;
-		max = max / _result.MomentOfInertia * Mathf.Rad2Deg;
-		output.text = $"{current:#,0.#}/{max:#,0.#}";
-
-		if (current < redThreshold)
-		{
-			output.color = Color.red;
-		}
-		else if (current < yellowThreshold)
-		{
-			output.color = Color.yellow;
-		}
-		else
-		{
-			output.color = Color.white;
-		}
-	}
-
-	private void DisplayPropulsionForce(
-		Text output, CardinalDirection direction, float redThreshold, float yellowThreshold
-	)
-	{
-		float current = _result.CurrentPropulsion[direction];
-		float max = _result.MaxPropulsion[direction];
-		output.text = $"{PhysicsUnitUtils.FormatForceNumeric(current)}/{PhysicsUnitUtils.FormatForceNumeric(max)}";
-
-		if (current < redThreshold * _result.Mass)
-		{
-			output.color = Color.red;
-		}
-		else if (current < yellowThreshold * _result.Mass)
-		{
-			output.color = Color.yellow;
-		}
-		else
-		{
-			output.color = Color.white;
-		}
-	}
-
-	private void DisplayPropulsionTorque(
-		Text output, float current, float max, float redThreshold, float yellowThreshold
-	)
-	{
-		output.text = $"{PhysicsUnitUtils.FormatTorqueNumeric(current)}/{PhysicsUnitUtils.FormatTorqueNumeric(max)}";
-
-		float angularAcceleration = current / _result.MomentOfInertia * Mathf.Rad2Deg;
-
-		if (angularAcceleration < redThreshold)
-		{
-			output.color = Color.red;
-		}
-		else if (angularAcceleration < yellowThreshold)
-		{
-			output.color = Color.yellow;
-		}
-		else
-		{
-			output.color = Color.white;
-		}
 	}
 
 	private void DisplayFirepowerResults()
