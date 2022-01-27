@@ -17,10 +17,10 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "DirectionalThruster";
 
-	private ParticleSystem[] _upParticles;
-	private ParticleSystem[] _downParticles;
-	private ParticleSystem[] _leftParticles;
-	private ParticleSystem[] _rightParticles;
+	private ParticleSystemWrapper[] _upParticles;
+	private ParticleSystemWrapper[] _downParticles;
+	private ParticleSystemWrapper[] _leftParticles;
+	private ParticleSystemWrapper[] _rightParticles;
 
 	private float _upMaxForce;
 	private Dictionary<string, float> _upResourceUse;
@@ -70,7 +70,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 	private void LoadModuleSpec(
 		DirectionalThrusterModuleSpec spec,
-		out float maxForce, out Dictionary<string, float> maxResourceUse, out ParticleSystem[] particles
+		out float maxForce, out Dictionary<string, float> maxResourceUse, out ParticleSystemWrapper[] particles
 	)
 	{
 		maxForce = spec.MaxForce;
@@ -78,7 +78,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 		if (spec.Particles != null)
 		{
-			particles = new ParticleSystem[spec.Particles.Length];
+			particles = new ParticleSystemWrapper[spec.Particles.Length];
 
 			for (int i = 0; i < spec.Particles.Length; i++)
 			{
@@ -144,11 +144,11 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		StartCoroutine(LateFixedUpdate());
 	}
 
-	private static void StartParticleSystems(ParticleSystem[] particleSystems)
+	private static void StartParticleSystems(ParticleSystemWrapper[] particleSystems)
 	{
 		if (particleSystems == null) return;
 
-		foreach (ParticleSystem particle in particleSystems)
+		foreach (ParticleSystemWrapper particle in particleSystems)
 		{
 			particle.Play();
 		}
@@ -269,9 +269,9 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		}
 	}
 
-	private static void SetParticlesStrength(ParticleSystem[] particles, float thrustScale)
+	private static void SetParticlesStrength(ParticleSystemWrapper[] particles, float thrustScale)
 	{
-		if (particles != null) ParticleSystemUtils.ScaleThrustParticles(particles, thrustScale);
+		if (particles != null) ParticleSystemWrapper.BatchScaleThrustParticles(particles, thrustScale);
 	}
 
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)

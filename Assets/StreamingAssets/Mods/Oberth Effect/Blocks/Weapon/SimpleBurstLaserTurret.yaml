@@ -57,8 +57,8 @@ TurretedWeapon:
     HitParticles:
       - Direction: { X: 0, Y: -1 }
         Size: 0.1
-        SpreadAngle: 45
-        MaxSpeed: 1.5
-        Lifetime: 0.2
-        EmissionRateOverTime: 100
+        SpreadAngle: 30
+        MaxSpeed: 5
+        Lifetime: 0.5
+        EmissionRateOverTime: 20
         Color: tertiary

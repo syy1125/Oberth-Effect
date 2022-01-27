@@ -18,13 +18,13 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 	public const string CLASS_KEY = "OmniThruster";
 
 	private Transform _upParticleRoot;
-	private ParticleSystem[] _upParticles;
+	private ParticleSystemWrapper[] _upParticles;
 	private Transform _downParticleRoot;
-	private ParticleSystem[] _downParticles;
+	private ParticleSystemWrapper[] _downParticles;
 	private Transform _leftParticleRoot;
-	private ParticleSystem[] _leftParticles;
+	private ParticleSystemWrapper[] _leftParticles;
 	private Transform _rightParticleRoot;
-	private ParticleSystem[] _rightParticles;
+	private ParticleSystemWrapper[] _rightParticles;
 
 	private Vector3 _localRight;
 	private Vector3 _localUp;
@@ -44,13 +44,13 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 			int particleCount = spec.Particles.Length;
 
 			_upParticleRoot = CreateParticleParent("UpParticles", 0f);
-			_upParticles = new ParticleSystem[particleCount];
+			_upParticles = new ParticleSystemWrapper[particleCount];
 			_downParticleRoot = CreateParticleParent("DownParticles", 180f);
-			_downParticles = new ParticleSystem[particleCount];
+			_downParticles = new ParticleSystemWrapper[particleCount];
 			_leftParticleRoot = CreateParticleParent("LeftParticles", 90f);
-			_leftParticles = new ParticleSystem[particleCount];
+			_leftParticles = new ParticleSystemWrapper[particleCount];
 			_rightParticleRoot = CreateParticleParent("RightParticles", -90f);
-			_rightParticles = new ParticleSystem[particleCount];
+			_rightParticles = new ParticleSystemWrapper[particleCount];
 
 			for (int i = 0; i < particleCount; i++)
 			{
@@ -95,11 +95,11 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 		StartCoroutine(LateFixedUpdate());
 	}
 
-	private static void StartParticleSystems(ParticleSystem[] particleSystems)
+	private static void StartParticleSystems(ParticleSystemWrapper[] particleSystems)
 	{
 		if (particleSystems == null) return;
 
-		foreach (ParticleSystem particle in particleSystems)
+		foreach (ParticleSystemWrapper particle in particleSystems)
 		{
 			particle.Play();
 		}
@@ -193,9 +193,9 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 		}
 	}
 
-	private static void SetParticlesStrength(ParticleSystem[] particles, float thrustScale)
+	private static void SetParticlesStrength(ParticleSystemWrapper[] particles, float thrustScale)
 	{
-		if (particles != null) ParticleSystemUtils.ScaleThrustParticles(particles, thrustScale);
+		if (particles != null) ParticleSystemWrapper.BatchScaleThrustParticles(particles, thrustScale);
 	}
 
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)

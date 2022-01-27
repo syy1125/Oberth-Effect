@@ -37,47 +37,5 @@ public static class UnityComponentSpecExtensions
 			collider.SetPath(i, spec[i].Path);
 		}
 	}
-
-	public static void LoadSpec(this ParticleSystem particles, ParticleSystemSpec spec)
-	{
-		var main = particles.main;
-		main.startSize = spec.Size;
-		main.startLifetime = spec.Lifetime;
-		main.startSpeed = spec.MaxSpeed;
-		main.playOnAwake = false;
-
-		var colorContext = particles.GetComponentInParent<ColorContext>();
-		if (colorContext.ColorScheme.ResolveColor(spec.Color, out Color startColor))
-		{
-			main.startColor = startColor;
-		}
-		else
-		{
-			Debug.LogError($"Failed to parse particle color {spec.Color}");
-		}
-
-		var emission = particles.emission;
-		emission.enabled = true;
-		emission.rateOverTime = spec.EmissionRateOverTime;
-		emission.rateOverDistance = spec.EmissionRateOverDistance;
-
-		var shape = particles.shape;
-		shape.enabled = true;
-		shape.angle = spec.SpreadAngle;
-		shape.radius = 0f;
-
-		var colorLifetime = particles.colorOverLifetime;
-		colorLifetime.enabled = true;
-		var gradient = new Gradient();
-		gradient.SetKeys(
-			new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-			new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) }
-		);
-		colorLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
-
-		var renderer = particles.GetComponent<Renderer>();
-		renderer.enabled = true;
-		renderer.material = TextureDatabase.Instance.DefaultParticleMaterial;
-	}
 }
 }

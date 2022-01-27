@@ -8,7 +8,7 @@ public class BeamWeaponVisual : MonoBehaviour
 {
 	private LineRenderer _line;
 	private Transform _hitParticleParentTransform;
-	private ParticleSystem[] _hitParticles;
+	private ParticleSystemWrapper[] _hitParticles;
 
 	private bool _firing;
 	private bool _hit;
@@ -29,25 +29,13 @@ public class BeamWeaponVisual : MonoBehaviour
 			_hitParticleParentTransform = hitParticleParentObject.transform;
 			_hitParticleParentTransform.SetParent(transform);
 
-			_hitParticles = new ParticleSystem[hitParticlesSpec.Length];
+			_hitParticles = new ParticleSystemWrapper[hitParticlesSpec.Length];
 
 			for (int i = 0; i < hitParticlesSpec.Length; i++)
 			{
-				// TODO Code duplicated in AbstractPropulsionBase
-				var spec = hitParticlesSpec[i];
-
-				GameObject particleHolder = new GameObject("ParticleSystem");
-
-				var holderTransform = particleHolder.transform;
-				holderTransform.SetParent(_hitParticleParentTransform);
-				holderTransform.localPosition = new Vector3(spec.Offset.x, spec.Offset.y, 1f);
-				holderTransform.localRotation = Quaternion.LookRotation(spec.Direction);
-
-				var particles = particleHolder.AddComponent<ParticleSystem>();
-				particles.LoadSpec(spec);
-				particles.Stop();
-
-				_hitParticles[i] = particles;
+				_hitParticles[i] = RendererHelper.CreateParticleSystem(
+					_hitParticleParentTransform, hitParticlesSpec[i]
+				);
 			}
 		}
 	}
@@ -84,9 +72,9 @@ public class BeamWeaponVisual : MonoBehaviour
 				{
 					_hit = true;
 
-					foreach (ParticleSystem particle in _hitParticles)
+					foreach (ParticleSystemWrapper wrapper in _hitParticles)
 					{
-						particle.Play();
+						wrapper.Play();
 					}
 				}
 
@@ -99,9 +87,9 @@ public class BeamWeaponVisual : MonoBehaviour
 				{
 					_hit = false;
 
-					foreach (ParticleSystem particle in _hitParticles)
+					foreach (ParticleSystemWrapper wrapper in _hitParticles)
 					{
-						particle.Stop();
+						wrapper.Stop();
 					}
 				}
 			}

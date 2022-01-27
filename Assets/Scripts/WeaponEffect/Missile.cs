@@ -51,7 +51,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	private MissileConfig _config;
 	private TargetLockTarget _target;
 	private PointDefenseTarget _pdTarget;
-	private ParticleSystem[] _propulsionParticles;
+	private ParticleSystemWrapper[] _propulsionParticles;
 	private float[] _maxParticleSpeeds;
 
 	private float _initTime;
@@ -90,7 +90,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		if (_config.PropulsionParticles != null)
 		{
-			_propulsionParticles = new ParticleSystem[_config.PropulsionParticles.Length];
+			_propulsionParticles = new ParticleSystemWrapper[_config.PropulsionParticles.Length];
 			_maxParticleSpeeds = new float[_config.PropulsionParticles.Length];
 
 			for (var i = 0; i < _config.PropulsionParticles.Length; i++)
@@ -126,7 +126,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		if (_propulsionParticles != null)
 		{
-			foreach (ParticleSystem particle in _propulsionParticles)
+			foreach (ParticleSystemWrapper particle in _propulsionParticles)
 			{
 				particle.Play();
 			}
@@ -171,7 +171,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		if (_propulsionParticles != null)
 		{
-			ParticleSystemUtils.ScaleThrustParticles(_propulsionParticles, thrustScale);
+			ParticleSystemWrapper.BatchScaleThrustParticles(_propulsionParticles, thrustScale);
 		}
 	}
 

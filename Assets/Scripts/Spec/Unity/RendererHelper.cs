@@ -23,7 +23,7 @@ public static class RendererHelper
 		}
 	}
 
-	public static ParticleSystem CreateParticleSystem(Transform parent, ParticleSystemSpec spec)
+	public static ParticleSystemWrapper CreateParticleSystem(Transform parent, ParticleSystemSpec spec)
 	{
 		GameObject particleHolder = new GameObject("ParticleSystem");
 
@@ -33,9 +33,10 @@ public static class RendererHelper
 		holderTransform.localRotation = Quaternion.LookRotation(spec.Direction);
 
 		var particles = particleHolder.AddComponent<ParticleSystem>();
-		particles.LoadSpec(spec);
+		var wrapper = particleHolder.AddComponent<ParticleSystemWrapper>();
+		wrapper.LoadSpec(spec);
 		particles.Stop();
-		return particles;
+		return wrapper;
 	}
 }
 }

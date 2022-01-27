@@ -17,8 +17,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 	private float _maxThrottleRate;
 
-	private ParticleSystem[] _particles;
-	private float[] _maxParticleSpeeds;
+	private ParticleSystemWrapper[] _particles;
 
 	private float _forwardBackResponse;
 	private float _strafeResponse;
@@ -36,13 +35,11 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 		if (spec.Particles != null)
 		{
-			_particles = new ParticleSystem[spec.Particles.Length];
-			_maxParticleSpeeds = new float[spec.Particles.Length];
+			_particles = new ParticleSystemWrapper[spec.Particles.Length];
 
 			for (var i = 0; i < spec.Particles.Length; i++)
 			{
 				_particles[i] = RendererHelper.CreateParticleSystem(transform, spec.Particles[i]);
-				_maxParticleSpeeds[i] = spec.Particles[i].MaxSpeed;
 			}
 		}
 
@@ -62,7 +59,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 			if (_particles != null)
 			{
 				// We have particles
-				foreach (ParticleSystem particle in _particles)
+				foreach (ParticleSystemWrapper particle in _particles)
 				{
 					particle.Play();
 				}
@@ -126,7 +123,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 		if (_particles != null)
 		{
-			ParticleSystemUtils.ScaleThrustParticles(_particles, trueThrustScale);
+			ParticleSystemWrapper.BatchScaleThrustParticles(_particles, trueThrustScale);
 		}
 	}
 
