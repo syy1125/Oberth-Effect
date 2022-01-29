@@ -33,6 +33,14 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 		}
 
 		var component = blockObject.GetComponent(type);
+		if (component == null)
+		{
+			Debug.LogError(
+				$"Component of type `{type}` does not exist at {blockObject.name} ({x}, {y}) in {gameObject.name}"
+			);
+			return;
+		}
+
 		var method = component.GetType().GetMethod(
 			methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
 		);
