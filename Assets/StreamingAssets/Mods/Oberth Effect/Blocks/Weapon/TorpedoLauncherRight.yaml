@@ -36,10 +36,10 @@ FixedWeapon:
   MissileLauncherEffect:
     FiringPortOffset: { X: 0, Y: 0.5 }
     DamageType: Kinetic
-    Damage: 200
+    Damage: 800
     ArmorPierce: 10
     MaxResourceUse:
-      OberthEffect/Energy: 300
+      OberthEffect/Energy: 200
     ColliderSize: { X: 0.16, Y: 1.4 }
     LaunchTubes:
       - Position: { X: 0.25, Y: 0 }
@@ -55,7 +55,7 @@ FixedWeapon:
       MaxHealth: 10
       ArmorValue: 2
     HealthDamageScaling: 0.8
-    ReloadTime: 2.5
+    ReloadTime: 15
     ScreenShake:
       Strength: 0.5
       Duration: 1

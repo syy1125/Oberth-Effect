@@ -33,7 +33,7 @@ FixedWeapon:
   MissileLauncherEffect:
     FiringPortOffset: { X: 0, Y: 0 }
     DamageType: Explosive
-    Damage: 40
+    Damage: 80
     ExplosionRadius: 2
     MaxResourceUse:
       OberthEffect/Energy: 100
@@ -70,7 +70,7 @@ FixedWeapon:
     ThrustActivationDelay: 0.2
     GuidanceAlgorithm: Predictive
     GuidanceActivationDelay: 0
-    ReloadTime: 1.5
+    ReloadTime: 5
     ScreenShake:
       Strength: 0.2
       Duration: 0.2
