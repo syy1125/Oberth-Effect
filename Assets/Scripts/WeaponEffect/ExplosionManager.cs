@@ -51,13 +51,19 @@ public class ExplosionManager : MonoBehaviourPun
 
 	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId, Vector2? preferredVelocity)
 	{
-		photonView.RPC(nameof(DoExplosionAt), RpcTarget.All, center, radius, damage, ownerId, preferredVelocity);
+		DoExplosionAt(center, radius, damage, true, ownerId, preferredVelocity);
+		photonView.RPC(
+			nameof(DoExplosionAt), RpcTarget.Others,
+			center, radius, damage, false, ownerId, preferredVelocity
+		);
 	}
 
 	[PunRPC]
-	private void DoExplosionAt(Vector3 center, float radius, float damage, int ownerId, Vector2? preferredVelocity)
+	private void DoExplosionAt(
+		Vector3 center, float radius, float damage, bool isMine, int ownerId, Vector2? preferredVelocity
+	)
 	{
-		DealExplosionDamageAt(center, radius, damage, ownerId);
+		DealExplosionDamageAt(center, radius, damage, isMine, ownerId);
 		PlayEffectAt(center, radius, preferredVelocity);
 	}
 
@@ -105,14 +111,14 @@ public class ExplosionManager : MonoBehaviourPun
 		return baseFactor * unitArea;
 	}
 
-	private void DealExplosionDamageAt(Vector3 center, float radius, float damage, int explosionOwnerId)
+	private void DealExplosionDamageAt(Vector3 center, float radius, float damage, bool isMine, int explosionOwnerId)
 	{
 		int colliderCount = Physics2D.OverlapCircle(center, radius, LayerConstants.WeaponHitFilter, _colliders);
 		var targets = _colliders
 			.Take(colliderCount)
 			.Select(c => c.GetComponentInParent<IDamageable>())
 			.Distinct()
-			.Where(target => target != null && target.IsMine && target.OwnerId != explosionOwnerId)
+			.Where(target => target != null && target.OwnerId != explosionOwnerId)
 			.ToList();
 
 #if UNITY_EDITOR
@@ -123,17 +129,38 @@ public class ExplosionManager : MonoBehaviourPun
 
 		foreach (IDamageable target in targets)
 		{
-			(Vector2 minPos, Vector2 maxPos) = target.GetExplosionDamageBounds();
-			Vector2 localCenter = target.transform.InverseTransformPoint(center);
+			if (target is IDirectDamageable directDamageable)
+			{
+				if (!isMine) continue;
 
-			float effectiveDamage =
-				d
-				* CalculateDamageFactor(
-					minPos, maxPos, localCenter, radius,
-					target.GetExplosionGridResolution(),
-					target.GetPointInBoundPredicate()
-				);
-			target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
+				(Vector2 minPos, Vector2 maxPos) = target.GetExplosionDamageBounds();
+				Vector2 localCenter = target.transform.InverseTransformPoint(center);
+
+				float effectiveDamage =
+					d
+					* CalculateDamageFactor(
+						minPos, maxPos, localCenter, radius,
+						target.GetExplosionGridResolution(),
+						target.GetPointInBoundPredicate()
+					);
+				directDamageable.RequestDirectDamage(DamageType.Explosive, effectiveDamage, 1f);
+			}
+			else
+			{
+				if (!target.IsMine) continue;
+
+				(Vector2 minPos, Vector2 maxPos) = target.GetExplosionDamageBounds();
+				Vector2 localCenter = target.transform.InverseTransformPoint(center);
+
+				float effectiveDamage =
+					d
+					* CalculateDamageFactor(
+						minPos, maxPos, localCenter, radius,
+						target.GetExplosionGridResolution(),
+						target.GetPointInBoundPredicate()
+					);
+				target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
+			}
 		}
 	}
 

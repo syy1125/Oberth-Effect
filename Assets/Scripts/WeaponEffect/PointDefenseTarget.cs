@@ -8,7 +8,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))] // Used by PD guns to plot intercept
-public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
+public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObservable
 {
 	public bool IsMine { get; private set; }
 	public int OwnerId { get; private set; }
@@ -55,6 +55,18 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 	public Predicate<Vector2> GetPointInBoundPredicate()
 	{
 		return null;
+	}
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			stream.SendNext(_health);
+		}
+		else
+		{
+			_health = (float) stream.ReceiveNext();
+		}
 	}
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
@@ -114,6 +126,22 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 	)
 	{
 		photonView.RPC(nameof(TakeDirectDamageRpc), photonView.Owner, damageType, damage, armorPierce);
+
+		// Predictive disabling if damage is expected to exceed health
+		float damageModifier = Mathf.Min(armorPierce / _armor, 1f);
+		float effectiveDamage = damage * damageModifier;
+		if (_health > effectiveDamage)
+		{
+			_health -= effectiveDamage;
+		}
+		else
+		{
+			if (!_destroyed)
+			{
+				_destroyed = true;
+				gameObject.SetActive(false);
+			}
+		}
 	}
 
 	[PunRPC]
