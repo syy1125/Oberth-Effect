@@ -7867,7 +7867,7 @@ MonoBehaviour:
   TooltipText: 'Some blocks can be configured to ignore rotational commands. By default,
     only thrusters are used in rotational commands.
 
-    The value shown for"current"
+    The value shown for "current"
     takes that into accout, while the value for "max" shows the hypothetical maximum
     if all propulsion components are configured to respond to rotational commands.'
 --- !u!1001 &1323217414
@@ -11771,7 +11771,7 @@ MonoBehaviour:
   TooltipText: 'Some blocks can be configured to ignore translational commands.
 
     The
-    value shown for"current" takes that into accout, while the value for "max" shows
+    value shown for "current" takes that into accout, while the value for "max" shows
     the hypothetical maximum if all propulsion components are configured to respond
     to translational commands.'
 --- !u!1 &2060839461
