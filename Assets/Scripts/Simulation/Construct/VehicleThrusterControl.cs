@@ -134,11 +134,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 							throw new ArgumentOutOfRangeException();
 					}
 
-					if (PlayerControlConfig.Instance.InertiaDampenerActive)
-					{
-						ApplyInertiaDampener();
-					}
-
+					ApplyInertiaDampener();
 					NetAndClampCommands();
 				}
 				else
@@ -228,15 +224,23 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void ApplyInertiaDampener()
 	{
-		Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
+		if (PlayerControlConfig.Instance.InertiaDampenerActive)
+		{
+			Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
 
-		HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
-			? -localVelocity.x * InertiaDampenerStrength
-			: 0f;
+			HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
+				? -localVelocity.x * InertiaDampenerStrength
+				: 0f;
 
-		VerticalCommand.AutoValue = Mathf.Approximately(VerticalCommand.PlayerValue, 0)
-			? -localVelocity.y * InertiaDampenerStrength
-			: 0f;
+			VerticalCommand.AutoValue = Mathf.Approximately(VerticalCommand.PlayerValue, 0)
+				? -localVelocity.y * InertiaDampenerStrength
+				: 0f;
+		}
+		else
+		{
+			HorizontalCommand.AutoValue = 0f;
+			VerticalCommand.AutoValue = 0f;
+		}
 	}
 
 	private void NetAndClampCommands()
