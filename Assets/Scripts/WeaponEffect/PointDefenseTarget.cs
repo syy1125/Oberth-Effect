@@ -123,4 +123,10 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);
 	}
 }
+
+public struct PointDefenseTargetData
+{
+	public PointDefenseTarget Target;
+	public float PriorityScore;
+}
 }

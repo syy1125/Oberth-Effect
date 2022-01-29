@@ -4,7 +4,6 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
-using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Lib;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
@@ -58,9 +57,12 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	private Vector2? _targetAcceleration;
 	private Pid<float> _rotationPid;
 
+	private float? _hitTime;
+
 	private void Awake()
 	{
 		_ownBody = GetComponent<Rigidbody2D>();
+		_hitTime = null;
 	}
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -105,7 +107,16 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		if (_config.HasTarget)
 		{
 			_target = PhotonView.Find(_config.TargetPhotonId)?.GetComponent<TargetLockTarget>();
-			Debug.Log($"Target is {_target}");
+
+			if (_target != null)
+			{
+				foreach (var receiver in _target.GetComponents<IIncomingMissileReceiver>())
+				{
+					receiver.AddIncomingMissile(this);
+				}
+			}
+
+			Debug.Log($"Missile target is {_target}");
 		}
 
 		_initTime = Time.time;
@@ -216,6 +227,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 			)
 			{
 				_targetAcceleration = acceleration;
+				_hitTime = hitTime;
 			}
 		}
 	}
@@ -233,6 +245,11 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	private void EndOfLifeDespawn()
 	{
 		GetComponent<DamagingProjectile>().OnLifetimeDespawn();
+	}
+
+	public float? GetHitTime()
+	{
+		return _hitTime;
 	}
 
 	private void OnDrawGizmos()

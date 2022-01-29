@@ -41,7 +41,7 @@ public class TargetInterface : MonoBehaviour
 
 	private void Update()
 	{
-		if (WeaponControl == null || !WeaponControl.enabled)
+		if (WeaponControl == null || !WeaponControl.isActiveAndEnabled)
 		{
 			UpdateTarget(null, false);
 			return;

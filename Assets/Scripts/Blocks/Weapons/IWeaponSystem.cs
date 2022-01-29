@@ -13,7 +13,7 @@ public interface IWeaponSystem
 	Transform transform { get; }
 	public WeaponBindingGroup WeaponBinding { get; }
 
-	void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTarget> targets);
+	void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTargetData> targetData);
 	void SetTargetPhotonId(int? targetId);
 	void SetAimPoint(Vector2? aimPoint);
 	void SetFiring(bool firing);

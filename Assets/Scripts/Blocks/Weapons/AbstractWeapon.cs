@@ -152,29 +152,34 @@ public abstract class AbstractWeapon :
 
 	#region Weapon Logic
 
-	public void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTarget> targets)
+	public void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTargetData> targetData)
 	{
 		Vector2 position = transform.position;
-		float limit = GetMaxRange();
-		limit *= limit;
+		float rangeSqrLimit = GetMaxRange();
+		rangeSqrLimit *= rangeSqrLimit;
 
 		Vector2 localVelocity = GetComponentInParent<Rigidbody2D>().GetPointVelocity(position);
 		int bestIndex = -1;
 		float bestScore = float.NegativeInfinity;
+		Vector2 bestAimPoint = Vector2.zero;
 
-		for (int i = 0; i < targets.Count; i++)
+		for (int i = 0; i < targetData.Count; i++)
 		{
-			var target = targets[i];
-			Vector2 relativePosition = (Vector2) target.transform.position - position;
-			if (relativePosition.sqrMagnitude > limit) continue;
+			var target = targetData[i];
 
-			Vector2 relativeVelocity = target.GetComponent<Rigidbody2D>().velocity - localVelocity;
-			float score = Vector2.Dot(relativePosition, -relativeVelocity) / relativePosition.sqrMagnitude;
+			Vector2 interceptPoint = WeaponEmitter.GetInterceptPoint(
+				position, localVelocity,
+				target.Target.transform.position, target.Target.GetComponent<Rigidbody2D>().velocity
+			);
+			if ((interceptPoint - position).sqrMagnitude > rangeSqrLimit) continue;
+
+			float score = target.PriorityScore;
 
 			if (score > bestScore)
 			{
 				bestIndex = i;
-				bestScore = score;
+				bestScore = targetData[i].PriorityScore;
+				bestAimPoint = interceptPoint;
 			}
 		}
 
@@ -186,14 +191,9 @@ public abstract class AbstractWeapon :
 			return;
 		}
 
-		var bestTarget = targets[bestIndex];
-		SetAimPoint(
-			WeaponEmitter.GetInterceptAimPoint(
-				position, localVelocity,
-				bestTarget.transform.position, bestTarget.GetComponent<Rigidbody2D>().velocity
-			)
-		);
-		SetTargetPhotonId(bestTarget.photonView.ViewID);
+		var bestTarget = targetData[bestIndex];
+		SetAimPoint(bestAimPoint);
+		SetTargetPhotonId(bestTarget.Target.photonView.ViewID);
 		SetFiring(true);
 	}
 
@@ -219,7 +219,7 @@ public abstract class AbstractWeapon :
 	)
 	{
 		GetComponentInParent<IBlockRpcRelay>().InvokeBlockRpc(
-			Core.RootPosition, typeof(TurretedWeapon), nameof(ReceiveWeaponEmitterRpc), rpcTarget,
+			Core.RootPosition, GetType(), nameof(ReceiveWeaponEmitterRpc), rpcTarget,
 			methodName, parameters
 		);
 	}

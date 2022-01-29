@@ -132,7 +132,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_targetPhotonId = targetId;
 	}
 
-	public Vector2 GetInterceptAimPoint(
+	public Vector2 GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{

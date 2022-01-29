@@ -14,7 +14,8 @@ using UnityEngine.InputSystem;
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener
+public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener,
+	IIncomingMissileReceiver
 {
 	public InputActionReference LookAction;
 	public InputActionReference FireAction1;
@@ -27,6 +28,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private List<IWeaponSystem> _weapons;
 	private bool _weaponListChanged;
+	private List<Missile> _incomingMissiles;
 
 	public bool TargetLock { get; private set; }
 	public int? TargetPhotonId { get; private set; }
@@ -40,6 +42,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_weapons = new List<IWeaponSystem>();
+		_incomingMissiles = new List<Missile>();
 
 		_pdFilter = new ContactFilter2D
 		{
@@ -115,8 +118,16 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				FindTarget(aimPoint);
 			}
 
-			List<PointDefenseTarget> pdTargets = GetPointDefenseTargets(isMine);
-			SendWeaponCommands(aimPoint, isMine, firing1, firing2, pdTargets);
+			if (isMine)
+			{
+				CleanUpIncomingMissiles();
+				List<PointDefenseTargetData> pdTargetData = GetPointDefenseTargets();
+				SendWeaponCommands(aimPoint, true, firing1, firing2, pdTargetData);
+			}
+			else
+			{
+				SendWeaponCommands(aimPoint, false, firing1, firing2, null);
+			}
 
 			yield return new WaitForFixedUpdate();
 		}
@@ -186,10 +197,31 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		}
 	}
 
-	private List<PointDefenseTarget> GetPointDefenseTargets(bool isMine)
+	public void AddIncomingMissile(Missile missile)
 	{
-		if (!isMine) return null;
+		if (photonView.IsMine)
+		{
+			_incomingMissiles.Add(missile);
+		}
+	}
 
+	private void CleanUpIncomingMissiles()
+	{
+		for (int i = 0; i < _incomingMissiles.Count;)
+		{
+			if (_incomingMissiles[i] == null || !_incomingMissiles[i].isActiveAndEnabled)
+			{
+				_incomingMissiles.RemoveAt(i);
+			}
+			else
+			{
+				i++;
+			}
+		}
+	}
+
+	private List<PointDefenseTargetData> GetPointDefenseTargets()
+	{
 		if (_weaponListChanged)
 		{
 			_pdRange = _weapons
@@ -199,26 +231,63 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				.Max();
 		}
 
-		List<PointDefenseTarget> pdTargets = new List<PointDefenseTarget>();
+		List<PointDefenseTargetData> pdTargets = new List<PointDefenseTargetData>();
+
 		if (_pdRange > Mathf.Epsilon)
 		{
+			// If an incoming missiles is a valid point defense target, always consider it for interception
+			foreach (Missile missile in _incomingMissiles)
+			{
+				var target = missile.GetComponent<PointDefenseTarget>();
+				var hitTime = missile.GetHitTime();
+
+				if (target != null && hitTime != null)
+				{
+					pdTargets.Add(
+						new PointDefenseTargetData
+						{
+							Target = target,
+							PriorityScore = 1f / hitTime.Value
+						}
+					);
+				}
+			}
+
+			// Find other PD targets
 			int count = Physics2D.OverlapCircle(transform.position, _pdRange, _pdFilter, _pdHits);
 			int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
-			pdTargets = _pdHits
-				.Take(count)
-				.Select(hit => hit.GetComponentInParent<PointDefenseTarget>())
-				.Where(
-					target => target != null
-					          && PhotonTeamHelper.GetPlayerTeamIndex(target.OwnerId) != ownerTeamIndex
-				)
-				.ToList();
+			Vector2 ownPosition = GetComponent<Rigidbody2D>().worldCenterOfMass;
+			Vector2 ownVelocity = GetComponent<Rigidbody2D>().velocity;
+
+			foreach (
+				var target in _pdHits
+					.Take(count)
+					.Select(hit => hit.GetComponentInParent<PointDefenseTarget>())
+					.Distinct()
+			)
+			{
+				if (target == null || PhotonTeamHelper.GetPlayerTeamIndex(target.OwnerId) == ownerTeamIndex)
+				{
+					continue;
+				}
+
+				Vector2 relativePosition = (Vector2) target.transform.position - ownPosition;
+				Vector2 relativeVelocity = target.GetComponent<Rigidbody2D>().velocity - ownVelocity;
+				pdTargets.Add(
+					new PointDefenseTargetData
+					{
+						Target = target,
+						PriorityScore = Vector2.Dot(relativePosition, -relativeVelocity) / relativePosition.sqrMagnitude
+					}
+				);
+			}
 		}
 
 		return pdTargets;
 	}
 
 	private void SendWeaponCommands(
-		Vector3 aimPoint, bool isMine, bool firing1, bool firing2, List<PointDefenseTarget> pdTargets
+		Vector3 aimPoint, bool isMine, bool firing1, bool firing2, List<PointDefenseTargetData> pdTargets
 	)
 	{
 		foreach (IWeaponSystem weapon in _weapons)
