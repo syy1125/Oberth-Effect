@@ -75,51 +75,59 @@ public class TargetInterface : MonoBehaviour
 	{
 		_targetId = targetId;
 		_targetLock = targetLock;
-
 		if (_targetId == null)
 		{
-			_group.alpha = 0f;
-			_group.interactable = false;
-			_group.blocksRaycasts = false;
-			TargetLockHighlight.gameObject.SetActive(false);
+			HideTargetingInterface();
+			return;
+		}
+
+		_target = PhotonView.Find(_targetId.Value).gameObject;
+		if (_target == null)
+		{
+			HideTargetingInterface();
+			return;
+		}
+
+		CameraFollow.Target = _target.transform;
+		_group.alpha = 1f;
+		_group.interactable = true;
+		_group.blocksRaycasts = true;
+
+		TargetLockHighlight.Target = _target.transform;
+		TargetLockHighlight.gameObject.SetActive(true);
+
+		if (WeaponControl.TargetLock)
+		{
+			Frame.color = TargetLockColor;
+			TargetText.fontStyle = FontStyle.Bold;
+			TargetText.color = TargetLockColor;
+
+			foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
+			{
+				image.color = TargetLockColor;
+				image.pixelsPerUnitMultiplier = 0.5f;
+			}
 		}
 		else
 		{
-			_target = PhotonView.Find(_targetId.Value).gameObject;
+			Frame.color = TargetColor;
+			TargetText.fontStyle = FontStyle.Normal;
+			TargetText.color = TargetColor;
 
-			CameraFollow.Target = _target.transform;
-			_group.alpha = 1f;
-			_group.interactable = true;
-			_group.blocksRaycasts = true;
-
-			TargetLockHighlight.Target = _target.transform;
-			TargetLockHighlight.gameObject.SetActive(true);
-
-			if (WeaponControl.TargetLock)
+			foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
 			{
-				Frame.color = TargetLockColor;
-				TargetText.fontStyle = FontStyle.Bold;
-				TargetText.color = TargetLockColor;
-
-				foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
-				{
-					image.color = TargetLockColor;
-					image.pixelsPerUnitMultiplier = 0.5f;
-				}
-			}
-			else
-			{
-				Frame.color = TargetColor;
-				TargetText.fontStyle = FontStyle.Normal;
-				TargetText.color = TargetColor;
-
-				foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
-				{
-					image.color = TargetColor;
-					image.pixelsPerUnitMultiplier = 1f;
-				}
+				image.color = TargetColor;
+				image.pixelsPerUnitMultiplier = 1f;
 			}
 		}
+	}
+
+	private void HideTargetingInterface()
+	{
+		_group.alpha = 0f;
+		_group.interactable = false;
+		_group.blocksRaycasts = false;
+		TargetLockHighlight.gameObject.SetActive(false);
 	}
 }
 }

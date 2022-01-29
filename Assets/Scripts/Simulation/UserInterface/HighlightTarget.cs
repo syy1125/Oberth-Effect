@@ -26,6 +26,8 @@ public class HighlightTarget : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		if (Target == null) return;
+
 		(Vector2 targetPosition, float targetSize) = GetTargetPositionAndSize();
 		Vector2 screenPosition = _mainCamera.WorldToViewportPoint(targetPosition);
 
