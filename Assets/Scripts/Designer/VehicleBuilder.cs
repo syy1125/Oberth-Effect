@@ -33,7 +33,6 @@ internal class BlockNotErasable : Exception
 public class VehicleBuilder : MonoBehaviour
 {
 	public VehicleDesigner Designer;
-	public GameObject ControlCoreBlock;
 
 	public int VehicleCost { get; private set; }
 
@@ -79,9 +78,9 @@ public class VehicleBuilder : MonoBehaviour
 		_blockToObject.Add(blockInstance, blockObject);
 	}
 
-	public List<Vector2Int> GetConflicts(BlockSpec spec, Vector2Int rootLocation, int rotation)
+	public List<Vector2Int> GetConflicts(BlockSpec spec, Vector2Int rootPosition, int rotation)
 	{
-		return VehicleBlockUtils.AllPositionsOccupiedBy(spec, rootLocation, rotation)
+		return VehicleBlockUtils.AllPositionsOccupiedBy(spec, rootPosition, rotation)
 			.Where(position => _posToBlock.ContainsKey(position))
 			.ToList();
 	}

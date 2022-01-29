@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
@@ -30,6 +31,7 @@ public class DesignerPaletteUse : MonoBehaviour
 	public InputActionReference RotateAction;
 	public InputActionReference InverseRotateAction;
 	public InputActionReference UsePaletteAction;
+	public InputActionReference ReplacementModeAction;
 
 	public IPaletteSelection CurrentSelection => Palette.CurrentSelection;
 
@@ -190,17 +192,13 @@ public class DesignerPaletteUse : MonoBehaviour
 
 				if (_hoverPosition != null && _mirrorPosition != null)
 				{
-					int mirrorRotation = (4 - _rotation + blockSelection.BlockSpec.Construction.MirrorRotationOffset)
-					                     % 4;
-					Vector2Int mirrorPosition = new Vector2Int(
-						                            _mirrorPosition.Value - _hoverPosition.Value.x,
-						                            _hoverPosition.Value.y
-					                            )
-					                            + TransformUtils.RotatePoint(
-						                            blockSelection.BlockSpec.Construction.MirrorRootOffset,
-						                            mirrorRotation
-					                            );
-					_mirrorBlockPreview.transform.localPosition = (Vector2) mirrorPosition;
+					GetMirrorBlock(
+						blockSelection.BlockSpec, _hoverPosition.Value, _rotation,
+						_mirrorPosition.Value,
+						out BlockSpec _, out Vector2Int mirrorRootPosition, out int mirrorRotation
+					);
+
+					_mirrorBlockPreview.transform.localPosition = (Vector2) mirrorRootPosition;
 					_mirrorBlockPreview.transform.localRotation = TransformUtils.GetPhysicalRotation(mirrorRotation);
 					_mirrorBlockPreview.SetActive(
 						!GridMove.Dragging
@@ -289,21 +287,15 @@ public class DesignerPaletteUse : MonoBehaviour
 					&& !ContainsMirrorPosition(blockSelection.BlockSpec, usePosition, _rotation, _mirrorPosition.Value)
 				)
 				{
-					int mirrorRotation =
-						(4 - _rotation + blockSelection.BlockSpec.Construction.MirrorRotationOffset)
-						% 4;
-					Vector2Int mirrorRootPosition =
-						new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y)
-						+ TransformUtils.RotatePoint(
-							blockSelection.BlockSpec.Construction.MirrorRootOffset,
-							mirrorRotation
-						);
-					BlockSpec mirrorBlockSpec = BlockDatabase.Instance.GetBlockSpec(
-						BlockDatabase.GetMirrorBlockId(blockSelection.BlockSpec)
+					GetMirrorBlock(
+						blockSelection.BlockSpec, usePosition, _rotation,
+						_mirrorPosition.Value,
+						out BlockSpec mirrorBlockSpec, out Vector2Int mirrorRootPosition, out int mirrorRotation
 					);
 					TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation, _prevUse == null);
 				}
 
+				UpdateConflicts();
 				UpdateDisconnections();
 
 				break;
@@ -331,11 +323,55 @@ public class DesignerPaletteUse : MonoBehaviour
 		return mirror >= bounds.Min.x * 2 && mirror <= (bounds.Max.x - 1) * 2;
 	}
 
-	private void TryAddBlock(BlockSpec blockSpec, Vector2Int position, int rotation, bool showFailText)
+	private void TryAddBlock(BlockSpec blockSpec, Vector2Int rootPosition, int rotation, bool showFailText)
 	{
 		try
 		{
-			Builder.AddBlock(blockSpec, position, rotation);
+			if (ReplacementModeAction.action.ReadValue<float>() > 0.5f)
+			{
+				var conflicts = Builder.GetConflicts(blockSpec, rootPosition, rotation);
+				var conflictBlocks = new HashSet<VehicleBlueprint.BlockInstance>(
+					conflicts.Select(position => Builder.GetBlockInstanceAt(position))
+				);
+
+				switch (conflictBlocks.Count)
+				{
+					case 0:
+						break;
+					case 1:
+						try
+						{
+							Builder.RemoveBlock(conflictBlocks.First().Position);
+						}
+						catch (BlockNotErasable error)
+						{
+							if (showFailText)
+							{
+								string blockName = BlockDatabase.Instance.GetBlockSpec(error.BlockId).Info.FullName;
+								FlytextManager.CreateNotificationFlytext(
+									Builder.transform.TransformPoint(error.Position),
+									$"{blockName} cannot be replaced"
+								);
+							}
+
+							return;
+						}
+
+						break;
+					default:
+						if (showFailText)
+						{
+							FlytextManager.CreateNotificationFlytext(
+								Builder.transform.TransformPoint((Vector2) rootPosition),
+								"Overlaps multiple blocks"
+							);
+						}
+
+						return;
+				}
+			}
+
+			Builder.AddBlock(blockSpec, rootPosition, rotation);
 		}
 		catch (DuplicateBlockError error)
 		{
@@ -385,6 +421,23 @@ public class DesignerPaletteUse : MonoBehaviour
 			HashSet<Vector2Int> conflicts = new HashSet<Vector2Int>(
 				Builder.GetConflicts(blockSelection.BlockSpec, _hoverPosition.Value, _rotation)
 			);
+
+			if (
+				_mirrorPosition != null
+				&& !ContainsMirrorPosition(
+					blockSelection.BlockSpec, _hoverPosition.Value, _rotation, _mirrorPosition.Value
+				)
+			)
+			{
+				GetMirrorBlock(
+					blockSelection.BlockSpec, _hoverPosition.Value, _rotation,
+					_mirrorPosition.Value,
+					out BlockSpec mirrorBlockSpec, out Vector2Int mirrorRootPosition, out int mirrorRotation
+				);
+
+				conflicts.UnionWith(Builder.GetConflicts(mirrorBlockSpec, mirrorRootPosition, mirrorRotation));
+			}
+
 			Indicators.SetConflicts(conflicts);
 		}
 		else
@@ -393,11 +446,32 @@ public class DesignerPaletteUse : MonoBehaviour
 		}
 	}
 
-	#endregion
-
 	private void UpdateDisconnections()
 	{
 		Indicators.SetDisconnections(Builder.GetDisconnectedPositions());
+	}
+
+	#endregion
+
+	private static void GetMirrorBlock(
+		BlockSpec blockSpec, Vector2Int rootPosition, int rotation,
+		int mirrorPosition,
+		out BlockSpec mirrorBlockSpec, out Vector2Int mirrorRootPosition, out int mirrorRotation
+	)
+	{
+		mirrorBlockSpec = BlockDatabase.Instance.GetBlockSpec(
+			BlockDatabase.GetMirrorBlockId(blockSpec)
+		);
+
+		mirrorRotation =
+			(4 - rotation + blockSpec.Construction.MirrorRotationOffset)
+			% 4;
+		mirrorRootPosition =
+			new Vector2Int(mirrorPosition - rootPosition.x, rootPosition.y)
+			+ TransformUtils.RotatePoint(
+				mirrorBlockSpec.Construction.MirrorRootOffset,
+				mirrorRotation
+			);
 	}
 
 	private void HandleRotate(InputAction.CallbackContext context)

@@ -608,6 +608,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Replacement Mode Modifier",
+                    "type": "Button",
+                    "id": "190a7417-5e43-4edf-8f62-f111a915b5c5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Mouse Move",
                     "type": "Value",
                     "id": "f37ea966-5bde-48df-9eda-dfd87864b709",
@@ -1151,6 +1159,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Multi Select Modifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2fc2d37b-05f8-41a2-acef-9ad3afed2f57",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Replacement Mode Modifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dcd9710f-f34f-42b6-a87d-513afc085581",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Replacement Mode Modifier",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
