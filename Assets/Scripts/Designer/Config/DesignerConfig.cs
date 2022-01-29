@@ -51,7 +51,7 @@ public class DesignerConfig : MonoBehaviour
 	private List<VehicleBlueprint.BlockInstance> _selectedBlocks;
 	private Dictionary<VehicleBlueprint.BlockInstance, GameObject> _selectionIndicators;
 
-	private string _configBlockId;
+	private HashSet<Type> _configComponents;
 	private List<GameObject> _blockConfigItems;
 	private bool _updatingElements;
 
@@ -64,6 +64,7 @@ public class DesignerConfig : MonoBehaviour
 		_context = GetComponentInParent<ColorContext>();
 		_selectedBlocks = new List<VehicleBlueprint.BlockInstance>();
 		_selectionIndicators = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
+		_configComponents = new HashSet<Type>();
 		_blockConfigItems = new List<GameObject>();
 	}
 
@@ -245,8 +246,8 @@ public class DesignerConfig : MonoBehaviour
 		);
 
 		SetVehicleConfigEnabled(true);
+		_configComponents.Clear();
 		ClearBlockConfigItems();
-		_configBlockId = null;
 
 		LayoutRebuilder.MarkLayoutForRebuild(ConfigParent);
 
@@ -263,38 +264,54 @@ public class DesignerConfig : MonoBehaviour
 		SetVehicleConfigEnabled(false);
 		UpdateSelectionIndicators();
 
-		string blockId = _selectedBlocks[0].BlockId;
+		bool sameBlockId = true;
+		HashSet<Type> configComponents = new HashSet<Type>(
+			Builder.GetBlockObject(_selectedBlocks[0])
+				.GetComponents<IConfigComponent>()
+				.Select(component => component.GetType())
+		);
+
 		for (int i = 1; i < _selectedBlocks.Count; i++)
 		{
-			if (_selectedBlocks[i].BlockId != blockId)
+			configComponents.IntersectWith(
+				Builder.GetBlockObject(_selectedBlocks[i])
+					.GetComponents<IConfigComponent>()
+					.Select(component => component.GetType())
+			);
+
+			if (sameBlockId && _selectedBlocks[i].BlockId != _selectedBlocks[0].BlockId)
 			{
-				StatusText.text = "Block type mismatch.";
-				ClearBlockConfigItems();
-				_configBlockId = null;
-				return;
+				sameBlockId = false;
 			}
 		}
 
-		// From this point on, we known that all blocks are of the same time (same block id).
-		BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(blockId);
+		if (configComponents.Count == 0)
+		{
+			StatusText.text = "Selected blocks have no common components.";
+			_configComponents.Clear();
+			ClearBlockConfigItems();
+			return;
+		}
 
 		StatusText.text = string.Join(
 			"\n",
-			_selectedBlocks.Count > 1
-				? $"Configuring {_selectedBlocks.Count} blocks."
-				: $"Configuring {blockSpec.Info.FullName} at {_selectedBlocks[0].Position}.",
+			_selectedBlocks.Count <= 1
+				? $"Configuring {BlockDatabase.Instance.GetBlockSpec(_selectedBlocks[0].BlockId).Info.FullName} at {_selectedBlocks[0].Position}."
+				: sameBlockId
+					? $"Configuring {_selectedBlocks.Count} {BlockDatabase.Instance.GetBlockSpec(_selectedBlocks[0].BlockId).Info.FullName} blocks."
+					: $"Configuring {_selectedBlocks.Count} blocks.",
 			"Press 'Q' to show vehicle config"
 		);
 
-		if (blockId != _configBlockId)
+		if (configComponents.SetEquals(_configComponents))
 		{
-			ClearBlockConfigItems();
-			CreateBlockConfigItems();
-			_configBlockId = blockId;
+			UpdateBlockConfigItems();
 		}
 		else
 		{
-			UpdateBlockConfigItems();
+			_configComponents = configComponents;
+			ClearBlockConfigItems();
+			CreateBlockConfigItems();
 		}
 	}
 
@@ -332,6 +349,8 @@ public class DesignerConfig : MonoBehaviour
 		)
 		{
 			Type componentType = component.GetType();
+			if (!_configComponents.Contains(componentType)) continue;
+
 			string configKey = TypeUtils.GetClassKey(componentType);
 			var currentConfigs =
 				configs.Select(config => config.ContainsKey(configKey) ? (JObject) config[configKey] : null).ToList();
