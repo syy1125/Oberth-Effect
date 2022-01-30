@@ -11,6 +11,7 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.UserInterface;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public BlockHealthBarControl HealthBarControl;
 	public Radar Radar;
 	public TargetInterface TargetInterface;
+	public AlertDisplay AlertDisplay;
 
 	public GameObject VehiclePrefab;
 
@@ -131,6 +133,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		HealthBarControl.SetTarget(Vehicle.GetComponent<VehicleCore>());
 		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
 		TargetInterface.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();
+		AlertDisplay.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();
 
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
 

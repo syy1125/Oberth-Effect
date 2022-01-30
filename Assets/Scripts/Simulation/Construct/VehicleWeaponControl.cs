@@ -28,7 +28,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private List<IWeaponSystem> _weapons;
 	private bool _weaponListChanged;
-	private List<Missile> _incomingMissiles;
+	public List<Missile> IncomingMissiles { get; private set; }
 
 	public bool TargetLock { get; private set; }
 	public int? TargetPhotonId { get; private set; }
@@ -42,7 +42,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
 		_weapons = new List<IWeaponSystem>();
-		_incomingMissiles = new List<Missile>();
+		IncomingMissiles = new List<Missile>();
 
 		_pdFilter = new ContactFilter2D
 		{
@@ -201,17 +201,17 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		if (photonView.IsMine)
 		{
-			_incomingMissiles.Add(missile);
+			IncomingMissiles.Add(missile);
 		}
 	}
 
 	private void CleanUpIncomingMissiles()
 	{
-		for (int i = 0; i < _incomingMissiles.Count;)
+		for (int i = 0; i < IncomingMissiles.Count;)
 		{
-			if (_incomingMissiles[i] == null || !_incomingMissiles[i].isActiveAndEnabled)
+			if (IncomingMissiles[i] == null || !IncomingMissiles[i].isActiveAndEnabled)
 			{
-				_incomingMissiles.RemoveAt(i);
+				IncomingMissiles.RemoveAt(i);
 			}
 			else
 			{
@@ -236,7 +236,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		if (_pdRange > Mathf.Epsilon)
 		{
 			// If an incoming missiles is a valid point defense target, always consider it for interception
-			foreach (Missile missile in _incomingMissiles)
+			foreach (Missile missile in IncomingMissiles)
 			{
 				var target = missile.GetComponent<PointDefenseTarget>();
 				var hitTime = missile.GetHitTime();
