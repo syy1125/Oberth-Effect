@@ -35,6 +35,7 @@ FixedWeapon:
     DamageType: Explosive
     Damage: 80
     ExplosionRadius: 2
+    ProximityFuseRadius: 1
     MaxResourceUse:
       OberthEffect/Energy: 100
     ColliderSize: { X: 0.1, Y: 0.2 }
@@ -64,15 +65,15 @@ FixedWeapon:
         Rotation: 0
         LaunchVelocity: { X: 0, Y: 5 }
     LaunchInterval: 0.1
-    MaxAcceleration: 15
-    MaxAngularAcceleration: 180
-    MaxLifetime: 5
+    MaxAcceleration: 20
+    MaxAngularAcceleration: 360
+    MaxLifetime: 4
     ThrustActivationDelay: 0.2
     GuidanceAlgorithm: Predictive
     GuidanceActivationDelay: 0
     ReloadTime: 5
     ScreenShake:
-      Strength: 0.2
+      Strength: 0.1
       Duration: 0.2
       DecayCurve: Linear
     Renderers:

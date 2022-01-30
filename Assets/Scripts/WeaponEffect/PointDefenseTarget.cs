@@ -8,12 +8,14 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))] // Used by PD guns to plot intercept
-public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObservable
+public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObservable, IGuidedWeaponTarget
 {
 	public bool IsMine { get; private set; }
 	public int OwnerId { get; private set; }
 
 	public UnityEvent OnDestroyedByDamage = new UnityEvent();
+
+	private Rigidbody2D _body;
 
 	private float _maxHealth;
 	private float _health;
@@ -28,6 +30,8 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	{
 		IsMine = photonView.IsMine;
 		OwnerId = photonView.OwnerActorNr;
+
+		_body = GetComponent<Rigidbody2D>();
 	}
 
 	public void Init(float maxHealth, float armorValue, Vector2 colliderSize)
@@ -67,6 +71,16 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 		{
 			_health = (float) stream.ReceiveNext();
 		}
+	}
+
+	public Vector2 GetEffectivePosition()
+	{
+		return _body.worldCenterOfMass;
+	}
+
+	public Vector2 GetEffectiveVelocity()
+	{
+		return _body.velocity;
 	}
 
 	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)

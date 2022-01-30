@@ -61,6 +61,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			DamageType = spec.DamageType,
 			ArmorPierce = spec.ArmorPierce,
 			ExplosionRadius = spec.ExplosionRadius,
+			ProximityFuseRadius = spec.ProximityFuseRadius,
 			Lifetime = spec.MaxLifetime,
 			MaxAcceleration = spec.MaxAcceleration,
 			MaxAngularAcceleration = spec.MaxAngularAcceleration,

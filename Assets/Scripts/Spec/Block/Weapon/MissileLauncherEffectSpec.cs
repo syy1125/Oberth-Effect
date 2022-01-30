@@ -16,6 +16,7 @@ public struct MissileLaunchTubeSpec
 
 public class MissileLauncherEffectSpec : AbstractWeaponEffectSpec
 {
+	public float ProximityFuseRadius;
 	public Vector2 ColliderSize;
 
 	[ValidateNonNull]

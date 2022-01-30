@@ -46,7 +46,7 @@ public class DamagingProjectile : MonoBehaviourPun
 		Vector2 prevPosition = transform.position;
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			Vector2 currentPosition = transform.position;
 
@@ -223,7 +223,7 @@ public class DamagingProjectile : MonoBehaviourPun
 		}
 	}
 
-	public void OnLifetimeDespawn()
+	public void DetonateOrDespawn()
 	{
 		gameObject.SetActive(false);
 

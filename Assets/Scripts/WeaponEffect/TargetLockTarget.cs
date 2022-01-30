@@ -6,7 +6,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
-public class TargetLockTarget : MonoBehaviourPun
+public class TargetLockTarget : MonoBehaviourPun, IGuidedWeaponTarget
 {
 	public static readonly List<TargetLockTarget> ActiveTargets = new List<TargetLockTarget>();
 

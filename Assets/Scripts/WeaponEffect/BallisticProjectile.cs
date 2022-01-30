@@ -81,7 +81,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 	private void EndOfLifeDespawn()
 	{
-		GetComponent<DamagingProjectile>().OnLifetimeDespawn();
+		GetComponent<DamagingProjectile>().DetonateOrDespawn();
 	}
 }
 }

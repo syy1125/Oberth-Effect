@@ -92,6 +92,10 @@
             "description": "Specifies a missile launcher and the missile it launches.",
             "allOf": [{ "$ref": "BaseWeaponEffectSpecSchema.json" }],
             "properties": {
+                "ProximityFuseRadius": {
+                    "type": "number",
+                    "description": "Only relevant for explosive missiles. If set, the missile will explode when in proximity of the target, rather than requiring a direct hit."
+                },
                 "ColliderSize": { "$ref": "Vector2Schema.json" },
                 "LaunchTubes": {
                     "type": "array",
