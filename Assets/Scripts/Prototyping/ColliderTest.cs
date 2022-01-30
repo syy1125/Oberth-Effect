@@ -44,7 +44,7 @@ public class ColliderTest : MonoBehaviour
 		Vector2 prevPosition = transform.position;
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			foreach (var referenceFrame in ReferenceFrameProvider.ReferenceFrames)
 			{

@@ -105,7 +105,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			bool isMine = photonView.IsMine;
 			bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;

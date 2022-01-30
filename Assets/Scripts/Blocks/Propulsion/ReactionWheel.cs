@@ -112,7 +112,7 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			float trueResponse = _response * _satisfaction;
 

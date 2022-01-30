@@ -113,7 +113,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			if (photonView.IsMine)
 			{

@@ -218,7 +218,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			Vector2 overallResponse = _response * Satisfaction;
 

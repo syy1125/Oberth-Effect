@@ -158,7 +158,7 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			Vector2 overallResponse = _response * Satisfaction;
 

@@ -46,7 +46,7 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 	{
 		yield return new WaitForFixedUpdate();
 
-		while (enabled)
+		while (isActiveAndEnabled)
 		{
 			WeaponEmitter.EmitterFixedUpdate(Core.IsMine, Firing);
 			yield return new WaitForFixedUpdate();
