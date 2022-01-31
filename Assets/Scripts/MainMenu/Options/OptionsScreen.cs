@@ -1,18 +1,27 @@
 ﻿using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
+using Syy1125.OberthEffect.Init;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.MainMenu.Options
 {
 public class OptionsScreen : MonoBehaviour
 {
+	public PercentageSlider MasterVolumeSlider;
+	public PercentageSlider UIVolumeSlider;
 	public SwitchSelect UnitModeSwitch;
 	public PercentageSlider DesignerGridOpacitySlider;
 	public PercentageSlider ScreenShakeMultiplierSlider;
 
 	private void Start()
 	{
+		MasterVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.MASTER_VOLUME);
+		MasterVolumeSlider.OnChange.AddListener(HandleMasterVolumeChange);
+
+		UIVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.UI_VOLUME);
+		UIVolumeSlider.OnChange.AddListener(HandleUIVolumeChange);
+
 		UnitModeSwitch.Value = (int) PhysicsUnitUtils.UnitMode;
 		UnitModeSwitch.OnValueChanged.AddListener(HandleUnitModeChange);
 
@@ -23,6 +32,16 @@ public class OptionsScreen : MonoBehaviour
 		float screenShakeMultiplier = PlayerPrefs.GetFloat(PropertyKeys.SCREEN_SHAKE_MULTIPLIER, 1f);
 		ScreenShakeMultiplierSlider.Value = screenShakeMultiplier;
 		ScreenShakeMultiplierSlider.OnChange.AddListener(HandleScreenShakeMultiplierChange);
+	}
+
+	private void HandleMasterVolumeChange(float volume)
+	{
+		AudioMixerManager.Instance.SetVolume(PropertyKeys.MASTER_VOLUME, volume);
+	}
+
+	private void HandleUIVolumeChange(float volume)
+	{
+		AudioMixerManager.Instance.SetVolume(PropertyKeys.UI_VOLUME, volume);
 	}
 
 	private void HandleUnitModeChange(int unitMode)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Spec.Database;
@@ -113,6 +114,7 @@ public class GameInitializer : MonoBehaviour
 		LoadProgress.Progress = null;
 
 		yield return KeybindManager.Instance.LoadKeybinds();
+		AudioMixerManager.Instance.LoadVolumes();
 
 		LoadText.text = "Starting game";
 		LoadProgress.Progress = null;
