@@ -116,7 +116,7 @@ public static class InterceptSolver
 		Vector2 hitPosition = targetPosition + targetVelocity * hitTime;
 		accelerationVector = hitPosition.normalized * missileAcceleration;
 
-		return converged;
+		return converged && hitTime > 0f;
 	}
 
 	private static float FindMissileInterceptSeed(

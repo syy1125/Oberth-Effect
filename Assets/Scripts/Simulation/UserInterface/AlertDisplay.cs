@@ -24,7 +24,7 @@ public class AlertDisplay : MonoBehaviour
 			MissileTimerDisplay.gameObject.SetActive(false);
 			return;
 		}
-		
+
 		if (WeaponControl.IncomingMissiles.Count == 0)
 		{
 			MissileCountDisplay.gameObject.SetActive(false);
