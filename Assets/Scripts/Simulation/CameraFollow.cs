@@ -1,4 +1,4 @@
-﻿using Syy1125.OberthEffect.Lib;
+﻿using Syy1125.OberthEffect.Lib.Pid;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -23,12 +23,7 @@ public class CameraFollow : MonoBehaviour
 
 	private void Awake()
 	{
-		_pid = new Pid<Vector2>(
-			PositionPidConfig,
-			(a, b) => a + b,
-			(a, b) => a - b,
-			(v, s) => v * s
-		);
+		_pid = new Vector2Pid(PositionPidConfig);
 	}
 
 	public void EnterInitMode()

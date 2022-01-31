@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Lib
+namespace Syy1125.OberthEffect.Lib.Pid
 {
 public class RotationPid : Pid<float>
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Lib
+namespace Syy1125.OberthEffect.Lib.Pid
 {
 [Serializable]
 public struct PidConfig
@@ -11,15 +11,15 @@ public struct PidConfig
 	public float IntegralTime;
 }
 
-public class Pid<T>
+public class Pid<T> : IPid<T>
 {
 	public T Output { get; private set; }
 
-	private PidConfig _config;
+	private readonly PidConfig _config;
 
-	private Func<T, T, T> _addOp;
-	private Func<T, T, T> _subOp;
-	private Func<T, float, T> _multOp;
+	private readonly Func<T, T, T> _addOp;
+	private readonly Func<T, T, T> _subOp;
+	private readonly Func<T, float, T> _multOp;
 
 	private bool _hasPrev;
 	private T _prev;
@@ -39,7 +39,7 @@ public class Pid<T>
 	{
 		T baseResponse = value;
 
-		if (_hasPrev && !Mathf.Approximately(_config.DerivativeTime, 0f))
+		if (_hasPrev && !Mathf.Approximately(_config.DerivativeTime, 0f) && !Mathf.Approximately(deltaTime, 0f))
 		{
 			T derivative = _multOp(_subOp(value, _prev), 1f / deltaTime);
 			baseResponse = _addOp(baseResponse, _multOp(derivative, _config.DerivativeTime));

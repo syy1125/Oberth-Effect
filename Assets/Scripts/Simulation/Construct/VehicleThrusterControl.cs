@@ -6,7 +6,7 @@ using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Input;
-using Syy1125.OberthEffect.Lib;
+using Syy1125.OberthEffect.Lib.Pid;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,7 +36,83 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
 
-	private Pid<float> _rotationPid;
+	private class ThrusterRotationPid : IPid<float>
+	{
+		private struct PidHistory
+		{
+			public float Time;
+			public float Value;
+			public float Integral;
+		}
+
+		public float Output { get; private set; }
+
+		private readonly PidConfig _config;
+		private readonly float _timeLimit;
+
+		private float _timer;
+		private readonly LinkedList<PidHistory> _history;
+		private float _integral;
+
+		public ThrusterRotationPid(PidConfig config, float timeLimit)
+		{
+			_config = config;
+			_timeLimit = timeLimit;
+
+			_timer = 0f;
+			_history = new LinkedList<PidHistory>();
+			_integral = 0f;
+		}
+
+		public void Update(float value, float deltaTime)
+		{
+			_timer += deltaTime;
+
+			float baseResponse = value;
+
+			if (
+				_history.Count > 0
+				&& !Mathf.Approximately(_config.DerivativeTime, 0f)
+				&& !Mathf.Approximately(deltaTime, 0f)
+			)
+			{
+				float derivative = (value - _history.Last.Value.Value) / deltaTime;
+				baseResponse += derivative * _config.DerivativeTime;
+			}
+
+			if (!Mathf.Approximately(_config.IntegralTime, 0f) && _timeLimit > Mathf.Epsilon)
+			{
+				float stepIntegral = value * deltaTime;
+				_history.AddLast(new PidHistory { Time = _timer, Value = value, Integral = stepIntegral });
+				_integral += stepIntegral;
+
+				float minTime = _timer - _timeLimit;
+				while (_history.Count > 0 && _history.First.Value.Time < minTime)
+				{
+					_integral -= _history.First.Value.Integral;
+					_history.RemoveFirst();
+				}
+
+				baseResponse += _integral / _config.IntegralTime;
+			}
+			else if (!Mathf.Approximately(_config.DerivativeTime, 0f))
+			{
+				_history.Clear();
+				_history.AddLast(new PidHistory { Value = value });
+			}
+
+			Output = baseResponse * _config.Response;
+		}
+
+		public void Reset()
+		{
+			_timer = 0f;
+			_history.Clear();
+			_integral = 0f;
+		}
+	}
+
+	private IPid<float> _rotationPid;
 
 	[ReadOnlyField]
 	public InputCommand HorizontalCommand;
@@ -51,7 +127,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
-		_rotationPid = new RotationPid(RotationPidConfig);
+		_rotationPid = new ThrusterRotationPid(RotationPidConfig, 2f);
 	}
 
 	private void OnEnable()

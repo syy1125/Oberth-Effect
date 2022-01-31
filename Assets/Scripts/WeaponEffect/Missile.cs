@@ -4,7 +4,7 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Physics;
-using Syy1125.OberthEffect.Lib;
+using Syy1125.OberthEffect.Lib.Pid;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -56,7 +56,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private float _initTime;
 	private Vector2? _targetAcceleration;
-	private Pid<float> _rotationPid;
+	private IPid<float> _rotationPid;
 
 	private float? _hitTime;
 
