@@ -47,9 +47,9 @@ public class TargetInterface : MonoBehaviour
 			return;
 		}
 
-		if (WeaponControl.TargetPhotonId != _targetId || WeaponControl.TargetLock != _targetLock)
+		if (WeaponControl.TargetPhotonViewId != _targetId || WeaponControl.TargetLock != _targetLock)
 		{
-			UpdateTarget(WeaponControl.TargetPhotonId, WeaponControl.TargetLock);
+			UpdateTarget(WeaponControl.TargetPhotonViewId, WeaponControl.TargetLock);
 		}
 
 		if (_target != null)

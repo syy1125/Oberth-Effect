@@ -31,7 +31,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	public List<Missile> IncomingMissiles { get; private set; }
 
 	public bool TargetLock { get; private set; }
-	public int? TargetPhotonId { get; private set; }
+	private TargetLockTarget _currentTarget;
+	public int? TargetPhotonViewId => _currentTarget == null ? (int?) null : _currentTarget.PhotonViewId;
 
 	private float _pdRange;
 	private ContactFilter2D _pdFilter;
@@ -113,13 +114,19 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 			Vector3 aimPoint = GetAimPoint(isMine);
 
-			if (isMine && !TargetLock)
-			{
-				FindTarget(aimPoint);
-			}
-
 			if (isMine)
 			{
+				if (!TargetLock)
+				{
+					FindTarget(aimPoint);
+				}
+				else if (_currentTarget == null || !_currentTarget.isActiveAndEnabled)
+				{
+					Debug.Log("WeaponControl target is null or disabled, unlocking target.");
+					TargetLock = false;
+					FindTarget(aimPoint);
+				}
+
 				CleanUpIncomingMissiles();
 				List<PointDefenseTargetData> pdTargetData = GetPointDefenseTargets();
 				SendWeaponCommands(aimPoint, true, firing1, firing2, pdTargetData);
@@ -152,7 +159,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private void FindTarget(Vector2 cursorPosition)
 	{
-		TargetPhotonId = null;
+		_currentTarget = null;
 		float minDistance = float.PositiveInfinity;
 		int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
 
@@ -168,14 +175,14 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			}
 
 			float distance = Vector2.Distance(cursorPosition, target.GetEffectivePosition());
-			if (TargetPhotonId == null || distance < minDistance)
+			if (TargetPhotonViewId == null || distance < minDistance)
 			{
-				TargetPhotonId = target.photonView.ViewID;
+				_currentTarget = target;
 				minDistance = distance;
 			}
 		}
 
-		if (TargetPhotonId != null && minDistance > _mainCamera.orthographicSize)
+		if (TargetPhotonViewId != null && minDistance > _mainCamera.orthographicSize)
 		{
 			// Try to make targeting more natural. When the cursor is far from the detected target,
 			// only set target if the ratio of target-cursor distance to cursor-vehicle distance is smaller than ratio of vehicle-cursor distance to cursor-edge distance.
@@ -192,7 +199,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 			if (minDistance > Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio))
 			{
-				TargetPhotonId = null;
+				_currentTarget = null;
 			}
 		}
 	}
@@ -296,7 +303,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			{
 				case WeaponBindingGroup.Manual1:
 					weapon.SetAimPoint(aimPoint);
-					weapon.SetTargetPhotonId(TargetPhotonId);
+					weapon.SetTargetPhotonId(TargetPhotonViewId);
 
 					if (isMine)
 					{
@@ -306,7 +313,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 					break;
 				case WeaponBindingGroup.Manual2:
 					weapon.SetAimPoint(aimPoint);
-					weapon.SetTargetPhotonId(TargetPhotonId);
+					weapon.SetTargetPhotonId(TargetPhotonViewId);
 
 					if (isMine)
 					{
@@ -334,9 +341,9 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			Debug.Log("Turning off target lock");
 			TargetLock = false;
 		}
-		else if (TargetPhotonId != null)
+		else if (TargetPhotonViewId != null)
 		{
-			Debug.Log($"Locking onto {TargetPhotonId.Value}");
+			Debug.Log($"Locking onto {TargetPhotonViewId.Value}");
 			TargetLock = true;
 		}
 	}
@@ -346,12 +353,15 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		if (stream.IsWriting)
 		{
 			stream.SendNext(_localAimPoint);
-			stream.SendNext(TargetPhotonId);
+			stream.SendNext(TargetPhotonViewId);
 		}
 		else
 		{
 			_localAimPoint = (Vector2) stream.ReceiveNext();
-			TargetPhotonId = (int?) stream.ReceiveNext();
+			int? targetPhotonViewId = (int?) stream.ReceiveNext();
+			_currentTarget = targetPhotonViewId == null
+				? null
+				: PhotonView.Find(targetPhotonViewId.Value)?.GetComponent<TargetLockTarget>();
 		}
 	}
 }
