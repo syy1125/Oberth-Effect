@@ -87,6 +87,7 @@ public class PlayerPanel : MonoBehaviourPunCallbacks
 
 	private void KickPlayer()
 	{
+		Debug.Log($"Kicking player {Player}");
 		PhotonNetwork.CloseConnection(Player);
 	}
 }
