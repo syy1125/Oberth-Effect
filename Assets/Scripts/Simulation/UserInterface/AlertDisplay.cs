@@ -25,8 +25,6 @@ public class AlertDisplay : MonoBehaviour
 			return;
 		}
 		
-		Debug.Log(WeaponControl.IncomingMissiles.Count);
-
 		if (WeaponControl.IncomingMissiles.Count == 0)
 		{
 			MissileCountDisplay.gameObject.SetActive(false);

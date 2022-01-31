@@ -29,14 +29,18 @@ public class SimulationMenu : MonoBehaviourPunCallbacks
 	{
 		_open = !_open;
 
+
 		foreach (Transform child in transform)
 		{
 			child.gameObject.SetActive(_open);
 		}
+
+		Debug.Log(_open ? "Simulation menu is now open" : "Simulation menu is now closed");
 	}
 
 	public void LeaveGame()
 	{
+		Debug.Log("Leaving room");
 		PhotonNetwork.LeaveRoom();
 	}
 
