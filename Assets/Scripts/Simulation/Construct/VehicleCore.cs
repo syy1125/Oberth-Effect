@@ -122,13 +122,17 @@ public class VehicleCore :
 			Debug.LogError($"Failed to remove vehicle {this} from active vehicle list");
 		}
 
-		IsDead = true;
-		foreach (var listener in GetComponents<IVehicleDeathListener>())
+		if (!IsDead)
 		{
-			listener.OnVehicleDeath();
-		}
+			IsDead = true;
 
-		OnVehicleDeath.Invoke();
+			foreach (var listener in GetComponents<IVehicleDeathListener>())
+			{
+				listener.OnVehicleDeath();
+			}
+
+			OnVehicleDeath.Invoke();
+		}
 	}
 
 	public string GetName()
