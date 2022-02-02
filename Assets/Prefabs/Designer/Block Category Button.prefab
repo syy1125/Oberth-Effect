@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: 2713724302216516852}
   - component: {fileID: 2713724302216516850}
   - component: {fileID: 5551330399830680693}
+  - component: {fileID: 6030956689327452056}
   m_Layer: 5
   m_Name: Block Category Button
   m_TagString: Untagged
@@ -371,3 +372,17 @@ MonoBehaviour:
   Icon: {fileID: 2713724301752955087}
   NameDisplay: {fileID: 2713724301405129526}
   SelectHighlight: {fileID: 3017038979001247258}
+--- !u!114 &6030956689327452056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2713724302216516848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f20bffa84a944f98e6649f7bd821a51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Sound: {fileID: 8300000, guid: 0225e0c412f4a83458eff512cee26a1c, type: 3}
+  VolumeScale: 0.8

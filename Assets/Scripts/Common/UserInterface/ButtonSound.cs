@@ -7,6 +7,7 @@ namespace Syy1125.OberthEffect.Common.UserInterface
 public class ButtonSound : MonoBehaviour
 {
 	public AudioClip Sound;
+	public float VolumeScale = 1f;
 
 	private void OnEnable()
 	{
@@ -22,7 +23,7 @@ public class ButtonSound : MonoBehaviour
 	{
 		if (Sound != null)
 		{
-			UISoundManager.Instance.PlaySound(Sound);
+			UISoundManager.Instance.PlaySound(Sound, VolumeScale);
 		}
 	}
 }

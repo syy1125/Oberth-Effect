@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Colors;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec.Block;
@@ -15,7 +16,7 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Config
 {
-public class DesignerConfig : MonoBehaviour
+public class DesignerConfig : MonoBehaviour, IElementControllerContext
 {
 	[Header("Input")]
 	public InputActionReference SelectBlockAction;
@@ -53,7 +54,7 @@ public class DesignerConfig : MonoBehaviour
 
 	private HashSet<Type> _configComponents;
 	private List<GameObject> _blockConfigItems;
-	private bool _updatingElements;
+	public bool UpdatingElements { get; private set; }
 
 	public bool HasSelectedBlock => _selectedBlocks.Count > 0;
 
@@ -205,6 +206,8 @@ public class DesignerConfig : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
+		UpdatingElements = true;
+		
 		_selectedBlocks.Clear();
 		ClearSelectionIndicators();
 
@@ -221,6 +224,8 @@ public class DesignerConfig : MonoBehaviour
 		_context.SetColorScheme(colorScheme);
 
 		ShowVehicleConfig();
+		
+		UpdatingElements = false;
 	}
 
 	private void ShowAutoConfig()
@@ -431,7 +436,7 @@ public class DesignerConfig : MonoBehaviour
 	{
 		Debug.Assert(_selectedBlocks.Count > 0, nameof(_selectedBlocks) + ".Count > 0");
 
-		_updatingElements = true;
+		UpdatingElements = true;
 
 		List<JObject> configs = _selectedBlocks.Select(block => TypeUtils.ParseJson(block.Config)).ToList();
 
@@ -470,7 +475,7 @@ public class DesignerConfig : MonoBehaviour
 			}
 		}
 
-		_updatingElements = false;
+		UpdatingElements = false;
 	}
 
 	private static bool GetToggleValue(IEnumerable<JObject> currentConfigs, ToggleConfigItem toggleItem)
@@ -510,7 +515,7 @@ public class DesignerConfig : MonoBehaviour
 
 	private void SetBlockConfigs(Type componentType, string itemKey, JValue value)
 	{
-		if (_updatingElements) return;
+		if (UpdatingElements) return;
 
 		foreach (VehicleBlueprint.BlockInstance selectedBlock in _selectedBlocks)
 		{

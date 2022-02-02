@@ -104,6 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sound: {fileID: 8300000, guid: 50b1e0dade540074eb28999f01e2c0c6, type: 3}
+  VolumeScale: 0.5
 --- !u!1 &4547676646644913094
 GameObject:
   m_ObjectHideFlags: 0

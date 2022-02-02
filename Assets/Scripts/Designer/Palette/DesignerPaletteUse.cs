@@ -2,6 +2,7 @@
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec.Block;
@@ -26,6 +27,12 @@ public class DesignerPaletteUse : MonoBehaviour
 	public VehicleBuilder Builder;
 	public BlockIndicators Indicators;
 	public Transform PreviewParent;
+
+	[Header("Assets")]
+	public AudioClip PlaceSound;
+	public AudioClip EraseSound;
+	public AudioClip FailSound;
+	public float VolumeScale = 1f;
 
 	[Header("Input Actions")]
 	public InputActionReference RotateAction;
@@ -276,11 +283,13 @@ public class DesignerPaletteUse : MonoBehaviour
 	{
 		if (_usePosition == null) return;
 		Vector2Int usePosition = _usePosition.Value;
+		bool noPrevUse = _prevUse == null;
 
 		switch (Palette.CurrentSelection)
 		{
 			case BlockSelection blockSelection:
-				TryAddBlock(blockSelection.BlockSpec, usePosition, _rotation, _prevUse == null);
+			{
+				bool success = TryAddBlock(blockSelection.BlockSpec, usePosition, _rotation, noPrevUse);
 
 				if (
 					_mirrorPosition != null
@@ -292,26 +301,49 @@ public class DesignerPaletteUse : MonoBehaviour
 						_mirrorPosition.Value,
 						out BlockSpec mirrorBlockSpec, out Vector2Int mirrorRootPosition, out int mirrorRotation
 					);
-					TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation, _prevUse == null);
+					success |= TryAddBlock(mirrorBlockSpec, mirrorRootPosition, mirrorRotation, noPrevUse);
+				}
+
+				if (success)
+				{
+					UISoundManager.Instance.PlaySound(PlaceSound, VolumeScale);
+				}
+				else if (noPrevUse)
+				{
+					UISoundManager.Instance.PlaySound(FailSound, VolumeScale);
 				}
 
 				UpdateConflicts();
 				UpdateDisconnections();
 
 				break;
+			}
 			case EraserSelection _:
-				TryEraseBlock(usePosition, _prevUse == null);
+			{
+				bool success = TryEraseBlock(usePosition, noPrevUse);
 				if (_mirrorPosition != null)
 				{
-					TryEraseBlock(new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y), false);
+					success |= TryEraseBlock(
+						new Vector2Int(_mirrorPosition.Value - usePosition.x, usePosition.y), false
+					);
 				}
 
 				EraserIndicator.gameObject.SetActive(false);
 				MirrorEraserIndicator.gameObject.SetActive(false);
 
+				if (success)
+				{
+					UISoundManager.Instance.PlaySound(EraseSound, VolumeScale);
+				}
+				else if (noPrevUse)
+				{
+					UISoundManager.Instance.PlaySound(FailSound, VolumeScale);
+				}
+
 				UpdateDisconnections();
 
 				break;
+			}
 		}
 	}
 
@@ -323,7 +355,7 @@ public class DesignerPaletteUse : MonoBehaviour
 		return mirror >= bounds.Min.x * 2 && mirror <= (bounds.Max.x - 1) * 2;
 	}
 
-	private void TryAddBlock(BlockSpec blockSpec, Vector2Int rootPosition, int rotation, bool showFailText)
+	private bool TryAddBlock(BlockSpec blockSpec, Vector2Int rootPosition, int rotation, bool showFailText)
 	{
 		try
 		{
@@ -354,7 +386,7 @@ public class DesignerPaletteUse : MonoBehaviour
 								);
 							}
 
-							return;
+							return false;
 						}
 
 						break;
@@ -367,11 +399,12 @@ public class DesignerPaletteUse : MonoBehaviour
 							);
 						}
 
-						return;
+						return false;
 				}
 			}
 
 			Builder.AddBlock(blockSpec, rootPosition, rotation);
+			return true;
 		}
 		catch (DuplicateBlockError error)
 		{
@@ -382,14 +415,17 @@ public class DesignerPaletteUse : MonoBehaviour
 					"Block overlap"
 				);
 			}
+
+			return false;
 		}
 	}
 
-	private void TryEraseBlock(Vector2Int position, bool showFailText)
+	private bool TryEraseBlock(Vector2Int position, bool showFailText)
 	{
 		try
 		{
 			Builder.RemoveBlock(position);
+			return true;
 		}
 		catch (EmptyBlockError error)
 		{
@@ -400,6 +436,8 @@ public class DesignerPaletteUse : MonoBehaviour
 					"Nothing to erase"
 				);
 			}
+
+			return false;
 		}
 		catch (BlockNotErasable error)
 		{
@@ -411,6 +449,8 @@ public class DesignerPaletteUse : MonoBehaviour
 					$"{blockName} cannot be erased"
 				);
 			}
+
+			return false;
 		}
 	}
 

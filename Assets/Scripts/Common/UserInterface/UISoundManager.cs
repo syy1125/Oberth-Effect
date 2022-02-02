@@ -8,7 +8,7 @@ namespace Syy1125.OberthEffect.Common.UserInterface
 public class UISoundManager : MonoBehaviour
 {
 	public static UISoundManager Instance { get; private set; }
-	
+
 	private AudioSource _audio;
 
 	private void Awake()
@@ -35,9 +35,9 @@ public class UISoundManager : MonoBehaviour
 		}
 	}
 
-	public void PlaySound(AudioClip clip)
+	public void PlaySound(AudioClip clip, float volumeScale = 1f)
 	{
-		_audio.PlayOneShot(clip);
+		_audio.PlayOneShot(clip, volumeScale);
 	}
 }
 }
