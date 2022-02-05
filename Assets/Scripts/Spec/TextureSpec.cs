@@ -2,6 +2,7 @@
 using System.IO;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
@@ -11,6 +12,7 @@ public struct TextureSpec : ICustomChecksum
 {
 	[IdField]
 	public string TextureId;
+	[ValidateFilePath]
 	public string ImagePath;
 	public Vector2 Pivot;
 	public float PixelsPerUnit;

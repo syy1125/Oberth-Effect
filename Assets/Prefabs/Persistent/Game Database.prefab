@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 117555452602271285}
   - component: {fileID: 6531937078527960719}
   - component: {fileID: 6328443150759379133}
+  - component: {fileID: 6502072993870983696}
   - component: {fileID: 4199980601329637369}
   - component: {fileID: 7791161910311404772}
   - component: {fileID: 6971351197917937370}
@@ -76,6 +77,18 @@ MonoBehaviour:
   VehicleBlockMaterial: {fileID: 2100000, guid: d3dadea20e3f7a94d825499e0c8d81da, type: 2}
   DefaultParticleMaterial: {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   DefaultLineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &6502072993870983696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687548951508394711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0004120cfddd4a75bfffcb08e3b1f791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4199980601329637369
 MonoBehaviour:
   m_ObjectHideFlags: 0

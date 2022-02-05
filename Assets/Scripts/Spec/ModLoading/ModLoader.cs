@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Security.Cryptography;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
@@ -41,6 +42,7 @@ public static class ModLoader
 	internal static ModLoadingPipeline<BlockSpec> BlockPipeline;
 	internal static ModLoadingPipeline<BlockCategorySpec> BlockCategoryPipeline;
 	internal static ModLoadingPipeline<TextureSpec> TexturePipeline;
+	internal static ModLoadingPipeline<SoundSpec> SoundPipeline;
 	internal static ModLoadingPipeline<VehicleResourceSpec> VehicleResourcePipeline;
 	internal static ModLoadingPipeline<ControlGroupSpec> ControlGroupPipeline;
 
@@ -53,25 +55,36 @@ public static class ModLoader
 		BlockPipeline = new ModLoadingPipeline<BlockSpec>(_modsRoot, "Blocks");
 		BlockCategoryPipeline = new ModLoadingPipeline<BlockCategorySpec>(_modsRoot, "Block Categories");
 		TexturePipeline = new ModLoadingPipeline<TextureSpec>(
-			_modsRoot, "Textures", (filePath, document) =>
-			{
-				var mappingNode = (YamlMappingNode) document.RootNode;
-
-				if (mappingNode.Children.TryGetValue(nameof(TextureSpec.ImagePath), out YamlNode node))
-				{
-					mappingNode.Children[nameof(TextureSpec.ImagePath)] = new YamlScalarNode(
-						Path.Combine(
-							Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
-							((YamlScalarNode) node).Value
-						)
-					);
-				}
-			}
+			_modsRoot, "Textures",
+			ResolveAbsolutePaths(nameof(TextureSpec.ImagePath))
+		);
+		SoundPipeline = new ModLoadingPipeline<SoundSpec>(
+			_modsRoot, "Sounds",
+			ResolveAbsolutePaths(nameof(SoundSpec.SoundPath))
 		);
 		VehicleResourcePipeline = new ModLoadingPipeline<VehicleResourceSpec>(_modsRoot, "Vehicle Resources");
 		ControlGroupPipeline = new ModLoadingPipeline<ControlGroupSpec>(_modsRoot, "Control Groups");
 
 		Initialized = true;
+	}
+
+	private static Action<string, YamlDocument> ResolveAbsolutePaths(params string[] fields)
+	{
+		return (filePath, document) =>
+		{
+			var mappingNode = (YamlMappingNode) document.RootNode;
+
+			foreach (string field in fields)
+			{
+				if (mappingNode.Children.TryGetValue(field, out YamlNode node))
+				{
+					mappingNode.Children[field] = Path.Combine(
+						Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
+						((YamlScalarNode) node).Value
+					);
+				}
+			}
+		};
 	}
 
 
@@ -241,6 +254,7 @@ public static class ModLoader
 			BlockPipeline.LoadModContent(mod);
 			BlockCategoryPipeline.LoadModContent(mod);
 			TexturePipeline.LoadModContent(mod);
+			SoundPipeline.LoadModContent(mod);
 			VehicleResourcePipeline.LoadModContent(mod);
 			ControlGroupPipeline.LoadModContent(mod);
 		}
@@ -257,6 +271,7 @@ public static class ModLoader
 		BlockPipeline.ParseSpecInstances(deserializer, OnParseProgress);
 		BlockCategoryPipeline.ParseSpecInstances(deserializer, OnParseProgress);
 		TexturePipeline.ParseSpecInstances(deserializer, OnParseProgress);
+		SoundPipeline.ParseSpecInstances(deserializer, OnParseProgress);
 		VehicleResourcePipeline.ParseSpecInstances(deserializer, OnParseProgress);
 		ControlGroupPipeline.ParseSpecInstances(deserializer, OnParseProgress);
 	}
@@ -299,6 +314,7 @@ public static class ModLoader
 		BlockPipeline.ValidateResults();
 		BlockCategoryPipeline.ValidateResults();
 		TexturePipeline.ValidateResults();
+		SoundPipeline.ValidateResults();
 		VehicleResourcePipeline.ValidateResults();
 		ControlGroupPipeline.ValidateResults();
 	}
@@ -319,6 +335,7 @@ public static class ModLoader
 		ushort blockSpecChecksum = GetChecksum(BlockPipeline.Results, level);
 		ushort blockCategorySpecChecksum = GetChecksum(BlockCategoryPipeline.Results, level);
 		ushort textureSpecChecksum = GetChecksum(TexturePipeline.Results, level);
+		ushort soundChecksum = GetChecksum(SoundPipeline.Results, level);
 		ushort vehicleResourceChecksum = GetChecksum(VehicleResourcePipeline.Results, level);
 		ushort controlGroupChecksum = GetChecksum(ControlGroupPipeline.Results, level);
 
@@ -327,6 +344,7 @@ public static class ModLoader
 			blockSpecChecksum
 			+ blockCategorySpecChecksum
 			+ textureSpecChecksum
+			+ soundChecksum
 			+ vehicleResourceChecksum
 			+ controlGroupChecksum
 		);

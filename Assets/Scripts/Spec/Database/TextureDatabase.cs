@@ -35,7 +35,17 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 	{
 		_specs = ModLoader.TexturePipeline.Results
 			.ToDictionary(instance => instance.Spec.TextureId, instance => instance);
+
+		if (_sprites != null)
+		{
+			foreach (Sprite sprite in _sprites.Values)
+			{
+				Destroy(sprite);
+			}
+		}
+
 		_sprites = new Dictionary<string, Sprite>();
+
 		Debug.Log($"Loaded {_specs.Count} texture specs");
 	}
 
@@ -44,6 +54,14 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 		if (Instance == this)
 		{
 			Instance = null;
+			
+			if (_sprites != null)
+			{
+				foreach (Sprite sprite in _sprites.Values)
+				{
+					Destroy(sprite);
+				}
+			}
 		}
 	}
 

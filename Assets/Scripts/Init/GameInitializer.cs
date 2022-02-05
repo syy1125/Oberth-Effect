@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Spec.Database;
@@ -103,6 +102,11 @@ public class GameInitializer : MonoBehaviour
 
 		Task textureTask = Task.Run(TextureDatabase.Instance.LoadTextures);
 		yield return new WaitUntil(() => textureTask.IsCompleted);
+
+		LoadText.text = "Loading sounds";
+		LoadProgress.Progress = null;
+
+		yield return StartCoroutine(SoundDatabase.Instance.LoadAudioClips());
 
 		LoadText.text = "Finalizing game data";
 		LoadProgress.Progress = null;
