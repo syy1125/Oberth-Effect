@@ -169,6 +169,10 @@
                             "type": "number",
                             "description": "Maximum force of the engine in the up direction."
                         },
+                        "ThrustOrigin": {
+                            "$ref": "Vector2Schema.json",
+                            "description": "The local position where the thrust force should be applied."
+                        },
                         "MaxResourceUse": {
                             "type": "object",
                             "patternProperties": {

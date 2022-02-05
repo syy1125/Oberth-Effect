@@ -4,6 +4,7 @@ using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec.Block.Propulsion
 {
@@ -11,6 +12,7 @@ public class LinearEngineSpec : ICustomValidation
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxForce;
+	public Vector2 ThrustOrigin;
 	public Dictionary<string, float> MaxResourceUse;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxThrottleRate;

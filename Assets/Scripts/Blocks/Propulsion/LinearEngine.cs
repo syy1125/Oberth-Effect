@@ -16,6 +16,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	public const string CLASS_KEY = "LinearEngine";
 
 	private float _maxThrottleRate;
+	private Vector2 _thrustOrigin;
 
 	private ParticleSystemWrapper[] _particles;
 
@@ -32,6 +33,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		MaxResourceUse = spec.MaxResourceUse;
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_maxThrottleRate = spec.MaxThrottleRate;
+		_thrustOrigin = spec.ThrustOrigin;
 
 		if (spec.Particles != null)
 		{
@@ -118,13 +120,21 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 		if (Body != null && IsMine)
 		{
-			Body.AddForceAtPosition(transform.up * (MaxForce * trueThrustScale), transform.position);
+			Body.AddForceAtPosition(
+				transform.up * (MaxForce * trueThrustScale),
+				transform.TransformPoint(_thrustOrigin)
+			);
 		}
 
 		if (_particles != null)
 		{
 			ParticleSystemWrapper.BatchScaleThrustParticles(_particles, trueThrustScale);
 		}
+	}
+
+	public override Vector2 GetPropulsionForceOrigin()
+	{
+		return _thrustOrigin;
 	}
 
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)

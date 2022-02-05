@@ -97,7 +97,9 @@ public abstract class AbstractThrusterBase :
 		}
 
 		localUp.Normalize();
-		Vector3 localPosition = Body.transform.InverseTransformPoint(transform.position) - (Vector3) Body.centerOfMass;
+		Vector3 localPosition =
+			Body.transform.InverseTransformPoint(transform.TransformPoint(GetPropulsionForceOrigin()))
+			- (Vector3) Body.centerOfMass;
 
 		forwardBackResponse = localUp.y;
 		strafeResponse = localUp.x;
