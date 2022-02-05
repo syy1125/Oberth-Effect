@@ -1,5 +1,6 @@
 ﻿using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec
@@ -13,6 +14,7 @@ public struct VehicleResourceSpec
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public string ShortName;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	[ValidateColor(false)]
 	public string DisplayColor;
 
 	public string WrapColorTag(string content) => $"<color=\"{DisplayColor}\">{content}</color>";

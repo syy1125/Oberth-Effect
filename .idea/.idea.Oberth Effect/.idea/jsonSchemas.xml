@@ -103,6 +103,30 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="Vehicle Resource Spec">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="Vehicle Resource Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/VehicleResourceSpecSchema.json" />
+              <option name="schemaVersion" value="JSON Schema version 7" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Vehicle Resources/**/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Vehicle Resources/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
       </map>
     </state>
   </component>

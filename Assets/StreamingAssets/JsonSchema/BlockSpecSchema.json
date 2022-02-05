@@ -278,7 +278,7 @@
             "properties": {
                 "AlwaysExplode": {
                     "type": "boolean",
-                    "description": "Informative only. Describes if the block will always explode at the described strength."
+                    "description": "For UI information only. Describes if the block will always explode at the described strength."
                 },
                 "ActivationCondition": {
                     "$ref": "ControlConditionSpecSchema.json"
