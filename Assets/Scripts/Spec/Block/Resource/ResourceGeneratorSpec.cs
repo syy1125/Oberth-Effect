@@ -12,6 +12,10 @@ public class ResourceGeneratorSpec : ICustomValidation
 	public Dictionary<string, float> GenerationRate;
 	public ControlConditionSpec ActivationCondition;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundReferenceSpec StartSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundReferenceSpec StopSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public RendererSpec[] ActivationRenderers;
 
 	public void Validate(List<string> path, List<string> errors)

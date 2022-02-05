@@ -46,6 +46,10 @@ Resource:
     ActivationCondition:
       ControlGroupId: OberthEffect/FusionReactor
       MatchValues: [ On ]
+    StartSound:
+      SoundId: OberthEffect/FusionReactorStart
+    StopSound:
+      SoundId: OberthEffect/FusionReactorStop
     ActivationRenderers:
       - TextureId: OberthEffect/FusionReactorRing
         Offset: { X: 0.5, Y: 0.5 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Init
 {
-// A debug counterpart to GameInitializer. It does everything synchronously in Awake.
+// A debug counterpart to GameInitializer. It does most things synchronously in Awake.
 public class DebugGameInitializer : MonoBehaviour
 {
 	private bool _debugInit;
@@ -35,6 +35,7 @@ public class DebugGameInitializer : MonoBehaviour
 		{
 			KeybindManager.Instance.QuickLoadKeybinds();
 			AudioMixerManager.Instance.LoadVolumes();
+			StartCoroutine(SoundDatabase.Instance.LoadAudioClips());
 		}
 	}
 }

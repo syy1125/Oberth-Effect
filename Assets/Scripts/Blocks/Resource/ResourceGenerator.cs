@@ -20,7 +20,13 @@ public class ResourceGenerator :
 	private Dictionary<string, float> _consumptionRate;
 	private Dictionary<string, float> _generationRate;
 	private IControlCondition _activationCondition;
+	private AudioClip _startSound;
+	private float _startSoundVolume;
+	private AudioClip _stopSound;
+	private float _stopSoundVolume;
+
 	private Transform _activeRenderersParent;
+	private AudioSource _audioSource;
 
 	private bool _active = true;
 	private float _satisfaction;
@@ -42,6 +48,28 @@ public class ResourceGenerator :
 		if (provider != null)
 		{
 			_active = provider.IsConditionTrue(_activationCondition);
+		}
+
+		if (spec.StartSound != null)
+		{
+			_startSound = SoundDatabase.Instance.ContainsId(spec.StartSound.SoundId)
+				? SoundDatabase.Instance.GetAudioClip(spec.StartSound.SoundId)
+				: null;
+			_startSoundVolume = spec.StartSound.Volume;
+		}
+
+		if (spec.StopSound != null)
+		{
+			_stopSound = SoundDatabase.Instance.ContainsId(spec.StopSound.SoundId)
+				? SoundDatabase.Instance.GetAudioClip(spec.StopSound.SoundId)
+				: null;
+			_stopSoundVolume = spec.StopSound.Volume;
+		}
+
+		if (_startSound != null || _stopSound != null)
+		{
+			_audioSource = gameObject.AddComponent<AudioSource>();
+			_audioSource.outputAudioMixerGroup = SoundDatabase.Instance.BlockSoundGroup;
 		}
 
 		if (spec.ActivationRenderers != null)
@@ -70,11 +98,27 @@ public class ResourceGenerator :
 
 	public void OnControlGroupsChanged(IControlConditionProvider provider)
 	{
-		_active = provider.IsConditionTrue(_activationCondition);
+		bool active = provider.IsConditionTrue(_activationCondition);
 
-		if (_activeRenderersParent != null)
+		if (active != _active)
 		{
-			_activeRenderersParent.gameObject.SetActive(_active);
+			_active = active;
+
+			if (_active && _startSound != null)
+			{
+				if (_audioSource.isPlaying) _audioSource.Stop();
+				_audioSource.PlayOneShot(_startSound, _startSoundVolume);
+			}
+			else if (!_active && _stopSound != null)
+			{
+				if (_audioSource.isPlaying) _audioSource.Stop();
+				_audioSource.PlayOneShot(_stopSound, _stopSoundVolume);
+			}
+
+			if (_activeRenderersParent != null)
+			{
+				_activeRenderersParent.gameObject.SetActive(_active);
+			}
 		}
 	}
 

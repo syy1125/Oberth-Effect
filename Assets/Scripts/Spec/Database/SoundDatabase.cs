@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Networking;
 
 namespace Syy1125.OberthEffect.Spec.Database
@@ -11,6 +12,8 @@ namespace Syy1125.OberthEffect.Spec.Database
 public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 {
 	public static SoundDatabase Instance { get; private set; }
+
+	public AudioMixerGroup BlockSoundGroup;
 
 	private Dictionary<string, SpecInstance<SoundSpec>> _specs;
 	private Dictionary<string, AudioClip> _sounds;
@@ -98,6 +101,11 @@ public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 		yield return request.SendWebRequest();
 
 		_sounds[soundId] = DownloadHandlerAudioClip.GetContent(request);
+	}
+
+	public AudioClip GetAudioClip(string soundId)
+	{
+		return _sounds.TryGetValue(soundId, out AudioClip clip) ? clip : null;
 	}
 }
 }

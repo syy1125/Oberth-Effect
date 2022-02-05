@@ -1,0 +1,12 @@
+﻿{
+    "$id": "SoundReferenceSpecSchema",
+    "type": "object",
+    "properties": {
+        "SoundId": { "type": "string" },
+        "Volume": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        }
+    }
+}

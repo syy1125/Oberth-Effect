@@ -152,6 +152,8 @@
                         "ActivationCondition": {
                             "$ref": "ControlConditionSpecSchema.json"
                         },
+                        "StartSound": { "$ref": "SoundReferenceSpecSchema.json" },
+                        "StopSound": { "$ref": "SoundReferenceSpecSchema.json" },
                         "ActivationRenderers": {
                             "$ref": "RendererSpecArraySchema.json"
                         }

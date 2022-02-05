@@ -7807,6 +7807,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Game Database
       objectReference: {fileID: 0}
+    - target: {fileID: 6502072993870983696, guid: a06af5311d941704f925f04c0af20333, type: 3}
+      propertyPath: BlockSoundGroup
+      value: 
+      objectReference: {fileID: 6952895644121704121, guid: 7998df256a1789f48a33126ed63c4c53, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a06af5311d941704f925f04c0af20333, type: 3}
 --- !u!1 &1325757350

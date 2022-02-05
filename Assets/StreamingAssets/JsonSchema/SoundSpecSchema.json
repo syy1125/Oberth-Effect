@@ -1,0 +1,9 @@
+﻿{
+    "$id": "SoundSpecSchema",
+    "type": "object",
+    "required": ["SoundId"],
+    "properties": {
+        "SoundId": { "type": "string" },
+        "SoundPath": { "type": "string" }
+    }
+}

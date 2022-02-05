@@ -306,6 +306,8 @@ public static class ModLoader
 			);
 		ValidateTextureIdAttribute.ValidIds =
 			new HashSet<string>(TexturePipeline.Results.Select(instance => instance.Spec.TextureId));
+		ValidateSoundIdAttribute.ValidIds =
+			new HashSet<string>(SoundPipeline.Results.Select(instance => instance.Spec.SoundId));
 		ValidateVehicleResourceIdAttribute.ValidIds =
 			new HashSet<string>(VehicleResourcePipeline.Results.Select(instance => instance.Spec.ResourceId));
 		ValidateControlGroupIdAttribute.ValidIds =

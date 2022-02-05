@@ -80,6 +80,24 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="Sound Spec">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="Sound Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/SoundSpecSchema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Sounds/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="Texture Spec">
           <value>
             <SchemaInfo>
