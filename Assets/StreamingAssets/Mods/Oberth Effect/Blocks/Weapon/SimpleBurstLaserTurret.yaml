@@ -54,6 +54,8 @@ TurretedWeapon:
       Strength: 0.05
       Duration: 0.1
       DecayCurve: Linear
+    FireSound:
+      SoundId: OberthEffect/BurstLaser
     HitParticles:
       - Direction: { X: 0, Y: -1 }
         Size: 0.1

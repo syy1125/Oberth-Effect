@@ -52,24 +52,19 @@ public class ResourceGenerator :
 
 		if (spec.StartSound != null)
 		{
-			_startSound = SoundDatabase.Instance.ContainsId(spec.StartSound.SoundId)
-				? SoundDatabase.Instance.GetAudioClip(spec.StartSound.SoundId)
-				: null;
+			_startSound = SoundDatabase.Instance.GetAudioClip(spec.StartSound.SoundId);
 			_startSoundVolume = spec.StartSound.Volume;
 		}
 
 		if (spec.StopSound != null)
 		{
-			_stopSound = SoundDatabase.Instance.ContainsId(spec.StopSound.SoundId)
-				? SoundDatabase.Instance.GetAudioClip(spec.StopSound.SoundId)
-				: null;
+			_stopSound = SoundDatabase.Instance.GetAudioClip(spec.StopSound.SoundId);
 			_stopSoundVolume = spec.StopSound.Volume;
 		}
 
 		if (_startSound != null || _stopSound != null)
 		{
-			_audioSource = gameObject.AddComponent<AudioSource>();
-			_audioSource.outputAudioMixerGroup = SoundDatabase.Instance.BlockSoundGroup;
+			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
 		}
 
 		if (spec.ActivationRenderers != null)

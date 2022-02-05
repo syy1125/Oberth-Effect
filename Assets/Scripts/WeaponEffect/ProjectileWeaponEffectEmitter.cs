@@ -38,6 +38,10 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private BallisticProjectileConfig _projectileConfig;
 	private Dictionary<string, float> _reloadResourceUse;
 
+	private AudioSource _audioSource;
+	private AudioClip _fireSound;
+	private float _fireSoundVolume;
+
 	private Vector2? _aimPoint;
 	private float _reloadProgress;
 	private float _resourceSatisfaction;
@@ -85,6 +89,13 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			_projectileConfig.MaxHealth = spec.PointDefenseTarget.MaxHealth;
 			_projectileConfig.ArmorValue = spec.PointDefenseTarget.ArmorValue;
 			_projectileConfig.HealthDamageScaling = spec.HealthDamageScaling;
+		}
+
+		if (spec.FireSound != null)
+		{
+			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
+			_fireSound = SoundDatabase.Instance.GetAudioClip(spec.FireSound.SoundId);
+			_fireSoundVolume = spec.FireSound.Volume;
 		}
 
 		_reloadResourceUse = spec.MaxResourceUse;
@@ -310,6 +321,18 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				_screenShake.Strength, _screenShake.Duration, _screenShake.DecayCurve
 			);
 		}
+
+		if (_fireSound != null)
+		{
+			PlayFireSound();
+			GetComponentInParent<IWeaponEffectRpcRelay>()
+				.InvokeWeaponEffectRpc(nameof(PlayFireSound), RpcTarget.Others);
+		}
+	}
+
+	public void PlayFireSound()
+	{
+		_audioSource.PlayOneShot(_fireSound, _fireSoundVolume);
 	}
 }
 }

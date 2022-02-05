@@ -107,5 +107,12 @@ public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 	{
 		return _sounds.TryGetValue(soundId, out AudioClip clip) ? clip : null;
 	}
+
+	public AudioSource CreateBlockAudioSource(GameObject go)
+	{
+		var audioSource = go.AddComponent<AudioSource>();
+		audioSource.outputAudioMixerGroup = BlockSoundGroup;
+		return audioSource;
+	}
 }
 }

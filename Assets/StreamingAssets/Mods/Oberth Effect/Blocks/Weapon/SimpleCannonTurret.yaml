@@ -53,6 +53,8 @@ TurretedWeapon:
       Strength: 0.2
       Duration: 0.4
       DecayCurve: Quadratic
+    FireSound: 
+      SoundId: OberthEffect/Cannon
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.1, Y: 0.2 }

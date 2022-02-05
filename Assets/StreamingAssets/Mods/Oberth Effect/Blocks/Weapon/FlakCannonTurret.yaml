@@ -54,6 +54,9 @@ TurretedWeapon:
       Strength: 0.1
       Duration: 0.1
       DecayCurve: Linear
+    FireSound: 
+      SoundId: OberthEffect/Flak
+      Volume: 0.6
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.05, Y: 0.1 }

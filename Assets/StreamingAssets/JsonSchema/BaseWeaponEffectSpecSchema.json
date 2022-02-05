@@ -36,6 +36,9 @@
                 "DecayCurve": { "enum": ["Linear", "Quadratic", "Cubic"] }
             }
         },
+        "FireSound": {
+            "$ref": "SoundReferenceSpecSchema.json"
+        },
         "FireParticles": {
             "$ref": "ParticleSystemSpecArraySchema.json"
         }

@@ -37,6 +37,9 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private float _resourceSatisfaction;
 
 	private ScreenShakeSpec _screenShake;
+	private AudioSource _audioSource;
+	private AudioClip _fireSound;
+	private float _fireSoundVolume;
 
 	// State
 	private int _beamTicksRemaining;
@@ -82,6 +85,13 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_visual = beamEffectObject.AddComponent<BeamWeaponVisual>();
 		_visual.Init(beamWidth, beamColor, spec.HitParticles);
+
+		if (spec.FireSound != null)
+		{
+			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
+			_fireSound = SoundDatabase.Instance.GetAudioClip(spec.FireSound.SoundId);
+			_fireSoundVolume = spec.FireSound.Volume;
+		}
 
 		_reloadResourceUse = spec.MaxResourceUse;
 		_screenShake = spec.ScreenShake;
@@ -173,9 +183,9 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			{
 				_reloadProgress -= _reloadTime;
 
-				StartBeamDuration();
+				StartBeamFiring();
 				GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(
-					nameof(StartBeamDuration), RpcTarget.Others
+					nameof(StartBeamFiring), RpcTarget.Others
 				);
 			}
 
@@ -294,10 +304,15 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		}
 	}
 
-	public void StartBeamDuration()
+	public void StartBeamFiring()
 	{
 		if (_preciseDuration) _beamTicksRemaining = _durationTicks;
 		else _beamSecondsRemaining = _durationSeconds;
+
+		if (_fireSound != null)
+		{
+			_audioSource.PlayOneShot(_fireSound, _fireSoundVolume);
+		}
 	}
 }
 }

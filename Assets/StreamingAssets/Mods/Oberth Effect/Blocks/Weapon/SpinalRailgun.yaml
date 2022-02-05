@@ -51,6 +51,8 @@ FixedWeapon:
       Strength: 1.5
       Duration: 0.4
       DecayCurve: Cubic
+    FireSound: 
+      SoundId: OberthEffect/Railgun
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.15, Y: 0.3 }

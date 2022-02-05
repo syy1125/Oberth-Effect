@@ -25,6 +25,8 @@ public abstract class AbstractWeaponEffectSpec : ICustomValidation
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ScreenShakeSpec ScreenShake;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundReferenceSpec FireSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] FireParticles;
 
 	public virtual void Validate(List<string> path, List<string> errors)
