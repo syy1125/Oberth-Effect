@@ -10,6 +10,7 @@ public class AlertDisplay : MonoBehaviour
 	public VehicleWeaponControl WeaponControl;
 	public Text MissileCountDisplay;
 	public Text MissileTimerDisplay;
+	public AudioSource AlertAudio;
 
 	private void LateUpdate()
 	{
@@ -29,6 +30,7 @@ public class AlertDisplay : MonoBehaviour
 		{
 			MissileCountDisplay.gameObject.SetActive(false);
 			MissileTimerDisplay.gameObject.SetActive(false);
+			AlertAudio.mute = true;
 		}
 		else
 		{
@@ -39,6 +41,7 @@ public class AlertDisplay : MonoBehaviour
 				? $"< {WeaponControl.IncomingMissiles.Count} Incoming Missiles >"
 				: "< Incoming Missile >";
 			MissileCountDisplay.color = textColor;
+			AlertAudio.mute = false;
 
 			float? minTime = null;
 
@@ -60,10 +63,14 @@ public class AlertDisplay : MonoBehaviour
 				MissileTimerDisplay.gameObject.SetActive(true);
 				MissileTimerDisplay.text = $"< Time to Impact {minTime.Value:0.00}s >";
 				MissileTimerDisplay.color = textColor;
+
+				AlertAudio.pitch = minTime.Value < 1.5f ? 1.4f : 1f;
 			}
 			else
 			{
 				MissileTimerDisplay.gameObject.SetActive(false);
+
+				AlertAudio.pitch = 1f;
 			}
 		}
 	}

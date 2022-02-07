@@ -10,6 +10,7 @@ public class OptionsScreen : MonoBehaviour
 {
 	public PercentageSlider MasterVolumeSlider;
 	public PercentageSlider UIVolumeSlider;
+	public PercentageSlider GameVolumeSlider;
 	public PercentageSlider BlocksVolumeSlider;
 
 	public SwitchSelect UnitModeSwitch;
@@ -23,6 +24,9 @@ public class OptionsScreen : MonoBehaviour
 
 		UIVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.UI_VOLUME);
 		UIVolumeSlider.OnChange.AddListener(HandleUIVolumeChange);
+
+		GameVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.GAME_SFX_VOLUME);
+		GameVolumeSlider.OnChange.AddListener(HandleGameVolumeChange);
 
 		BlocksVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.BLOCKS_VOLUME);
 		BlocksVolumeSlider.OnChange.AddListener(HandleBlocksVolumeChange);
@@ -47,6 +51,11 @@ public class OptionsScreen : MonoBehaviour
 	private void HandleUIVolumeChange(float volume)
 	{
 		AudioMixerManager.Instance.SetVolume(PropertyKeys.UI_VOLUME, volume);
+	}
+
+	private void HandleGameVolumeChange(float volume)
+	{
+		AudioMixerManager.Instance.SetVolume(PropertyKeys.GAME_SFX_VOLUME, volume);
 	}
 
 	private void HandleBlocksVolumeChange(float volume)
