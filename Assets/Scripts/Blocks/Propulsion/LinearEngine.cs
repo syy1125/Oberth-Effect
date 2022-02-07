@@ -15,7 +15,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "LinearEngine";
 
-	private float _maxThrottleRate;
+	private float _throttleRate;
 	private Vector2 _thrustOrigin;
 
 	private AudioSource _thrustSound;
@@ -28,6 +28,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	private float _rotateResponse;
 
 	private float _targetThrustScale;
+	private float _trueThrustScale;
 	private Vector3 _localUp;
 
 	public void LoadSpec(LinearEngineSpec spec)
@@ -35,7 +36,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
-		_maxThrottleRate = spec.MaxThrottleRate;
+		_throttleRate = spec.MaxThrottleRate;
 		_thrustOrigin = spec.ThrustOrigin;
 
 		if (spec.ThrustSound != null)
@@ -113,46 +114,56 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 			rawResponse += _rotateResponse * rotate;
 		}
 
-		float trueThrustStrength = _targetThrustScale * Satisfaction;
-		_targetThrustScale = Mathf.Clamp01(
-			Mathf.Min(rawResponse, trueThrustStrength + _maxThrottleRate * Time.fixedDeltaTime)
-		);
+		_targetThrustScale = Mathf.Clamp01(rawResponse);
 	}
 
 	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
 		ResourceRequests.Clear();
 
-		foreach (KeyValuePair<string, float> entry in MaxResourceUse)
+		if (!Mathf.Approximately(_targetThrustScale, 0f))
 		{
-			ResourceRequests.Add(entry.Key, entry.Value * _targetThrustScale);
+			foreach (KeyValuePair<string, float> entry in MaxResourceUse)
+			{
+				ResourceRequests.Add(entry.Key, entry.Value * _targetThrustScale);
+			}
 		}
 
 		return ResourceRequests;
+	}
+
+	public override float SatisfyResourceRequestAtLevel(float level)
+	{
+		float maxSatisfaction = Mathf.Approximately(_targetThrustScale, 0f)
+			? 0f
+			: Mathf.Clamp01(_trueThrustScale + _throttleRate * Time.fixedDeltaTime) / _targetThrustScale;
+
+		Satisfaction = Mathf.Min(level, maxSatisfaction);
+		_trueThrustScale = _targetThrustScale * Satisfaction;
+
+		return Satisfaction;
 	}
 
 	private void FixedUpdate()
 	{
 		if (IsSimulation())
 		{
-			float trueThrustScale = _targetThrustScale * Satisfaction;
-
 			if (IsMine)
 			{
 				Body.AddForceAtPosition(
-					transform.up * (MaxForce * trueThrustScale),
+					transform.up * (MaxForce * _trueThrustScale),
 					transform.TransformPoint(_thrustOrigin)
 				);
 			}
 
 			if (_thrustSound != null)
 			{
-				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, trueThrustScale);
+				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, _trueThrustScale);
 			}
 
 			if (_particles != null)
 			{
-				ParticleSystemWrapper.BatchScaleThrustParticles(_particles, trueThrustScale);
+				ParticleSystemWrapper.BatchScaleThrustParticles(_particles, _trueThrustScale);
 			}
 		}
 	}
@@ -180,7 +191,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 				.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)));
 		}
 
-		builder.Append($"  Throttle response rate {_maxThrottleRate * 100:F0}%/s");
+		builder.Append($"  Throttle response rate {_throttleRate * 100:F0}%/s");
 
 		return builder.ToString();
 	}

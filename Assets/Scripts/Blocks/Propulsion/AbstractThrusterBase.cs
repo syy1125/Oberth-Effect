@@ -84,9 +84,10 @@ public abstract class AbstractThrusterBase :
 
 	public abstract IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
 
-	public void SatisfyResourceRequestAtLevel(float level)
+	public virtual float SatisfyResourceRequestAtLevel(float level)
 	{
 		Satisfaction = level;
+		return Satisfaction;
 	}
 
 	protected void CalculateResponse(

@@ -246,9 +246,10 @@ public abstract class AbstractWeapon :
 		return WeaponEmitter.GetResourceConsumptionRateRequest();
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
+	public float SatisfyResourceRequestAtLevel(float level)
 	{
 		WeaponEmitter.SatisfyResourceRequestAtLevel(level);
+		return level;
 	}
 
 	public float GetMaxRange()

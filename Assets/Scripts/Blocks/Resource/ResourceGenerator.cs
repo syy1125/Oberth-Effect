@@ -135,9 +135,10 @@ public class ResourceGenerator :
 		return _active ? _consumptionRate : null;
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
+	public float SatisfyResourceRequestAtLevel(float level)
 	{
 		_satisfaction = level;
+		return _satisfaction;
 	}
 
 	public IReadOnlyDictionary<string, float> GetGenerationRate()

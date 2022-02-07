@@ -198,15 +198,15 @@ public class VehicleResourceManager :
 					.ToArray()
 			);
 
-			if (consumeResources && satisfactionLevel > 0f)
+			float consumptionLevel = consumer.SatisfyResourceRequestAtLevel(satisfactionLevel);
+
+			if (consumeResources && consumptionLevel > 0f)
 			{
 				foreach (KeyValuePair<string, float> pair in request)
 				{
 					_currentResources[pair.Key] -= pair.Value * satisfactionLevel * Time.fixedDeltaTime;
 				}
 			}
-
-			consumer.SatisfyResourceRequestAtLevel(satisfactionLevel);
 		}
 	}
 

@@ -9,6 +9,7 @@ public interface IResourceConsumer
 {
 	IReadOnlyDictionary<string, float> GetMaxResourceUseRate();
 	IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest();
-	void SatisfyResourceRequestAtLevel(float level);
+	/// <returns>Actual consumption level of resources</returns>
+	float SatisfyResourceRequestAtLevel(float level);
 }
 }

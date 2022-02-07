@@ -103,9 +103,10 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 		return _resourceRequests;
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
+	public float SatisfyResourceRequestAtLevel(float level)
 	{
 		_satisfaction = level;
+		return _satisfaction;
 	}
 
 	private IEnumerator LateFixedUpdate()
