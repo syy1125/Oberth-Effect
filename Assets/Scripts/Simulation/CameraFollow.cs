@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Lib.Pid;
+﻿using System.Collections;
+using Syy1125.OberthEffect.Lib.Pid;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
@@ -26,21 +27,33 @@ public class CameraFollow : MonoBehaviour
 		_pid = new Vector2Pid(PositionPidConfig);
 	}
 
+	private void Start()
+	{
+		StartCoroutine(LateFixedUpdate());
+	}
+
 	public void EnterInitMode()
 	{
 		_initTimer = InitTime;
 	}
 
-	private void FixedUpdate()
+	private IEnumerator LateFixedUpdate()
 	{
-		if (Target == null) return;
-
-		if (_initTimer <= 0 && UsePid)
+		while (true)
 		{
-			Vector2 offset = _targetPosition - (Vector2) transform.position;
-			_pid.Update(offset, Time.fixedDeltaTime);
-			_velocity += _pid.Output * Time.fixedDeltaTime;
-			transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
+			yield return new WaitForFixedUpdate();
+
+			if (!isActiveAndEnabled) continue;
+
+			if (Target == null) continue;
+
+			if (_initTimer <= 0 && UsePid)
+			{
+				Vector2 offset = _targetPosition - (Vector2) transform.position;
+				_pid.Update(offset, Time.fixedDeltaTime);
+				_velocity += _pid.Output * Time.fixedDeltaTime;
+				transform.position += new Vector3(_velocity.x, _velocity.y) * Time.fixedDeltaTime;
+			}
 		}
 	}
 
