@@ -18,6 +18,8 @@ public class LinearEngineSpec : ICustomValidation
 	public float MaxThrottleRate;
 	public ControlConditionSpec ActivationCondition;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundCurveSpec ThrustSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] Particles;
 
 	public void Validate(List<string> path, List<string> errors)

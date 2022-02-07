@@ -17,6 +17,10 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "OmniThruster";
 
+	private AudioSource _thrustSound;
+	private float _minVolume;
+	private float _maxVolume;
+
 	private Transform _upParticleRoot;
 	private ParticleSystemWrapper[] _upParticles;
 	private Transform _downParticleRoot;
@@ -38,6 +42,17 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
+
+		if (spec.ThrustSound != null)
+		{
+			_thrustSound = gameObject.AddComponent<AudioSource>();
+			_minVolume = spec.ThrustSound.MinVolume;
+			_maxVolume = spec.ThrustSound.MaxVolume;
+
+			_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+			_thrustSound.volume = _minVolume;
+			_thrustSound.loop = true;
+		}
 
 		if (spec.Particles != null)
 		{
@@ -81,18 +96,21 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		base.Start();
 
-		if (Body != null)
+		if (IsSimulation())
 		{
 			_localRight = Body.transform.InverseTransformDirection(transform.right);
 			_localUp = Body.transform.InverseTransformDirection(transform.up);
+
+			if (_thrustSound != null)
+			{
+				_thrustSound.Play();
+			}
 
 			StartParticleSystems(_upParticles);
 			StartParticleSystems(_downParticles);
 			StartParticleSystems(_leftParticles);
 			StartParticleSystems(_rightParticles);
 		}
-
-		StartCoroutine(LateFixedUpdate());
 	}
 
 	private static void StartParticleSystems(ParticleSystemWrapper[] particleSystems)
@@ -154,18 +172,26 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 		return ResourceRequests;
 	}
 
-	private IEnumerator LateFixedUpdate()
+	private void FixedUpdate()
 	{
-		yield return new WaitForFixedUpdate();
+		Vector2 overallResponse = _response * Satisfaction;
 
-		while (isActiveAndEnabled)
+		if (IsSimulation())
 		{
-			Vector2 overallResponse = _response * Satisfaction;
-
-			if (Body != null && IsMine)
+			if (IsMine)
 			{
 				Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
 			}
+
+			if (_thrustSound != null)
+			{
+				float volume = Mathf.Lerp(
+					_minVolume, _maxVolume,
+					(Mathf.Abs(overallResponse.x) + Mathf.Abs(overallResponse.y)) / 2
+				);
+				_thrustSound.volume = volume;
+			}
+
 
 			if (overallResponse.x > 0)
 			{
@@ -188,8 +214,6 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 				SetParticlesStrength(_upParticles, 0f);
 				SetParticlesStrength(_downParticles, -overallResponse.y);
 			}
-
-			yield return new WaitForFixedUpdate();
 		}
 	}
 

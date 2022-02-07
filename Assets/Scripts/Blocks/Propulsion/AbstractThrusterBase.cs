@@ -65,6 +65,11 @@ public abstract class AbstractThrusterBase :
 		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
 	}
 
+	protected bool IsSimulation()
+	{
+		return Body != null;
+	}
+
 	public void OnControlGroupsChanged(IControlConditionProvider provider)
 	{
 		PropulsionActive = provider.IsConditionTrue(ActivationCondition);

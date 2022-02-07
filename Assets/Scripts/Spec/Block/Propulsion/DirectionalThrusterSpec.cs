@@ -13,6 +13,8 @@ public class DirectionalThrusterModuleSpec : ICustomValidation
 	public float MaxForce;
 	public Dictionary<string, float> MaxResourceUse;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundCurveSpec ThrustSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] Particles;
 
 	public void Validate(List<string> path, List<string> errors)

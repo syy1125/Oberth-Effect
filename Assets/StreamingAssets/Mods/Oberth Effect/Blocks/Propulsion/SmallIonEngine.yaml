@@ -37,6 +37,10 @@ Propulsion:
     MaxResourceUse:
       OberthEffect/Energy: 50
     MaxThrottleRate: 2
+    ThrustSound: 
+      SoundId: OberthEffect/Engine
+      MinVolume: 0
+      MaxVolume: 0.4
     Particles:
       - Offset: { X: 0, Y: -0.2 }
         Direction: { X: 0, Y: -1 }

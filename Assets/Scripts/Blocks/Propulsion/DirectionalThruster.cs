@@ -17,19 +17,111 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "DirectionalThruster";
 
-	private ParticleSystemWrapper[] _upParticles;
-	private ParticleSystemWrapper[] _downParticles;
-	private ParticleSystemWrapper[] _leftParticles;
-	private ParticleSystemWrapper[] _rightParticles;
+	private class Module
+	{
+		private DirectionalThruster _parent;
 
-	private float _upMaxForce;
-	private Dictionary<string, float> _upResourceUse;
-	private float _downMaxForce;
-	private Dictionary<string, float> _downResourceUse;
-	private float _leftMaxForce;
-	private Dictionary<string, float> _leftResourceUse;
-	private float _rightMaxForce;
-	private Dictionary<string, float> _rightResourceUse;
+		public readonly float MaxForce;
+		public readonly Dictionary<string, float> MaxResourceUse;
+
+		private AudioSource _thrustSound;
+		private float _minVolume;
+		private float _maxVolume;
+		private ParticleSystemWrapper[] _particles;
+
+		public Module(DirectionalThruster parent, DirectionalThrusterModuleSpec spec)
+		{
+			_parent = parent;
+
+			MaxForce = spec.MaxForce;
+			MaxResourceUse = spec.MaxResourceUse;
+
+			if (spec.ThrustSound != null)
+			{
+				_thrustSound = parent.gameObject.AddComponent<AudioSource>();
+				_minVolume = spec.ThrustSound.MinVolume;
+				_maxVolume = spec.ThrustSound.MaxVolume;
+
+				_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+				_thrustSound.volume = _minVolume;
+				_thrustSound.loop = true;
+			}
+
+			if (spec.Particles != null)
+			{
+				_particles = new ParticleSystemWrapper[spec.Particles.Length];
+
+				for (int i = 0; i < spec.Particles.Length; i++)
+				{
+					_particles[i] = RendererHelper.CreateParticleSystem(_parent.transform, spec.Particles[i]);
+				}
+			}
+		}
+
+		public void StartEffects()
+		{
+			if (_thrustSound != null)
+			{
+				_thrustSound.Play();
+			}
+
+			if (_particles != null)
+			{
+				foreach (ParticleSystemWrapper particle in _particles)
+				{
+					particle.Play();
+				}
+			}
+		}
+
+		public void AddResourceRequest(IDictionary<string, float> requests, float requestStrength)
+		{
+			if (MaxResourceUse != null && MaxResourceUse.Count > 0)
+			{
+				DictionaryUtils.AddScaledDictionary(MaxResourceUse, requestStrength, requests);
+			}
+		}
+
+		public void PlayEffectsAtStrength(float thrustScale)
+		{
+			if (_thrustSound != null)
+			{
+				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, thrustScale);
+			}
+
+			if (_particles != null)
+			{
+				ParticleSystemWrapper.BatchScaleThrustParticles(_particles, thrustScale);
+			}
+		}
+	}
+
+	private Module _upModule;
+	private Module _downModule;
+	private Module _leftModule;
+	private Module _rightModule;
+
+	// private AudioSource _upSound;
+	// private Tuple<float, float> _upVolume;
+	// private ParticleSystemWrapper[] _upParticles;
+	// private AudioSource _downSound;
+	// private Tuple<float, float> _downVolume;
+	// private ParticleSystemWrapper[] _downParticles;
+	// private AudioSource _leftSound;
+	// private Tuple<float, float> _leftVolume;
+	// private ParticleSystemWrapper[] _leftParticles;
+	// private AudioSource _rightSound;
+	// private Tuple<float, float> _rightVolume;
+	// private ParticleSystemWrapper[] _rightParticles;
+	//
+	// private float _upMaxForce;
+	// private Dictionary<string, float> _upResourceUse;
+	// private float _downMaxForce;
+	// private Dictionary<string, float> _downResourceUse;
+	// private float _leftMaxForce;
+	// private Dictionary<string, float> _leftResourceUse;
+	// private float _rightMaxForce;
+	// private Dictionary<string, float> _rightResourceUse;
 
 	private Vector3 _localRight;
 	private Vector3 _localUp;
@@ -44,22 +136,22 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 		if (spec.Up != null)
 		{
-			LoadModuleSpec(spec.Up, out _upMaxForce, out _upResourceUse, out _upParticles);
+			_upModule = new Module(this, spec.Up);
 		}
 
 		if (spec.Down != null)
 		{
-			LoadModuleSpec(spec.Down, out _downMaxForce, out _downResourceUse, out _downParticles);
+			_downModule = new Module(this, spec.Down);
 		}
 
 		if (spec.Left != null)
 		{
-			LoadModuleSpec(spec.Left, out _leftMaxForce, out _leftResourceUse, out _leftParticles);
+			_leftModule = new Module(this, spec.Left);
 		}
 
 		if (spec.Right != null)
 		{
-			LoadModuleSpec(spec.Right, out _rightMaxForce, out _rightResourceUse, out _rightParticles);
+			_rightModule = new Module(this, spec.Right);
 		}
 
 		ComputeMaxResourceUse();
@@ -70,11 +162,27 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 	private void LoadModuleSpec(
 		DirectionalThrusterModuleSpec spec,
-		out float maxForce, out Dictionary<string, float> maxResourceUse, out ParticleSystemWrapper[] particles
+		out float maxForce, out Dictionary<string, float> maxResourceUse,
+		out AudioSource audioSource, out Tuple<float, float> volumeRange, out ParticleSystemWrapper[] particles
 	)
 	{
 		maxForce = spec.MaxForce;
 		maxResourceUse = spec.MaxResourceUse;
+
+		if (spec.ThrustSound != null)
+		{
+			audioSource = gameObject.AddComponent<AudioSource>();
+			volumeRange = Tuple.Create(spec.ThrustSound.MinVolume, spec.ThrustSound.MaxVolume);
+
+			audioSource.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+			audioSource.volume = spec.ThrustSound.MinVolume;
+			audioSource.loop = true;
+		}
+		else
+		{
+			audioSource = null;
+			volumeRange = null;
+		}
 
 		if (spec.Particles != null)
 		{
@@ -95,26 +203,26 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		var horizontalResourceUse = new Dictionary<string, float>();
 
-		if (_leftResourceUse != null)
+		if (_leftModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_leftResourceUse, horizontalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_leftModule.MaxResourceUse, horizontalResourceUse, FloatMax);
 		}
 
-		if (_rightResourceUse != null)
+		if (_rightModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_rightResourceUse, horizontalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_rightModule.MaxResourceUse, horizontalResourceUse, FloatMax);
 		}
 
 		var verticalResourceUse = new Dictionary<string, float>();
 
-		if (_upResourceUse != null)
+		if (_upModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_upResourceUse, verticalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_upModule.MaxResourceUse, verticalResourceUse, FloatMax);
 		}
 
-		if (_downResourceUse != null)
+		if (_downModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_downResourceUse, verticalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_downModule.MaxResourceUse, verticalResourceUse, FloatMax);
 		}
 
 		MaxResourceUse = new Dictionary<string, float>();
@@ -130,27 +238,15 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		base.Start();
 
-		if (Body != null)
+		if (IsSimulation())
 		{
 			_localRight = Body.transform.InverseTransformDirection(transform.right);
 			_localUp = Body.transform.InverseTransformDirection(transform.up);
 
-			StartParticleSystems(_upParticles);
-			StartParticleSystems(_downParticles);
-			StartParticleSystems(_leftParticles);
-			StartParticleSystems(_rightParticles);
-		}
-
-		StartCoroutine(LateFixedUpdate());
-	}
-
-	private static void StartParticleSystems(ParticleSystemWrapper[] particleSystems)
-	{
-		if (particleSystems == null) return;
-
-		foreach (ParticleSystemWrapper particle in particleSystems)
-		{
-			particle.Play();
+			_upModule?.StartEffects();
+			_downModule?.StartEffects();
+			_leftModule?.StartEffects();
+			_rightModule?.StartEffects();
 		}
 	}
 
@@ -193,79 +289,85 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	{
 		ResourceRequests.Clear();
 
-		if (_response.x > Mathf.Epsilon && _rightMaxForce > Mathf.Epsilon && _rightResourceUse != null)
+		if (_response.x > Mathf.Epsilon)
 		{
-			DictionaryUtils.AddScaledDictionary(_rightResourceUse, _response.x, ResourceRequests);
+			_rightModule?.AddResourceRequest(ResourceRequests, _response.x);
 		}
-		else if (_response.x < -Mathf.Epsilon && _leftMaxForce > Mathf.Epsilon && _leftResourceUse != null)
+		else if (_response.x < -Mathf.Epsilon)
 		{
-			DictionaryUtils.AddScaledDictionary(_leftResourceUse, -_response.x, ResourceRequests);
+			_leftModule?.AddResourceRequest(ResourceRequests, -_response.x);
 		}
 
-		if (_response.y > Mathf.Epsilon && _upMaxForce > Mathf.Epsilon && _upResourceUse != null)
+		if (_response.y > Mathf.Epsilon)
 		{
-			DictionaryUtils.AddScaledDictionary(_upResourceUse, _response.y, ResourceRequests);
+			_upModule?.AddResourceRequest(ResourceRequests, _response.y);
 		}
-		else if (_response.y < -Mathf.Epsilon && _downMaxForce > Mathf.Epsilon && _downResourceUse != null)
+		else if (_response.y < -Mathf.Epsilon)
 		{
-			DictionaryUtils.AddScaledDictionary(_downResourceUse, -_response.y, ResourceRequests);
+			_downModule?.AddResourceRequest(ResourceRequests, -_response.y);
 		}
 
 		return ResourceRequests;
 	}
 
-	private IEnumerator LateFixedUpdate()
+	private void FixedUpdate()
 	{
-		yield return new WaitForFixedUpdate();
+		Vector2 overallResponse = _response * Satisfaction;
 
-		while (isActiveAndEnabled)
+		if (IsSimulation())
 		{
-			Vector2 overallResponse = _response * Satisfaction;
+			Vector2 right = transform.right;
+			Vector2 up = transform.up;
+			Vector2 position = transform.position;
 
-			if (Body != null && IsMine)
+			if (overallResponse.x > Mathf.Epsilon && _rightModule != null)
 			{
-				Vector2 right = transform.right;
-				Vector2 up = transform.up;
-				Vector2 position = transform.position;
-
-				if (overallResponse.x > Mathf.Epsilon && _rightMaxForce > Mathf.Epsilon)
+				if (IsMine)
 				{
-					Body.AddForceAtPosition(right * (overallResponse.x * _rightMaxForce), position);
-					SetParticlesStrength(_leftParticles, 0f);
-					SetParticlesStrength(_rightParticles, overallResponse.x);
-				}
-				else if (overallResponse.x < -Mathf.Epsilon && _leftMaxForce > Mathf.Epsilon)
-				{
-					Body.AddForceAtPosition(right * (overallResponse.x * _leftMaxForce), position);
-					SetParticlesStrength(_leftParticles, -overallResponse.x);
-					SetParticlesStrength(_rightParticles, 0f);
-				}
-				else
-				{
-					SetParticlesStrength(_leftParticles, 0f);
-					SetParticlesStrength(_rightParticles, 0f);
+					Body.AddForceAtPosition(right * (overallResponse.x * _rightModule.MaxForce), position);
 				}
 
-				if (overallResponse.y > Mathf.Epsilon && _upMaxForce > Mathf.Epsilon)
+				_leftModule?.PlayEffectsAtStrength(0f);
+				_rightModule.PlayEffectsAtStrength(overallResponse.x);
+			}
+			else if (overallResponse.x < -Mathf.Epsilon && _leftModule != null)
+			{
+				if (IsMine)
 				{
-					Body.AddForceAtPosition(up * (overallResponse.y * _upMaxForce), position);
-					SetParticlesStrength(_upParticles, overallResponse.y);
-					SetParticlesStrength(_downParticles, 0f);
+					Body.AddForceAtPosition(right * (overallResponse.x * _leftModule.MaxForce), position);
 				}
-				else if (overallResponse.y < -Mathf.Epsilon && _downMaxForce > Mathf.Epsilon)
-				{
-					Body.AddForceAtPosition(up * (overallResponse.y * _downMaxForce), position);
-					SetParticlesStrength(_upParticles, 0f);
-					SetParticlesStrength(_downParticles, -overallResponse.y);
-				}
-				else
-				{
-					SetParticlesStrength(_upParticles, 0f);
-					SetParticlesStrength(_downParticles, 0f);
-				}
+
+				_leftModule.PlayEffectsAtStrength(-overallResponse.x);
+				_rightModule?.PlayEffectsAtStrength(0f);
+			}
+			else
+			{
+				_leftModule?.PlayEffectsAtStrength(0f);
+				_rightModule?.PlayEffectsAtStrength(0f);
 			}
 
-			yield return new WaitForFixedUpdate();
+			if (overallResponse.y > Mathf.Epsilon && _upModule != null)
+			{
+				if (IsMine)
+				{
+					Body.AddForceAtPosition(up * (overallResponse.y * _upModule.MaxForce), position);
+				}
+
+				_upModule.PlayEffectsAtStrength(overallResponse.y);
+				_downModule?.PlayEffectsAtStrength(0f);
+			}
+			else if (overallResponse.y < -Mathf.Epsilon && _downModule != null)
+			{
+				Body.AddForceAtPosition(up * (overallResponse.y * _downModule.MaxForce), position);
+
+				_upModule?.PlayEffectsAtStrength(0f);
+				_downModule.PlayEffectsAtStrength(-overallResponse.y);
+			}
+			else
+			{
+				_upModule?.PlayEffectsAtStrength(0f);
+				_downModule?.PlayEffectsAtStrength(0f);
+			}
 		}
 	}
 
@@ -274,18 +376,23 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		if (particles != null) ParticleSystemWrapper.BatchScaleThrustParticles(particles, thrustScale);
 	}
 
+	private static void SetSoundVolume(AudioSource audioSource, Tuple<float, float> volumeRange, float thrustScale)
+	{
+		if (audioSource != null) audioSource.volume = Mathf.Lerp(volumeRange.Item1, volumeRange.Item2, thrustScale);
+	}
+
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)
 	{
 		switch (localDirection)
 		{
 			case CardinalDirection.Up:
-				return _upMaxForce;
+				return _upModule?.MaxForce ?? 0f;
 			case CardinalDirection.Right:
-				return _rightMaxForce;
+				return _rightModule?.MaxForce ?? 0f;
 			case CardinalDirection.Down:
-				return _downMaxForce;
+				return _downModule?.MaxForce ?? 0f;
 			case CardinalDirection.Left:
-				return _leftMaxForce;
+				return _leftModule?.MaxForce ?? 0f;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(localDirection), localDirection, null);
 		}
@@ -296,26 +403,30 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		StringBuilder builder = new StringBuilder();
 		builder.AppendLine("Maneuvering thruster");
 
-		AppendDirectionTooltip(builder, "upward", _upMaxForce, _upResourceUse);
-		AppendDirectionTooltip(builder, "downward", _downMaxForce, _downResourceUse);
-		AppendDirectionTooltip(builder, "left", _leftMaxForce, _leftResourceUse);
-		AppendDirectionTooltip(builder, "right", _rightMaxForce, _rightResourceUse);
+		AppendDirectionTooltip(builder, "upward", _upModule);
+		AppendDirectionTooltip(builder, "downward", _downModule);
+		AppendDirectionTooltip(builder, "left", _leftModule);
+		AppendDirectionTooltip(builder, "right", _rightModule);
 
 		return builder.ToString();
 	}
 
 	private static void AppendDirectionTooltip(
-		StringBuilder builder, string direction, float maxForce, IReadOnlyDictionary<string, float> maxResourceUse
+		StringBuilder builder, string direction, Module thrustModule
 	)
 	{
-		if (maxForce > Mathf.Epsilon)
+		if (thrustModule != null)
 		{
-			builder.Append($"  Max thrust {direction} {PhysicsUnitUtils.FormatForce(maxForce)}");
+			builder.Append($"  Max thrust {direction} {PhysicsUnitUtils.FormatForce(thrustModule.MaxForce)}");
 
-			if (maxResourceUse != null && maxResourceUse.Count > 0)
+			if (thrustModule.MaxResourceUse != null && thrustModule.MaxResourceUse.Count > 0)
 			{
 				builder.Append(" using up to ")
-					.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(maxResourceUse)))
+					.Append(
+						string.Join(
+							", ", VehicleResourceDatabase.Instance.FormatResourceDict(thrustModule.MaxResourceUse)
+						)
+					)
 					.Append(" per second");
 			}
 

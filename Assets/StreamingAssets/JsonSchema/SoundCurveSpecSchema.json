@@ -1,0 +1,9 @@
+﻿{
+    "$id": "SoundCurveSpecSchema",
+    "type": "object",
+    "properties": {
+        "SoundId": { "type": "string" },
+        "MinVolume": { "type": "number", "minimum": 0, "maximum": 1, "default": 0 },
+        "MaxVolume": { "type": "number", "minimum": 0, "maximum": 1, "default": 1 }
+    }
+}

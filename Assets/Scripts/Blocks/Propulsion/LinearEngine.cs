@@ -18,6 +18,9 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	private float _maxThrottleRate;
 	private Vector2 _thrustOrigin;
 
+	private AudioSource _thrustSound;
+	private float _minVolume;
+	private float _maxVolume;
 	private ParticleSystemWrapper[] _particles;
 
 	private float _forwardBackResponse;
@@ -34,6 +37,17 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_maxThrottleRate = spec.MaxThrottleRate;
 		_thrustOrigin = spec.ThrustOrigin;
+
+		if (spec.ThrustSound != null)
+		{
+			_thrustSound = gameObject.AddComponent<AudioSource>();
+			_minVolume = spec.ThrustSound.MinVolume;
+			_maxVolume = spec.ThrustSound.MaxVolume;
+
+			_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+			_thrustSound.volume = _minVolume;
+			_thrustSound.loop = true;
+		}
 
 		if (spec.Particles != null)
 		{
@@ -53,14 +67,17 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	{
 		base.Start();
 
-		if (Body != null)
+		if (IsSimulation())
 		{
-			// We are in simulation
 			_localUp = Body.transform.InverseTransformDirection(transform.up);
+
+			if (_thrustSound != null)
+			{
+				_thrustSound.Play();
+			}
 
 			if (_particles != null)
 			{
-				// We have particles
 				foreach (ParticleSystemWrapper particle in _particles)
 				{
 					particle.Play();
@@ -116,19 +133,27 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 	private void FixedUpdate()
 	{
-		float trueThrustScale = _targetThrustScale * Satisfaction;
-
-		if (Body != null && IsMine)
+		if (IsSimulation())
 		{
-			Body.AddForceAtPosition(
-				transform.up * (MaxForce * trueThrustScale),
-				transform.TransformPoint(_thrustOrigin)
-			);
-		}
+			float trueThrustScale = _targetThrustScale * Satisfaction;
 
-		if (_particles != null)
-		{
-			ParticleSystemWrapper.BatchScaleThrustParticles(_particles, trueThrustScale);
+			if (IsMine)
+			{
+				Body.AddForceAtPosition(
+					transform.up * (MaxForce * trueThrustScale),
+					transform.TransformPoint(_thrustOrigin)
+				);
+			}
+
+			if (_thrustSound != null)
+			{
+				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, trueThrustScale);
+			}
+
+			if (_particles != null)
+			{
+				ParticleSystemWrapper.BatchScaleThrustParticles(_particles, trueThrustScale);
+			}
 		}
 	}
 
