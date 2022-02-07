@@ -41,6 +41,7 @@ public class AudioMixerManager : MonoBehaviour
 	{
 		LoadVolume(PropertyKeys.MASTER_VOLUME, 0.5f);
 		LoadVolume(PropertyKeys.UI_VOLUME, 0.5f);
+		LoadVolume(PropertyKeys.BLOCKS_VOLUME, 1f);
 	}
 
 	private void LoadVolume(string propertyName, float defaultValue)

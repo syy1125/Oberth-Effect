@@ -13,6 +13,7 @@ public static class PropertyKeys
 	public const string ANALYSIS_USE_ACC_MODE = "AnalysisUseAccelerationMode";
 	public const string MASTER_VOLUME = "MasterVolume";
 	public const string UI_VOLUME = "UIVolume";
+	public const string BLOCKS_VOLUME = "BlocksVolume";
 	public const string PHYSICS_UNIT_MODE = "PhysicsUnitMode";
 	public const string DESIGNER_GRID_OPACITY = "DesignerGridOpacity";
 	public const string SCREEN_SHAKE_MULTIPLIER = "ScreenShakeMultiplier";

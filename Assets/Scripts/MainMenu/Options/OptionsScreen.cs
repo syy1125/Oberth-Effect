@@ -10,6 +10,8 @@ public class OptionsScreen : MonoBehaviour
 {
 	public PercentageSlider MasterVolumeSlider;
 	public PercentageSlider UIVolumeSlider;
+	public PercentageSlider BlocksVolumeSlider;
+
 	public SwitchSelect UnitModeSwitch;
 	public PercentageSlider DesignerGridOpacitySlider;
 	public PercentageSlider ScreenShakeMultiplierSlider;
@@ -21,6 +23,9 @@ public class OptionsScreen : MonoBehaviour
 
 		UIVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.UI_VOLUME);
 		UIVolumeSlider.OnChange.AddListener(HandleUIVolumeChange);
+
+		BlocksVolumeSlider.Value = AudioMixerManager.Instance.GetVolume(PropertyKeys.BLOCKS_VOLUME);
+		BlocksVolumeSlider.OnChange.AddListener(HandleBlocksVolumeChange);
 
 		UnitModeSwitch.Value = (int) PhysicsUnitUtils.UnitMode;
 		UnitModeSwitch.OnValueChanged.AddListener(HandleUnitModeChange);
@@ -42,6 +47,11 @@ public class OptionsScreen : MonoBehaviour
 	private void HandleUIVolumeChange(float volume)
 	{
 		AudioMixerManager.Instance.SetVolume(PropertyKeys.UI_VOLUME, volume);
+	}
+
+	private void HandleBlocksVolumeChange(float volume)
+	{
+		AudioMixerManager.Instance.SetVolume(PropertyKeys.BLOCKS_VOLUME, volume);
 	}
 
 	private void HandleUnitModeChange(int unitMode)
