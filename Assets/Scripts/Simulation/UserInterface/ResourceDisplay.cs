@@ -54,13 +54,39 @@ public class ResourceDisplay : MonoBehaviour
 					row.FillBar.fillAmount = 0f;
 					row.FillPercent.text = "N/A";
 					row.WarningIcon.SetActive(false);
+					row.ErrorIcon.SetActive(false);
+					row.EfficiencyDisplay.gameObject.SetActive(false);
 				}
 				else
 				{
 					float fillAmount = resourceStatus.CurrentAmount / resourceStatus.StorageCapacity;
 					row.FillBar.fillAmount = fillAmount;
 					row.FillPercent.text = $"{fillAmount * 100:F1}%";
-					row.WarningIcon.SetActive(!Mathf.Approximately(resourceStatus.Satisfaction, 1f));
+
+					if (Mathf.Approximately(resourceStatus.Satisfaction, 1f))
+					{
+						row.WarningIcon.SetActive(false);
+						row.ErrorIcon.SetActive(false);
+						row.EfficiencyDisplay.gameObject.SetActive(false);
+					}
+					else
+					{
+						row.EfficiencyDisplay.gameObject.SetActive(true);
+						row.EfficiencyDisplay.text = $"({resourceStatus.Satisfaction:0%} eff.)";
+
+						if (resourceStatus.Satisfaction >= 0.5f)
+						{
+							row.WarningIcon.SetActive(true);
+							row.ErrorIcon.SetActive(false);
+							row.EfficiencyDisplay.color = new Color(1f, 0.5f, 0f);
+						}
+						else
+						{
+							row.WarningIcon.SetActive(false);
+							row.ErrorIcon.SetActive(true);
+							row.EfficiencyDisplay.color = Color.red;
+						}
+					}
 				}
 			}
 		}

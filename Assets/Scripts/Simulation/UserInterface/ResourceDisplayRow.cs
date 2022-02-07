@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface
@@ -9,5 +10,7 @@ public class ResourceDisplayRow : MonoBehaviour
 	public Image FillBar;
 	public Text FillPercent;
 	public GameObject WarningIcon;
+	public GameObject ErrorIcon;
+	public Text EfficiencyDisplay;
 }
 }
