@@ -79,17 +79,16 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 
 	private void UpdateTurretRotationState()
 	{
-		float targetAngle = AimPoint == null
-			? 0f
-			: Vector3.SignedAngle(
-				Vector3.up,
-				Vector3.Scale(
-					transform.InverseTransformPoint(AimPoint.Value) - _turretTransform.localPosition,
-					new Vector3(1f, 1f, 0f)
-				),
-				Vector3.forward
-			);
-		_turretAngle = Mathf.MoveTowardsAngle(_turretAngle, targetAngle, _rotationSpeed * Time.fixedDeltaTime);
+		if (AimPoint == null)
+		{
+			_turretAngle = Mathf.MoveTowardsAngle(_turretAngle, 0f, _rotationSpeed * Time.fixedDeltaTime);
+		}
+		else
+		{
+			Vector2 localAimPoint = transform.InverseTransformPoint(AimPoint.Value) - _turretTransform.localPosition;
+			float targetAngle = Vector3.SignedAngle(Vector3.up, localAimPoint, Vector3.forward);
+			_turretAngle = Mathf.MoveTowardsAngle(_turretAngle, targetAngle, _rotationSpeed * Time.fixedDeltaTime);
+		}
 	}
 
 	private void ApplyTurretRotation()
