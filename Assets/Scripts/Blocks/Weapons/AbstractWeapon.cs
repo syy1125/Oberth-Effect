@@ -275,7 +275,7 @@ public abstract class AbstractWeapon :
 		float armorPierce = FirepowerUtils.GetMeanArmorPierce(firepower);
 		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
 
-		builder.AppendLine($"  <b>Maximum DPS {maxDps:0.#} (<color=\"lightblue\">{armorPierce:0.##} AP</color>)</b>");
+		builder.AppendLine($"  <b>Expected DPS {maxDps:0.#} (<color=\"lightblue\">{armorPierce:0.##} AP</color>)</b>");
 
 		Dictionary<string, float> resourcePerFirepower =
 			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);

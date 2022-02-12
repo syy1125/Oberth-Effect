@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using log4net.Core;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
@@ -154,7 +153,8 @@ public class ExplosionManager : MonoBehaviourPun
 		Debug.Log($"Explosion query found {colliderCount} colliders, mapped to {targets.Count} targets");
 #endif
 
-		float d = damage * 100 / (19 * Mathf.PI * radius * radius);
+		// Deal double damage as generally, only half of the explosion will cover the target.
+		float d = damage * 200 / (19 * Mathf.PI * radius * radius);
 
 		foreach (IDamageable target in targets)
 		{
