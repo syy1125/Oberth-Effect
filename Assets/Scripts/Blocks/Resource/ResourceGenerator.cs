@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -20,8 +21,10 @@ public class ResourceGenerator :
 	private Dictionary<string, float> _consumptionRate;
 	private Dictionary<string, float> _generationRate;
 	private IControlCondition _activationCondition;
+	private string _startSoundId;
 	private AudioClip _startSound;
 	private float _startSoundVolume;
+	private string _stopSoundId;
 	private AudioClip _stopSound;
 	private float _stopSoundVolume;
 
@@ -52,13 +55,15 @@ public class ResourceGenerator :
 
 		if (spec.StartSound != null)
 		{
-			_startSound = SoundDatabase.Instance.GetAudioClip(spec.StartSound.SoundId);
+			_startSoundId = spec.StartSound.SoundId;
+			_startSound = SoundDatabase.Instance.GetAudioClip(_startSoundId);
 			_startSoundVolume = spec.StartSound.Volume;
 		}
 
 		if (spec.StopSound != null)
 		{
-			_stopSound = SoundDatabase.Instance.GetAudioClip(spec.StopSound.SoundId);
+			_stopSoundId = spec.StopSound.SoundId;
+			_stopSound = SoundDatabase.Instance.GetAudioClip(_stopSoundId);
 			_stopSoundVolume = spec.StopSound.Volume;
 		}
 
@@ -102,12 +107,16 @@ public class ResourceGenerator :
 			if (_active && _startSound != null)
 			{
 				if (_audioSource.isPlaying) _audioSource.Stop();
-				_audioSource.PlayOneShot(_startSound, _startSoundVolume);
+				float volume = GetComponentInParent<IBlockSoundAttenuator>()
+					.AttenuateOneShotSound(_startSoundId, _startSoundVolume);
+				_audioSource.PlayOneShot(_startSound, volume);
 			}
 			else if (!_active && _stopSound != null)
 			{
 				if (_audioSource.isPlaying) _audioSource.Stop();
-				_audioSource.PlayOneShot(_stopSound, _stopSoundVolume);
+				float volume = GetComponentInParent<IBlockSoundAttenuator>()
+					.AttenuateOneShotSound(_stopSoundId, _stopSoundVolume);
+				_audioSource.PlayOneShot(_stopSound, volume);
 			}
 
 			if (_activeRenderersParent != null)

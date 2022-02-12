@@ -17,7 +17,8 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 {
 	public const string CLASS_KEY = "OmniThruster";
 
-	private AudioSource _thrustSound;
+	private string _thrustSoundId;
+	private AudioSource _thrustSoundSource;
 	private float _minVolume;
 	private float _maxVolume;
 
@@ -45,13 +46,14 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 
 		if (spec.ThrustSound != null)
 		{
-			_thrustSound = gameObject.AddComponent<AudioSource>();
+			_thrustSoundId = spec.ThrustSound.SoundId;
+			_thrustSoundSource = gameObject.AddComponent<AudioSource>();
 			_minVolume = spec.ThrustSound.MinVolume;
 			_maxVolume = spec.ThrustSound.MaxVolume;
 
-			_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
-			_thrustSound.volume = _minVolume;
-			_thrustSound.loop = true;
+			_thrustSoundSource.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+			_thrustSoundSource.volume = _minVolume;
+			_thrustSoundSource.loop = true;
 		}
 
 		if (spec.Particles != null)
@@ -101,9 +103,9 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 			_localRight = Body.transform.InverseTransformDirection(transform.right);
 			_localUp = Body.transform.InverseTransformDirection(transform.up);
 
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
-				_thrustSound.Play();
+				_thrustSoundSource.Play();
 			}
 
 			StartParticleSystems(_upParticles);
@@ -183,13 +185,13 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 				Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
 			}
 
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
 				float volume = Mathf.Lerp(
 					_minVolume, _maxVolume,
 					(Mathf.Abs(overallResponse.x) + Mathf.Abs(overallResponse.y)) / 2
 				);
-				_thrustSound.volume = volume;
+				_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
 			}
 
 

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2241316949492300623}
   - component: {fileID: -3674230021090741243}
   - component: {fileID: 8977424140230095265}
+  - component: {fileID: 6843520128822586368}
   - component: {fileID: 3829135942959768613}
   - component: {fileID: 1786932030375893110}
   m_Layer: 6
@@ -134,6 +135,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 3588089235036331014}
   - {fileID: 1496067975417197364}
+  - {fileID: 3829135942959768613}
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -217,6 +219,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de88732d0584111840512a14d61dfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6843520128822586368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8509090524700470632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c51bc1fa3d847c4be751d46ac8d2877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttenuationRate: 1
 --- !u!114 &3829135942959768613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ba1410ac4c04fe7810c1f1ec0f15fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebrisPrefab: {fileID: 3143220733756046700, guid: cf0819ef59226564f95d8d404ead1b24, type: 3}
+  DebrisPrefabName: Debris
 --- !u!114 &1786932030375893110
 MonoBehaviour:
   m_ObjectHideFlags: 0

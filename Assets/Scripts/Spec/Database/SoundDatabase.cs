@@ -112,6 +112,7 @@ public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 	{
 		var audioSource = go.AddComponent<AudioSource>();
 		audioSource.outputAudioMixerGroup = BlockSoundGroup;
+		audioSource.spatialBlend = 0.6f;
 		return audioSource;
 	}
 }

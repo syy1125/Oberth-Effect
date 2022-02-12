@@ -23,6 +23,7 @@ public abstract class AbstractThrusterBase :
 	protected IControlCondition ActivationCondition;
 
 	protected Rigidbody2D Body;
+	protected IBlockSoundAttenuator SoundAttenuator;
 	protected bool IsMine;
 
 	protected bool PropulsionActive;
@@ -35,6 +36,7 @@ public abstract class AbstractThrusterBase :
 	protected virtual void Awake()
 	{
 		Body = GetComponentInParent<Rigidbody2D>();
+		SoundAttenuator = GetComponentInParent<IBlockSoundAttenuator>();
 
 		ResourceRequests = new Dictionary<string, float>();
 	}

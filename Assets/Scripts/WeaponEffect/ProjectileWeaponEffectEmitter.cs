@@ -39,6 +39,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private Dictionary<string, float> _reloadResourceUse;
 
 	private AudioSource _audioSource;
+	private string _fireSoundId;
 	private AudioClip _fireSound;
 	private float _fireSoundVolume;
 
@@ -94,7 +95,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		if (spec.FireSound != null)
 		{
 			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
-			_fireSound = SoundDatabase.Instance.GetAudioClip(spec.FireSound.SoundId);
+			_fireSoundId = spec.FireSound.SoundId;
+			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
 			_fireSoundVolume = spec.FireSound.Volume;
 		}
 
@@ -332,7 +334,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void PlayFireSound()
 	{
-		_audioSource.PlayOneShot(_fireSound, _fireSoundVolume);
+			float volume = GetComponentInParent<IBlockSoundAttenuator>()
+				.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
+			_audioSource.PlayOneShot(_fireSound, volume);
 	}
 }
 }

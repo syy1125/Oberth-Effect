@@ -38,6 +38,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private ScreenShakeSpec _screenShake;
 	private AudioSource _audioSource;
+	private string _fireSoundId;
 	private AudioClip _fireSound;
 	private float _fireSoundVolume;
 
@@ -89,7 +90,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		if (spec.FireSound != null)
 		{
 			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
-			_fireSound = SoundDatabase.Instance.GetAudioClip(spec.FireSound.SoundId);
+			_fireSoundId = spec.FireSound.SoundId;
+			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
 			_fireSoundVolume = spec.FireSound.Volume;
 		}
 
@@ -311,7 +313,9 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		if (_fireSound != null)
 		{
-			_audioSource.PlayOneShot(_fireSound, _fireSoundVolume);
+			float volume = GetComponentInParent<IBlockSoundAttenuator>()
+				.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
+			_audioSource.PlayOneShot(_fireSound, volume);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
@@ -18,7 +17,8 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	private float _throttleRate;
 	private Vector2 _thrustOrigin;
 
-	private AudioSource _thrustSound;
+	private string _thrustSoundId;
+	private AudioSource _thrustSoundSource;
 	private float _minVolume;
 	private float _maxVolume;
 	private ParticleSystemWrapper[] _particles;
@@ -41,13 +41,14 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 
 		if (spec.ThrustSound != null)
 		{
-			_thrustSound = gameObject.AddComponent<AudioSource>();
+			_thrustSoundId = spec.ThrustSound.SoundId;
+			_thrustSoundSource = gameObject.AddComponent<AudioSource>();
 			_minVolume = spec.ThrustSound.MinVolume;
 			_maxVolume = spec.ThrustSound.MaxVolume;
 
-			_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
-			_thrustSound.volume = _minVolume;
-			_thrustSound.loop = true;
+			_thrustSoundSource.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
+			_thrustSoundSource.volume = _minVolume;
+			_thrustSoundSource.loop = true;
 		}
 
 		if (spec.Particles != null)
@@ -72,9 +73,9 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		{
 			_localUp = Body.transform.InverseTransformDirection(transform.up);
 
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
-				_thrustSound.Play();
+				_thrustSoundSource.Play();
 			}
 
 			if (_particles != null)
@@ -156,9 +157,10 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 				);
 			}
 
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
-				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, _trueThrustScale);
+				float volume = Mathf.Lerp(_minVolume, _maxVolume, _trueThrustScale);
+				_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
 			}
 
 			if (_particles != null)

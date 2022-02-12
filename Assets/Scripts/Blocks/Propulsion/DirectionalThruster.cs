@@ -24,7 +24,8 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		public readonly float MaxForce;
 		public readonly Dictionary<string, float> MaxResourceUse;
 
-		private AudioSource _thrustSound;
+		private string _thrustSoundId;
+		private AudioSource _thrustSoundSource;
 		private float _minVolume;
 		private float _maxVolume;
 		private ParticleSystemWrapper[] _particles;
@@ -38,13 +39,14 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 			if (spec.ThrustSound != null)
 			{
-				_thrustSound = parent.gameObject.AddComponent<AudioSource>();
+				_thrustSoundId = spec.ThrustSound.SoundId;
+				_thrustSoundSource = parent.gameObject.AddComponent<AudioSource>();
 				_minVolume = spec.ThrustSound.MinVolume;
 				_maxVolume = spec.ThrustSound.MaxVolume;
 
-				_thrustSound.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
-				_thrustSound.volume = _minVolume;
-				_thrustSound.loop = true;
+				_thrustSoundSource.clip = SoundDatabase.Instance.GetAudioClip(_thrustSoundId);
+				_thrustSoundSource.volume = _minVolume;
+				_thrustSoundSource.loop = true;
 			}
 
 			if (spec.Particles != null)
@@ -60,9 +62,9 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 		public void StartEffects()
 		{
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
-				_thrustSound.Play();
+				_thrustSoundSource.Play();
 			}
 
 			if (_particles != null)
@@ -84,9 +86,10 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 		public void PlayEffectsAtStrength(float thrustScale)
 		{
-			if (_thrustSound != null)
+			if (_thrustSoundSource != null)
 			{
-				_thrustSound.volume = Mathf.Lerp(_minVolume, _maxVolume, thrustScale);
+				float volume = Mathf.Lerp(_minVolume, _maxVolume, thrustScale);
+				_thrustSoundSource.volume = _parent.SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
 			}
 
 			if (_particles != null)
@@ -100,28 +103,6 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	private Module _downModule;
 	private Module _leftModule;
 	private Module _rightModule;
-
-	// private AudioSource _upSound;
-	// private Tuple<float, float> _upVolume;
-	// private ParticleSystemWrapper[] _upParticles;
-	// private AudioSource _downSound;
-	// private Tuple<float, float> _downVolume;
-	// private ParticleSystemWrapper[] _downParticles;
-	// private AudioSource _leftSound;
-	// private Tuple<float, float> _leftVolume;
-	// private ParticleSystemWrapper[] _leftParticles;
-	// private AudioSource _rightSound;
-	// private Tuple<float, float> _rightVolume;
-	// private ParticleSystemWrapper[] _rightParticles;
-	//
-	// private float _upMaxForce;
-	// private Dictionary<string, float> _upResourceUse;
-	// private float _downMaxForce;
-	// private Dictionary<string, float> _downResourceUse;
-	// private float _leftMaxForce;
-	// private Dictionary<string, float> _leftResourceUse;
-	// private float _rightMaxForce;
-	// private Dictionary<string, float> _rightResourceUse;
 
 	private Vector3 _localRight;
 	private Vector3 _localUp;
@@ -158,45 +139,6 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 		GetComponentInParent<IControlConditionProvider>()
 			?.MarkControlGroupsActive(ActivationCondition.GetControlGroups());
-	}
-
-	private void LoadModuleSpec(
-		DirectionalThrusterModuleSpec spec,
-		out float maxForce, out Dictionary<string, float> maxResourceUse,
-		out AudioSource audioSource, out Tuple<float, float> volumeRange, out ParticleSystemWrapper[] particles
-	)
-	{
-		maxForce = spec.MaxForce;
-		maxResourceUse = spec.MaxResourceUse;
-
-		if (spec.ThrustSound != null)
-		{
-			audioSource = gameObject.AddComponent<AudioSource>();
-			volumeRange = Tuple.Create(spec.ThrustSound.MinVolume, spec.ThrustSound.MaxVolume);
-
-			audioSource.clip = SoundDatabase.Instance.GetAudioClip(spec.ThrustSound.SoundId);
-			audioSource.volume = spec.ThrustSound.MinVolume;
-			audioSource.loop = true;
-		}
-		else
-		{
-			audioSource = null;
-			volumeRange = null;
-		}
-
-		if (spec.Particles != null)
-		{
-			particles = new ParticleSystemWrapper[spec.Particles.Length];
-
-			for (int i = 0; i < spec.Particles.Length; i++)
-			{
-				particles[i] = RendererHelper.CreateParticleSystem(transform, spec.Particles[i]);
-			}
-		}
-		else
-		{
-			particles = null;
-		}
 	}
 
 	private void ComputeMaxResourceUse()
