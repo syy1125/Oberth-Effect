@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Syy1125.OberthEffect.Input
+namespace Syy1125.OberthEffect.Simulation.Input
 {
 public class SuppressActionMap : MonoBehaviour
 {

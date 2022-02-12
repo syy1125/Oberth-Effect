@@ -5,8 +5,8 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Foundation;
-using Syy1125.OberthEffect.Input;
 using Syy1125.OberthEffect.Lib.Pid;
+using Syy1125.OberthEffect.Simulation.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

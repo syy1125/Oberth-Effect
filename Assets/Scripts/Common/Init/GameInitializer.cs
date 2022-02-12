@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Init
+namespace Syy1125.OberthEffect.Common.Init
 {
 public class GameInitializer : MonoBehaviour
 {

@@ -1,5 +1,5 @@
-﻿using Syy1125.OberthEffect.Components.UserInterface;
-using Syy1125.OberthEffect.Init;
+﻿using Syy1125.OberthEffect.Common.Init;
+using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;

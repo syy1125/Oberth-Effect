@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Components
 {
 public class ScreenshotHandler : MonoBehaviour
 {

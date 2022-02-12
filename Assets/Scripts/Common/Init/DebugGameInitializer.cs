@@ -2,7 +2,7 @@
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Init
+namespace Syy1125.OberthEffect.Common.Init
 {
 // A debug counterpart to GameInitializer. It does most things synchronously in Awake.
 public class DebugGameInitializer : MonoBehaviour

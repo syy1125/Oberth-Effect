@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Syy1125.OberthEffect.Init;
+using Syy1125.OberthEffect.Common.Init;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;

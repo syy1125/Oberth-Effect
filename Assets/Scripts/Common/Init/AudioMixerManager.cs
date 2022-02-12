@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Foundation;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Syy1125.OberthEffect.Init
+namespace Syy1125.OberthEffect.Common.Init
 {
 public class AudioMixerManager : MonoBehaviour
 {

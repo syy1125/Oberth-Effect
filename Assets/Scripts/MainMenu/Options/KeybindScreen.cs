@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using Syy1125.OberthEffect.Common.Init;
 using Syy1125.OberthEffect.Components.UserInterface;
-using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;

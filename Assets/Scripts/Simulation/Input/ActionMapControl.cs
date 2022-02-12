@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Syy1125.OberthEffect.Input
+namespace Syy1125.OberthEffect.Simulation.Input
 {
 public class ActionMapControl : MonoBehaviour
 {

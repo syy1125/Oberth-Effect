@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Lib.DataStructures;
 
 namespace Syy1125.OberthEffect.Lib.Utils
 {

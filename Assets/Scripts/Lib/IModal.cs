@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-namespace Syy1125.OberthEffect
+namespace Syy1125.OberthEffect.Lib
 {
 public interface IModal : IEventSystemHandler
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Common.Utils
+namespace Syy1125.OberthEffect.Lib.DataStructures
 {
 public class MinHeap<T, TKey> : ICollection<T> where TKey : IComparable<TKey>
 {

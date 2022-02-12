@@ -5,7 +5,7 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Utils
+namespace Syy1125.OberthEffect.Common.Utils
 {
 public static class VehicleBlockUtils
 {

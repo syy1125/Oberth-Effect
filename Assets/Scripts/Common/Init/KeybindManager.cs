@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
 
-namespace Syy1125.OberthEffect.Init
+namespace Syy1125.OberthEffect.Common.Init
 {
 [Serializable]
 public struct KeybindOverride

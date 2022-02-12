@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Syy1125.OberthEffect.Lib;
+using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer.Menu
 {
