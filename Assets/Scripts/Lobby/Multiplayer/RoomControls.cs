@@ -4,6 +4,7 @@ using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Match;

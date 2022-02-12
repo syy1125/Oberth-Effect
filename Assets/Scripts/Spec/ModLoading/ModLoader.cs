@@ -44,6 +44,13 @@ public static class ModLoader
 	internal static ModLoadingPipeline<SoundSpec> SoundPipeline;
 	internal static ModLoadingPipeline<VehicleResourceSpec> VehicleResourcePipeline;
 	internal static ModLoadingPipeline<ControlGroupSpec> ControlGroupPipeline;
+	internal static ModLoadingPipeline<StockVehicleSpec> StockVehiclePipeline;
+
+	private static IEnumerable<IModLoadingPipeline> Pipelines => new IModLoadingPipeline[]
+	{
+		BlockPipeline, BlockCategoryPipeline, TexturePipeline, SoundPipeline, VehicleResourcePipeline,
+		ControlGroupPipeline, StockVehiclePipeline
+	};
 
 	public static bool Initialized { get; private set; }
 
@@ -63,6 +70,10 @@ public static class ModLoader
 		);
 		VehicleResourcePipeline = new ModLoadingPipeline<VehicleResourceSpec>(_modsRoot, "Vehicle Resources");
 		ControlGroupPipeline = new ModLoadingPipeline<ControlGroupSpec>(_modsRoot, "Control Groups");
+		StockVehiclePipeline = new ModLoadingPipeline<StockVehicleSpec>(
+			_modsRoot, "Stock Vehicles",
+			ResolveAbsolutePaths(nameof(StockVehicleSpec.VehiclePath))
+		);
 
 		Initialized = true;
 	}
@@ -218,15 +229,11 @@ public static class ModLoader
 
 	#endregion
 
-	#region Mod Content
-
 	public static ushort BasicChecksum { get; private set; }
 	public static ushort StrictChecksum { get; private set; }
 	public static ushort FullChecksum { get; private set; }
 
 	public static bool DataReady { get; private set; }
-
-	#endregion
 
 	public static void LoadAllEnabledContent()
 	{
@@ -250,12 +257,10 @@ public static class ModLoader
 				LoadDescription = enabledMods[i].Mod.DisplayName;
 			}
 
-			BlockPipeline.LoadModContent(mod);
-			BlockCategoryPipeline.LoadModContent(mod);
-			TexturePipeline.LoadModContent(mod);
-			SoundPipeline.LoadModContent(mod);
-			VehicleResourcePipeline.LoadModContent(mod);
-			ControlGroupPipeline.LoadModContent(mod);
+			foreach (IModLoadingPipeline pipeline in Pipelines)
+			{
+				pipeline.LoadModContent(mod);
+			}
 		}
 	}
 
@@ -267,12 +272,10 @@ public static class ModLoader
 			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())))
 			.Build();
 
-		BlockPipeline.ParseSpecInstances(deserializer, OnParseProgress);
-		BlockCategoryPipeline.ParseSpecInstances(deserializer, OnParseProgress);
-		TexturePipeline.ParseSpecInstances(deserializer, OnParseProgress);
-		SoundPipeline.ParseSpecInstances(deserializer, OnParseProgress);
-		VehicleResourcePipeline.ParseSpecInstances(deserializer, OnParseProgress);
-		ControlGroupPipeline.ParseSpecInstances(deserializer, OnParseProgress);
+		foreach (IModLoadingPipeline pipeline in Pipelines)
+		{
+			pipeline.ParseSpecInstances(deserializer, OnParseProgress);
+		}
 	}
 
 	private static void OnParseProgress(string name, int i, int count)
@@ -295,29 +298,22 @@ public static class ModLoader
 		}
 
 		ValidateBlockIdAttribute.ValidIds =
-			new HashSet<string>(
-				BlockPipeline.Results.Where(instance => instance.Spec.Enabled).Select(instance => instance.Spec.BlockId)
-			);
+			new HashSet<string>(BlockPipeline.GetResultIds<string>(spec => spec.Enabled));
 		ValidateBlockCategoryIdAttribute.ValidIds =
-			new HashSet<string>(
-				BlockCategoryPipeline.Results.Where(instance => instance.Spec.Enabled)
-					.Select(instance => instance.Spec.BlockCategoryId)
-			);
+			new HashSet<string>(BlockCategoryPipeline.GetResultIds<string>(spec => spec.Enabled));
 		ValidateTextureIdAttribute.ValidIds =
-			new HashSet<string>(TexturePipeline.Results.Select(instance => instance.Spec.TextureId));
+			new HashSet<string>(TexturePipeline.GetResultIds<string>());
 		ValidateSoundIdAttribute.ValidIds =
-			new HashSet<string>(SoundPipeline.Results.Select(instance => instance.Spec.SoundId));
+			new HashSet<string>(SoundPipeline.GetResultIds<string>());
 		ValidateVehicleResourceIdAttribute.ValidIds =
-			new HashSet<string>(VehicleResourcePipeline.Results.Select(instance => instance.Spec.ResourceId));
+			new HashSet<string>(VehicleResourcePipeline.GetResultIds<string>());
 		ValidateControlGroupIdAttribute.ValidIds =
-			new HashSet<string>(ControlGroupPipeline.Results.Select(instance => instance.Spec.ControlGroupId));
+			new HashSet<string>(ControlGroupPipeline.GetResultIds<string>());
 
-		BlockPipeline.ValidateResults();
-		BlockCategoryPipeline.ValidateResults();
-		TexturePipeline.ValidateResults();
-		SoundPipeline.ValidateResults();
-		VehicleResourcePipeline.ValidateResults();
-		ControlGroupPipeline.ValidateResults();
+		foreach (IModLoadingPipeline pipeline in Pipelines)
+		{
+			pipeline.ValidateResults();
+		}
 	}
 
 	public static void ComputeChecksum()
@@ -339,6 +335,7 @@ public static class ModLoader
 		ushort soundChecksum = GetChecksum(SoundPipeline.Results, level);
 		ushort vehicleResourceChecksum = GetChecksum(VehicleResourcePipeline.Results, level);
 		ushort controlGroupChecksum = GetChecksum(ControlGroupPipeline.Results, level);
+		ushort stockVehicleChecksum = GetChecksum(StockVehiclePipeline.Results, level);
 
 		// Convert throws OverflowException even in unchecked. So start with uint and then truncate it down to ushort.
 		return (ushort) Convert.ToUInt32(
@@ -348,6 +345,7 @@ public static class ModLoader
 			+ soundChecksum
 			+ vehicleResourceChecksum
 			+ controlGroupChecksum
+			+ stockVehicleChecksum
 		);
 	}
 
@@ -373,7 +371,7 @@ public static class ModLoader
 
 	private static ushort CompactChecksum(ulong sum)
 	{
-		return (ushort) ((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) | 0xffff));
+		return (ushort) ((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) & 0xffff));
 	}
 }
 }

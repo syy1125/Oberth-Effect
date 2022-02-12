@@ -16,7 +16,14 @@ namespace Syy1125.OberthEffect.Spec.ModLoading
 internal class InvalidSpecStructureException : Exception
 {}
 
-public class ModLoadingPipeline<TSpec>
+internal interface IModLoadingPipeline
+{
+	void LoadModContent(ModListElement mod);
+	void ParseSpecInstances(IDeserializer deserializer, Action<string, int, int> onProgress);
+	void ValidateResults();
+}
+
+public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 {
 	private struct GameSpecDocument
 	{
@@ -74,6 +81,11 @@ public class ModLoadingPipeline<TSpec>
 					}
 				}
 			}
+		}
+
+		if (_idField == null)
+		{
+			Debug.LogError($"{typeof(TSpec)} has no ID field");
 		}
 	}
 
@@ -243,6 +255,16 @@ public class ModLoadingPipeline<TSpec>
 				Debug.LogWarning(message);
 			}
 		}
+	}
+
+	public IEnumerable<T> GetResultIds<T>(Predicate<TSpec> @where = null)
+	{
+		FieldInfo idField = typeof(TSpec).GetField(_idField, BindingFlags.Public | BindingFlags.Instance);
+		Debug.Assert(idField != null, nameof(idField) + " != null");
+
+		return @where == null
+			? Results.Select(instance => (T) idField.GetValue(instance.Spec))
+			: Results.Where(instance => @where(instance.Spec)).Select(instance => (T) idField.GetValue(instance.Spec));
 	}
 }
 }

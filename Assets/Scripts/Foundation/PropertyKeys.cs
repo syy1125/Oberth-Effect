@@ -1,7 +1,7 @@
 namespace Syy1125.OberthEffect.Foundation
 {
 /// <summary>
-/// Central place to store photon custom property keys to avoid potential conflicts
+/// Central place to store custom property keys to avoid potential conflicts
 /// </summary>
 public static class PropertyKeys
 {
@@ -17,6 +17,7 @@ public static class PropertyKeys
 	public const string BLOCKS_VOLUME = "BlocksVolume";
 	public const string PHYSICS_UNIT_MODE = "PhysicsUnitMode";
 	public const string DESIGNER_GRID_OPACITY = "DesignerGridOpacity";
+	public const string SHOW_STOCK_VEHICLES = "ShowStockVehicles";
 	public const string SCREEN_SHAKE_MULTIPLIER = "ScreenShakeMultiplier";
 
 	// Photon room custom properties

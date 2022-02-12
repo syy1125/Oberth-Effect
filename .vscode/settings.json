@@ -65,8 +65,11 @@
         "Assets/StreamingAssets/JsonSchema/ControlGroupConfigSchema.json": [
             "Assets/StreamingAssets/Mods/*/Control Groups/**/*.yaml"
         ],
-        "Assets/StreamingAssets/JsonSchema/VehicleResourceSchema.json": [
+        "Assets/StreamingAssets/JsonSchema/VehicleResourceSpecSchema.json": [
             "Assets/StreamingAssets/Mods/*/Vehicle Resources/**/*.yaml"
+        ],
+        "Assets/StreamingAssets/JsonSchema/StockVehicleSpecSchema.json": [
+            "Assets/StreamingAssets/Mods/*/Stock Vehicles/**/*.yaml"
         ]
     }
 }

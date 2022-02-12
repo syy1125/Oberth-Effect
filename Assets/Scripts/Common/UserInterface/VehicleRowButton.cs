@@ -1,7 +1,8 @@
+using Syy1125.OberthEffect.Foundation;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Syy1125.OberthEffect.Foundation.UserInterface
+namespace Syy1125.OberthEffect.Common.UserInterface
 {
 [RequireComponent(typeof(Button))]
 public class VehicleRowButton : MonoBehaviour
@@ -33,9 +34,9 @@ public class VehicleRowButton : MonoBehaviour
 		}
 	}
 
-	public void DisplayVehicle(VehicleBlueprint blueprint)
+	public void DisplayVehicle(VehicleBlueprint blueprint, bool isStock = false)
 	{
-		NameText.text = blueprint.Name;
+		NameText.text = isStock ? "[S] " + blueprint.Name : blueprint.Name;
 		CostText.text = blueprint.CachedCost.ToString();
 	}
 

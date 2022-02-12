@@ -1,4 +1,5 @@
 using System.IO;
+using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Foundation.UserInterface;
 using Syy1125.OberthEffect.Lib;
 using UnityEngine;
@@ -39,7 +40,6 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 			if (!string.IsNullOrWhiteSpace(vehicleName))
 			{
-				FileNameInput.text = vehicleName;
 				VehicleList.SelectName(vehicleName);
 				FileNameInput.text = vehicleName;
 				FileNameInput.interactable = true;

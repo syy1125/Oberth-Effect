@@ -1,0 +1,10 @@
+﻿{
+    "$id": "StockVehicleSpecSchema",
+    "type": "object",
+    "required": ["VehicleId"],
+    "properties": {
+        "VehicleId": { "type": "string" },
+        "Enabled": { "type": "boolean" },
+        "VehiclePath": { "type": "string" }
+    }
+}

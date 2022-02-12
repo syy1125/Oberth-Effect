@@ -46,10 +46,8 @@ public class BlockSpec : ICustomChecksum
 		{
 			return;
 		}
-		else
-		{
-			ChecksumHelper.GetBytesFromFields(stream, this, level);
-		}
+
+		ChecksumHelper.GetBytesFromFields(stream, this, level);
 	}
 }
 
