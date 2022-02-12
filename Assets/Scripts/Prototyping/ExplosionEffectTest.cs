@@ -21,7 +21,7 @@ public class ExplosionEffectTest : MonoBehaviour
 		{
 			Vector3 position = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 			position.z = 0f;
-			ExplosionManager.Instance.PlayEffectAt(position, 1f, null);
+			ExplosionManager.Instance.PlayEffectAt(position, 1f, Vector2.zero);
 
 			Debug.Log(ExplosionManager.CalculateDamageFactor(_min, _max, position, 0.5f));
 		}
@@ -30,7 +30,7 @@ public class ExplosionEffectTest : MonoBehaviour
 		{
 			Vector3 position = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 			position.z = 0f;
-			ExplosionManager.Instance.PlayEffectAt(position, 2f, null);
+			ExplosionManager.Instance.PlayEffectAt(position, 2f, Vector2.zero);
 
 			Debug.Log(ExplosionManager.CalculateDamageFactor(_min, _max, position, 1f));
 		}

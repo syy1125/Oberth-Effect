@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Common;
+﻿using Photon.Pun;
+using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
 using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
@@ -42,10 +43,12 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 		if (Mathf.Approximately(radius, 0f) || Mathf.Approximately(damage, 0f)) return;
 
+		var photonView = GetComponentInParent<PhotonView>();
+
 		Debug.Log($"Block \"{gameObject}\" is exploding for {damage} damage in {radius} game unit radius.");
 		ExplosionManager.Instance.CreateExplosionAt(
-			transform.TransformPoint(_explosionOffset), radius, damage, -1,
-			GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
+			photonView.ViewID, photonView.transform.InverseTransformPoint(transform.TransformPoint(_explosionOffset)),
+			radius, damage, -1
 		);
 	}
 

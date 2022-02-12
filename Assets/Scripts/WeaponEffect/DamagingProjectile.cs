@@ -179,9 +179,17 @@ public class DamagingProjectile : MonoBehaviourPun
 		if (_damageType == DamageType.Explosive)
 		{
 			// Explosive damage special case
+			Vector3 explosionCenter = hit.point;
+			ReferenceFrameProvider referenceFrame = hitTransform.GetComponentInParent<ReferenceFrameProvider>();
+			int? referenceFrameId = null;
+			if (referenceFrame != null)
+			{
+				referenceFrameId = referenceFrame.photonView.ViewID;
+				explosionCenter = referenceFrame.transform.InverseTransformPoint(explosionCenter);
+			}
+
 			ExplosionManager.Instance.CreateExplosionAt(
-				hit.point, _explosionRadius, _damage * damageModifier, photonView.OwnerActorNr,
-				hitTransform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
+				referenceFrameId, explosionCenter, _explosionRadius, _damage * damageModifier, photonView.OwnerActorNr
 			);
 			gameObject.SetActive(false);
 			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
@@ -232,8 +240,8 @@ public class DamagingProjectile : MonoBehaviourPun
 			if (_damageType == DamageType.Explosive && !_expectExploded)
 			{
 				ExplosionManager.Instance.CreateExplosionAt(
-					transform.position, _explosionRadius, _damage * _getDamageModifier(),
-					photonView.OwnerActorNr, null
+					null, transform.position,
+					_explosionRadius, _damage * _getDamageModifier(), photonView.OwnerActorNr
 				);
 			}
 

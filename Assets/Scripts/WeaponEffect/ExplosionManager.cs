@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using log4net.Core;
 using Photon.Pun;
 using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.Enums;
@@ -49,22 +50,50 @@ public class ExplosionManager : MonoBehaviourPun
 		}
 	}
 
-	public void CreateExplosionAt(Vector3 center, float radius, float damage, int ownerId, Vector2? preferredVelocity)
+	/// <summary>
+	/// Function to call when something explodes.
+	/// </summary>
+	/// <param name="referenceFrameId">If applicable, the reference frame that the explosion attaches to.</param>
+	/// <param name="center">The center of the explosion. If `referenceFrameId` is specified, this is the local position relative to the reference frame's transform.</param>
+	/// <param name="radius">Radius of the explosion.</param>
+	/// <param name="damage">Base damage value of the explosion.</param>
+	/// <param name="ownerId">Owner of the explosion. Used in friendly fire calculations.</param>
+	public void CreateExplosionAt(
+		int? referenceFrameId, Vector3 center, float radius, float damage, int ownerId
+	)
 	{
-		DoExplosionAt(center, radius, damage, true, ownerId, preferredVelocity);
+		DoExplosionAt(referenceFrameId, center, radius, damage, true, ownerId);
 		photonView.RPC(
 			nameof(DoExplosionAt), RpcTarget.Others,
-			center, radius, damage, false, ownerId, preferredVelocity
+			referenceFrameId, center, radius, damage, false, ownerId
 		);
 	}
 
 	[PunRPC]
 	private void DoExplosionAt(
-		Vector3 center, float radius, float damage, bool isMine, int ownerId, Vector2? preferredVelocity
+		int? referenceFrameId, Vector3 center, float radius, float damage, bool isMine, int ownerId
 	)
 	{
+		Vector2? visualVelocity = null;
+
+		if (referenceFrameId != null)
+		{
+			var referenceFrame = PhotonView.Find(referenceFrameId.Value)?.GetComponent<ReferenceFrameProvider>();
+
+			if (referenceFrame != null)
+			{
+				center = referenceFrame.transform.TransformPoint(center);
+				visualVelocity = referenceFrame.GetVelocity();
+			}
+		}
+
+		if (visualVelocity == null && ReferenceFrameProvider.MainReferenceFrame != null)
+		{
+			visualVelocity = ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
+		}
+
 		DealExplosionDamageAt(center, radius, damage, isMine, ownerId);
-		PlayEffectAt(center, radius, preferredVelocity);
+		PlayEffectAt(center, radius, visualVelocity ?? Vector2.zero);
 	}
 
 	#region Damage Calculation
@@ -168,20 +197,13 @@ public class ExplosionManager : MonoBehaviourPun
 
 	#region Visual Effects
 
-	public void PlayEffectAt(Vector3 position, float size, Vector2? preferredVelocity)
+	public void PlayEffectAt(Vector3 position, float size, Vector2 velocity)
 	{
-		StartCoroutine(DoPlayEffect(position, size, preferredVelocity));
+		StartCoroutine(DoPlayEffect(position, size, velocity));
 	}
 
-	private IEnumerator DoPlayEffect(Vector2 position, float size, Vector2? preferredVelocity)
+	private IEnumerator DoPlayEffect(Vector2 position, float size, Vector2 velocity)
 	{
-		if (preferredVelocity == null && ReferenceFrameProvider.MainReferenceFrame != null)
-		{
-			preferredVelocity = ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
-		}
-
-		Vector2 velocity = preferredVelocity.GetValueOrDefault();
-
 		GameObject effect = _visualEffectPool.Count > 0
 			? _visualEffectPool.Pop()
 			: Instantiate(ExplosionEffectPrefab);

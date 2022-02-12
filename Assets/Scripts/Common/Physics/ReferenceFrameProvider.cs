@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Common.Physics
 {
 [RequireComponent(typeof(PhotonView))]
-public class ReferenceFrameProvider : MonoBehaviour
+public class ReferenceFrameProvider : MonoBehaviourPun
 {
 	public static ReferenceFrameProvider MainReferenceFrame;
 
@@ -18,7 +18,7 @@ public class ReferenceFrameProvider : MonoBehaviour
 	private void Awake()
 	{
 		ReferenceFrames.Add(this);
-		IsMine = GetComponent<PhotonView>().IsMine;
+		IsMine = photonView.IsMine;
 		_body = GetComponent<Rigidbody2D>();
 	}
 

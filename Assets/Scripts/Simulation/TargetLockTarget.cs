@@ -18,7 +18,7 @@ public class TargetLockTarget : MonoBehaviourPun, IGuidedWeaponTarget, IVehicleD
 
 	private void Awake()
 	{
-		PhotonViewId = GetComponent<PhotonView>().ViewID;
+		PhotonViewId = photonView.ViewID;
 		_body = GetComponent<Rigidbody2D>();
 	}
 

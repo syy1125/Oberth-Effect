@@ -272,6 +272,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				{
 					case DamageType.Kinetic:
 					case DamageType.Energy:
+					{
 						if (hitTarget is IDirectDamageable directTarget)
 						{
 							directTarget.RequestDirectDamage(_damageType, damageThisTick, _armorPierce);
@@ -286,12 +287,26 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 						}
 
 						break;
+					}
 					case DamageType.Explosive:
+					{
+						Vector3 explosionCenter = worldEnd;
+						ReferenceFrameProvider referenceFrame =
+							hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>();
+						int? referenceFrameId = null;
+
+						if (referenceFrame != null)
+						{
+							explosionCenter = referenceFrame.transform.InverseTransformPoint(worldEnd);
+							referenceFrameId = referenceFrame.photonView.ViewID;
+						}
+
 						ExplosionManager.Instance.CreateExplosionAt(
-							worldEnd, _explosionRadius, damageThisTick, _ownerContext.OwnerId,
-							hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>()?.GetVelocity()
+							referenceFrameId, explosionCenter,
+							_explosionRadius, damageThisTick, _ownerContext.OwnerId
 						);
 						break;
+					}
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
