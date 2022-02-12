@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Common.ControlCondition;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
 
 namespace Syy1125.OberthEffect.Blocks
 {

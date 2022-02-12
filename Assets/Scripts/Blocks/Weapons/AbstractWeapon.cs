@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.WeaponEffect;

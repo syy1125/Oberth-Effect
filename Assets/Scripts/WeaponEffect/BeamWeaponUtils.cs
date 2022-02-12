@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect

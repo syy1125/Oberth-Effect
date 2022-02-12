@@ -1,8 +1,8 @@
 using System;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
 using UnityEngine;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.ControlGroup;

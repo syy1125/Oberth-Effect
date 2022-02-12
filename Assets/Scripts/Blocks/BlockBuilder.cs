@@ -1,9 +1,9 @@
 ﻿using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Colors;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Colors;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;

@@ -3,9 +3,9 @@ using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ControlCondition;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
+using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion

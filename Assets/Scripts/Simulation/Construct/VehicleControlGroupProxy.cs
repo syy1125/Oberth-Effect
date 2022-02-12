@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Common.ControlCondition;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Construct

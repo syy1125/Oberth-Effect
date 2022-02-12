@@ -1,4 +1,4 @@
-﻿using Syy1125.OberthEffect.Common.Enums;
+﻿using Syy1125.OberthEffect.Foundation.Enums;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {

@@ -1,6 +1,6 @@
 ﻿using Photon.Pun;
-using Syy1125.OberthEffect.Common.ControlCondition;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.WeaponEffect;

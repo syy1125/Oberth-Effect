@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Physics;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Foundation.Physics;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.WeaponEffect

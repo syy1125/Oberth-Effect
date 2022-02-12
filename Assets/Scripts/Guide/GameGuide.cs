@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Enums;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 

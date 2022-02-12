@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 using UnityEngine.Events;

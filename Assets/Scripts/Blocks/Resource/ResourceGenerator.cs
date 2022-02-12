@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ControlCondition;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;

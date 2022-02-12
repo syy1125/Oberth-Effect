@@ -1,6 +1,6 @@
-﻿using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Utils;
-using Syy1125.OberthEffect.Components.UserInterface;
+﻿using Syy1125.OberthEffect.Components.UserInterface;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Init;
 using UnityEngine;
 

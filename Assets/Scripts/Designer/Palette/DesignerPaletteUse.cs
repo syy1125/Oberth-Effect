@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Blocks;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.UserInterface;
-using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.UserInterface;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;

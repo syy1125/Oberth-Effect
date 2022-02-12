@@ -2,8 +2,8 @@
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Utils;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Config

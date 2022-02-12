@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Utils;
 using UnityEngine;

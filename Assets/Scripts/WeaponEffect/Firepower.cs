@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation.Enums;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {

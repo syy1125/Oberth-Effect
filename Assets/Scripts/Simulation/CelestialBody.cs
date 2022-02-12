@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;

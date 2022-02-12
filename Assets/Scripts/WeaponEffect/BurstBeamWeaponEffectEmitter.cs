@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.Colors;
-using Syy1125.OberthEffect.Common.Enums;
-using Syy1125.OberthEffect.Common.Physics;
-using Syy1125.OberthEffect.Common.Utils;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Colors;
+using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Foundation.Physics;
+using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;

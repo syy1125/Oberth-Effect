@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Designer.Palette;
+using Syy1125.OberthEffect.Foundation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

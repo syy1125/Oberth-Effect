@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using Photon.Pun;
-using Syy1125.OberthEffect.Common.Enums;
+using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 

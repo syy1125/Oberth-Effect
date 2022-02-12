@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Common;
+using Syy1125.OberthEffect.Foundation;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Construct

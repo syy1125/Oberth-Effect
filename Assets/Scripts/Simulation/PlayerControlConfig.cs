@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Syy1125.OberthEffect.Common;
-using Syy1125.OberthEffect.Common.ControlCondition;
+using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Init;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;

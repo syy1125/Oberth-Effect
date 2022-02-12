@@ -1,5 +1,5 @@
-﻿using Syy1125.OberthEffect.Common.Match;
-using Syy1125.OberthEffect.Common.Utils;
+﻿using Syy1125.OberthEffect.Foundation.Match;
+using Syy1125.OberthEffect.Foundation.Utils;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
