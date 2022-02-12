@@ -34,8 +34,8 @@ public class BlockHealthBar : MonoBehaviour
 		Vector2 screenPosition = _mainCamera.WorldToScreenPoint(targetPosition);
 
 		if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-			_parentTransform, screenPosition, null, out Vector2 localPoint
-		))
+			    _parentTransform, screenPosition, null, out Vector2 localPoint
+		    ))
 		{
 			transform.localPosition = localPoint;
 		}

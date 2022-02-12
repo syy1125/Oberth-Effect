@@ -264,8 +264,8 @@ public class VehicleBuilder : MonoBehaviour
 			var positions = new List<Vector2Int>();
 
 			foreach (Vector3Int localPosition in new BlockBounds(
-				spec.Construction.BoundsMin, spec.Construction.BoundsMax
-			).AllPositionsWithin)
+				         spec.Construction.BoundsMin, spec.Construction.BoundsMax
+			         ).AllPositionsWithin)
 			{
 				Vector2Int globalPosition = blockInstance.Position
 				                            + TransformUtils.RotatePoint(localPosition, blockInstance.Rotation);

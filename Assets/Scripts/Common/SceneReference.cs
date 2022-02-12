@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -37,7 +36,7 @@ public class SceneReference : ISerializationCallbackReceiver
 #if UNITY_EDITOR
 	// What we use in editor to select the scene
 	[SerializeField]
-	private Object sceneAsset;
+	private UnityEngine.Object sceneAsset;
 	private bool IsValidSceneAsset
 	{
 		get
@@ -320,8 +319,9 @@ public class SceneReferencePropertyDrawer : PropertyDrawer
 					+ "."
 					+ readOnlyWarning;
 				if (DrawUtils.ButtonHelper(
-					buttonRect, "Add...", "Add (buildIndex " + addIndex + ")", EditorStyles.miniButtonLeft, tooltipMsg
-				))
+					    buttonRect, "Add...", "Add (buildIndex " + addIndex + ")", EditorStyles.miniButtonLeft,
+					    tooltipMsg
+				    ))
 					BuildUtils.AddBuildScene(buildScene);
 				buttonRect.width /= 2;
 				buttonRect.x += buttonRect.width;
@@ -338,8 +338,8 @@ public class SceneReferencePropertyDrawer : PropertyDrawer
 				             + readOnlyWarning;
 
 				if (DrawUtils.ButtonHelper(
-					buttonRect, stateString, stateString + " In Build", EditorStyles.miniButtonLeft, tooltipMsg
-				))
+					    buttonRect, stateString, stateString + " In Build", EditorStyles.miniButtonLeft, tooltipMsg
+				    ))
 					BuildUtils.SetBuildSceneState(buildScene, !isEnabled);
 				buttonRect.x += buttonRect.width;
 
@@ -347,8 +347,8 @@ public class SceneReferencePropertyDrawer : PropertyDrawer
 					"Completely remove this scene from build settings.\nYou will need to add it again for it to be included in builds!"
 					+ readOnlyWarning;
 				if (DrawUtils.ButtonHelper(
-					buttonRect, "Remove...", "Remove from Build", EditorStyles.miniButtonMid, tooltipMsg
-				))
+					    buttonRect, "Remove...", "Remove from Build", EditorStyles.miniButtonMid, tooltipMsg
+				    ))
 					BuildUtils.RemoveBuildScene(buildScene);
 			}
 		}
@@ -478,7 +478,7 @@ public class SceneReferencePropertyDrawer : PropertyDrawer
 		/// <summary>
 		/// For a given Scene Asset object reference, extract its build settings data, including buildIndex.
 		/// </summary>
-		public static BuildScene GetBuildScene(Object sceneObject)
+		public static BuildScene GetBuildScene(UnityEngine.Object sceneObject)
 		{
 			var entry = new BuildScene
 			{

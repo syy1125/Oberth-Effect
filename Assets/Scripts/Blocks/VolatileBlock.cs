@@ -1,7 +1,5 @@
 ﻿using Photon.Pun;
-using Syy1125.OberthEffect.Common;
 using Syy1125.OberthEffect.Common.ControlCondition;
-using Syy1125.OberthEffect.Common.Physics;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;

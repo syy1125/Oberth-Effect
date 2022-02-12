@@ -54,7 +54,7 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 		if (Instance == this)
 		{
 			Instance = null;
-			
+
 			if (_sprites != null)
 			{
 				foreach (Sprite sprite in _sprites.Values)

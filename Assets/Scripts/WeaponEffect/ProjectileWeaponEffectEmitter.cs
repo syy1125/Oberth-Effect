@@ -334,9 +334,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void PlayFireSound()
 	{
-			float volume = GetComponentInParent<IBlockSoundAttenuator>()
-				.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
-			_audioSource.PlayOneShot(_fireSound, volume);
+		float volume = GetComponentInParent<IBlockSoundAttenuator>()
+			.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
+		_audioSource.PlayOneShot(_fireSound, volume);
 	}
 }
 }

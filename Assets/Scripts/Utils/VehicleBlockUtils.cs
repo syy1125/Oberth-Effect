@@ -12,7 +12,7 @@ public static class VehicleBlockUtils
 	public static IEnumerable<Vector2Int> AllPositionsOccupiedBy(BlockSpec spec, Vector2Int rootLocation, int rotation)
 	{
 		foreach (Vector3Int localPosition in new BlockBounds(spec.Construction.BoundsMin, spec.Construction.BoundsMax)
-			.AllPositionsWithin)
+			         .AllPositionsWithin)
 		{
 			yield return rootLocation + TransformUtils.RotatePoint(localPosition, rotation);
 		}

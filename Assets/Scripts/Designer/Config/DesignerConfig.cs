@@ -8,7 +8,6 @@ using Syy1125.OberthEffect.Common.Colors;
 using Syy1125.OberthEffect.Common.UserInterface;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Components.UserInterface;
-using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -207,7 +206,7 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 	public void ReloadVehicle()
 	{
 		UpdatingElements = true;
-		
+
 		_selectedBlocks.Clear();
 		ClearSelectionIndicators();
 
@@ -224,7 +223,7 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 		_context.SetColorScheme(colorScheme);
 
 		ShowVehicleConfig();
-		
+
 		UpdatingElements = false;
 	}
 

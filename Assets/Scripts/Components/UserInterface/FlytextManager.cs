@@ -22,8 +22,8 @@ public class FlytextManager : MonoBehaviour
 	{
 		Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPosition);
 		if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-			GetComponent<RectTransform>(), screenPoint, Camera.main, out Vector2 localPoint
-		))
+			    GetComponent<RectTransform>(), screenPoint, Camera.main, out Vector2 localPoint
+		    ))
 		{
 			GameObject flytext = Instantiate(FlytextPrefab, transform);
 			flytext.transform.localPosition = localPoint;
