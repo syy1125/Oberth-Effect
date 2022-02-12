@@ -38,7 +38,7 @@ Propulsion:
       OberthEffect/Energy: 50
     MaxThrottleRate: 2
     ThrustSound: 
-      SoundId: OberthEffect/Engine
+      SoundId: OberthEffect/IonEngine
       MinVolume: 0
       MaxVolume: 0.4
     Particles:

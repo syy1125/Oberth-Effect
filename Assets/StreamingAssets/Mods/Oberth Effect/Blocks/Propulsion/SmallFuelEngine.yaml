@@ -38,7 +38,7 @@ Propulsion:
       MatchValues: [ On ]
     MaxThrottleRate: 2
     ThrustSound: 
-      SoundId: OberthEffect/Engine
+      SoundId: OberthEffect/FuelEngine
       MaxVolume: 0.6
     Particles:
       - Offset: { X: 0, Y: -0.2 }
