@@ -396,7 +396,7 @@ public class GameGuide : MonoBehaviour
 			Step(
 				"Propulsion (2/3)", string.Join(
 					"\n",
-					"Engines are workhorses with powerful thrust in a single direction. But they generally require time to ramp up thrust.",
+					"Engines have powerful thrust in a single direction, but they generally require time to ramp up thrust.",
 					"Thrusters, on the other hand, are designed to be versatile. They are weaker and less efficient, but have fast response time and often can provide thrust in more than one direction."
 				), null
 			)
@@ -447,7 +447,7 @@ public class GameGuide : MonoBehaviour
 				"Weapons",
 				string.Join(
 					"\n",
-					"Vehicle-mounted weapons lets you shoot back when encountering hostiles. Never go into combat without them.",
+					"Mounting weapons lets you shoot back when encountering hostiles. This guide won't cover then in detail, but you should experiment and see what kinds of weapons work well for your playstyle.",
 					"A detailed description of damage mechanics can be found in the help (F1) screen."
 				),
 				null

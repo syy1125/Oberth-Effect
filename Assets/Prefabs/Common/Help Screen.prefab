@@ -244,14 +244,15 @@ MonoBehaviour:
     and increases linearly with AP up to the block's armor value, at which point
     the weapon will deal full damage.\n\nThere are three types of weaponry and corresponding
     damage type in this game.\n<color=\"silver\">Kinetic</color> weapons shoot some
-    kind of physical projectile. They tend to have high damage and AP values, but
-    also have a considerable amount of recoil.\n<color=\"lime\">Energy</color> weapons
-    use directed energy to attack enemies, bypassing the need for a physical medium.
-    They tend to deal less damage and have more demanding resource draw, but are
-    easier to aim because of their higher projectile speeds or hitscan nature.\n<color=\"red\">Explosive</color>
-    damage always has an AP value of 1, but will deal damage to every block within
-    the explosion radius, making them great for targeting sensitive components. The
-    damage decreases as distance from the center of the explosion increases."
+    kind of physical projectile. They tend to have high damage but can be challenging
+    to aim.\n<color=\"lime\">Energy</color> weapons use directed energy to attack
+    enemies, bypassing the need for a physical medium. They tend to deal mediocre
+    damage and have more demanding resource draw but can hit more consistently.\n<color=\"red\">Explosive</color>
+    damage always has an AP value of 1, but will spread out their damage over everything
+    inside the explosion radius. The damage scales with the hit surface area and
+    decreases as distance from the center of the explosion increases. Explosive weapons
+    often have deceptively high damage values but struggle against tiny targets and
+    targets with high armor."
 --- !u!1 &1420612001147136319
 GameObject:
   m_ObjectHideFlags: 0
