@@ -46,8 +46,9 @@
                     "$ref": "RendererSpecArraySchema.json",
                     "description": "Renderers for the projectile."
                 },
-                "ProjectileParticles": {
-                    "$ref": "ParticleSystemSpecArraySchema.json"
+                "TrailParticles": {
+                    "$ref": "ParticleSystemSpecArraySchema.json",
+                    "description": "Trail particles for the projectile"
                 }
             }
         },

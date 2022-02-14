@@ -45,8 +45,6 @@ public class BlockSoundAttenuator : MonoBehaviour, IBlockSoundAttenuator
 				{
 					_persistentAttenuation[entry.Key] = Mathf.Lerp(entry.Value, 1f, attenuateAmount);
 				}
-
-				Debug.Log($"{entry.Key} at {_persistentAttenuation[entry.Key]:0%}");
 			}
 
 			foreach (KeyValuePair<string, float> entry in _persistentVolumes)
@@ -56,7 +54,7 @@ public class BlockSoundAttenuator : MonoBehaviour, IBlockSoundAttenuator
 
 			_persistentVolumes.Clear();
 
-			foreach (string soundId in _oneShotAttenuation.Keys)
+			foreach (string soundId in _oneShotAttenuation.Keys.ToList())
 			{
 				_oneShotAttenuation[soundId] = Mathf.Lerp(_oneShotAttenuation[soundId], 1f, attenuateAmount);
 			}

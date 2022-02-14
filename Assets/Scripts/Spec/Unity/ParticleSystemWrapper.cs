@@ -13,7 +13,7 @@ public class ParticleSystemWrapper : MonoBehaviour
 {
 	private ParticleSystem _psCache;
 
-	public ParticleSystem Particles
+	public ParticleSystem ParticleSystem
 	{
 		get
 		{
@@ -30,7 +30,7 @@ public class ParticleSystemWrapper : MonoBehaviour
 
 	public void LoadSpec(ParticleSystemSpec spec)
 	{
-		var main = Particles.main;
+		var main = ParticleSystem.main;
 		main.startSize = spec.Size;
 		main.startLifetime = spec.Lifetime;
 		main.playOnAwake = false;
@@ -48,17 +48,17 @@ public class ParticleSystemWrapper : MonoBehaviour
 			Debug.LogError($"Failed to parse particle color {spec.Color}");
 		}
 
-		var emission = Particles.emission;
+		var emission = ParticleSystem.emission;
 		emission.enabled = true;
 		emission.rateOverTime = spec.EmissionRateOverTime;
 		emission.rateOverDistance = spec.EmissionRateOverDistance;
 
-		var shape = Particles.shape;
+		var shape = ParticleSystem.shape;
 		shape.enabled = true;
 		shape.angle = spec.SpreadAngle;
 		shape.radius = 0f;
 
-		var colorLifetime = Particles.colorOverLifetime;
+		var colorLifetime = ParticleSystem.colorOverLifetime;
 		colorLifetime.enabled = true;
 		var gradient = new Gradient();
 		gradient.SetKeys(
@@ -74,19 +74,19 @@ public class ParticleSystemWrapper : MonoBehaviour
 
 	public void Play()
 	{
-		Particles.Play();
+		ParticleSystem.Play();
 	}
 
 	public void Stop()
 	{
-		Particles.Stop();
+		ParticleSystem.Stop();
 	}
 
 	public static void BatchScaleThrustParticles(IEnumerable<ParticleSystemWrapper> wrappers, float thrustScale)
 	{
 		foreach (ParticleSystemWrapper wrapper in wrappers)
 		{
-			var main = wrapper.Particles.main;
+			var main = wrapper.ParticleSystem.main;
 
 			main.startSpeedMultiplier = wrapper._startSpeed * thrustScale;
 			var startColor = main.startColor.color;

@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.WeaponEffect
 {
 [Serializable]
-public struct BallisticProjectileConfig
+public struct ProjectileConfig
 {
 	public Vector2 ColliderSize;
 	public float Damage;
@@ -25,6 +25,7 @@ public struct BallisticProjectileConfig
 	public float HealthDamageScaling;
 
 	public RendererSpec[] Renderers;
+	public ParticleSystemSpec[] TrailParticles;
 }
 
 [RequireComponent(typeof(PhotonView))]
@@ -33,13 +34,14 @@ public struct BallisticProjectileConfig
 [RequireComponent(typeof(DamagingProjectile))]
 public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
-	private BallisticProjectileConfig _config;
+	private ProjectileConfig _config;
 	private PointDefenseTarget _pdTarget;
+	private ParticleSystemWrapper[] _particles;
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
-		_config = JsonUtility.FromJson<BallisticProjectileConfig>(
+		_config = JsonUtility.FromJson<ProjectileConfig>(
 			CompressionUtils.Decompress((byte[]) instantiationData[0])
 		);
 
@@ -62,10 +64,30 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		}
 
 		RendererHelper.AttachRenderers(transform, _config.Renderers);
+
+		if (_config.TrailParticles != null)
+		{
+			_particles = RendererHelper.CreateParticleSystems(transform, _config.TrailParticles);
+
+			foreach (ParticleSystemWrapper particle in _particles)
+			{
+				var main = particle.ParticleSystem.main;
+				main.simulationSpace = ParticleSystemSimulationSpace.Custom;
+				main.customSimulationSpace = Camera.main.transform;
+			}
+		}
 	}
 
 	private void Start()
 	{
+		if (_particles != null)
+		{
+			foreach (ParticleSystemWrapper particle in _particles)
+			{
+				particle.Play();
+			}
+		}
+
 		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
 	}
 

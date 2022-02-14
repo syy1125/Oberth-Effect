@@ -19,13 +19,9 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 	private float _minVolume;
 	private float _maxVolume;
 
-	private Transform _upParticleRoot;
 	private ParticleSystemWrapper[] _upParticles;
-	private Transform _downParticleRoot;
 	private ParticleSystemWrapper[] _downParticles;
-	private Transform _leftParticleRoot;
 	private ParticleSystemWrapper[] _leftParticles;
-	private Transform _rightParticleRoot;
 	private ParticleSystemWrapper[] _rightParticles;
 
 	private Vector3 _localRight;
@@ -57,24 +53,18 @@ public class OmniThruster : AbstractThrusterBase, ITooltipProvider
 		{
 			int particleCount = spec.Particles.Length;
 
-			_upParticleRoot = CreateParticleParent("UpParticles", 0f);
-			_upParticles = new ParticleSystemWrapper[particleCount];
-			_downParticleRoot = CreateParticleParent("DownParticles", 180f);
-			_downParticles = new ParticleSystemWrapper[particleCount];
-			_leftParticleRoot = CreateParticleParent("LeftParticles", 90f);
-			_leftParticles = new ParticleSystemWrapper[particleCount];
-			_rightParticleRoot = CreateParticleParent("RightParticles", -90f);
-			_rightParticles = new ParticleSystemWrapper[particleCount];
-
-			for (int i = 0; i < particleCount; i++)
-			{
-				ParticleSystemSpec particleSpec = spec.Particles[i];
-
-				_upParticles[i] = RendererHelper.CreateParticleSystem(_upParticleRoot, particleSpec);
-				_downParticles[i] = RendererHelper.CreateParticleSystem(_downParticleRoot, particleSpec);
-				_leftParticles[i] = RendererHelper.CreateParticleSystem(_leftParticleRoot, particleSpec);
-				_rightParticles[i] = RendererHelper.CreateParticleSystem(_rightParticleRoot, particleSpec);
-			}
+			_upParticles = RendererHelper.CreateParticleSystems(
+				CreateParticleParent("UpParticles", 0f), spec.Particles
+			);
+			_downParticles = RendererHelper.CreateParticleSystems(
+				CreateParticleParent("DownParticles", 180f), spec.Particles
+			);
+			_leftParticles = RendererHelper.CreateParticleSystems(
+				CreateParticleParent("LeftParticles", 90f), spec.Particles
+			);
+			_rightParticles = RendererHelper.CreateParticleSystems(
+				CreateParticleParent("RightParticles", -90f), spec.Particles
+			);
 		}
 
 		GetComponentInParent<IControlConditionProvider>()?

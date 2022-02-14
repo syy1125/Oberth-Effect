@@ -50,12 +50,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 
 			if (spec.Particles != null)
 			{
-				_particles = new ParticleSystemWrapper[spec.Particles.Length];
-
-				for (int i = 0; i < spec.Particles.Length; i++)
-				{
-					_particles[i] = RendererHelper.CreateParticleSystem(_parent.transform, spec.Particles[i]);
-				}
+				_particles = RendererHelper.CreateParticleSystems(_parent.transform, spec.Particles);
 			}
 		}
 

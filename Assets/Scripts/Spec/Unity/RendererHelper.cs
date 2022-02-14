@@ -38,5 +38,17 @@ public static class RendererHelper
 		particles.Stop();
 		return wrapper;
 	}
+
+	public static ParticleSystemWrapper[] CreateParticleSystems(Transform parent, ParticleSystemSpec[] specs)
+	{
+		ParticleSystemWrapper[] particles = new ParticleSystemWrapper[specs.Length];
+
+		for (int i = 0; i < specs.Length; i++)
+		{
+			particles[i] = CreateParticleSystem(parent, specs[i]);
+		}
+		
+		return particles;
+	}
 }
 }

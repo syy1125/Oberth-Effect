@@ -49,7 +49,7 @@ public class ProjectileWeaponEffectSpec : AbstractWeaponEffectSpec
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public RendererSpec[] Renderers;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
-	public ParticleSystemSpec[] ProjectileParticles;
+	public ParticleSystemSpec[] TrailParticles;
 
 	public override void Validate(List<string> path, List<string> errors)
 	{

@@ -35,7 +35,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private float _recoil;
 	private float _reloadTime;
-	private BallisticProjectileConfig _projectileConfig;
+	private ProjectileConfig _projectileConfig;
 	private Dictionary<string, float> _reloadResourceUse;
 
 	private AudioSource _audioSource;
@@ -74,14 +74,15 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_recoil = spec.Recoil;
 		_reloadTime = spec.ReloadTime;
 
-		_projectileConfig = new BallisticProjectileConfig
+		_projectileConfig = new ProjectileConfig
 		{
 			ColliderSize = spec.ColliderSize,
 			Damage = spec.Damage,
 			DamageType = spec.DamageType,
 			ArmorPierce = spec.ArmorPierce,
 			ExplosionRadius = spec.ExplosionRadius,
-			Renderers = spec.Renderers
+			Renderers = spec.Renderers,
+			TrailParticles = spec.TrailParticles
 		};
 
 		if (spec.PointDefenseTarget != null)
@@ -123,11 +124,6 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	public float GetMaxRange()
 	{
 		return _maxRange;
-	}
-
-	public float GetMaxSpeed()
-	{
-		return _maxSpeed;
 	}
 
 	public void GetMaxFirepower(IList<FirepowerEntry> entries)

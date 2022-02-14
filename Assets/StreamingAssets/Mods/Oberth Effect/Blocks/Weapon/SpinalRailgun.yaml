@@ -47,12 +47,22 @@ FixedWeapon:
     MaxSpeed: 250
     MaxLifetime: 4
     ReloadTime: 3
-    ScreenShake: 
+    ScreenShake:
       Strength: 1.5
       Duration: 0.4
       DecayCurve: Cubic
-    FireSound: 
+    FireSound:
       SoundId: OberthEffect/Railgun
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.15, Y: 0.3 }
+    TrailParticles:
+      - Direction: { X: 0, Y: -1 }
+        SpreadAngle: 180
+        EmissionRateOverTime: 0
+        EmissionRateOverDistance: 2
+        Size: 0.5
+        MaxSpeed: 2
+        Lifetime: 0.5
+        Color: tertiary
+        
