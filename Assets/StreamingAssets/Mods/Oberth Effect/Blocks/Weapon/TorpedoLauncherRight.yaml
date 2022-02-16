@@ -27,8 +27,8 @@ Physics:
   Mass: 5
   MomentOfInertia: 2.0833333
   BoxCollider:
-    Offset: { X: 0, Y: 0 }
-    Size: { X: 1, Y: 1 }
+    Offset: { X: 0, Y: 0.5 }
+    Size: { X: 1, Y: 2 }
 Combat:
   MaxHealth: 200
   ArmorValue: 8

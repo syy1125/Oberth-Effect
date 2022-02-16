@@ -1,0 +1,4 @@
+﻿TextureId: OberthEffect/TorpedoLauncherForward
+ImagePath: ./TorpedoLauncherForward.png
+PixelsPerUnit: 100
+ApplyVehicleColors: true
