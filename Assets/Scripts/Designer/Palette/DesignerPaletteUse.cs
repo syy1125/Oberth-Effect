@@ -534,6 +534,7 @@ public class DesignerPaletteUse : MonoBehaviour
 				if (spec.Enabled && spec.Construction.ShowInDesigner)
 				{
 					Palette.SelectBlock(hoverBlockInstance.BlockId);
+					_rotation = hoverBlockInstance.Rotation;
 				}
 				else
 				{
