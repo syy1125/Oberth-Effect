@@ -35,6 +35,8 @@ public class DesignerPaletteUse : MonoBehaviour
 	public float VolumeScale = 1f;
 
 	[Header("Input Actions")]
+	public InputActionReference CursorAction;
+	public InputActionReference EraserAction;
 	public InputActionReference RotateAction;
 	public InputActionReference InverseRotateAction;
 	public InputActionReference UsePaletteAction;
@@ -65,6 +67,8 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	private void OnEnable()
 	{
+		CursorAction.action.performed += HandleCursor;
+		EraserAction.action.performed += HandleEraser;
 		RotateAction.action.performed += HandleRotate;
 
 		Palette.OnSelectionChanged += OnPaletteSelectionChanged;
@@ -82,6 +86,8 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	private void OnDisable()
 	{
+		CursorAction.action.performed -= HandleCursor;
+		EraserAction.action.performed -= HandleEraser;
 		RotateAction.action.performed -= HandleRotate;
 
 		Palette.OnSelectionChanged -= OnPaletteSelectionChanged;
@@ -512,6 +518,48 @@ public class DesignerPaletteUse : MonoBehaviour
 				mirrorBlockSpec.Construction.MirrorRootOffset,
 				mirrorRotation
 			);
+	}
+
+	private void HandleCursor(InputAction.CallbackContext context)
+	{
+		if (Palette.CurrentSelection == CursorSelection.Instance && _hoverPosition != null)
+		{
+			var hoverPosition = _hoverPosition.Value;
+			VehicleBlueprint.BlockInstance hoverBlockInstance = Builder.GetBlockInstanceAt(hoverPosition);
+
+			if (hoverBlockInstance != null)
+			{
+				BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(hoverBlockInstance.BlockId);
+
+				if (spec.Enabled && spec.Construction.ShowInDesigner)
+				{
+					Palette.SelectBlock(hoverBlockInstance.BlockId);
+				}
+				else
+				{
+					FlytextManager.CreateNotificationFlytext(
+						Builder.transform.TransformPoint(new Vector3(hoverPosition.x, hoverPosition.y)),
+						$"{spec.Info.FullName} cannot be picked"
+					);
+				}
+			}
+		}
+		else
+		{
+			Palette.SelectCursor();
+		}
+	}
+
+	private void HandleEraser(InputAction.CallbackContext context)
+	{
+		if (Palette.CurrentSelection == EraserSelection.Instance)
+		{
+			Palette.SelectCursor();
+		}
+		else
+		{
+			Palette.SelectEraser();
+		}
 	}
 
 	private void HandleRotate(InputAction.CallbackContext context)

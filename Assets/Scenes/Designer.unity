@@ -8024,8 +8024,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BlockButtonsParent: {fileID: 860709243}
   BlockButtonPrefab: {fileID: 533385805182799309, guid: 613b3b57f909a6b4192acdcf480d8851, type: 3}
-  CursorAction: {fileID: 2632173336168338102, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  EraserAction: {fileID: 1947422442943052003, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!114 &1325757353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8053,6 +8051,8 @@ MonoBehaviour:
   EraseSound: {fileID: 8300000, guid: a0168094756165848b43a9482fbdc28e, type: 3}
   FailSound: {fileID: 8300000, guid: 762eb01ca98615a46ae92fd28de5f3cf, type: 3}
   VolumeScale: 0.4
+  CursorAction: {fileID: 2632173336168338102, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  EraserAction: {fileID: 1947422442943052003, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   RotateAction: {fileID: 2188817439674365716, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   InverseRotateAction: {fileID: -6241464692842964678, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   UsePaletteAction: {fileID: 4873732141627724481, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}

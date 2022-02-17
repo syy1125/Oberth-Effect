@@ -12,9 +12,6 @@ public class BlockPalette : MonoBehaviour
 	public Transform BlockButtonsParent;
 	public GameObject BlockButtonPrefab;
 
-	public InputActionReference CursorAction;
-	public InputActionReference EraserAction;
-
 	private Dictionary<string, BlockButton> _buttons;
 	private BlockButton _selectedBlockButton;
 	public IPaletteSelection CurrentSelection { get; private set; }
@@ -31,25 +28,22 @@ public class BlockPalette : MonoBehaviour
 
 	private void OnEnable()
 	{
-		CursorAction.action.performed += SelectCursor;
-		EraserAction.action.performed += SelectEraser;
-
 		switch (_storedSelection)
 		{
 			case BlockSelection blockSelection:
 				SelectBlock(blockSelection.BlockId);
 				break;
 			case CursorSelection _:
-				SelectCursor(new InputAction.CallbackContext());
+				SelectCursor();
 				break;
 			case EraserSelection _:
-				SelectCursor(new InputAction.CallbackContext());
+				SelectEraser();
 				break;
 			case null:
 				break;
 			default:
 				Debug.LogError($"Invalid stored selection {_storedSelection}");
-				SelectCursor(new InputAction.CallbackContext());
+				SelectCursor();
 				break;
 		}
 	}
@@ -68,16 +62,13 @@ public class BlockPalette : MonoBehaviour
 			_buttons.Add(instance.Spec.BlockId, button);
 		}
 
-		SelectCursor(new InputAction.CallbackContext());
+		SelectCursor();
 	}
 
 	private void OnDisable()
 	{
 		_storedSelection = CurrentSelection;
-		SelectCursor(new InputAction.CallbackContext());
-
-		CursorAction.action.performed -= SelectCursor;
-		EraserAction.action.performed -= SelectEraser;
+		SelectCursor();
 	}
 
 	public void SetSelectedCategory(string category)
@@ -113,12 +104,12 @@ public class BlockPalette : MonoBehaviour
 		SetSelection(new BlockSelection(blockId));
 	}
 
-	private void SelectCursor(InputAction.CallbackContext context)
+	public void SelectCursor()
 	{
 		SetSelection(CursorSelection.Instance);
 	}
 
-	private void SelectEraser(InputAction.CallbackContext context)
+	public void SelectEraser()
 	{
 		SetSelection(EraserSelection.Instance);
 	}

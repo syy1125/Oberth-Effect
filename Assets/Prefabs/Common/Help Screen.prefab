@@ -4413,7 +4413,7 @@ PrefabInstance:
       objectReference: {fileID: 2632173336168338102, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
     - target: {fileID: 4449364639924032186, guid: f5984f84a2a15d54fb8a2e736f4d50c6, type: 3}
       propertyPath: m_Text
-      value: Cursor mode
+      value: Cursor / pick block
       objectReference: {fileID: 0}
     - target: {fileID: 6664498301735839915, guid: f5984f84a2a15d54fb8a2e736f4d50c6, type: 3}
       propertyPath: m_Pivot.x
