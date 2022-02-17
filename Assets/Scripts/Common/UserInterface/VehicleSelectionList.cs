@@ -9,11 +9,18 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Common.UserInterface
 {
+public class VehicleListItem
+{
+	public string FilePath;
+	public VehicleBlueprint Blueprint;
+	public GameObject Panel;
+}
+
 [Serializable]
-public class SelectVehicleEvent : UnityEvent<string>
+public class SelectVehicleEvent : UnityEvent<string, VehicleBlueprint>
 {}
 
-public class VehicleList : MonoBehaviour
+public class VehicleSelectionList : MonoBehaviour
 {
 	public const string VEHICLE_EXTENSION = ".vehicle";
 
@@ -31,8 +38,7 @@ public class VehicleList : MonoBehaviour
 	private static string _saveDir;
 	public static string SaveDir => _saveDir ??= Path.Combine(Application.persistentDataPath, "Vehicles");
 
-	private List<string> _vehiclePaths;
-	private Dictionary<int, GameObject> _vehiclePanels;
+	private List<VehicleListItem> _vehicles;
 	private int? _costLimit;
 	private int _selectedIndex;
 
@@ -40,8 +46,7 @@ public class VehicleList : MonoBehaviour
 
 	private void Awake()
 	{
-		_vehiclePaths = new List<string>();
-		_vehiclePanels = new Dictionary<int, GameObject>();
+		_vehicles = new List<VehicleListItem>();
 
 		if (!Directory.Exists(SaveDir))
 		{
@@ -79,7 +84,7 @@ public class VehicleList : MonoBehaviour
 			}
 		}
 
-		EmptyDirectoryIndicator.SetActive(_vehiclePaths.Count <= 0);
+		EmptyDirectoryIndicator.SetActive(_vehicles.Count <= 0);
 	}
 
 	private VehicleRowButton CreateVehicleRowButton(string vehiclePath, bool isStock)
@@ -98,24 +103,30 @@ public class VehicleList : MonoBehaviour
 			return null;
 		}
 
-		_vehiclePaths.Add(vehiclePath);
-		GameObject go = Instantiate(VehicleRowPrefab, ListParent);
+		GameObject row = Instantiate(VehicleRowPrefab, ListParent);
 
-		var button = go.GetComponent<VehicleRowButton>();
+		var button = row.GetComponent<VehicleRowButton>();
 		button.DisplayVehicle(blueprint, isStock);
-		button.SetIndex(_vehiclePaths.Count - 1);
+		button.SetIndex(_vehicles.Count);
 		button.SetCostColor(
 			_costLimit.HasValue
 				? _costLimit.Value < blueprint.CachedCost ? Color.red : Color.green
 				: Color.white
 		);
 
-		_vehiclePanels.Add(_vehiclePaths.Count - 1, go);
+		_vehicles.Add(
+			new VehicleListItem
+			{
+				FilePath = vehiclePath,
+				Blueprint = blueprint,
+				Panel = row
+			}
+		);
 
 		if (!isStock && blueprint.Name == _selectNameOnEnable)
 		{
 			button.SetSelected(true);
-			_selectedIndex = _vehiclePaths.Count - 1;
+			_selectedIndex = _vehicles.Count - 1;
 		}
 
 		return button;
@@ -123,9 +134,9 @@ public class VehicleList : MonoBehaviour
 
 	private void OnDisable()
 	{
-		foreach (GameObject go in _vehiclePanels.Values)
+		foreach (VehicleListItem item in _vehicles)
 		{
-			Destroy(go);
+			Destroy(item.Panel);
 		}
 
 		if (ShowStockVehicleToggle != null)
@@ -133,8 +144,7 @@ public class VehicleList : MonoBehaviour
 			ShowStockVehicleToggle.onValueChanged.RemoveListener(SetStockVehicleVisible);
 		}
 
-		_vehiclePanels.Clear();
-		_vehiclePaths.Clear();
+		_vehicles.Clear();
 		_selectNameOnEnable = null;
 	}
 
@@ -144,13 +154,12 @@ public class VehicleList : MonoBehaviour
 
 		string selectedPath = GetSelectedVehiclePath();
 
-		foreach (GameObject go in _vehiclePanels.Values)
+		foreach (VehicleListItem item in _vehicles)
 		{
-			Destroy(go);
+			Destroy(item.Panel);
 		}
 
-		_vehiclePanels.Clear();
-		_vehiclePanels.Clear();
+		_vehicles.Clear();
 		_selectNameOnEnable = null;
 
 		if (CanShowStockVehicle && showStock)
@@ -162,7 +171,7 @@ public class VehicleList : MonoBehaviour
 				if (vehiclePath == selectedPath)
 				{
 					button.SetSelected(true);
-					_selectedIndex = _vehiclePaths.Count - 1;
+					_selectedIndex = _vehicles.Count - 1;
 				}
 			}
 		}
@@ -178,26 +187,26 @@ public class VehicleList : MonoBehaviour
 				if (vehiclePath == selectedPath)
 				{
 					button.SetSelected(true);
-					_selectedIndex = _vehiclePaths.Count - 1;
+					_selectedIndex = _vehicles.Count - 1;
 				}
 			}
 		}
 
-		EmptyDirectoryIndicator.SetActive(_vehiclePaths.Count <= 0);
+		EmptyDirectoryIndicator.SetActive(_vehicles.Count <= 0);
 	}
 
 	public void SetCostLimit(int? costLimit)
 	{
 		_costLimit = costLimit;
 
-		if (_vehiclePanels == null) return;
+		if (_vehicles == null || _vehicles.Count == 0) return;
 
-		foreach (var entry in _vehiclePanels)
+		foreach (var entry in _vehicles)
 		{
-			string content = File.ReadAllText(_vehiclePaths[entry.Key]);
+			string content = File.ReadAllText(entry.FilePath);
 			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(content);
 
-			entry.Value.GetComponent<VehicleRowButton>().SetCostColor(
+			entry.Panel.GetComponent<VehicleRowButton>().SetCostColor(
 				_costLimit.HasValue
 					? _costLimit.Value < blueprint.CachedCost ? Color.red : Color.green
 					: Color.white
@@ -207,28 +216,33 @@ public class VehicleList : MonoBehaviour
 
 	public void SelectIndex(int index)
 	{
-		if (_selectedIndex >= 0 && _selectedIndex < _vehiclePanels.Count)
+		if (_selectedIndex >= 0 && _selectedIndex < _vehicles.Count)
 		{
-			_vehiclePanels[_selectedIndex].GetComponent<VehicleRowButton>().SetSelected(false);
+			_vehicles[_selectedIndex].Panel.GetComponent<VehicleRowButton>().SetSelected(false);
 		}
 
 		_selectedIndex = index;
 
 		if (_selectedIndex >= 0)
 		{
-			_vehiclePanels[_selectedIndex].GetComponent<VehicleRowButton>().SetSelected(true);
+			_vehicles[_selectedIndex].Panel.GetComponent<VehicleRowButton>().SetSelected(true);
 		}
 
-		OnSelectVehicle.Invoke(
-			_selectedIndex >= 0 ? Path.GetFileNameWithoutExtension(_vehiclePaths[_selectedIndex]) : null
-		);
+		if (_selectedIndex >= 0)
+		{
+			OnSelectVehicle.Invoke(_vehicles[_selectedIndex].FilePath, _vehicles[_selectedIndex].Blueprint);
+		}
+		else
+		{
+			OnSelectVehicle.Invoke(null, null);
+		}
 	}
 
 	public void SelectName(string vehicleName)
 	{
-		if (_vehiclePaths != null && _vehiclePaths.Count > 0)
+		if (_vehicles != null && _vehicles.Count > 0)
 		{
-			int index = _vehiclePaths.FindIndex(path => Path.GetFileNameWithoutExtension(path) == vehicleName);
+			int index = _vehicles.FindIndex(item => item.Blueprint.Name == vehicleName);
 			SelectIndex(index);
 		}
 		else
@@ -239,10 +253,15 @@ public class VehicleList : MonoBehaviour
 
 	public string GetSelectedVehiclePath()
 	{
-		return _selectedIndex < 0 ? null : _vehiclePaths[_selectedIndex];
+		return _selectedIndex < 0 ? null : _vehicles[_selectedIndex].FilePath;
 	}
 
-	public string ToVehiclePath(string vehicleName)
+	public VehicleBlueprint GetSelectedVehicleBlueprint()
+	{
+		return _selectedIndex < 0 ? null : _vehicles[_selectedIndex].Blueprint;
+	}
+
+	public static string GetVehicleSavePath(string vehicleName)
 	{
 		return Path.Combine(SaveDir, vehicleName + VEHICLE_EXTENSION);
 	}

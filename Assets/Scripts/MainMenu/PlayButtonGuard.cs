@@ -14,9 +14,9 @@ public class PlayButtonGuard : MonoBehaviour
 {
 	private void OnEnable()
 	{
-		bool hasVehicle = Directory.Exists(VehicleList.SaveDir)
-		                  && Directory.GetFiles(VehicleList.SaveDir)
-			                  .Any(file => Path.GetExtension(file).Equals(VehicleList.VEHICLE_EXTENSION));
+		bool hasVehicle = Directory.Exists(VehicleSelectionList.SaveDir)
+		                  && Directory.GetFiles(VehicleSelectionList.SaveDir)
+			                  .Any(file => Path.GetExtension(file).Equals(VehicleSelectionList.VEHICLE_EXTENSION));
 
 		if (!hasVehicle)
 		{

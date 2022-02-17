@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using ExitGames.Client.Photon;
+using Newtonsoft.Json;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Common.UserInterface;
@@ -25,7 +26,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	[Header("Controls")]
 	public Button SelectVehicleButton;
 	public GameObject VehicleSelectionScreen;
-	public VehicleList VehicleList;
+	public VehicleSelectionList VehicleList;
 	public Button LoadVehicleButton;
 	public Button ReadyButton;
 	public Tooltip ReadyTooltip;
@@ -392,39 +393,35 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		// If the vehicle list is open and the player has selected a vehicle but not confirmed it, update whether the load vehicle button can be clicked.
 		if (VehicleSelectionScreen.activeSelf && _selectedVehicleName != null)
 		{
-			string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
-			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(serializedVehicle);
+			VehicleBlueprint blueprint = VehicleList.GetSelectedVehicleBlueprint();
 			LoadVehicleButton.interactable = blueprint.CachedCost <= PhotonHelper.GetRoomCostLimit();
 		}
 	}
 
 	private void OpenVehicleSelection()
 	{
-		SelectVehicle(null);
+		SelectVehicle(null, null);
 		UpdateVehicleListCostLimit();
 		VehicleSelectionScreen.SetActive(true);
 	}
 
-	private void SelectVehicle(string vehicleName)
+	private void SelectVehicle(string filePath, VehicleBlueprint blueprint)
 	{
-		_selectedVehicleName = vehicleName;
-
-		if (vehicleName != null)
+		if (filePath == null)
 		{
-			string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
-			VehicleBlueprint blueprint = JsonUtility.FromJson<VehicleBlueprint>(serializedVehicle);
-			LoadVehicleButton.interactable = blueprint.CachedCost <= PhotonHelper.GetRoomCostLimit();
+			_selectedVehicleName = null;
+			LoadVehicleButton.interactable = false;
 		}
 		else
 		{
-			LoadVehicleButton.interactable = false;
+			_selectedVehicleName = blueprint.Name;
+			LoadVehicleButton.interactable = blueprint.CachedCost <= PhotonHelper.GetRoomCostLimit();
 		}
 	}
 
 	private void LoadVehicleSelection()
 	{
-		string serializedVehicle = File.ReadAllText(VehicleList.ToVehiclePath(_selectedVehicleName));
-		VehicleSelection.SerializedVehicle = serializedVehicle;
+		VehicleSelection.SerializedVehicle = JsonUtility.ToJson(VehicleList.GetSelectedVehicleBlueprint());
 
 		PhotonNetwork.LocalPlayer.SetCustomProperties(
 			new Hashtable

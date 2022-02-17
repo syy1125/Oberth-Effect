@@ -11,13 +11,13 @@ public class VehicleRowButton : MonoBehaviour
 	public Text NameText;
 	public Text CostText;
 
-	private VehicleList _vehicleList;
+	private VehicleSelectionList _vehicleList;
 	private Button _button;
 	private int _index;
 
 	private void Awake()
 	{
-		_vehicleList = GetComponentInParent<VehicleList>();
+		_vehicleList = GetComponentInParent<VehicleSelectionList>();
 		_button = GetComponent<Button>();
 	}
 

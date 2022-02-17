@@ -1,5 +1,6 @@
 using System.IO;
 using Syy1125.OberthEffect.Common.UserInterface;
+using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.UserInterface;
 using Syy1125.OberthEffect.Lib;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 	public NotificationDialog Notification;
 
 	[Header("Internal References")]
-	public VehicleList VehicleList;
+	public VehicleSelectionList VehicleList;
 
 	public Button SaveLoadButton;
 
@@ -79,18 +80,18 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 		SaveLoadButton.interactable = !string.IsNullOrWhiteSpace(filename);
 	}
 
-	private void HandleSelectVehicle(string vehicleName)
+	private void HandleSelectVehicle(string filePath, VehicleBlueprint blueprint)
 	{
 		if (SaveMode)
 		{
-			if (vehicleName != null)
+			if (blueprint.Name != null)
 			{
-				FileNameInput.text = vehicleName;
+				FileNameInput.text = blueprint.Name;
 			}
 		}
 		else
 		{
-			SaveLoadButton.interactable = vehicleName != null;
+			SaveLoadButton.interactable = filePath != null;
 		}
 	}
 
@@ -106,7 +107,7 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 
 		Designer.Builder.RenameVehicle(FileNameInput.text);
 		string content = Designer.ExportVehicle();
-		string filePath = VehicleList.ToVehiclePath(FileNameInput.text);
+		string filePath = VehicleSelectionList.GetVehicleSavePath(FileNameInput.text);
 		File.WriteAllText(filePath, content);
 
 		Notification.SetContent($"Vehicle {FileNameInput.text} saved!");
