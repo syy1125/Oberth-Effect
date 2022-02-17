@@ -80,15 +80,26 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 	private void Start()
 	{
+		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
+
 		if (_particles != null)
 		{
 			foreach (ParticleSystemWrapper particle in _particles)
 			{
-				particle.Play();
+				particle.ParticleSystem.Simulate(Time.fixedDeltaTime);
 			}
 		}
+	}
 
-		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
+	private void FixedUpdate()
+	{
+		if (_particles != null)
+		{
+			foreach (ParticleSystemWrapper particle in _particles)
+			{
+				particle.ParticleSystem.Simulate(Time.fixedDeltaTime, true, false);
+			}
+		}
 	}
 
 	private float GetHealthDamageModifier()

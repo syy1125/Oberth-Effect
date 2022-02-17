@@ -187,10 +187,10 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private IEnumerator LateFixedUpdate()
 	{
-		yield return new WaitForFixedUpdate();
-
 		while (isActiveAndEnabled)
 		{
+			yield return new WaitForFixedUpdate();
+			
 			if (photonView.IsMine)
 			{
 				if (ActionMapControl.Instance.IsActionMapEnabled("Player"))
@@ -220,8 +220,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 			}
 
 			SendCommands();
-
-			yield return new WaitForFixedUpdate();
 		}
 	}
 
