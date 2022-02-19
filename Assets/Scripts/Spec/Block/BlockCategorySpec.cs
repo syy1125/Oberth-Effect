@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Spec.ModLoading;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
-public struct BlockCategorySpec
+public class BlockCategorySpec
 {
 	[RequireChecksumLevel(ChecksumLevel.Everything)]
 	[IdField]

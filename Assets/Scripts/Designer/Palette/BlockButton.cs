@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,6 +20,8 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	[Header("References")]
 	public RawImage PreviewImage;
 	public Camera BlockCamera;
+	public CanvasGroup Category;
+	public Image CategoryIcon;
 	public Text BlockName;
 
 	[Header("Config")]
@@ -64,6 +67,10 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		BlockCamera.targetTexture = _rt;
 	}
 
+	private void Update()
+	{
+		Category.alpha = Mathf.MoveTowards(Category.alpha, _hover ? 0f : 1f, Time.unscaledDeltaTime / FadeDuration);
+	}
 
 	public void DisplayBlock(SpecInstance<BlockSpec> instance)
 	{
@@ -71,6 +78,8 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		gameObject.name = _blockId;
 
 		BlockName.text = instance.Spec.Info.ShortName;
+		BlockCategorySpec category = BlockDatabase.Instance.GetCategory(instance.Spec.CategoryId);
+		CategoryIcon.sprite = TextureDatabase.Instance.GetSprite(category.IconTextureId);
 
 		GameObject previewObject = BlockBuilder.BuildFromSpec(instance.Spec, BlockCamera.transform, Vector2Int.zero, 0);
 

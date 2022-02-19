@@ -11,7 +11,8 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 	public static BlockDatabase Instance { get; private set; }
 
 	private Dictionary<string, SpecInstance<BlockSpec>> _specs;
-	private List<SpecInstance<BlockCategorySpec>> _categories;
+	private Dictionary<string, SpecInstance<BlockCategorySpec>> _categories;
+	private List<SpecInstance<BlockCategorySpec>> _categoryList;
 
 	private void Awake()
 	{
@@ -34,10 +35,13 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 			.ToDictionary(instance => instance.Spec.BlockId, instance => instance);
 		_categories = ModLoader.BlockCategoryPipeline.Results
 			.Where(instance => instance.Spec.Enabled)
+			.ToDictionary(instance => instance.Spec.BlockCategoryId, instance => instance);
+		_categoryList = ModLoader.BlockCategoryPipeline.Results
+			.Where(instance => instance.Spec.Enabled)
 			.OrderBy(instance => instance.Spec.Order)
 			.ToList();
 		Debug.Log($"Loaded {_specs.Count} block specs");
-		Debug.Log($"Loaded {_categories.Count} block categories");
+		Debug.Log($"Loaded {_categoryList.Count} block categories");
 	}
 
 	private void OnDestroy()
@@ -71,7 +75,12 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 
 	public IEnumerable<SpecInstance<BlockCategorySpec>> ListCategories()
 	{
-		return _categories;
+		return _categoryList;
+	}
+
+	public BlockCategorySpec GetCategory(string categoryId)
+	{
+		return _categories.TryGetValue(categoryId, out SpecInstance<BlockCategorySpec> instance) ? instance.Spec : null;
 	}
 }
 }
