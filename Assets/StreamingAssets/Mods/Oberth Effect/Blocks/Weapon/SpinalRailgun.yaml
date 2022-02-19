@@ -8,6 +8,7 @@ Info:
   Description: |
     A massive railgun designed to devastate enemies at long range.
     To minimize the amount of space taken, this railgun is hull-mounted.
+    Warranty void if used as a (very expensive) thruster.
 Renderers:
   - TextureId: OberthEffect/Railgun
 Construction:

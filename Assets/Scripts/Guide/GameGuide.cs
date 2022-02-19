@@ -328,7 +328,7 @@ public class GameGuide : MonoBehaviour
 		yield return StartCoroutine(
 			Step(
 				"Placing blocks (2/2)",
-				"Use Q to deselect blocks and go back to cursor mode. E selects eraser mode for removing blocks. M toggles mirror mode.\nNote that you can never remove the control core, as a vehicle requires it to function.",
+				"Use Q to deselect blocks and go back to cursor mode. E selects eraser mode for removing blocks. M toggles mirror mode, and period and comma keys move the mirror left and right.\nNote that you can never remove the control core, as a vehicle requires it to function.",
 				null
 			)
 		);
@@ -355,7 +355,7 @@ public class GameGuide : MonoBehaviour
 				"Tooltips",
 				string.Join(
 					"\n",
-					"Oberth Effect comes with an extensive tooltip system to provide you with information.",
+					"Oberth Effect comes with an extensive tooltip system to provide you with detailed information.",
 					"If you ever want to know what a block does, hover over it and see what the tooltip says!"
 				),
 				null
