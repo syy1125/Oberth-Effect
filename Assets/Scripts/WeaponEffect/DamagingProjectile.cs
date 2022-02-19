@@ -2,14 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
