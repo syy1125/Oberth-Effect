@@ -73,7 +73,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 		GetComponent<DamagingProjectile>().Init(
 			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius,
-			GetHealthDamageModifier
+			GetHealthDamageModifier, _config.Lifetime
 		);
 
 		GetComponent<BoxCollider2D>().size = _config.ColliderSize;
@@ -82,7 +82,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		{
 			_pdTarget = gameObject.AddComponent<PointDefenseTarget>();
 			_pdTarget.Init(_config.MaxHealth, _config.ArmorValue, _config.ColliderSize);
-			_pdTarget.OnDestroyedByDamage.AddListener(EndOfLifeDespawn);
+			_pdTarget.OnDestroyedByDamage.AddListener(GetComponent<DamagingProjectile>().LifetimeDespawn);
 
 			gameObject.AddComponent<ReferenceFrameProvider>();
 			var radiusProvider = gameObject.AddComponent<ConstantCollisionRadiusProvider>();
@@ -134,7 +134,6 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	private void Start()
 	{
 		StartCoroutine(LateFixedUpdate());
-		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
 
 		if (_propulsionParticles != null)
 		{
@@ -211,7 +210,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 						&& nextPosition.sqrMagnitude > relativePosition.sqrMagnitude
 					)
 					{
-						GetComponent<DamagingProjectile>().DetonateOrDespawn();
+						GetComponent<DamagingProjectile>().LifetimeDespawn();
 						yield break;
 					}
 				}
@@ -275,11 +274,6 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 				_pdTarget.HealthFraction,
 				0f, 1f, 1f - _config.HealthDamageScaling, 1f
 			);
-	}
-
-	private void EndOfLifeDespawn()
-	{
-		GetComponent<DamagingProjectile>().DetonateOrDespawn();
 	}
 
 	public float? GetHitTime()

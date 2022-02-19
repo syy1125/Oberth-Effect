@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -32,7 +34,7 @@ public struct ProjectileConfig
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(DamagingProjectile))]
-public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback
+public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallback, IProjectileDespawnListener
 {
 	private ProjectileConfig _config;
 	private PointDefenseTarget _pdTarget;
@@ -47,7 +49,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 
 		GetComponent<DamagingProjectile>().Init(
 			_config.Damage, _config.DamageType, _config.ArmorPierce, _config.ExplosionRadius,
-			GetHealthDamageModifier
+			GetHealthDamageModifier, _config.Lifetime
 		);
 
 		GetComponent<BoxCollider2D>().size = _config.ColliderSize;
@@ -56,7 +58,7 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		{
 			_pdTarget = gameObject.AddComponent<PointDefenseTarget>();
 			_pdTarget.Init(_config.MaxHealth, _config.ArmorValue, _config.ColliderSize);
-			_pdTarget.OnDestroyedByDamage.AddListener(EndOfLifeDespawn);
+			_pdTarget.OnDestroyedByDamage.AddListener(GetComponent<DamagingProjectile>().LifetimeDespawn);
 
 			gameObject.AddComponent<ReferenceFrameProvider>();
 			var radiusProvider = gameObject.AddComponent<ConstantCollisionRadiusProvider>();
@@ -68,20 +70,19 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		if (_config.TrailParticles != null)
 		{
 			_particles = RendererHelper.CreateParticleSystems(transform, _config.TrailParticles);
+			var mainCameraTransform = Camera.main.transform;
 
 			foreach (ParticleSystemWrapper particle in _particles)
 			{
 				var main = particle.ParticleSystem.main;
 				main.simulationSpace = ParticleSystemSimulationSpace.Custom;
-				main.customSimulationSpace = Camera.main.transform;
+				main.customSimulationSpace = mainCameraTransform;
 			}
 		}
 	}
 
 	private void Start()
 	{
-		Invoke(nameof(EndOfLifeDespawn), _config.Lifetime);
-
 		if (_particles != null)
 		{
 			foreach (ParticleSystemWrapper particle in _particles)
@@ -102,6 +103,32 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 		}
 	}
 
+	public void BeforeDespawn()
+	{
+		PersistParticles();
+	}
+
+	private void PersistParticles()
+	{
+		if (_particles != null && _particles.Length > 0)
+		{
+			GameObject persistParticles = new GameObject("PersistProjectileParticles");
+
+			foreach (ParticleSystemWrapper particle in _particles)
+			{
+				particle.ParticleSystem.Simulate(Time.fixedDeltaTime, true, false);
+
+				particle.transform.SetParent(persistParticles.transform);
+				var emission = particle.ParticleSystem.emission;
+				emission.rateOverTime = 0f;
+				emission.rateOverDistance = 0f;
+				particle.ParticleSystem.Play();
+			}
+
+			Destroy(persistParticles, _config.TrailParticles.Select(spec => spec.Lifetime).Max());
+		}
+	}
+
 	private float GetHealthDamageModifier()
 	{
 		return _pdTarget == null
@@ -110,11 +137,6 @@ public class BallisticProjectile : MonoBehaviourPun, IPunInstantiateMagicCallbac
 				_pdTarget.HealthFraction,
 				0f, 1f, 1f - _config.HealthDamageScaling, 1f
 			);
-	}
-
-	private void EndOfLifeDespawn()
-	{
-		GetComponent<DamagingProjectile>().DetonateOrDespawn();
 	}
 }
 }

@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using ICSharpCode.NRefactory.Ast;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
@@ -18,15 +20,18 @@ public class DamagingProjectile : MonoBehaviourPun
 	private float _armorPierce;
 	private float _explosionRadius;
 	private Func<float> _getDamageModifier;
+	private float _deathTime;
 	private bool _expectExploded;
 
 	private List<ReferenceFrameProvider.RayStep[]> _allSteps = new List<ReferenceFrameProvider.RayStep[]>();
+
 #if UNITY_EDITOR
 	private List<Tuple<Vector2, Vector2>> _tracePoints = new List<Tuple<Vector2, Vector2>>();
 #endif
 
 	public void Init(
-		float maxDamage, DamageType damageType, float armorPierce, float explosionRadius, Func<float> getDamageModifier
+		float maxDamage, DamageType damageType, float armorPierce, float explosionRadius, Func<float> getDamageModifier,
+		float lifetime
 	)
 	{
 		_damage = maxDamage;
@@ -34,6 +39,7 @@ public class DamagingProjectile : MonoBehaviourPun
 		_armorPierce = Mathf.Clamp(armorPierce, 1f, 10f);
 		_explosionRadius = explosionRadius;
 		_getDamageModifier = getDamageModifier;
+		_deathTime = Time.time + lifetime;
 	}
 
 	private void Start()
@@ -44,6 +50,7 @@ public class DamagingProjectile : MonoBehaviourPun
 	private IEnumerator LateFixedUpdate()
 	{
 		Vector2 prevPosition = transform.position;
+		float prevTime = Time.time;
 		yield return new WaitForFixedUpdate();
 
 		while (isActiveAndEnabled)
@@ -52,15 +59,36 @@ public class DamagingProjectile : MonoBehaviourPun
 
 			var steps = GetRaySteps(prevPosition, currentPosition);
 
-			if (steps != null)
+			if (Time.time >= _deathTime)
 			{
-				TraceRaySteps(steps);
+				float timeFraction = Mathf.InverseLerp(prevTime, Time.time, _deathTime);
+				if (steps != null)
+				{
+					TraceRaySteps(steps, timeFraction);
+				}
+
+				// If we have exhausted our damage, gameObject would've been deactivated.
+				if (gameObject.activeSelf)
+				{
+					transform.position = Vector2.Lerp(prevPosition, currentPosition, timeFraction);
+					LifetimeDespawn();
+				}
+			}
+			else
+			{
+				if (steps != null)
+				{
+					TraceRaySteps(steps, 1f);
+				}
 			}
 
 			prevPosition = currentPosition;
+			prevTime = Time.time;
 			yield return new WaitForFixedUpdate();
 		}
 	}
+
+	#region Raytracing
 
 	private IEnumerable<ReferenceFrameProvider.RayStep> GetRaySteps(
 		Vector2 prevPosition, Vector2 currentPosition
@@ -91,7 +119,7 @@ public class DamagingProjectile : MonoBehaviourPun
 		};
 	}
 
-	private void TraceRaySteps(IEnumerable<ReferenceFrameProvider.RayStep> steps)
+	private void TraceRaySteps(IEnumerable<ReferenceFrameProvider.RayStep> steps, float timeLimit)
 	{
 		StringBuilder warningBuilder = new StringBuilder();
 
@@ -103,6 +131,8 @@ public class DamagingProjectile : MonoBehaviourPun
 #if UNITY_EDITOR
 			_tracePoints.Add(Tuple.Create(step.WorldStart, step.WorldEnd));
 #endif
+
+			if (step.T > timeLimit) return;
 
 			Vector2 direction = step.WorldEnd - step.WorldStart;
 			int hits = Physics2D.Raycast(
@@ -163,12 +193,6 @@ public class DamagingProjectile : MonoBehaviourPun
 
 		if (!target.IsMine)
 		{
-			if (_damageType == DamageType.Explosive)
-			{
-				gameObject.SetActive(false);
-				_expectExploded = true;
-			}
-
 			// Not mine to handle
 			return HitResult.Stop;
 		}
@@ -191,8 +215,7 @@ public class DamagingProjectile : MonoBehaviourPun
 			ExplosionManager.Instance.CreateExplosionAt(
 				referenceFrameId, explosionCenter, _explosionRadius, _damage * damageModifier, photonView.OwnerActorNr
 			);
-			gameObject.SetActive(false);
-			photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
+			ExhaustedDespawn();
 
 			return HitResult.Stop;
 		}
@@ -205,8 +228,7 @@ public class DamagingProjectile : MonoBehaviourPun
 
 			if (damageExhausted)
 			{
-				gameObject.SetActive(false);
-				photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
+				ExhaustedDespawn();
 				return HitResult.DamageExhausted;
 			}
 			else
@@ -215,6 +237,8 @@ public class DamagingProjectile : MonoBehaviourPun
 			}
 		}
 	}
+
+	#endregion
 
 	[PunRPC]
 	private void SetRemainingDamage(float damage)
@@ -231,8 +255,18 @@ public class DamagingProjectile : MonoBehaviourPun
 		}
 	}
 
-	public void DetonateOrDespawn()
+	private void ExhaustedDespawn()
 	{
+		PreDespawn();
+
+		gameObject.SetActive(false);
+		photonView.RPC(nameof(DestroyProjectile), photonView.Owner);
+	}
+
+	public void LifetimeDespawn()
+	{
+		PreDespawn();
+
 		gameObject.SetActive(false);
 
 		if (photonView.IsMine)
@@ -246,6 +280,21 @@ public class DamagingProjectile : MonoBehaviourPun
 			}
 
 			PhotonNetwork.Destroy(gameObject);
+		}
+	}
+
+	private void PreDespawn()
+	{
+		if (!gameObject.activeSelf)
+		{
+			Debug.LogWarning(
+				"DamagingProjectile is getting de-spawned multiple times. This could cause buggy behaviour."
+			);
+		}
+
+		foreach (IProjectileDespawnListener listener in GetComponents<IProjectileDespawnListener>())
+		{
+			listener.BeforeDespawn();
 		}
 	}
 
