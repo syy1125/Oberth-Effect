@@ -27,6 +27,8 @@ public class GameGuide : MonoBehaviour
 	public Text GuideTitle;
 	public Text GuideText;
 	public Button SkipStepButton;
+	public Button NextGuideButton;
+	public Button ExitGuideButton;
 	public float FadeTime = 0.2f;
 	public float HighlightZoomTime = 0.5f;
 	public float HighlightScale = 5f;
@@ -49,8 +51,10 @@ public class GameGuide : MonoBehaviour
 	private CanvasGroup _canvasGroup;
 	private Coroutine _zoomHighlight;
 	private bool _skip;
+	private bool _next;
 
 	public static GuideSelection ActiveGuide = GuideSelection.None;
+	private GuideSelection _currentGuide;
 	public static GameGuide Instance { get; private set; }
 
 	private void Awake()
@@ -72,13 +76,15 @@ public class GameGuide : MonoBehaviour
 	private void OnEnable()
 	{
 		SkipStepButton.onClick.AddListener(SkipStep);
+		NextGuideButton.onClick.AddListener(NextGuide);
+		ExitGuideButton.onClick.AddListener(SkipStep);
 	}
 
 	private void Start()
 	{
-		var guide = ActiveGuide;
+		_currentGuide = ActiveGuide;
 		ActiveGuide = GuideSelection.None;
-		switch (guide)
+		switch (_currentGuide)
 		{
 			case GuideSelection.None:
 				gameObject.SetActive(false);
@@ -97,6 +103,8 @@ public class GameGuide : MonoBehaviour
 	private void OnDisable()
 	{
 		SkipStepButton.onClick.RemoveListener(SkipStep);
+		NextGuideButton.onClick.RemoveListener(NextGuide);
+		ExitGuideButton.onClick.RemoveListener(SkipStep);
 	}
 
 	private void OnDestroy()
@@ -112,6 +120,11 @@ public class GameGuide : MonoBehaviour
 	private void SkipStep()
 	{
 		_skip = true;
+	}
+
+	private void NextGuide()
+	{
+		_next = true;
 	}
 
 	private void Highlight(RectTransform target)
@@ -174,6 +187,9 @@ public class GameGuide : MonoBehaviour
 		skipText ??= condition == null ? "Continue" : "Skip";
 		SkipStepButton.GetComponentInChildren<Text>().text = skipText;
 
+		SkipStepButton.gameObject.SetActive(true);
+		NextGuideButton.gameObject.SetActive(false);
+		ExitGuideButton.gameObject.SetActive(false);
 		SkipStepButton.interactable = condition == null;
 
 		GuideTitle.text = title;
@@ -195,6 +211,43 @@ public class GameGuide : MonoBehaviour
 		_skip = false;
 		SkipStepButton.interactable = false;
 		yield return StartCoroutine(FadeGuideBox(0f));
+	}
+
+	private IEnumerator FinalStep(string title, string text, bool hasNext)
+	{
+		SkipStepButton.gameObject.SetActive(false);
+		NextGuideButton.gameObject.SetActive(hasNext);
+		ExitGuideButton.gameObject.SetActive(true);
+
+		GuideTitle.text = title;
+		GuideText.text = text;
+		yield return StartCoroutine(FadeGuideBox(1f));
+
+		yield return new WaitUntil(() => _skip || _next);
+
+		bool next = _next;
+		_skip = false;
+		_next = false;
+
+		yield return StartCoroutine(FadeGuideBox(0f));
+
+		if (next)
+		{
+			switch (_currentGuide)
+			{
+				case GuideSelection.DesignerBasic:
+					_currentGuide = GuideSelection.VehicleBasic;
+					StartCoroutine(PlayVehicleGuide());
+					break;
+				default:
+					Debug.LogError($"Current guide is {_currentGuide} which does not have a next guide!");
+					break;
+			}
+		}
+		else
+		{
+			gameObject.SetActive(false);
+		}
 	}
 
 	private IEnumerator DelayedEnableSkip(string skipText)
@@ -333,20 +386,17 @@ public class GameGuide : MonoBehaviour
 		);
 
 		yield return StartCoroutine(
-			Step(
+			FinalStep(
 				"Conclusion",
 				string.Join(
 					"\n",
 					"That concludes the basic features of the vehicle designer.",
-					"When you are ready, you can go back to the main menu and play the Vehicle Essentials guide.",
+					"When you are ready, you can continue to the Vehicle Essentials guide.",
 					"Alternatively, you're welcome to experiment with the designer and see what you can come up with."
 				),
-				null, "Done"
+				true
 			)
 		);
-
-
-		EndGuide();
 	}
 
 	#endregion
@@ -469,14 +519,12 @@ public class GameGuide : MonoBehaviour
 
 		Highlight(null);
 		yield return StartCoroutine(
-			Step(
+			FinalStep(
 				"Conclusion",
 				"That concludes the vehicle essentials guide. Now go forth and create!",
-				null, "Done"
+				false
 			)
 		);
-
-		EndGuide();
 	}
 
 	#endregion
