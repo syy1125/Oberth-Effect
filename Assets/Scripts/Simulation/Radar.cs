@@ -87,12 +87,18 @@ public class Radar : MonoBehaviour
 			}
 		}
 
-		_scale = Mathf.SmoothDamp(_scale, Scales[ScaleIndex], ref _scaleVelocity, ZoomInterval / 2f);
+		_scale = Mathf.SmoothDamp(
+			_scale, Scales[ScaleIndex], ref _scaleVelocity, ZoomInterval / 2f,
+			Mathf.Infinity, Time.unscaledDeltaTime
+		);
 	}
 
 	private void UpdateRuler()
 	{
-		_rulerUnit = Mathf.SmoothDamp(_rulerUnit, GetTargetRulerUnit(), ref _rulerUnitVelocity, ZoomInterval / 2f);
+		_rulerUnit = Mathf.SmoothDamp(
+			_rulerUnit, GetTargetRulerUnit(), ref _rulerUnitVelocity, ZoomInterval / 2f,
+			Mathf.Infinity, Time.unscaledDeltaTime
+		);
 		Vector2 offsetMax = RulerTransform.offsetMax;
 		offsetMax.x = _rulerUnit * _scale;
 		RulerTransform.offsetMax = offsetMax;

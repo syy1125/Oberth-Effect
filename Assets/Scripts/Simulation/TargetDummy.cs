@@ -11,8 +11,9 @@ namespace Syy1125.OberthEffect.Simulation
 [RequireComponent(typeof(BoxCollider2D))]
 public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
 {
-	private struct DamageInstance
+	public struct DamageInstance
 	{
+		public DamageType Type;
 		public float Amount;
 		public float Time;
 	}
@@ -26,6 +27,7 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
 
 	private BoxCollider2D _collider;
 	private LinkedList<DamageInstance> _damage;
+	public float DamagePerSecond { get; private set; }
 
 	private void Awake()
 	{
@@ -53,7 +55,7 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
 		float armorModifier = Mathf.Min(armorPierce / ArmorValue, 1f);
 
 		float effectiveDamage = damage * armorModifier;
-		_damage.AddLast(new DamageInstance { Amount = effectiveDamage, Time = Time.time });
+		_damage.AddLast(new DamageInstance { Type = damageType, Amount = effectiveDamage, Time = Time.time });
 
 		damageExhausted = true;
 	}
@@ -79,13 +81,23 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
 			_damage.RemoveFirst();
 		}
 
-		float damagePerSecond = _damage.Sum(instance => instance.Amount) / TimeInterval;
+		DamagePerSecond = _damage.Sum(instance => instance.Amount) / TimeInterval;
 
 		Display.text = string.Join(
 			"\n",
 			$"{ArmorValue:0.#} Armor, interval={TimeInterval:0.#}s",
-			$"DPS={damagePerSecond:0.0#}"
+			$"DPS={DamagePerSecond:0.0#}"
 		);
+	}
+
+	public IEnumerable<DamageInstance> GetDamageHistory()
+	{
+		return _damage;
+	}
+
+	public void ResetDamage()
+	{
+		_damage.Clear();
 	}
 }
 }

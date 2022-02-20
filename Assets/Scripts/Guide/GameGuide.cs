@@ -2,13 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Simulation;
+using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Guide
@@ -17,11 +23,14 @@ public enum GuideSelection
 {
 	None,
 	DesignerBasic,
-	VehicleBasic
+	VehicleBasic,
+	Gameplay
 }
 
 public class GameGuide : MonoBehaviour
 {
+	#region Unity Fields
+
 	[Header("Common")]
 	public RectTransform HighlightFrame;
 	public Text GuideTitle;
@@ -33,6 +42,8 @@ public class GameGuide : MonoBehaviour
 	public float HighlightZoomTime = 0.5f;
 	public float HighlightScale = 5f;
 	public float SkipDelay = 10f;
+	public TextAsset GuideVehicle;
+	public SceneReference GameplayGuide;
 
 	[Header("Designer")]
 	public VehicleDesigner Designer;
@@ -47,8 +58,20 @@ public class GameGuide : MonoBehaviour
 	public GameObject DesignerMenu;
 	public GameObject HelpScreen;
 
+	[Header("Simulation")]
+	public GameObject PauseIndicator;
+	public PlayerVehicleSpawner VehicleSpawner;
+	public RectTransform ShipyardFrame;
+	public RectTransform StatusPanelFrame;
+	public TargetDummy TargetDummy;
+	public GameObject TargetDummyHighlight;
+	public RectTransform MinimapFrame;
+
+	#endregion
+
 	private RectTransform _canvasTransform;
 	private CanvasGroup _canvasGroup;
+	private RectTransform _highlightTarget;
 	private Coroutine _zoomHighlight;
 	private bool _skip;
 	private bool _next;
@@ -95,8 +118,29 @@ public class GameGuide : MonoBehaviour
 			case GuideSelection.VehicleBasic:
 				StartCoroutine(PlayVehicleGuide());
 				break;
+			case GuideSelection.Gameplay:
+				StartCoroutine(PlayGameplayGuide());
+				break;
 			default:
 				throw new ArgumentOutOfRangeException();
+		}
+	}
+
+	private void Update()
+	{
+		if (_highlightTarget == null)
+		{
+			HighlightFrame.gameObject.SetActive(false);
+		}
+		else
+		{
+			HighlightFrame.gameObject.SetActive(true);
+			Vector3[] corners = new Vector3[4];
+			_highlightTarget.GetWorldCorners(corners);
+			// Reference: https://docs.unity3d.com/ScriptReference/RectTransform.GetWorldCorners.html
+			// Corners are in clockwise order starting from bottom left
+			HighlightFrame.offsetMin = _canvasTransform.InverseTransformPoint(corners[0]) - new Vector3(5f, 5f, 0);
+			HighlightFrame.offsetMax = _canvasTransform.InverseTransformPoint(corners[2]) + new Vector3(5f, 5f, 0);
 		}
 	}
 
@@ -127,22 +171,24 @@ public class GameGuide : MonoBehaviour
 		_next = true;
 	}
 
+	private void PauseSimulation()
+	{
+		Time.timeScale = 0f;
+		PauseIndicator.SetActive(true);
+	}
+
+	private void UnpauseSimulation()
+	{
+		Time.timeScale = 1f;
+		PauseIndicator.SetActive(false);
+	}
+
 	private void Highlight(RectTransform target)
 	{
-		if (target == null)
-		{
-			HighlightFrame.gameObject.SetActive(false);
-		}
-		else
-		{
-			HighlightFrame.gameObject.SetActive(true);
-			Vector3[] corners = new Vector3[4];
-			target.GetWorldCorners(corners);
-			// Reference: https://docs.unity3d.com/ScriptReference/RectTransform.GetWorldCorners.html
-			// Corners are in clockwise order starting from bottom left
-			HighlightFrame.offsetMin = _canvasTransform.InverseTransformPoint(corners[0]) - new Vector3(5f, 5f, 0);
-			HighlightFrame.offsetMax = _canvasTransform.InverseTransformPoint(corners[2]) + new Vector3(5f, 5f, 0);
+		_highlightTarget = target;
 
+		if (target != null)
+		{
 			if (_zoomHighlight != null)
 			{
 				StopCoroutine(_zoomHighlight);
@@ -154,12 +200,12 @@ public class GameGuide : MonoBehaviour
 
 	private IEnumerator ZoomHighlight()
 	{
-		float startTime = Time.time;
+		float startTime = Time.unscaledTime;
 		float endTime = startTime + HighlightZoomTime;
 
-		while (Time.time < endTime)
+		while (Time.unscaledTime < endTime)
 		{
-			float scale = Mathf.Lerp(HighlightScale, 1f, Mathf.InverseLerp(startTime, endTime, Time.time));
+			float scale = Mathf.Lerp(HighlightScale, 1f, Mathf.InverseLerp(startTime, endTime, Time.unscaledTime));
 			HighlightFrame.localScale = Vector3.one * scale;
 
 			yield return null;
@@ -205,7 +251,7 @@ public class GameGuide : MonoBehaviour
 			var delayedEnableSkip = StartCoroutine(DelayedEnableSkip(skipText));
 			yield return new WaitUntil(() => _skip || condition());
 			StopCoroutine(delayedEnableSkip);
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSecondsRealtime(0.5f);
 		}
 
 		_skip = false;
@@ -238,6 +284,11 @@ public class GameGuide : MonoBehaviour
 				case GuideSelection.DesignerBasic:
 					_currentGuide = GuideSelection.VehicleBasic;
 					StartCoroutine(PlayVehicleGuide());
+					break;
+				case GuideSelection.VehicleBasic:
+					VehicleSelection.SerializedVehicle = GuideVehicle.text;
+					ActiveGuide = GuideSelection.Gameplay;
+					SceneManager.LoadScene(GameplayGuide);
 					break;
 				default:
 					Debug.LogError($"Current guide is {_currentGuide} which does not have a next guide!");
@@ -521,7 +572,184 @@ public class GameGuide : MonoBehaviour
 		yield return StartCoroutine(
 			FinalStep(
 				"Conclusion",
-				"That concludes the vehicle essentials guide. Now go forth and create!",
+				"That concludes the vehicle essentials guide. Next we will cover gameplay controls.\nOr, if you prefer, you can start designing vehicles; the tutorials will always be accessible from the main menu.",
+				true
+			)
+		);
+	}
+
+	#endregion
+
+	#region Gameplay Guide
+
+	private IEnumerator PlayGameplayGuide()
+	{
+		yield return null;
+
+		Highlight(null);
+		PauseSimulation();
+		yield return StartCoroutine(
+			Step(
+				"Gameplay Guide",
+				string.Join(
+					"\n", "Welcome to the gameplay guide!",
+					"This guide aims to prepare you for facing off against other players in Oberth Effect."
+				),
+				null
+			)
+		);
+
+		Camera.main.GetComponent<CameraZoom>().TargetZoomExponent = 1.5f;
+		yield return new WaitForSecondsRealtime(0.5f);
+
+		Highlight(ShipyardFrame);
+		yield return StartCoroutine(
+			Step(
+				"Shipyard",
+				string.Join(
+					"\n",
+					"This is your shipyard. When you're near a friendly shipyard, it will resupply you with resources, indicated by colored particles flowing from the shipyard to your vehicle.",
+					"Protect it! If the opposing team destroys your shipyard, you will lose the game. A ring around the shipyard will indicate its remaining health."
+				),
+				null
+			)
+		);
+
+		Highlight(null);
+		Camera.main.GetComponent<CameraZoom>().TargetZoomExponent = 0.5f;
+		UnpauseSimulation();
+		yield return StartCoroutine(
+			Step(
+				"Maneuvering",
+				string.Join(
+					"\n",
+					"You can accelerate your vehicle using WASD. Your vehicle will try to rotate to point in the direction of your mouse.",
+					$"Accelerate your vehicle to {PhysicsUnitUtils.FormatSpeed(2)} to complete this step. It shouldn't take too long."
+				),
+				() => VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>().velocity.sqrMagnitude > 4f
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Control Schemes",
+				string.Join(
+					"\n",
+					"There are several control modes available for your vehicle, which affects how your key presses translate to thruster actions.",
+					"The vehicle is currently on <color=\"lime\">mouse</color> mode. There are two more modes, <color=\"lightblue\">relative</color> and <color=\"yellow\">cruise</color>.",
+					"You can cycle between them during gameplay using 'R', or change your vehicle's default control mode in the vehicle config in the designer. Experiment and find out which mode suits your vehicle's playstyle the most!",
+					"Cycle to a different control mode to complete this step."
+				),
+				() => PlayerControlConfig.Instance.ControlMode != VehicleControlMode.Mouse
+			)
+		);
+
+		PauseSimulation();
+		yield return StartCoroutine(
+			Step(
+				"Acceleration",
+				string.Join(
+					"\n",
+					"A word of caution: there is no \"space drag\" in this game. It takes time to speed up and slow down. If you simply point toward the target and hold W, you will have a hard time slowing down when you overshoot!",
+					"A common technique is to use a flip-and-burn trajectory (also known as a brachistochrone trajectory), where you accelerate toward the target until the halfway mark, then spend the other half of the trip accelerating in the opposite direction to slow down."
+				),
+				null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Inertia Dampener",
+				"You can press 'X' to toggle inertia dampener, which will try to stop your velocity relative to the global reference frame.",
+				null
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Self Destruct",
+				"If you ever find yourself hopelessly out of position, or if your vehicle has been damaged beyond repair, you can hold backspace to self-destruct and respawn at a friendly shipyard.",
+				null
+			)
+		);
+
+		Highlight(StatusPanelFrame);
+		yield return StartCoroutine(
+			Step(
+				"Status Panel",
+				string.Join(
+					"\n",
+					"The left side of your HUD contains a picture-in-picture (pip) frame showing your vehicle, as well as status of the vehicle.",
+					"Some blocks can be turned on and off during gameplay. The status of those blocks will also show up on the status panel."
+				),
+				null
+			)
+		);
+
+		Highlight(null);
+		UnpauseSimulation();
+		TargetDummyHighlight.SetActive(true);
+		yield return StartCoroutine(
+			Step(
+				"Weapon Testing",
+				"A target dummy has been set up for you to test your weapons. Head there and we will do some live-fire training.",
+				() => (VehicleSpawner.Vehicle.transform.position - TargetDummy.transform.position).sqrMagnitude < 2500f
+			)
+		);
+
+		TargetDummyHighlight.SetActive(false);
+		yield return StartCoroutine(
+			Step(
+				"Weapon Testing",
+				"Try hitting it with your flak cannons. On this vehicle, they are assigned to the \"Manual 1\" group. Press and hold LMB to fire them.",
+				() => TargetDummy.GetDamageHistory().Any(item => item.Type == DamageType.Explosive)
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Targeting Lock",
+				string.Join(
+					"\n",
+					"Some of the perceptive players may have already noticed the targeting indicator floating over the target dummy.",
+					"All vehicles have the ability to acquire targets. When you acquire a target, it is marked by a targeting indicator, and a pip frame of it shows up on the upper right corner of your HUD.",
+					"Press spacebar to \"lock\" the target. This prevents your targeting system from switching targets when you move your cursor away.",
+					"To complete this step, lock onto the dummy as your target."
+				),
+				() => VehicleSpawner.Vehicle.GetComponent<VehicleWeaponControl>().TargetLock
+				      && (VehicleSpawner.Vehicle.GetComponent<VehicleWeaponControl>().TargetPhotonViewId
+				          == TargetDummy.GetComponent<PhotonView>().ViewID)
+			)
+		);
+
+		yield return StartCoroutine(
+			Step(
+				"Weapon Testing",
+				string.Join(
+					"\n",
+					"Guided weapons, like the torpedo mounted on this vehicle, require a target (acquired, not necessarily locked) to fire.",
+					"Now that you have the target dummy in your sights, press RMB to fire your torpedo."
+				),
+				() => TargetDummy.GetDamageHistory().Any(item => item.Type == DamageType.Kinetic)
+			)
+		);
+
+		PauseSimulation();
+		Highlight(MinimapFrame);
+		yield return StartCoroutine(
+			Step(
+				"Minimap",
+				"The lower right corner of your HUD contains the minimap, to help you keep track of the strategic situation.\nYou can use the numpad plus nad minus keys to zoom in and out the minimap.",
+				null
+			)
+		);
+
+		UnpauseSimulation();
+		Highlight(null);
+		yield return StartCoroutine(
+			FinalStep(
+				"Conclusion",
+				"That concludes the gameplay tutorial. Armed with this knowledge, you are now ready to explore the rest of Oberth Effect!",
 				false
 			)
 		);

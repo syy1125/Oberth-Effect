@@ -13,7 +13,7 @@ public class CameraZoom : MonoBehaviour
 
 	private Camera _camera;
 	private float _baseSize;
-	private float _targetZoomExponent;
+	public float TargetZoomExponent;
 	private float _smoothZoomExponent;
 	private float _smoothZoomVelocity;
 
@@ -27,13 +27,14 @@ public class CameraZoom : MonoBehaviour
 	{
 		var scroll = ZoomAction.action.ReadValue<float>();
 
-		if (Mathf.Abs(scroll) > Mathf.Epsilon)
+		if (Time.timeScale > Mathf.Epsilon && Mathf.Abs(scroll) > Mathf.Epsilon)
 		{
-			_targetZoomExponent = Mathf.Clamp(_targetZoomExponent - scroll / 10f, MinExponent, MaxExponent);
+			TargetZoomExponent = Mathf.Clamp(TargetZoomExponent - scroll / 10f, MinExponent, MaxExponent);
 		}
 
 		_smoothZoomExponent = Mathf.SmoothDamp(
-			_smoothZoomExponent, _targetZoomExponent, ref _smoothZoomVelocity, SmoothTime
+			_smoothZoomExponent, TargetZoomExponent, ref _smoothZoomVelocity, SmoothTime,
+			Mathf.Infinity, Time.unscaledDeltaTime
 		);
 
 		_camera.orthographicSize = _baseSize * Mathf.Exp(_smoothZoomExponent);

@@ -27,6 +27,7 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private bool _started;
 	private Coroutine _initNotification;
+	private Coroutine _fadeNotification;
 	private Dictionary<string, Text> _controlGroupDisplays;
 
 	private void OnEnable()
@@ -221,12 +222,13 @@ public class ControlInfoDisplay : MonoBehaviour
 
 		ControlNotification.text = notification;
 		ControlNotification.CrossFadeAlpha(1f, 0f, true);
-		CancelInvoke(nameof(FadeNotification));
-		Invoke(nameof(FadeNotification), NotificationFadeDelay);
+		if (_fadeNotification != null) StopCoroutine(_fadeNotification);
+		_fadeNotification = StartCoroutine(FadeNotification());
 	}
 
-	private void FadeNotification()
+	private IEnumerator FadeNotification()
 	{
+		yield return new WaitForSecondsRealtime(NotificationFadeDelay);
 		ControlNotification.CrossFadeAlpha(0f, NotificationFadeTime, true);
 	}
 }

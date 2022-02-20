@@ -55,7 +55,7 @@ public class VehicleIndicator : MonoBehaviour
 			{
 				_angle = Mathf.SmoothDampAngle(
 					         _angle * Mathf.Rad2Deg, targetAngle * Mathf.Rad2Deg,
-					         ref _angularVelocity, 0.02f
+					         ref _angularVelocity, 0.02f, Mathf.Infinity, Time.unscaledDeltaTime
 				         )
 				         * Mathf.Deg2Rad;
 				PositionPropulsionIndicator(com, new Vector2(xSize, ySize));

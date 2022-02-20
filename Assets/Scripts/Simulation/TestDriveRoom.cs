@@ -11,6 +11,11 @@ public class TestDriveRoom : MonoBehaviour
 {
 	private void OnEnable()
 	{
+		if (PhotonNetwork.IsConnected)
+		{
+			PhotonNetwork.Disconnect();
+		}
+
 		PhotonNetwork.OfflineMode = true;
 		PhotonNetwork.CreateRoom(
 			"", new RoomOptions

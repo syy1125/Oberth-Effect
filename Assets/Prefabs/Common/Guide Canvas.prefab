@@ -135,7 +135,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 61cda816f7a7da14bb1600c066071e77, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -366,7 +366,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 61cda816f7a7da14bb1600c066071e77, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -749,6 +749,10 @@ MonoBehaviour:
   HighlightZoomTime: 0.5
   HighlightScale: 10
   SkipDelay: 10
+  GuideVehicle: {fileID: 4900000, guid: 870e8272519e2d442873326737547679, type: 3}
+  GameplayGuide:
+    sceneAsset: {fileID: 102900000, guid: 7327e3b4822956f429be1476f3f824a5, type: 3}
+    scenePath: Assets/Scenes/Gameplay Guide.unity
   Designer: {fileID: 0}
   Builder: {fileID: 0}
   Toolbar: {fileID: 0}
@@ -758,6 +762,13 @@ MonoBehaviour:
   Config: {fileID: 0}
   DesignerMenu: {fileID: 0}
   HelpScreen: {fileID: 0}
+  PauseIndicator: {fileID: 0}
+  VehicleSpawner: {fileID: 0}
+  ShipyardFrame: {fileID: 0}
+  StatusPanelFrame: {fileID: 0}
+  TargetDummy: {fileID: 0}
+  TargetDummyHighlight: {fileID: 0}
+  MinimapFrame: {fileID: 0}
 --- !u!225 &6913993996440482668
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1059,7 +1070,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 61cda816f7a7da14bb1600c066071e77, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 

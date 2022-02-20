@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Designer.unity
     guid: 8a6855e77cf8dae47a28b4c44bff7c32
   - enabled: 1
+    path: Assets/Scenes/Gameplay Guide.unity
+    guid: 7327e3b4822956f429be1476f3f824a5
+  - enabled: 1
     path: Assets/Scenes/Test Drive Room.unity
     guid: 5d4fb7245d9a8304b84d56ef2fd63b8f
   - enabled: 1
