@@ -10,13 +10,14 @@ namespace Syy1125.OberthEffect.Lobby.Multiplayer
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(LayoutElement))]
 [RequireComponent(typeof(PlayerPanel))]
-public class DragPlayerPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DragPlayerPanel : MonoBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler,
+	IEndDragHandler
 {
 	public Texture2D GrabTexture;
 
 	private RectTransform _transform;
 	private ScrollRect _scroll;
-	private Vector2 _handle;
+	private Vector2 _dragHandle;
 
 	private void Awake()
 	{
@@ -29,12 +30,15 @@ public class DragPlayerPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		enabled = PhotonNetwork.LocalPlayer.IsMasterClient || GetComponent<PlayerPanel>().Player.IsLocal;
 	}
 
-	public void OnBeginDrag(PointerEventData eventData)
+	public void OnInitializePotentialDrag(PointerEventData eventData)
 	{
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(
-			_transform, eventData.position, eventData.pressEventCamera, out _handle
+			_transform, eventData.position, eventData.pressEventCamera, out _dragHandle
 		);
+	}
 
+	public void OnBeginDrag(PointerEventData eventData)
+	{
 		GetComponent<LayoutElement>().ignoreLayout = true;
 		GetComponent<CanvasGroup>().blocksRaycasts = false;
 		Cursor.SetCursor(GrabTexture, new Vector2(50f, 50f), CursorMode.Auto);
@@ -43,30 +47,12 @@ public class DragPlayerPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		float viewportHeight = _scroll.viewport.rect.height;
-		RectTransformUtils.ScreenPointToNormalizedPointInRectangle(
-			_scroll.viewport, eventData.position, eventData.pressEventCamera, out Vector2 contentPoint
-		);
-
-		if (contentPoint.y > 0.95f)
-		{
-			_scroll.velocity = new Vector2(
-				0f, MathUtils.Remap(contentPoint.y, 0.95f, 1f, -0.5f, -0.1f) * viewportHeight
-			);
-		}
-		else if (contentPoint.y < 0.05f)
-		{
-			_scroll.velocity = new Vector2(0f, MathUtils.Remap(contentPoint.y, 0f, 0.05f, 0.1f, 0.5f) * viewportHeight);
-		}
-		else
-		{
-			_scroll.velocity = Vector2.zero;
-		}
+		ScrollRectUtils.DragEdgeScroll(_scroll, eventData);
 
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(
 			_transform, eventData.position, eventData.pressEventCamera, out Vector2 point
 		);
-		_transform.Translate(point - _handle, Space.Self);
+		_transform.Translate(point - _dragHandle, Space.Self);
 	}
 
 	public void OnEndDrag(PointerEventData eventData)

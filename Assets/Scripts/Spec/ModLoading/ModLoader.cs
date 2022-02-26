@@ -97,6 +97,10 @@ public static class ModLoader
 		};
 	}
 
+	public static void InjectBlockSpec(TextAsset blockSpec)
+	{
+		BlockPipeline.InjectFileContent(blockSpec.text, "Core");
+	}
 
 	#region Mod List
 
@@ -199,7 +203,7 @@ public static class ModLoader
 		return JsonUtility.FromJson<ModSpec>(File.ReadAllText(modDefPath));
 	}
 
-	private static void SaveModList(List<ModListElement> modList)
+	public static void SaveModList(List<ModListElement> modList)
 	{
 		string content = JsonUtility.ToJson(new ModListSpec { ModList = modList }, true);
 		File.WriteAllText(Path.Combine(_modsRoot, "modlist.json"), content);
