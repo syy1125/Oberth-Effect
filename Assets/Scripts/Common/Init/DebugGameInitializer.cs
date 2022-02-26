@@ -7,6 +7,8 @@ namespace Syy1125.OberthEffect.Common.Init
 // A debug counterpart to GameInitializer. It does most things synchronously in Awake.
 public class DebugGameInitializer : MonoBehaviour
 {
+	public TextAsset CoreBlock;
+
 	private bool _debugInit;
 
 	private void Awake()
@@ -17,6 +19,7 @@ public class DebugGameInitializer : MonoBehaviour
 			_debugInit = true;
 
 			ModLoader.Init();
+			ModLoader.InjectBlockSpec(CoreBlock);
 			ModLoader.LoadModList();
 			ModLoader.LoadAllEnabledContent();
 

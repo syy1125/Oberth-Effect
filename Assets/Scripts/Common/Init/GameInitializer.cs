@@ -14,6 +14,7 @@ namespace Syy1125.OberthEffect.Common.Init
 public class GameInitializer : MonoBehaviour
 {
 	public SceneReference MainMenuScene;
+	public TextAsset CoreBlock;
 	public Text LoadText;
 	public ProgressBar LoadProgress;
 
@@ -25,6 +26,7 @@ public class GameInitializer : MonoBehaviour
 		if (!ModLoader.Initialized)
 		{
 			ModLoader.Init();
+			ModLoader.InjectBlockSpec(CoreBlock);
 		}
 
 		StartCoroutine(LoadGame());

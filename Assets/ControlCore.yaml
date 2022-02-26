@@ -1,0 +1,37 @@
+﻿BlockId: OberthEffect/ControlCore
+Enabled: true
+Info:
+  ShortName: Core
+  FullName: Vehicle Control Core
+  Description: |
+    Fallback spec for vehicle control core. If you see this, it means that none of the mods defined a new description for the control core.
+Renderers:
+  - TextureId: OberthEffect/ControlCore
+Construction:
+  ShowInDesigner: false
+  AllowErase: false
+  BoundsMin: { X: 0, Y: 0 }
+  BoundsMax: { X: 1, Y: 1 }
+  AttachmentPoints:
+    - { X: -1, Y: 0 }
+    - { X: 1, Y: 0 }
+    - { X: 0, Y: -1 }
+    - { X: 0, Y: 1 }
+Physics:
+  CenterOfMass: { X: 0, Y: 0 }
+  Mass: 2
+  MomentOfInertia: 0.3333333
+  BoxCollider:
+    Offset: { X: 0, Y: 0 }
+    Size: { X: 1, Y: 1 }
+Combat:
+  MaxHealth: 200
+  ArmorValue: 5
+ControlCore: { }
+Resource:
+  ResourceGenerator:
+    GenerationRate:
+      OberthEffect/Energy: 100
+  StorageCapacity:
+    OberthEffect/Energy: 1000
+    OberthEffect/Fuel: 100
