@@ -2,6 +2,7 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using PlasticPipe.Server;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Match;
 using UnityEngine;
@@ -50,7 +51,16 @@ public static class PhotonTeamHelper
 
 	public static int GetPlayerTeamIndex(int playerActorNumber)
 	{
-		return GetPlayerTeamIndex(PhotonNetwork.CurrentRoom.Players[playerActorNumber]);
+		GameMode gameMode = PhotonHelper.GetRoomGameMode();
+
+		if (gameMode.IsTeamMode())
+		{
+			return (int) PhotonNetwork.CurrentRoom.Players[playerActorNumber].CustomProperties[PropertyKeys.TEAM_INDEX];
+		}
+		else
+		{
+			return playerActorNumber;
+		}
 	}
 
 	public static bool IsValidTeam(int teamIndex)
