@@ -46,6 +46,11 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 		_health = _maxHealth;
 	}
 
+	public void TutorialSetOwnerOverride(int ownerId)
+	{
+		OwnerId = ownerId;
+	}
+
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
 	{
 		return new Tuple<Vector2, Vector2>(-_boundHalfSize, _boundHalfSize);

@@ -8,10 +8,14 @@ using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation;
 using Syy1125.OberthEffect.Simulation.Construct;
+using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -65,6 +69,8 @@ public class GameGuide : MonoBehaviour
 	public RectTransform StatusPanelFrame;
 	public TargetDummy TargetDummy;
 	public GameObject TargetDummyHighlight;
+	public GameObject MissilePrefab;
+	public string MissileTextureId;
 	public RectTransform MinimapFrame;
 
 	#endregion
@@ -735,16 +741,96 @@ public class GameGuide : MonoBehaviour
 		);
 
 		PauseSimulation();
-		Highlight(MinimapFrame);
 		yield return StartCoroutine(
 			Step(
-				"Minimap",
-				"The lower right corner of your HUD contains the minimap, to help you keep track of the strategic situation.\nYou can use the numpad plus nad minus keys to zoom in and out the minimap.",
-				null
+				"Point Defense",
+				string.Join(
+					"\n",
+					"You may have noticed that some of your flak cannons weren't firing at all. This is because they are bound to the point defense (PD) weapon group.",
+					"PD weapons aren't under the control of any manual weapon groups. In the game, certain projectiles can be vulnerable to PD. When they enter the proximity of your vehicle, PD weapons will automatically track and fire on those projectiles.",
+					"For demonstration purposes, when you press continue, this tutorial will spawn a torpedo to the right and heading toward your vehicle."
+				), null
 			)
 		);
 
 		UnpauseSimulation();
+		Rigidbody2D vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
+		GameObject missile = PhotonNetwork.Instantiate(
+			MissilePrefab.name,
+			vehicle.worldCenterOfMass + new Vector2(50f, 0f),
+			Quaternion.AngleAxis(90f, Vector3.forward),
+			data: new object[]
+			{
+				CompressionUtils.Compress(
+					JsonUtility.ToJson(
+						new MissileConfig
+						{
+							ColliderSize = new Vector2(0.16f, 1.4f),
+							Damage = 10f,
+							DamageType = DamageType.Kinetic,
+							ArmorPierce = 1f,
+							Lifetime = 60f,
+
+							HasTarget = true,
+							TargetPhotonId = vehicle.GetComponent<PhotonView>().ViewID,
+							MaxAcceleration = 10f,
+							MaxAngularAcceleration = 45f,
+							ThrustActivationDelay = 0.1f,
+							GuidanceAlgorithm = MissileGuidanceAlgorithm.Predictive,
+							GuidanceActivationDelay = 0f,
+
+							IsPointDefenseTarget = true,
+							MaxHealth = 10f,
+							ArmorValue = 1f,
+							HealthDamageScaling = 0.8f,
+
+							Renderers = new[]
+							{
+								new RendererSpec
+								{
+									TextureId = MissileTextureId,
+									Scale = Vector2.one
+								}
+							},
+							PropulsionParticles = new[]
+							{
+								new ParticleSystemSpec
+								{
+									Offset = new Vector2(0f, -0.7f),
+									Direction = Vector2.down,
+									Size = 0.16f,
+									MaxSpeed = 10f,
+									EmissionRateOverTime = 200f,
+									Lifetime = 0.2f,
+									Color = "orange"
+								}
+							}
+						}
+					)
+				),
+				JsonUtility.ToJson(VehicleSpawner.Vehicle.GetComponent<ColorContext>().ColorScheme)
+			}
+		);
+		missile.GetComponent<Rigidbody2D>().velocity = vehicle.velocity;
+		missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
+
+		yield return StartCoroutine(
+			Step(
+				"Point Defense",
+				"Now watch as your point defense cannons destroy the incoming torpedo.",
+				() => missile == null || !missile.gameObject.activeSelf
+			)
+		);
+
+		Highlight(MinimapFrame);
+		yield return StartCoroutine(
+			Step(
+				"Minimap",
+				"The lower right corner of your HUD contains the minimap, to help you keep track of the strategic situation.\nYou can use the numpad plus and minus keys to zoom in and out the minimap.",
+				null
+			)
+		);
+
 		Highlight(null);
 		yield return StartCoroutine(
 			FinalStep(
