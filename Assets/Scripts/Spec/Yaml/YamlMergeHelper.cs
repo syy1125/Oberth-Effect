@@ -33,7 +33,7 @@ public static class YamlMergeHelper
 						switch (entry.Value)
 						{
 							case YamlMappingNode rightMappingNode:
-								DeepMerge(leftMappingNode, rightMappingNode);
+								output.Children[entry.Key] = DeepMerge(leftMappingNode, rightMappingNode);
 								break;
 							case YamlScalarNode rightScalarNode:
 								if (rightScalarNode.Value == null)
