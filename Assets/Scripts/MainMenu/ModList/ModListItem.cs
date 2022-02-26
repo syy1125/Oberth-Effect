@@ -17,7 +17,7 @@ public class ModListItem : MonoBehaviour,
 	public GameObject DropShadowPrefab;
 	public Text ModName;
 	public Toggle EnableToggle;
-	
+
 	public bool UpdatingElements { get; private set; }
 
 	private RectTransform _transform;
@@ -42,7 +42,7 @@ public class ModListItem : MonoBehaviour,
 	public void LoadMod(ModListElement element)
 	{
 		UpdatingElements = true;
-		
+
 		ModName.text = $"{element.Mod.DisplayName} <size=12>v{element.Mod.Version}</size>";
 		GetComponent<Tooltip>().SetTooltip(element.Mod.Description);
 		EnableToggle.isOn = element.Enabled;

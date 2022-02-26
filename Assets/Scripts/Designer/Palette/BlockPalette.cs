@@ -3,7 +3,6 @@ using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Designer.Palette
 {

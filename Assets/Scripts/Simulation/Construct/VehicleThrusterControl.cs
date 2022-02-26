@@ -190,7 +190,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		while (isActiveAndEnabled)
 		{
 			yield return new WaitForFixedUpdate();
-			
+
 			if (photonView.IsMine)
 			{
 				if (ActionMapControl.Instance.IsActionMapEnabled("Player"))

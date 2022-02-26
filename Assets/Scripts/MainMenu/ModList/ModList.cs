@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Spec.ModLoading;
 using UnityEngine;
@@ -61,7 +60,7 @@ public class ModList : MonoBehaviour
 	public void SetModEnabled(int modIndex, bool modEnabled)
 	{
 		if (modEnabled == _modList[modIndex].Enabled) return;
-		
+
 		var modElement = _modList[modIndex];
 		modElement.Enabled = modEnabled;
 		_modList[modIndex] = modElement;
@@ -73,7 +72,7 @@ public class ModList : MonoBehaviour
 	public void MoveModIndex(int oldIndex, int newIndex)
 	{
 		if (newIndex == oldIndex) return;
-		
+
 		Debug.Assert(oldIndex >= 0, "oldIndex >= 0");
 		Debug.Assert(oldIndex < _modList.Count, "oldIndex < _modList.Count");
 		Debug.Assert(newIndex >= 0, "newIndex >= 0");

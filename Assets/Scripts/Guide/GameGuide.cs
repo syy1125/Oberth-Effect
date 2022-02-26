@@ -17,7 +17,6 @@ using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 

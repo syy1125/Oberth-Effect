@@ -47,7 +47,7 @@ public static class RendererHelper
 		{
 			particles[i] = CreateParticleSystem(parent, specs[i]);
 		}
-		
+
 		return particles;
 	}
 }

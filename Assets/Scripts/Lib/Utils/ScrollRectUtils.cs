@@ -21,7 +21,9 @@ public static class ScrollRectUtils
 		}
 		else if (contentPoint.y < 0.05f)
 		{
-			scrollRect.velocity = new Vector2(0f, MathUtils.Remap(contentPoint.y, 0f, 0.05f, 0.1f, 0.5f) * viewportHeight);
+			scrollRect.velocity = new Vector2(
+				0f, MathUtils.Remap(contentPoint.y, 0f, 0.05f, 0.1f, 0.5f) * viewportHeight
+			);
 		}
 		else
 		{

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
