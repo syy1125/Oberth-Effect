@@ -1,4 +1,7 @@
-﻿using Syy1125.OberthEffect.Simulation.Construct;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Syy1125.OberthEffect.Simulation.Construct;
+using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +13,15 @@ public class AlertDisplay : MonoBehaviour
 	public Text MissileCountDisplay;
 	public Text MissileTimerDisplay;
 	public AudioSource AlertAudio;
+	public Transform MissileMarkerParent;
+	public GameObject MissileMarkerPrefab;
+
+	private Dictionary<Missile, GameObject> _missileMarkers;
+
+	private void Awake()
+	{
+		_missileMarkers = new Dictionary<Missile, GameObject>();
+	}
 
 	private void LateUpdate()
 	{
@@ -31,6 +43,13 @@ public class AlertDisplay : MonoBehaviour
 			MissileCountDisplay.gameObject.SetActive(false);
 			MissileTimerDisplay.gameObject.SetActive(false);
 			AlertAudio.mute = true;
+
+			foreach (GameObject marker in _missileMarkers.Values)
+			{
+				Destroy(marker);
+			}
+
+			_missileMarkers.Clear();
 		}
 		else
 		{
@@ -43,20 +62,11 @@ public class AlertDisplay : MonoBehaviour
 			MissileCountDisplay.color = textColor;
 			AlertAudio.mute = false;
 
-			float? minTime = null;
 
-			foreach (var missile in WeaponControl.IncomingMissiles)
-			{
-				float? missileTime = missile.GetHitTime();
-
-				if (missileTime != null)
-				{
-					if (minTime == null || minTime.Value > missileTime.Value)
-					{
-						minTime = missileTime;
-					}
-				}
-			}
+			HashSet<Missile> missiles = new HashSet<Missile>(WeaponControl.IncomingMissiles);
+			float? minTime = missiles.Select(missile => missile.GetHitTime())
+				.Where(hitTime => hitTime != null && hitTime > 0f)
+				.Min();
 
 			if (minTime != null)
 			{
@@ -71,6 +81,28 @@ public class AlertDisplay : MonoBehaviour
 				MissileTimerDisplay.gameObject.SetActive(false);
 
 				AlertAudio.pitch = 1f;
+			}
+
+			List<Missile> removedKeys = new List<Missile>();
+			foreach (KeyValuePair<Missile, GameObject> entry in _missileMarkers)
+			{
+				if (!missiles.Remove(entry.Key))
+				{
+					removedKeys.Add(entry.Key);
+				}
+			}
+
+			foreach (Missile missile in removedKeys)
+			{
+				Destroy(_missileMarkers[missile]);
+				_missileMarkers.Remove(missile);
+			}
+
+			foreach (Missile missile in missiles)
+			{
+				var marker = Instantiate(MissileMarkerPrefab, MissileMarkerParent);
+				marker.GetComponent<HighlightTarget>().Target = missile.transform;
+				_missileMarkers.Add(missile, marker);
 			}
 		}
 	}

@@ -1504,6 +1504,8 @@ MonoBehaviour:
   MissileCountDisplay: {fileID: 8702961855644604776}
   MissileTimerDisplay: {fileID: 2367806855190970741}
   AlertAudio: {fileID: 6326492441746120824}
+  MissileMarkerParent: {fileID: 2356713704922160292}
+  MissileMarkerPrefab: {fileID: 1935562262794819298, guid: d17522da8d0fd5342b916291bbcf2cc4, type: 3}
 --- !u!82 &6326492441746120824
 AudioSource:
   m_ObjectHideFlags: 0

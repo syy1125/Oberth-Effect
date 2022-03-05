@@ -44,17 +44,20 @@ public class HighlightTarget : MonoBehaviour
 			_rectTransform.offsetMax = new Vector2(apparentSize, apparentSize);
 			_rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
-			if (screenPosition.y < 0.5f)
+			if (Label != null)
 			{
-				Label.anchorMin = new Vector2(0.5f, 1f);
-				Label.anchorMax = new Vector2(0.5f, 1f);
-				Label.pivot = new Vector2(0.5f, 0f);
-			}
-			else
-			{
-				Label.anchorMin = new Vector2(0.5f, 0f);
-				Label.anchorMax = new Vector2(0.5f, 0f);
-				Label.pivot = new Vector2(0.5f, 1f);
+				if (screenPosition.y < 0.5f)
+				{
+					Label.anchorMin = new Vector2(0.5f, 1f);
+					Label.anchorMax = new Vector2(0.5f, 1f);
+					Label.pivot = new Vector2(0.5f, 0f);
+				}
+				else
+				{
+					Label.anchorMin = new Vector2(0.5f, 0f);
+					Label.anchorMax = new Vector2(0.5f, 0f);
+					Label.pivot = new Vector2(0.5f, 1f);
+				}
 			}
 		}
 		else
@@ -71,10 +74,13 @@ public class HighlightTarget : MonoBehaviour
 				OffScreenSize * (1 - edgePoint.x), OffScreenSize * (1 - edgePoint.y)
 			);
 
-			Vector2 labelAnchor = Vector2.one - edgePoint;
-			Label.anchorMin = labelAnchor;
-			Label.anchorMax = labelAnchor;
-			Label.pivot = edgePoint;
+			if (Label != null)
+			{
+				Vector2 labelAnchor = Vector2.one - edgePoint;
+				Label.anchorMin = labelAnchor;
+				Label.anchorMax = labelAnchor;
+				Label.pivot = edgePoint;
+			}
 		}
 	}
 
