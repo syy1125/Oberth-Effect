@@ -575,6 +575,14 @@ public class GameGuide : MonoBehaviour
 
 		Highlight(null);
 		yield return StartCoroutine(
+			Step(
+				"Save your vehicle!",
+				"The next tutorial will load a stock vehicle to demonstrate gameplay features. If you made a custom vehicle design, save it before entering the next tutorial!",
+				null
+			)
+		);
+
+		yield return StartCoroutine(
 			FinalStep(
 				"Conclusion",
 				"That concludes the vehicle essentials guide. Next we will cover gameplay controls.\nOr, if you prefer, you can start designing vehicles; the tutorials will always be accessible from the main menu.",
@@ -756,7 +764,7 @@ public class GameGuide : MonoBehaviour
 		Rigidbody2D vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
 		GameObject missile = PhotonNetwork.Instantiate(
 			MissilePrefab.name,
-			vehicle.worldCenterOfMass + new Vector2(50f, 0f),
+			vehicle.worldCenterOfMass + new Vector2(80f, 0f),
 			Quaternion.AngleAxis(90f, Vector3.forward),
 			data: new object[]
 			{
