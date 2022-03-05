@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
@@ -20,6 +21,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	public InputActionReference LookAction;
 	public InputActionReference FireAction1;
 	public InputActionReference FireAction2;
+	public InputActionReference FireAction3;
+	public InputActionReference FireAction4;
 	public InputActionReference TargetLockAction;
 
 	private Camera _mainCamera;
@@ -111,6 +114,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			bool isMine = photonView.IsMine;
 			bool firing1 = FireAction1.action.ReadValue<float>() > 0.5f;
 			bool firing2 = FireAction2.action.ReadValue<float>() > 0.5f;
+			bool firing3 = FireAction3.action.ReadValue<float>() > 0.5f;
+			bool firing4 = FireAction4.action.ReadValue<float>() > 0.5f;
 
 			Vector3 aimPoint = GetAimPoint(isMine);
 
@@ -129,11 +134,11 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 				CleanUpIncomingMissiles();
 				List<PointDefenseTargetData> pdTargetData = GetPointDefenseTargets();
-				SendWeaponCommands(aimPoint, true, firing1, firing2, pdTargetData);
+				SendWeaponCommands(aimPoint, true, firing1, firing2, firing3, firing4, pdTargetData);
 			}
 			else
 			{
-				SendWeaponCommands(aimPoint, false, firing1, firing2, null);
+				SendWeaponCommands(aimPoint, false, firing1, firing2, firing3, firing4, null);
 			}
 
 			yield return new WaitForFixedUpdate();
@@ -294,7 +299,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	}
 
 	private void SendWeaponCommands(
-		Vector3 aimPoint, bool isMine, bool firing1, bool firing2, List<PointDefenseTargetData> pdTargets
+		Vector3 aimPoint, bool isMine, bool firing1, bool firing2, bool firing3, bool firing4,
+		List<PointDefenseTargetData> pdTargets
 	)
 	{
 		foreach (IWeaponSystem weapon in _weapons)
@@ -302,22 +308,24 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			switch (weapon.WeaponBinding)
 			{
 				case WeaponBindingGroup.Manual1:
-					weapon.SetAimPoint(aimPoint);
-					weapon.SetTargetPhotonId(TargetPhotonViewId);
-
-					if (isMine)
-					{
-						weapon.SetFiring(firing1);
-					}
-
-					break;
 				case WeaponBindingGroup.Manual2:
+				case WeaponBindingGroup.Manual3:
+				case WeaponBindingGroup.Manual4:
 					weapon.SetAimPoint(aimPoint);
 					weapon.SetTargetPhotonId(TargetPhotonViewId);
 
 					if (isMine)
 					{
-						weapon.SetFiring(firing2);
+						weapon.SetFiring(
+							weapon.WeaponBinding switch
+							{
+								WeaponBindingGroup.Manual1 => firing1,
+								WeaponBindingGroup.Manual2 => firing2,
+								WeaponBindingGroup.Manual3 => firing3,
+								WeaponBindingGroup.Manual4 => firing4,
+								_ => throw new ArgumentException()
+							}
+						);
 					}
 
 					break;

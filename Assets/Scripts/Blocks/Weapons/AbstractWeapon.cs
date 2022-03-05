@@ -123,7 +123,7 @@ public abstract class AbstractWeapon :
 			new StringSwitchSelectConfigItem
 			{
 				Key = "WeaponBinding",
-				Options = new[] { "Manual 1", "Manual 2", "Point Defense" },
+				Options = new[] { "Manual 1", "Manual 2", "Manual 3", "Manual 4", "Point Defense" },
 				Label = "Group",
 				Tooltip = string.Join(
 					"\n",

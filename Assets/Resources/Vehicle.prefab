@@ -474,6 +474,8 @@ MonoBehaviour:
   LookAction: {fileID: -841684042950946977, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   FireAction1: {fileID: -5540044965373844553, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   FireAction2: {fileID: -6982482081351046236, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  FireAction3: {fileID: 4408790990592266296, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  FireAction4: {fileID: 3310973374550294031, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   TargetLockAction: {fileID: 6437093828764471745, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
 --- !u!114 &8262174820219332251
 MonoBehaviour:

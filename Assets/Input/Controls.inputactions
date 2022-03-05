@@ -474,7 +474,7 @@
                 {
                     "name": "",
                     "id": "38d51635-f7b6-4cc5-9570-5ba2875ab3a3",
-                    "path": "<Mouse>/forwardButton",
+                    "path": "<Mouse>/backButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -496,7 +496,7 @@
                 {
                     "name": "",
                     "id": "bf8d63e7-3026-4884-8209-5a8d12d196fc",
-                    "path": "<Mouse>/backButton",
+                    "path": "<Mouse>/forwardButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
