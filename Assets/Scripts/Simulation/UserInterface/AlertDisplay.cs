@@ -22,6 +22,7 @@ public class AlertDisplay : MonoBehaviour
 		{
 			MissileCountDisplay.gameObject.SetActive(false);
 			MissileTimerDisplay.gameObject.SetActive(false);
+			AlertAudio.mute = true;
 			return;
 		}
 
