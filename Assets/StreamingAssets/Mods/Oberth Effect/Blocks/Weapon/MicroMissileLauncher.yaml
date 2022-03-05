@@ -76,6 +76,8 @@ FixedWeapon:
       Strength: 0.1
       Duration: 0.2
       DecayCurve: Linear
+    FireSound: 
+      SoundId: OberthEffect/MicroMissileLaunch
     Renderers:
       - TextureId: OberthEffect/Square
         Scale: { X: 0.1, Y: 0.2 }

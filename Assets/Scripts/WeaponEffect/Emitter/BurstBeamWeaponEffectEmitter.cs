@@ -12,9 +12,9 @@ using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.WeaponEffect
+namespace Syy1125.OberthEffect.WeaponEffect.Emitter
 {
-public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
+public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 {
 	private Camera _camera;
 	private OwnerContext _ownerContext;
@@ -29,18 +29,12 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private DamageType _damageType;
 	private float _armorPierce;
 	private float _explosionRadius;
-	private float _maxRange;
 
 	private Dictionary<string, float> _reloadResourceUse;
 
 	private float _reloadProgress;
-	private float _resourceSatisfaction;
 
 	private ScreenShakeSpec _screenShake;
-	private AudioSource _audioSource;
-	private string _fireSoundId;
-	private AudioClip _fireSound;
-	private float _fireSoundVolume;
 
 	// State
 	private int _beamTicksRemaining;
@@ -59,6 +53,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void LoadSpec(BurstBeamWeaponEffectSpec spec)
 	{
+		base.LoadSpec(spec);
+		
 		_preciseDuration = spec.PreciseDuration;
 		_durationTicks = spec.DurationTicks;
 		_durationSeconds = spec.DurationSeconds;
@@ -69,7 +65,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_damageType = spec.DamageType;
 		_armorPierce = spec.ArmorPierce;
 		_explosionRadius = spec.ExplosionRadius;
-		_maxRange = spec.MaxRange;
+		MaxRange = spec.MaxRange;
 
 		float beamWidth = spec.BeamWidth;
 		if (!_colorContext.ColorScheme.ResolveColor(spec.BeamColor, out Color beamColor))
@@ -87,14 +83,6 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_visual = beamEffectObject.AddComponent<BeamWeaponVisual>();
 		_visual.Init(beamWidth, beamColor, spec.HitParticles);
 
-		if (spec.FireSound != null)
-		{
-			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
-			_fireSoundId = spec.FireSound.SoundId;
-			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
-			_fireSoundVolume = spec.FireSound.Volume;
-		}
-
 		_reloadResourceUse = spec.MaxResourceUse;
 		_screenShake = spec.ScreenShake;
 
@@ -106,22 +94,12 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_reloadProgress = _reloadTime;
 	}
 
-	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
+	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
 		return _reloadProgress >= _reloadTime ? null : _reloadResourceUse;
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
-	{
-		_resourceSatisfaction = level;
-	}
-
-	public float GetMaxRange()
-	{
-		return _maxRange;
-	}
-
-	public void GetMaxFirepower(IList<FirepowerEntry> entries)
+	public override void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
 		entries.Add(
 			new FirepowerEntry
@@ -133,12 +111,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		);
 	}
 
-	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
-	{
-		return _reloadResourceUse;
-	}
-
-	public string GetEmitterTooltip()
+	public override string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
 
@@ -152,7 +125,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					? $"{PhysicsUnitUtils.FormatLength(_explosionRadius)} radius"
 					: $"<color=\"lightblue\">{_armorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(_maxRange)}");
+			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(
@@ -164,20 +137,14 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public void SetAimPoint(Vector2? aimPoint)
-	{}
-
-	public void SetTargetPhotonId(int? targetId)
-	{}
-
-	public Vector2 GetInterceptPoint(
+	public override Vector2 GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{
 		return targetPosition;
 	}
 
-	public void EmitterFixedUpdate(bool isMine, bool firing)
+	public override void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
 		{
@@ -193,7 +160,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 			if (_reloadProgress < _reloadTime)
 			{
-				_reloadProgress += Time.fixedDeltaTime * _resourceSatisfaction;
+				_reloadProgress += Time.fixedDeltaTime * ResourceSatisfaction;
 			}
 		}
 
@@ -236,11 +203,11 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private void FireBeamTick(bool isMine, float damageThisTick)
 	{
-		Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, _maxRange, 0f));
+		Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, MaxRange, 0f));
 		Vector3? normal = null;
 		IDamageable hitTarget = null;
 		int count = Physics2D.Raycast(
-			transform.position, transform.up, LayerConstants.WeaponHitFilter, _raycastHits, _maxRange
+			transform.position, transform.up, LayerConstants.WeaponHitFilter, _raycastHits, MaxRange
 		);
 
 		if (count > 0)
@@ -282,7 +249,7 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 							hitTarget.RequestBeamDamage(
 								_damageType, damageThisTick, _armorPierce,
 								_ownerContext.OwnerId,
-								transform.position, transform.TransformPoint(new Vector3(0f, _maxRange))
+								transform.position, transform.TransformPoint(new Vector3(0f, MaxRange))
 							);
 						}
 
@@ -325,13 +292,8 @@ public class BurstBeamWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	{
 		if (_preciseDuration) _beamTicksRemaining = _durationTicks;
 		else _beamSecondsRemaining = _durationSeconds;
-
-		if (_fireSound != null)
-		{
-			float volume = GetComponentInParent<IBlockSoundAttenuator>()
-				.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
-			_audioSource.PlayOneShot(_fireSound, volume);
-		}
+		
+		ExecuteWeaponSideEffects();
 	}
 }
 }

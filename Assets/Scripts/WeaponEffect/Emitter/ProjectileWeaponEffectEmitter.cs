@@ -12,9 +12,9 @@ using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.WeaponEffect
+namespace Syy1125.OberthEffect.WeaponEffect.Emitter
 {
-public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
+public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 {
 	private Camera _camera;
 	private Rigidbody2D _body;
@@ -29,23 +29,14 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private float _maxSpeed;
 	private float _maxLifetime;
-	private float _maxRange;
 	private AimPointScalingMode _aimPointScaling;
 	private float _aimPointScaleFactor;
 
 	private float _recoil;
 	private float _reloadTime;
 	private ProjectileConfig _projectileConfig;
-	private Dictionary<string, float> _reloadResourceUse;
 
-	private AudioSource _audioSource;
-	private string _fireSoundId;
-	private AudioClip _fireSound;
-	private float _fireSoundVolume;
-
-	private Vector2? _aimPoint;
 	private float _reloadProgress;
-	private float _resourceSatisfaction;
 
 	private ScreenShakeSpec _screenShake;
 
@@ -58,6 +49,8 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void LoadSpec(ProjectileWeaponEffectSpec spec)
 	{
+		base.LoadSpec(spec);
+
 		_burstCount = spec.BurstCount;
 		_burstInterval = spec.BurstInterval;
 		_clusterBaseAngles = spec.ClusterBaseAngles;
@@ -67,7 +60,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 		_maxSpeed = spec.MaxSpeed;
 		_maxLifetime = spec.MaxLifetime;
-		_maxRange = _maxSpeed * _maxLifetime;
+		MaxRange = _maxSpeed * _maxLifetime;
 		_aimPointScaling = spec.AimPointScaling;
 		_aimPointScaleFactor = spec.AimPointScaleFactor;
 
@@ -93,15 +86,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			_projectileConfig.HealthDamageScaling = spec.HealthDamageScaling;
 		}
 
-		if (spec.FireSound != null)
-		{
-			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
-			_fireSoundId = spec.FireSound.SoundId;
-			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
-			_fireSoundVolume = spec.FireSound.Volume;
-		}
-
-		_reloadResourceUse = spec.MaxResourceUse;
+		ReloadResourceUse = spec.MaxResourceUse;
 
 		_screenShake = spec.ScreenShake;
 	}
@@ -111,22 +96,12 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_reloadProgress = _reloadTime;
 	}
 
-	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
+	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
-		return _reloadProgress >= _reloadTime ? null : _reloadResourceUse;
+		return _reloadProgress >= _reloadTime ? null : ReloadResourceUse;
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
-	{
-		_resourceSatisfaction = level;
-	}
-
-	public float GetMaxRange()
-	{
-		return _maxRange;
-	}
-
-	public void GetMaxFirepower(IList<FirepowerEntry> entries)
+	public override void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
 		entries.Add(
 			new FirepowerEntry
@@ -138,12 +113,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		);
 	}
 
-	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
-	{
-		return _reloadResourceUse;
-	}
-
-	public string GetEmitterTooltip()
+	public override string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
 
@@ -155,7 +125,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(
-				$"    Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(_maxRange)}"
+				$"    Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(MaxRange)}"
 			);
 
 		if (_projectileConfig.IsPointDefenseTarget)
@@ -165,9 +135,9 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			);
 		}
 
-		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
+		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(ReloadResourceUse));
 		builder.AppendLine(
-			_reloadResourceUse.Count > 0
+			ReloadResourceUse.Count > 0
 				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
 				: $"    Reload time {_reloadTime}"
 		);
@@ -210,15 +180,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public void SetAimPoint(Vector2? aimPoint)
-	{
-		_aimPoint = aimPoint;
-	}
-
-	public void SetTargetPhotonId(int? targetId)
-	{}
-
-	public Vector2 GetInterceptPoint(
+	public override Vector2 GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{
@@ -234,7 +196,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return ownPosition + interceptVelocity * hitTime;
 	}
 
-	public void EmitterFixedUpdate(bool isMine, bool firing)
+	public override void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
 		{
@@ -252,7 +214,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 			if (_reloadProgress < _reloadTime)
 			{
-				_reloadProgress += Time.fixedDeltaTime * _resourceSatisfaction;
+				_reloadProgress += Time.fixedDeltaTime * ResourceSatisfaction;
 			}
 		}
 	}
@@ -264,10 +226,10 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		var rotation = firingPort.rotation;
 
 		float aimPointScale = 1f;
-		if (_aimPoint != null && !Mathf.Approximately(_maxRange, 0f))
+		if (AimPoint != null && !Mathf.Approximately(MaxRange, 0f))
 		{
 			aimPointScale = Mathf.Min(
-				Vector2.Distance(_aimPoint.Value, position) * _aimPointScaleFactor / _maxRange, 1f
+				Vector2.Distance(AimPoint.Value, position) * _aimPointScaleFactor / MaxRange, 1f
 			);
 		}
 
@@ -320,19 +282,7 @@ public class ProjectileWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			);
 		}
 
-		if (_fireSound != null)
-		{
-			PlayFireSound();
-			GetComponentInParent<IWeaponEffectRpcRelay>()
-				.InvokeWeaponEffectRpc(nameof(PlayFireSound), RpcTarget.Others);
-		}
-	}
-
-	public void PlayFireSound()
-	{
-		float volume = GetComponentInParent<IBlockSoundAttenuator>()
-			.AttenuateOneShotSound(_fireSoundId, _fireSoundVolume);
-		_audioSource.PlayOneShot(_fireSound, volume);
+		ExecuteWeaponSideEffects();
 	}
 }
 }

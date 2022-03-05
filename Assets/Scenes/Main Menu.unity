@@ -6303,7 +6303,8 @@ MonoBehaviour:
   m_Text: "Some icons from Material Design Icons\n  https://www.google.com/design/icons/\n\nAudio
     assets from opengameart.org\n  UI SFX set by Kenney Vleugels\n    www.kenney.nl\n 
     UI Sound Library by Little Robot Sound Factory\n    www.littlerobotsoundfactory.com\n 
-    Bang / Firework SFX by rubberduck"
+    Bang / Firework SFX by rubberduck\n  Projectile Launch Sounds by Michel Baradari\n   
+    apollo-music.de"
 --- !u!222 &988660832
 CanvasRenderer:
   m_ObjectHideFlags: 0

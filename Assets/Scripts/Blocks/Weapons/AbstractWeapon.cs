@@ -11,6 +11,7 @@ using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.WeaponEffect;
+using Syy1125.OberthEffect.WeaponEffect.Emitter;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Weapons

@@ -13,9 +13,9 @@ using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.WeaponEffect
+namespace Syy1125.OberthEffect.WeaponEffect.Emitter
 {
-public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
+public class MissileLauncherEffectEmitter : AbstractWeaponEffectEmitter
 {
 	private struct LaunchTube
 	{
@@ -32,16 +32,10 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 	private LaunchTube[] _launchTubes;
 	private float _launchInterval;
 	private float _reloadTime;
-	private Dictionary<string, float> _reloadResourceUse;
-
-	private float _maxRange;
 
 	private ScreenShakeSpec _screenShake;
 
 	// State
-	private Vector2? _aimPoint;
-	private int? _targetPhotonId;
-	private float _resourceSatisfaction;
 	private int _activeLauncherIndex;
 	private float _launchCooldown;
 
@@ -54,6 +48,8 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	public void LoadSpec(MissileLauncherEffectSpec spec)
 	{
+		base.LoadSpec(spec);
+
 		_missileConfig = new MissileConfig
 		{
 			ColliderSize = spec.ColliderSize,
@@ -102,38 +98,23 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_launchInterval = spec.LaunchInterval;
 
 		_reloadTime = spec.ReloadTime;
-		_reloadResourceUse = spec.MaxResourceUse;
+		ReloadResourceUse = spec.MaxResourceUse;
 
 		_screenShake = spec.ScreenShake;
 
 		// r = v * t + 1/2 * a * t^2
-		_maxRange = spec.LaunchTubes.Max(tube => tube.LaunchVelocity.magnitude) * _missileConfig.Lifetime
-		            + 0.5f * _missileConfig.MaxAcceleration * _missileConfig.Lifetime * _missileConfig.Lifetime;
+		MaxRange = spec.LaunchTubes.Max(tube => tube.LaunchVelocity.magnitude) * _missileConfig.Lifetime
+		           + 0.5f * _missileConfig.MaxAcceleration * _missileConfig.Lifetime * _missileConfig.Lifetime;
 	}
 
-	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
+	public override IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
 		int reloadCount = _launchTubes.Count(tube => tube.ReloadProgress < _reloadTime);
 		float multiplier = (float) reloadCount / _launchTubes.Length;
-		return _reloadResourceUse.ToDictionary(entry => entry.Key, entry => entry.Value * multiplier);
+		return ReloadResourceUse.ToDictionary(entry => entry.Key, entry => entry.Value * multiplier);
 	}
 
-	public void SatisfyResourceRequestAtLevel(float level)
-	{
-		_resourceSatisfaction = level;
-	}
-
-	public void SetAimPoint(Vector2? aimPoint)
-	{
-		_aimPoint = aimPoint;
-	}
-
-	public void SetTargetPhotonId(int? targetId)
-	{
-		_targetPhotonId = targetId;
-	}
-
-	public Vector2 GetInterceptPoint(
+	public override Vector2 GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{
@@ -149,7 +130,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		return ownPosition + 0.5f * acceleration * hitTime * hitTime;
 	}
 
-	public void EmitterFixedUpdate(bool isMine, bool firing)
+	public override void EmitterFixedUpdate(bool isMine, bool firing)
 	{
 		if (isMine)
 		{
@@ -184,12 +165,12 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 
 	private void FireCurrentLauncher()
 	{
-		if (_aimPoint == null) return;
+		if (AimPoint == null) return;
 
 		var firingPort = _launchTubes[_activeLauncherIndex].FiringPort;
 		Vector3 localLaunchVelocity = _launchTubes[_activeLauncherIndex].LaunchVelocity;
 
-		if (_targetPhotonId == null)
+		if (TargetPhotonId == null)
 		{
 			_missileConfig.HasTarget = false;
 			_missileConfig.TargetPhotonId = 0;
@@ -197,7 +178,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		else
 		{
 			_missileConfig.HasTarget = true;
-			_missileConfig.TargetPhotonId = _targetPhotonId.Value;
+			_missileConfig.TargetPhotonId = TargetPhotonId.Value;
 		}
 
 		GameObject missile = PhotonNetwork.Instantiate(
@@ -226,6 +207,8 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 				_screenShake.Strength, _screenShake.Duration, _screenShake.DecayCurve
 			);
 		}
+
+		ExecuteWeaponSideEffects();
 	}
 
 	private void ProgressReload()
@@ -234,7 +217,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		{
 			if (_launchTubes[i].ReloadProgress < _reloadTime)
 			{
-				_launchTubes[i].ReloadProgress += Time.fixedDeltaTime * _resourceSatisfaction;
+				_launchTubes[i].ReloadProgress += Time.fixedDeltaTime * ResourceSatisfaction;
 
 				if (_launchTubes[i].ReloadProgress >= _reloadTime)
 				{
@@ -252,12 +235,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		_launchTubes[tubeIndex].FiringPort.gameObject.SetActive(active);
 	}
 
-	public float GetMaxRange()
-	{
-		return _maxRange;
-	}
-
-	public void GetMaxFirepower(IList<FirepowerEntry> entries)
+	public override void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
 		entries.Add(
 			new FirepowerEntry
@@ -269,12 +247,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 		);
 	}
 
-	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
-	{
-		return _reloadResourceUse;
-	}
-
-	public string GetEmitterTooltip()
+	public override string GetEmitterTooltip()
 	{
 		StringBuilder builder = new StringBuilder();
 
@@ -287,7 +260,7 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			.AppendLine(
 				$"    Max acceleration {PhysicsUnitUtils.FormatAcceleration(_missileConfig.MaxAcceleration)}, max angular acceleration {_missileConfig.MaxAngularAcceleration:0.#}°/s²"
 			)
-			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(_maxRange)}");
+			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
 
 		if (_missileConfig.IsPointDefenseTarget)
 		{
@@ -296,9 +269,9 @@ public class MissileLauncherEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 			);
 		}
 
-		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
+		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(ReloadResourceUse));
 		builder.AppendLine(
-			_reloadResourceUse.Count > 0
+			ReloadResourceUse.Count > 0
 				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
 				: $"    Reload time {_reloadTime}"
 		);
