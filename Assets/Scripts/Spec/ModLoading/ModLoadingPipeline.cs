@@ -18,6 +18,7 @@ internal class InvalidSpecStructureException : Exception
 
 internal interface IModLoadingPipeline
 {
+	void ResetData();
 	void LoadModContent(ModListElement mod);
 	void ParseSpecInstances(IDeserializer deserializer, Action<string, int, int> onProgress);
 	void ValidateResults();
@@ -59,7 +60,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 	) :
 		this(contentDirectory, modsRoot, contentDirectory, preprocess)
 	{}
-
+	
 	private void ResolveIdField()
 	{
 		FieldInfo[] fields = typeof(TSpec).GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -87,6 +88,11 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		{
 			Debug.LogError($"{typeof(TSpec)} has no ID field");
 		}
+	}
+
+	public void ResetData()
+	{
+		_documents.Clear();
 	}
 
 	public void InjectFileContent(string content, string modName)

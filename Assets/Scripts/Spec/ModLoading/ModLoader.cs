@@ -78,6 +78,14 @@ public static class ModLoader
 		Initialized = true;
 	}
 
+	public static void ResetData()
+	{
+		foreach (IModLoadingPipeline pipeline in Pipelines)
+		{
+			pipeline.ResetData();
+		}
+	}
+
 	private static Action<string, YamlDocument> ResolveAbsolutePaths(params string[] fields)
 	{
 		return (filePath, document) =>

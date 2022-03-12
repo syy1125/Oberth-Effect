@@ -26,7 +26,6 @@ public class GameInitializer : MonoBehaviour
 		if (!ModLoader.Initialized)
 		{
 			ModLoader.Init();
-			ModLoader.InjectBlockSpec(CoreBlock);
 		}
 
 		StartCoroutine(LoadGame());
@@ -34,6 +33,15 @@ public class GameInitializer : MonoBehaviour
 
 	private IEnumerator LoadGame()
 	{
+		Task resetTask = Task.Run(ModLoader.ResetData);
+
+		LoadText.text = "Initializing";
+		LoadProgress.Progress = null;
+
+		yield return new WaitUntil(() => resetTask.IsCompleted);
+
+		ModLoader.InjectBlockSpec(CoreBlock);
+
 		Task loadTask = Task.Run(
 			() =>
 			{
