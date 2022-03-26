@@ -151,7 +151,13 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 		if (isMine && LookAction.action.enabled)
 		{
-			aimPoint = _mainCamera.ScreenToWorldPoint(LookAction.action.ReadValue<Vector2>());
+			Vector2 screenPoint = LookAction.action.ReadValue<Vector2>();
+			if (PlayerControlConfig.Instance.InvertAim)
+			{
+				screenPoint = new Vector2(Screen.width, Screen.height) - screenPoint;
+			}
+
+			aimPoint = _mainCamera.ScreenToWorldPoint(screenPoint);
 			_localAimPoint = transform.InverseTransformPoint(aimPoint);
 		}
 		else

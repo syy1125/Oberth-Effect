@@ -18,12 +18,16 @@ public class PlayerControlConfig : MonoBehaviour
 
 	public InputActionReference ToggleInertiaDampenerAction;
 	public InputActionReference CycleControlModeAction;
+	public InputActionReference InvertAimAction;
 
 	public bool InertiaDampenerActive { get; private set; }
 	public UnityEvent InertiaDampenerChanged;
 
 	public VehicleControlMode ControlMode { get; private set; }
 	public UnityEvent ControlModeChanged;
+
+	public bool InvertAim { get; private set; }
+	public UnityEvent InvertAimChanged;
 
 	public UnityEvent<List<string>> ControlGroupStateChanged;
 	public UnityEvent ActiveControlGroupChanged;
@@ -49,6 +53,7 @@ public class PlayerControlConfig : MonoBehaviour
 	{
 		ToggleInertiaDampenerAction.action.performed += ToggleInertiaDampener;
 		CycleControlModeAction.action.performed += CycleControlMode;
+		InvertAimAction.action.performed += ToggleInvertAim;
 
 		_controlGroupActions = new List<Tuple<string, InputAction>>();
 		_controlGroupStates = new Dictionary<string, int>();
@@ -69,17 +74,21 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void Start()
 	{
+		InertiaDampenerActive = false;
+		InertiaDampenerChanged?.Invoke();
+
 		ControlMode = VehicleSelection.SelectedVehicle.DefaultControlMode;
 		ControlModeChanged?.Invoke();
 
-		InertiaDampenerActive = false;
-		InertiaDampenerChanged?.Invoke();
+		InvertAim = false;
+		InvertAimChanged?.Invoke();
 	}
 
 	private void OnDisable()
 	{
 		ToggleInertiaDampenerAction.action.performed -= ToggleInertiaDampener;
 		CycleControlModeAction.action.performed -= CycleControlMode;
+		InvertAimAction.action.performed -= ToggleInvertAim;
 
 		foreach (Tuple<string, InputAction> tuple in _controlGroupActions)
 		{
@@ -139,6 +148,12 @@ public class PlayerControlConfig : MonoBehaviour
 		};
 
 		ControlModeChanged?.Invoke();
+	}
+
+	private void ToggleInvertAim(InputAction.CallbackContext context)
+	{
+		InvertAim = !InvertAim;
+		InvertAimChanged?.Invoke();
 	}
 
 	#endregion

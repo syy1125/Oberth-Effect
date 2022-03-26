@@ -17,6 +17,7 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	public Text InertiaDampenerDisplay;
 	public Text ControlModeDisplay;
+	public Text InvertAimDisplay;
 	public Text HealthBarModeDisplay;
 
 	public Text ControlNotification;
@@ -56,6 +57,8 @@ public class ControlInfoDisplay : MonoBehaviour
 		PlayerControlConfig.Instance.InertiaDampenerChanged.AddListener(NotifyInertiaDampenerChange);
 		PlayerControlConfig.Instance.ControlModeChanged.AddListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlModeChanged.AddListener(NotifyControlModeChange);
+		PlayerControlConfig.Instance.InvertAimChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.InvertAimChanged.AddListener(NotifyInvertAimChange);
 
 		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(NotifyControlGroupChange);
@@ -68,6 +71,8 @@ public class ControlInfoDisplay : MonoBehaviour
 		PlayerControlConfig.Instance.InertiaDampenerChanged.RemoveListener(NotifyInertiaDampenerChange);
 		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(NotifyControlModeChange);
+		PlayerControlConfig.Instance.InvertAimChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.InvertAimChanged.RemoveListener(NotifyInvertAimChange);
 
 		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(UpdateDisplay);
 		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(NotifyControlGroupChange);
@@ -106,6 +111,8 @@ public class ControlInfoDisplay : MonoBehaviour
 		yield return new WaitForSecondsRealtime(delay);
 		ControlNotification.text = GetControlModeText();
 		yield return new WaitForSecondsRealtime(delay);
+		ControlNotification.text = GetInvertAimText();
+		yield return new WaitForSecondsRealtime(delay);
 		ControlNotification.text = GetHealthBarStatusText();
 		yield return new WaitForSecondsRealtime(delay);
 
@@ -130,6 +137,7 @@ public class ControlInfoDisplay : MonoBehaviour
 
 		InertiaDampenerDisplay.text = GetInertiaDampenerText();
 		ControlModeDisplay.text = GetControlModeText();
+		InvertAimDisplay.text = GetInvertAimText();
 		HealthBarModeDisplay.text = GetHealthBarStatusText();
 
 		foreach (var entry in _controlGroupDisplays)
@@ -158,6 +166,14 @@ public class ControlInfoDisplay : MonoBehaviour
 		};
 
 		return $"Control Mode {controlModeStatus}";
+	}
+
+	private string GetInvertAimText()
+	{
+		string aimPointStatus = PlayerControlConfig.Instance.InvertAim
+			? "<color=\"red\">INVERTED</color>"
+			: "<color=\"cyan\">STANDARD</color>";
+		return $"Aim Point {aimPointStatus}";
 	}
 
 	private string GetHealthBarStatusText()
@@ -193,6 +209,11 @@ public class ControlInfoDisplay : MonoBehaviour
 	private void NotifyControlModeChange()
 	{
 		SetNotification(GetControlModeText());
+	}
+
+	private void NotifyInvertAimChange()
+	{
+		SetNotification(GetInvertAimText());
 	}
 
 	private void NotifyHealthBarStatusChange()

@@ -102,6 +102,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Invert Aim",
+                    "type": "Button",
+                    "id": "2d3be887-d6c3-44bd-9fb1-b9c178fed3ab",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Cycle Health Bar Mode",
                     "type": "Button",
                     "id": "2a8cc4af-0a01-4b1f-9da6-9b5f2db286a5",
@@ -534,6 +542,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Target Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b457d69-5299-4c8a-9114-5d29839c2d8c",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Invert Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
