@@ -250,7 +250,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private void RetargetMissile()
 	{
-		if (Launcher == null || Launcher.Equals(null))
+		if (Launcher == null || Launcher.Equals(null) || !Launcher.enabled)
 		{
 			photonView.RPC(nameof(SetTargetId), RpcTarget.All, (int?) null);
 			return;
