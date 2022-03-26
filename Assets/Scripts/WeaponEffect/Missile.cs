@@ -252,7 +252,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 	{
 		if (Launcher == null || Launcher.Equals(null))
 		{
-			_target = null;
+			photonView.RPC(nameof(SetTargetId), RpcTarget.All, (int?) null);
 			return;
 		}
 
