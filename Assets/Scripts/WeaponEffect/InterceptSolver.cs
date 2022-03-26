@@ -21,10 +21,10 @@ public static class InterceptSolver
 		float r2 = targetPosition.sqrMagnitude;
 		float v2 = targetVelocity.sqrMagnitude;
 		float vp2 = projectileSpeed * projectileSpeed;
-		float dot = Vector2.Dot(targetPosition, targetVelocity);
+		float dot = Vector2.Dot(targetPosition, targetVelocity); // dot = b/2
 
-		float diff = v2 - vp2;
-		float inner = dot * dot - r2 * diff;
+		float diff = v2 - vp2; // diff = a
+		float inner = dot * dot - r2 * diff; // inner = 1/4 (b^2 - 4ac)
 
 		if (Mathf.Approximately(diff, 0f)) // Singularity
 		{
@@ -79,7 +79,20 @@ public static class InterceptSolver
 
 			if (!BoundedMin(t1, t2, Mathf.Epsilon, out hitTime))
 			{
-				projectileVelocity = targetPosition.normalized * projectileSpeed;
+				// This means that the target is faster than the projectile and it's moving away.
+				// Essentially the same as the "No solution" case, use same technique for best effort closest approach.
+				float sqrt = Mathf.Sqrt((-dot * dot + r2 * v2) * vp2 * diff);
+				hitTime = (-dot * diff + sqrt) / (v2 * diff);
+
+				if (hitTime < Mathf.Epsilon)
+				{
+					hitTime = 0f;
+					projectileVelocity = targetPosition.normalized * projectileSpeed;
+					return false;
+				}
+
+				projectileVelocity = (targetPosition + targetVelocity * hitTime).normalized * projectileSpeed;
+
 				return false;
 			}
 
