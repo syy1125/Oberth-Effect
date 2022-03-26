@@ -13,6 +13,7 @@ using UnityEngine.InputSystem;
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(VehicleWeaponControl))]
 public class VehicleThrusterControl : MonoBehaviourPun,
 	IPunObservable, IPropulsionBlockRegistry, IVehicleDeathListener
 {
@@ -35,6 +36,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
+	private VehicleWeaponControl _weaponControl;
 
 	private class ThrusterRotationPid : IPid<float>
 	{
@@ -127,6 +129,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
+		_weaponControl = GetComponent<VehicleWeaponControl>();
 		_rotationPid = new ThrusterRotationPid(RotationPidConfig, 2f);
 	}
 
@@ -300,7 +303,14 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		if (PlayerControlConfig.Instance.InertiaDampenerActive)
 		{
-			Vector2 localVelocity = transform.InverseTransformVector(_body.velocity);
+			Vector2 velocity = _body.velocity;
+
+			if (_weaponControl != null & _weaponControl.TargetLock)
+			{
+				velocity -= _weaponControl.CurrentTarget.GetEffectiveVelocity();
+			}
+			
+			Vector2 localVelocity = transform.InverseTransformVector(velocity);
 
 			HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
 				? -localVelocity.x * InertiaDampenerStrength

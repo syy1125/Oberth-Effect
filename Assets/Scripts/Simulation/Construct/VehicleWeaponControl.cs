@@ -34,8 +34,8 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	public List<Missile> IncomingMissiles { get; private set; }
 
 	public bool TargetLock { get; private set; }
-	private TargetLockTarget _currentTarget;
-	public int? TargetPhotonViewId => _currentTarget == null ? (int?) null : _currentTarget.PhotonViewId;
+	public TargetLockTarget CurrentTarget { get; private set; }
+	public int? TargetPhotonViewId => CurrentTarget == null ? (int?) null : CurrentTarget.PhotonViewId;
 
 	private float _pdRange;
 	private ContactFilter2D _pdFilter;
@@ -125,7 +125,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				{
 					FindTarget(aimPoint);
 				}
-				else if (_currentTarget == null || !_currentTarget.isActiveAndEnabled)
+				else if (CurrentTarget == null || !CurrentTarget.isActiveAndEnabled)
 				{
 					Debug.Log("WeaponControl target is null or disabled, unlocking target.");
 					TargetLock = false;
@@ -164,7 +164,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 	private void FindTarget(Vector2 cursorPosition)
 	{
-		_currentTarget = null;
+		CurrentTarget = null;
 		float minDistance = float.PositiveInfinity;
 		int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
 
@@ -182,7 +182,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 			float distance = Vector2.Distance(cursorPosition, target.GetEffectivePosition());
 			if (TargetPhotonViewId == null || distance < minDistance)
 			{
-				_currentTarget = target;
+				CurrentTarget = target;
 				minDistance = distance;
 			}
 		}
@@ -204,7 +204,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 
 			if (minDistance > Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio))
 			{
-				_currentTarget = null;
+				CurrentTarget = null;
 			}
 		}
 	}
@@ -367,7 +367,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		{
 			_localAimPoint = (Vector2) stream.ReceiveNext();
 			int? targetPhotonViewId = (int?) stream.ReceiveNext();
-			_currentTarget = targetPhotonViewId == null
+			CurrentTarget = targetPhotonViewId == null
 				? null
 				: PhotonView.Find(targetPhotonViewId.Value)?.GetComponent<TargetLockTarget>();
 		}
