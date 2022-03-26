@@ -14,6 +14,13 @@ public struct MissileLaunchTubeSpec
 	public Vector2 LaunchVelocity;
 }
 
+public enum MissileRetargetingBehaviour
+{
+	Never,
+	IfInvalid,
+	Always
+}
+
 public class MissileLauncherEffectSpec : AbstractWeaponEffectSpec
 {
 	public float ProximityFuseRadius;
@@ -35,6 +42,7 @@ public class MissileLauncherEffectSpec : AbstractWeaponEffectSpec
 	public MissileGuidanceAlgorithm GuidanceAlgorithm;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float GuidanceActivationDelay;
+	public MissileRetargetingBehaviour RetargetingBehaviour;
 
 	public PointDefenseTargetSpec PointDefenseTarget;
 	public float HealthDamageScaling = 0.8f;

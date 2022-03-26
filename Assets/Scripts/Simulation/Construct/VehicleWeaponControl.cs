@@ -223,6 +223,14 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		}
 	}
 
+	public void RemoveIncomingMissile(Missile missile)
+	{
+		if (photonView.IsMine)
+		{
+			IncomingMissiles.Remove(missile);
+		}
+	}
+
 	private void CleanUpIncomingMissiles()
 	{
 		for (int i = 0; i < IncomingMissiles.Count;)

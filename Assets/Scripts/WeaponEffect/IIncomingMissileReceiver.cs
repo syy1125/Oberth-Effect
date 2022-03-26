@@ -3,5 +3,6 @@
 public interface IIncomingMissileReceiver
 {
 	void AddIncomingMissile(Missile missile);
+	void RemoveIncomingMissile(Missile missile);
 }
 }

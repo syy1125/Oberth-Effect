@@ -119,6 +119,7 @@
                 "ThrustActivationDelay": { "type": "number" },
                 "GuidanceAlgorithm": { "enum": ["Deadfire", "Predictive"] },
                 "GuidanceActivationDelay": { "type": "number" },
+                "RetargetingBehaviour": { "enum": ["Never", "IfInvalid", "Always"] },
                 "PointDefenseTarget": { "$ref": "PointDefenseTargetSpecSchema.json" },
                 "HealthDamageScaling": { "type": "number" },
                 "ReloadTime": { "type": "number" },

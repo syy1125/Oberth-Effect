@@ -6,8 +6,10 @@ using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Lib.Pid;
 using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {
@@ -23,11 +25,13 @@ public struct MissileConfig
 
 	public bool HasTarget;
 	public int TargetPhotonId;
+
 	public float MaxAcceleration;
 	public float MaxAngularAcceleration;
 	public float ThrustActivationDelay;
 	public MissileGuidanceAlgorithm GuidanceAlgorithm;
 	public float GuidanceActivationDelay;
+	public MissileRetargetingBehaviour RetargetingBehaviour;
 
 	public bool IsPointDefenseTarget;
 	public float MaxHealth;
@@ -46,6 +50,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
 	public float RotationPidResponse = 2f;
 	public float RotationPidBaseDerivativeTime = 5f;
+	[NonSerialized]
+	public IWeaponEffectEmitter Launcher;
 
 	private Rigidbody2D _ownBody;
 	private MissileConfig _config;
@@ -107,16 +113,7 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 		Debug.Log($"Missile launched with HasTarget={_config.HasTarget} and TargetPhotonId={_config.TargetPhotonId}");
 		if (_config.HasTarget)
 		{
-			_target = PhotonView.Find(_config.TargetPhotonId)?.GetComponent<IGuidedWeaponTarget>();
-
-			if (_target != null)
-			{
-				foreach (var receiver in _target.GetComponents<IIncomingMissileReceiver>())
-				{
-					receiver.AddIncomingMissile(this);
-				}
-			}
-
+			SetTargetId(_config.TargetPhotonId);
 			Debug.Log($"Missile target is {_target}");
 		}
 
@@ -194,24 +191,45 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 			if (Time.time - _initTime < _config.GuidanceActivationDelay) continue;
 
-			if (photonView.IsMine && HasValidTarget())
+			if (photonView.IsMine)
 			{
-				if (
-					_config.DamageType == DamageType.Explosive
-					&& _config.ProximityFuseRadius > Mathf.Epsilon
-				)
+				switch (_config.RetargetingBehaviour)
 				{
-					Vector2 relativePosition = _target.GetEffectivePosition() - _ownBody.worldCenterOfMass;
-					Vector2 relativeVelocity = _target.GetEffectiveVelocity() - _ownBody.velocity;
-					Vector2 nextPosition = relativePosition + relativeVelocity * Time.fixedDeltaTime;
+					case MissileRetargetingBehaviour.Never:
+						break;
+					case MissileRetargetingBehaviour.IfInvalid:
+						if (!HasValidTarget())
+						{
+							RetargetMissile();
+						}
 
+						break;
+					case MissileRetargetingBehaviour.Always:
+						RetargetMissile();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+
+				if (HasValidTarget())
+				{
 					if (
-						relativePosition.magnitude < _config.ProximityFuseRadius
-						&& nextPosition.sqrMagnitude > relativePosition.sqrMagnitude
+						_config.DamageType == DamageType.Explosive
+						&& _config.ProximityFuseRadius > Mathf.Epsilon
 					)
 					{
-						GetComponent<DamagingProjectile>().LifetimeDespawn();
-						yield break;
+						Vector2 relativePosition = _target.GetEffectivePosition() - _ownBody.worldCenterOfMass;
+						Vector2 relativeVelocity = _target.GetEffectiveVelocity() - _ownBody.velocity;
+						Vector2 nextPosition = relativePosition + relativeVelocity * Time.fixedDeltaTime;
+
+						if (
+							relativePosition.magnitude < _config.ProximityFuseRadius
+							&& nextPosition.sqrMagnitude > relativePosition.sqrMagnitude
+						)
+						{
+							GetComponent<DamagingProjectile>().LifetimeDespawn();
+							yield break;
+						}
 					}
 				}
 			}
@@ -226,6 +244,52 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	private void RetargetMissile()
+	{
+		if (Launcher == null || Launcher.Equals(null))
+		{
+			_target = null;
+			return;
+		}
+
+		if (Launcher.TargetPhotonId == null)
+		{
+			if (HasValidTarget())
+			{
+				photonView.RPC(nameof(SetTargetId), RpcTarget.All, Launcher.TargetPhotonId);
+			}
+		}
+		else
+		{
+			if (!HasValidTarget() || Launcher.TargetPhotonId.Value != _target.photonView.ViewID)
+			{
+				photonView.RPC(nameof(SetTargetId), RpcTarget.All, Launcher.TargetPhotonId);
+			}
+		}
+	}
+
+	[PunRPC]
+	private void SetTargetId(int? targetId)
+	{
+		if (HasValidTarget())
+		{
+			foreach (IIncomingMissileReceiver receiver in _target.GetComponents<IIncomingMissileReceiver>())
+			{
+				receiver.RemoveIncomingMissile(this);
+			}
+		}
+
+		_target = targetId == null ? null : PhotonView.Find(targetId.Value)?.GetComponent<IGuidedWeaponTarget>();
+
+		if (HasValidTarget())
+		{
+			foreach (IIncomingMissileReceiver receiver in _target.GetComponents<IIncomingMissileReceiver>())
+			{
+				receiver.AddIncomingMissile(this);
 			}
 		}
 	}
@@ -256,14 +320,8 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 	private bool HasValidTarget()
 	{
-		if (_target is UnityEngine.Object unityObject)
-		{
-			return unityObject != null;
-		}
-		else
-		{
-			return _target != null;
-		}
+		// Unity's nullability system doesn't play nice with System.Object.Equals
+		return _target != null && !_target.Equals(null);
 	}
 
 	private float GetHealthDamageModifier()

@@ -71,6 +71,7 @@ FixedWeapon:
     ThrustActivationDelay: 0.2
     GuidanceAlgorithm: Predictive
     GuidanceActivationDelay: 0
+    RetargetingBehaviour: IfInvalid
     ReloadTime: 5
     ScreenShake:
       Strength: 0.1

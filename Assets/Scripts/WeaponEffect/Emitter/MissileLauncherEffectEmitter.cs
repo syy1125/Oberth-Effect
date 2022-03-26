@@ -64,6 +64,7 @@ public class MissileLauncherEffectEmitter : AbstractWeaponEffectEmitter
 			ThrustActivationDelay = spec.ThrustActivationDelay,
 			GuidanceAlgorithm = spec.GuidanceAlgorithm,
 			GuidanceActivationDelay = spec.GuidanceActivationDelay,
+			RetargetingBehaviour = spec.RetargetingBehaviour,
 			Renderers = spec.Renderers,
 			PropulsionParticles = spec.PropulsionParticles
 		};
@@ -194,6 +195,8 @@ public class MissileLauncherEffectEmitter : AbstractWeaponEffectEmitter
 		missileBody.velocity =
 			_body.GetPointVelocity(firingPort.position)
 			+ (Vector2) transform.TransformVector(localLaunchVelocity);
+
+		missile.GetComponent<Missile>().Launcher = this;
 
 		firingPort.gameObject.SetActive(false);
 		GetComponentInParent<IWeaponEffectRpcRelay>().InvokeWeaponEffectRpc(

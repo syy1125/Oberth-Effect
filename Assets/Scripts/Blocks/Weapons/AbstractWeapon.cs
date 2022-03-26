@@ -207,7 +207,7 @@ public abstract class AbstractWeapon :
 	public void SetTargetPhotonId(int? targetId)
 	{
 		TargetPhotonId = targetId;
-		WeaponEmitter.SetTargetPhotonId(targetId);
+		WeaponEmitter.TargetPhotonId = targetId;
 	}
 
 	public void SetFiring(bool firing)

@@ -11,7 +11,7 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 {
 	protected float MaxRange;
 
-	protected int? TargetPhotonId;
+	public int? TargetPhotonId { get; set; }
 	protected Vector2? AimPoint;
 	protected Dictionary<string, float> ReloadResourceUse;
 	protected float ResourceSatisfaction;
@@ -32,11 +32,6 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
 			_fireSoundVolume = spec.FireSound.Volume;
 		}
-	}
-
-	public void SetTargetPhotonId(int? targetId)
-	{
-		TargetPhotonId = targetId;
 	}
 
 	public void SetAimPoint(Vector2? aimPoint)

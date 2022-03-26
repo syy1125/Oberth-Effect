@@ -5,7 +5,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public interface IWeaponEffectEmitter
 {
-	void SetTargetPhotonId(int? targetId);
+	public int? TargetPhotonId { get; set; }
 	void SetAimPoint(Vector2? aimPoint);
 
 	public Vector2 GetInterceptPoint(
