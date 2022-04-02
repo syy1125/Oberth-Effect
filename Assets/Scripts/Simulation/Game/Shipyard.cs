@@ -6,19 +6,29 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Match;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Lib.Math;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(RoomViewTeamProvider))]
 public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNameProvider
 {
+	[Header("Orbit")]
+	public CelestialBody ParentBody;
+	public float OrbitRadius;
+	public float TrueAnomalyAtEpoch;
+
+	[Header("Configuration")]
 	public float BaseMaxHealth;
 	public Transform[] SpawnPoints;
 	public Bounds[] ExplosionBounds;
 
+	[Header("References")]
 	public Transform IndicatorCanvas;
 	public GameObject ProtectIndicatorPrefab;
 	public GameObject DestroyIndicatorPrefab;
@@ -29,7 +39,11 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 	public int OwnerId => -1;
 	public int TeamIndex => _teamProvider.TeamIndex;
 
+	private Rigidbody2D _body;
 	private RoomViewTeamProvider _teamProvider;
+	private Orbit2D _orbit;
+	private float _referenceTime;
+
 	private GameMode _gameMode;
 	private bool _damageable;
 	private GameObject _indicator;
@@ -42,6 +56,7 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 
 	private void Awake()
 	{
+		_body = GetComponent<Rigidbody2D>();
 		_teamProvider = GetComponent<RoomViewTeamProvider>();
 
 		ActiveShipyards.Add(TeamIndex, this);
@@ -57,6 +72,26 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 				IndicatorCanvas
 			);
 			_indicator.GetComponent<HighlightTarget>().Target = transform;
+		}
+	}
+
+	private void OnEnable()
+	{
+		if (ParentBody != null)
+		{
+			ParentBody.OnOrbitUpdate += UpdateOrbit;
+
+			_orbit = new Orbit2D
+			{
+				ParentGravitationalParameter = ParentBody.GravitationalParameter,
+				SemiLatusRectum = OrbitRadius,
+				Eccentricity = 0f,
+				ArgumentOfPeriapsis = 0f,
+				TrueAnomalyAtEpoch = TrueAnomalyAtEpoch * Mathf.Deg2Rad
+			};
+			_referenceTime = (float) PhotonNetwork.Time;
+
+			_body.isKinematic = true;
 		}
 	}
 
@@ -79,9 +114,40 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 		}
 	}
 
+	private void OnDisable()
+	{
+		if (ParentBody != null)
+		{
+			ParentBody.OnOrbitUpdate -= UpdateOrbit;
+		}
+	}
+
 	private void OnDestroy()
 	{
 		ActiveShipyards.Remove(TeamIndex);
+	}
+
+	private void UpdateOrbit(bool init)
+	{
+		(Vector2 position, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+
+		if (init)
+		{
+			transform.position = ParentBody.transform.position + (Vector3) position;
+		}
+		else
+		{
+			_body.MovePosition(ParentBody.Body.position + position);
+		}
+	}
+
+	private void FixedUpdate()
+	{
+		if (_orbit != null)
+		{
+			(Vector2 position, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+			_body.MovePosition(ParentBody.Body.position + position);
+		}
 	}
 
 	public Transform GetBestSpawnPoint(int playerIndex)
@@ -103,6 +169,14 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 
 		// Fallback
 		return SpawnPoints[playerIndex % SpawnPoints.Length];
+	}
+
+	public Vector2 GetVelocity()
+	{
+		if (_orbit == null) return Vector2.zero;
+
+		float time = (float) PhotonNetwork.Time - _referenceTime;
+		return ParentBody.GetEffectiveVelocity(time) + _orbit.GetStateVectorAt(time).Item2;
 	}
 
 	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()

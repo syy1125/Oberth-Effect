@@ -829,6 +829,8 @@ MonoBehaviour:
   StartGameTooltip: {fileID: 1512728497}
   LobbyScreen: {fileID: 2143712903}
   Maps:
+  - sceneAsset: {fileID: 102900000, guid: ee3d9794e6cd5184b8fefaeac22e94f7, type: 3}
+    scenePath: Assets/Scenes/Levels/Gas Giant.unity
   - sceneAsset: {fileID: 102900000, guid: 8027120d6180dde499dd80587625e6e3, type: 3}
     scenePath: Assets/Scenes/Levels/Nebula.unity
 --- !u!1 &224209684

@@ -107,7 +107,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 	private void SpawnVehicle()
 	{
-		(Vector3 spawnPosition, Quaternion spawnRotation) = GetSpawnTransform();
+		(Vector3 spawnPosition, Quaternion spawnRotation, Vector2 velocity) = GetSpawnConditions();
 
 		bool useTeamColors = PhotonHelper.GetRoomGameMode().IsTeamMode()
 		                     && (bool) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.USE_TEAM_COLORS];
@@ -125,6 +125,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			}
 		);
 
+		Vehicle.GetComponent<Rigidbody2D>().velocity = velocity;
+
 		CameraRig.Target = Vehicle.transform;
 		VehicleCamera.Target = Vehicle.transform;
 
@@ -139,11 +141,11 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		ReferenceFrameProvider.MainReferenceFrame = Vehicle.GetComponent<ReferenceFrameProvider>();
 	}
 
-	private Tuple<Vector3, Quaternion> GetSpawnTransform()
+	private Tuple<Vector3, Quaternion, Vector2> GetSpawnConditions()
 	{
 		if (PhotonNetwork.CurrentRoom == null)
 		{
-			return GetFallbackSpawnTransform();
+			return GetFallbackSpawn();
 		}
 
 		int teamIndex = PhotonTeamHelper.GetPlayerTeamIndex(PhotonNetwork.LocalPlayer);
@@ -152,7 +154,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		if (shipyard == null)
 		{
 			Debug.LogError($"Failed to retrieve shipyard for team index {teamIndex}");
-			return GetFallbackSpawnTransform();
+			return GetFallbackSpawn();
 		}
 
 		var playersOnTeam = PhotonNetwork.CurrentRoom.Players.Values
@@ -161,13 +163,13 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			.ToList();
 
 		Transform spawnTransform = shipyard.GetBestSpawnPoint(playersOnTeam.IndexOf(PhotonNetwork.LocalPlayer));
-		return new Tuple<Vector3, Quaternion>(spawnTransform.position, spawnTransform.rotation);
+		return Tuple.Create(spawnTransform.position, spawnTransform.rotation, shipyard.GetVelocity());
 	}
 
-	private Tuple<Vector3, Quaternion> GetFallbackSpawnTransform()
+	private Tuple<Vector3, Quaternion, Vector2> GetFallbackSpawn()
 	{
-		return new Tuple<Vector3, Quaternion>(
-			Vector3.right * (10 * PhotonNetwork.LocalPlayer.ActorNumber), Quaternion.identity
+		return Tuple.Create(
+			Vector3.right * (10 * PhotonNetwork.LocalPlayer.ActorNumber), Quaternion.identity, Vector2.zero
 		);
 	}
 
