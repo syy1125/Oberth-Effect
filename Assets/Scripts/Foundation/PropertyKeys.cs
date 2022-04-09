@@ -23,6 +23,7 @@ public static class PropertyKeys
 	// Photon room custom properties
 	public const string ROOM_NAME = "n";
 	public const string GAME_MODE = "gm";
+	public const string MAP_INDEX = "mi";
 	public const string FRIENDLY_FIRE_MODE = "ff";
 	public const string TEAM_COLORS = "tc";
 	public const string USE_TEAM_COLORS = "utc";

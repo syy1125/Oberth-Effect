@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using ExitGames.Client.Photon;
 using Photon.Pun;
@@ -9,6 +10,8 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Match;
 using Syy1125.OberthEffect.Foundation.Utils;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer
@@ -30,6 +33,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 
 	[Space]
 	public SwitchSelect GameModeSelect;
+	public SwitchSelect MapSelect;
 	public SwitchSelect CostLimitSelect;
 	public InputField CostLimitInput;
 	public InputField ShipyardHealthInput;
@@ -40,7 +44,7 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	public GameObject LobbyScreen;
 
 	[Space]
-	public SceneReference[] Maps;
+	public SceneReference[] AssaultMaps;
 
 	private GameMode[] _gameModes;
 	// The vehicle that the player is considering to load. Transient state.
@@ -72,6 +76,9 @@ public class RoomControls : MonoBehaviourPunCallbacks
 
 		GameModeSelect.SetOptions(_gameModes.Select(gameMode => Enum.GetName(typeof(GameMode), gameMode)).ToArray());
 		GameModeSelect.OnValueChanged.AddListener(SetGameMode);
+		UpdateMapOptions(GameMode.Assault);
+		MapSelect.OnValueChanged.AddListener(SetMapIndex);
+
 		CostLimitSelect.OnValueChanged.AddListener(SetCostLimitPresetOption);
 		CostLimitInput.onEndEdit.AddListener(SetCostLimitText);
 		ShipyardHealthInput.onEndEdit.AddListener(SetShipyardHealthMultiplier);
@@ -105,6 +112,8 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		LoadVehicleButton.onClick.RemoveListener(LoadVehicleSelection);
 
 		GameModeSelect.OnValueChanged.RemoveListener(SetGameMode);
+		MapSelect.OnValueChanged.RemoveListener(SetMapIndex);
+
 		CostLimitSelect.OnValueChanged.RemoveListener(SetCostLimitPresetOption);
 		CostLimitInput.onEndEdit.RemoveListener(SetCostLimitText);
 		ShipyardHealthInput.onEndEdit.RemoveListener(SetShipyardHealthMultiplier);
@@ -123,7 +132,10 @@ public class RoomControls : MonoBehaviourPunCallbacks
 			RoomName.text = RoomNameInput.text = (string) nextProps[PropertyKeys.ROOM_NAME];
 		}
 
-		if (ContainsAnyKey(nextProps, PropertyKeys.GAME_MODE, PropertyKeys.COST_LIMIT_OPTION, PropertyKeys.COST_LIMIT))
+		if (ContainsAnyKey(
+			    nextProps, PropertyKeys.GAME_MODE, PropertyKeys.MAP_INDEX, PropertyKeys.COST_LIMIT_OPTION,
+			    PropertyKeys.COST_LIMIT
+		    ))
 		{
 			if (!PhotonNetwork.LocalPlayer.IsMasterClient)
 			{
@@ -212,9 +224,37 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
 
 		PhotonNetwork.CurrentRoom.SetCustomProperties(
-			new Hashtable { { PropertyKeys.GAME_MODE, _gameModes[i] } }
+			new Hashtable { { PropertyKeys.GAME_MODE, _gameModes[i] }, { PropertyKeys.MAP_INDEX, 0 } }
+		);
+		UpdateMapOptions(_gameModes[i]);
+		MapSelect.Value = 0;
+
+		UnreadyPlayers();
+	}
+
+	private void SetMapIndex(int i)
+	{
+		if (!PhotonNetwork.LocalPlayer.IsMasterClient) return;
+
+		PhotonNetwork.CurrentRoom.SetCustomProperties(
+			new Hashtable { { PropertyKeys.MAP_INDEX, i } }
 		);
 		UnreadyPlayers();
+	}
+
+	private void UpdateMapOptions(GameMode gameMode)
+	{
+		switch (gameMode)
+		{
+			// TODO TDM game mode and corresponding maps
+			case GameMode.Assault:
+			case GameMode.TeamDeathmatch:
+			default:
+				MapSelect.SetOptions(
+					AssaultMaps.Select(map => Path.GetFileNameWithoutExtension(map.ScenePath)).ToArray()
+				);
+				break;
+		}
 	}
 
 	private void SetCostLimitPresetOption(int optionIndex)
@@ -313,6 +353,8 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		UseTeamColors.interactable = true;
 
 		GameModeSelect.Interactable = true;
+		MapSelect.Interactable = true;
+
 		CostLimitSelect.Interactable = true;
 		CostLimitInput.interactable = Equals(
 			PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION], 3
@@ -330,6 +372,8 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		UseTeamColors.interactable = false;
 
 		GameModeSelect.Interactable = false;
+		MapSelect.Interactable = false;
+
 		CostLimitSelect.Interactable = false;
 		CostLimitInput.interactable = false;
 		ShipyardHealthInput.interactable = true;
@@ -345,6 +389,8 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		GameModeSelect.Value = Array.IndexOf(
 			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
 		);
+		MapSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.MAP_INDEX];
+
 		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
 		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
 		ShipyardHealthInput.text = PhotonHelper.GetShipyardHealthMultiplier().ToString("0.##");
@@ -359,9 +405,11 @@ public class RoomControls : MonoBehaviourPunCallbacks
 		bool ready = PhotonHelper.IsPlayerReady(PhotonNetwork.LocalPlayer);
 		SelectVehicleButton.interactable = !ready;
 
-		GameModeSelect.Value = Array.IndexOf(
-			_gameModes, (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE]
-		);
+		var gameMode = (GameMode) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.GAME_MODE];
+		GameModeSelect.Value = Array.IndexOf(_gameModes, gameMode);
+		UpdateMapOptions(gameMode);
+		MapSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.MAP_INDEX];
+
 		CostLimitSelect.Value = (int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.COST_LIMIT_OPTION];
 		CostLimitInput.text = PhotonHelper.GetRoomCostLimit().ToString();
 		ShipyardHealthInput.text = PhotonHelper.GetShipyardHealthMultiplier().ToString("0.##");
@@ -466,7 +514,9 @@ public class RoomControls : MonoBehaviourPunCallbacks
 	{
 		PhotonNetwork.AutomaticallySyncScene = true;
 		PhotonNetwork.CurrentRoom.IsOpen = false;
-		PhotonNetwork.LoadLevel(Maps[0].ScenePath);
+		PhotonNetwork.LoadLevel(
+			AssaultMaps[(int) PhotonNetwork.CurrentRoom.CustomProperties[PropertyKeys.MAP_INDEX]].ScenePath
+		);
 	}
 }
 }
