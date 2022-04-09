@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Math;
-using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Syy1125.OberthEffect.Simulation
 {
 public class CelestialBody : MonoBehaviourPun, IDamageable
 {
-	public delegate void OrbitUpdateEvent(bool init);
+	public delegate void OrbitUpdateEvent(Vector2 parentPosition, bool init);
 
 	[Header("Characteristics")]
 	public float GravitationalParameter;
@@ -32,11 +29,9 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 
 	private void Awake()
 	{
-		Body = gameObject.AddComponent<Rigidbody2D>();
+		Body = gameObject.GetComponent<Rigidbody2D>();
 		var circleCollider = gameObject.AddComponent<CircleCollider2D>();
 		var pointEffector = gameObject.AddComponent<PointEffector2D>();
-
-		Body.isKinematic = true;
 
 		circleCollider.radius = Mathf.Sqrt(GravitationalParameter) / 0.0025f;
 		circleCollider.isTrigger = true;
@@ -70,7 +65,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 		// Other celestial bodies update through recursive event invocations.
 		if (ParentBody == null)
 		{
-			OnOrbitUpdate?.Invoke(true);
+			OnOrbitUpdate?.Invoke(Vector2.zero, true);
 		}
 	}
 
@@ -88,24 +83,25 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 		// Other celestial bodies update through recursive event invocations.
 		if (_orbit == null)
 		{
-			OnOrbitUpdate?.Invoke(false);
+			OnOrbitUpdate?.Invoke(Vector2.zero, false);
 		}
 	}
 
-	private void UpdateOrbit(bool init)
+	private void UpdateOrbit(Vector2 parentPosition, bool init)
 	{
-		(Vector2 position, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		Vector2 position = parentPosition + localPosition;
 
 		if (init)
 		{
-			transform.position = ParentBody.transform.position + (Vector3) position;
+			transform.position = position;
 		}
 		else
 		{
-			Body.MovePosition(ParentBody.Body.position + position);
+			Body.MovePosition(position);
 		}
 
-		OnOrbitUpdate?.Invoke(init);
+		OnOrbitUpdate?.Invoke(position, init);
 	}
 
 	public Vector2 GetEffectiveVelocity(float time)

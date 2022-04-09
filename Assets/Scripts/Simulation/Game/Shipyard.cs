@@ -127,17 +127,18 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 		ActiveShipyards.Remove(TeamIndex);
 	}
 
-	private void UpdateOrbit(bool init)
+	private void UpdateOrbit(Vector2 parentPosition, bool init)
 	{
-		(Vector2 position, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		Vector2 position = parentPosition + localPosition;
 
 		if (init)
 		{
-			transform.position = ParentBody.transform.position + (Vector3) position;
+			transform.position = position;
 		}
 		else
 		{
-			_body.MovePosition(ParentBody.Body.position + position);
+			_body.MovePosition(position);
 		}
 	}
 
