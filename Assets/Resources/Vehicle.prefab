@@ -466,6 +466,9 @@ MonoBehaviour:
   FireAction3: {fileID: 4408790990592266296, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   FireAction4: {fileID: 3310973374550294031, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   TargetLockAction: {fileID: 6437093828764471745, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  OnIncomingMissileAdded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8262174820219332251
 MonoBehaviour:
   m_ObjectHideFlags: 0

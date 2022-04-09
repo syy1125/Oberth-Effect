@@ -11,6 +11,7 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
@@ -33,6 +34,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 	private List<IWeaponSystem> _weapons;
 	private bool _weaponListChanged;
 	public List<Missile> IncomingMissiles { get; private set; }
+	public UnityEvent OnIncomingMissileAdded;
 
 	public bool TargetLock { get; private set; }
 	public TargetLockTarget CurrentTarget { get; private set; }
@@ -223,6 +225,7 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		if (photonView.IsMine)
 		{
 			IncomingMissiles.Add(missile);
+			OnIncomingMissileAdded?.Invoke();
 		}
 	}
 

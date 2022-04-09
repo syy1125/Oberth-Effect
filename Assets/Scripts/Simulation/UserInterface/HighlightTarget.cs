@@ -24,6 +24,11 @@ public class HighlightTarget : MonoBehaviour
 		_canvasTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
 	}
 
+	public void Init()
+	{
+		LateUpdate();
+	}
+
 	private void LateUpdate()
 	{
 		if (Target == null) return;
