@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
@@ -168,11 +169,23 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 		return aimPoint;
 	}
 
-	private void FindTarget(Vector2 cursorPosition)
+	private void FindTarget(Vector2 aimPoint)
 	{
-		CurrentTarget = null;
-		float minDistance = float.PositiveInfinity;
 		int ownerTeamIndex = PhotonTeamHelper.GetPlayerTeamIndex(photonView.Owner);
+
+		// Idea is similar to projective geometry
+		// Suppose that the vehicle is at (0,0,0) and everything else (cursor and targets) is on the z=1 plane
+		// Find the target with sight line closest in angle to the vehicle-cursor line
+		Vector2 minCorner = _mainCamera.ViewportToWorldPoint(Vector3.zero);
+		Vector2 maxCorner = _mainCamera.ViewportToWorldPoint(Vector3.one);
+
+		// Try to make targeting more natural.
+		// Limit the angle of cursor-vehicle-target to 45 degrees.
+		// This should cover most of the screen when cursor is at center, or half the screen when cursor is near the edge.
+		CurrentTarget = null;
+		float bestScore = 45f;
+
+		Vector3 normalizedAimPoint = ProjectPoint(aimPoint, minCorner, maxCorner);
 
 		foreach (var target in TargetLockTarget.ActiveTargets)
 		{
@@ -185,34 +198,24 @@ public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPu
 				if (PhotonTeamHelper.GetPlayerTeamIndex(target.photonView.Owner) == ownerTeamIndex) continue;
 			}
 
-			float distance = Vector2.Distance(cursorPosition, target.GetEffectivePosition());
-			if (TargetPhotonViewId == null || distance < minDistance)
+			Vector3 normalizedPosition = ProjectPoint(target.GetEffectivePosition(), minCorner, maxCorner);
+			float score = Vector3.Angle(normalizedPosition, normalizedAimPoint);
+
+			if (score < bestScore)
 			{
 				CurrentTarget = target;
-				minDistance = distance;
+				bestScore = score;
 			}
 		}
+	}
 
-		if (TargetPhotonViewId != null && minDistance > _mainCamera.orthographicSize)
-		{
-			// Try to make targeting more natural. When the cursor is far from the detected target,
-			// only set target if the ratio of target-cursor distance to cursor-vehicle distance is smaller than ratio of vehicle-cursor distance to cursor-edge distance.
-			Vector2 minCorner = _mainCamera.ViewportToWorldPoint(Vector3.zero);
-			Vector2 maxCorner = _mainCamera.ViewportToWorldPoint(Vector3.one);
-			Vector2 com = _body.worldCenterOfMass;
-
-			float xRatio = cursorPosition.x > com.x
-				? (cursorPosition.x - com.x) / (maxCorner.x - cursorPosition.x)
-				: (com.x - cursorPosition.x) / (cursorPosition.x - minCorner.x);
-			float yRatio = cursorPosition.y > com.y
-				? (cursorPosition.y - com.y) / (maxCorner.y - cursorPosition.y)
-				: (com.y - cursorPosition.y) / (cursorPosition.y - minCorner.y);
-
-			if (minDistance > Vector2.Distance(cursorPosition, com) * Mathf.Max(xRatio, yRatio))
-			{
-				CurrentTarget = null;
-			}
-		}
+	private Vector3 ProjectPoint(Vector2 point, Vector2 minCorner, Vector2 maxCorner)
+	{
+		return new Vector3(
+			MathUtils.InverseLerpUnclamped(minCorner.x, maxCorner.x, point.x) * 2 - 1,
+			MathUtils.InverseLerpUnclamped(minCorner.y, maxCorner.y, point.y) * 2 - 1,
+			1f
+		);
 	}
 
 	public void AddIncomingMissile(Missile missile)

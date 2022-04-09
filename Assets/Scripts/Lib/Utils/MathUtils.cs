@@ -5,6 +5,9 @@ using Random = UnityEngine.Random;
 
 namespace Syy1125.OberthEffect.Lib.Utils
 {
+/// <summary>
+/// Utility class covering some math functions that are missing in in <c>Mathf</c>
+/// </summary>
 public static class MathUtils
 {
 	public static float Atanh(float value)
@@ -15,6 +18,11 @@ public static class MathUtils
 	public static float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
 	{
 		return Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(oldMin, oldMax, value));
+	}
+
+	public static float InverseLerpUnclamped(float a, float b, float value)
+	{
+		return (value - a) / (b - a);
 	}
 
 	// Reference: https://stackoverflow.com/questions/5817490/implementing-box-mueller-random-number-generator-in-c-sharp
