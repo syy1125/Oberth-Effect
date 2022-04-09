@@ -8,15 +8,17 @@ using UnityEngine.Events;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ConstructBlockManager))]
 public class VehicleCore :
-	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry, ITargetNameProvider
+	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry, ITargetLockInfoProvider
 {
 	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
 
 	public UnityEvent OnVehicleDeath;
 
+	private Rigidbody2D _body;
 	private List<ControlCore> _controlCores;
 
 	private bool _loaded;
@@ -28,6 +30,7 @@ public class VehicleCore :
 
 	private void Awake()
 	{
+		_body = GetComponent<Rigidbody2D>();
 		_controlCores = new List<ControlCore>();
 	}
 
@@ -138,6 +141,16 @@ public class VehicleCore :
 	public string GetName()
 	{
 		return $"{photonView.Owner.NickName} ({VehicleName})";
+	}
+
+	public Vector2 GetPosition()
+	{
+		return _body.worldCenterOfMass;
+	}
+
+	public Vector2 GetVelocity()
+	{
+		return _body.velocity;
 	}
 }
 }

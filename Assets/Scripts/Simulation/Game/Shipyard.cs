@@ -16,7 +16,7 @@ namespace Syy1125.OberthEffect.Simulation.Game
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(RoomViewTeamProvider))]
-public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNameProvider
+public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetLockInfoProvider
 {
 	[Header("Orbit")]
 	public CelestialBody ParentBody;
@@ -170,6 +170,11 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetNa
 
 		// Fallback
 		return SpawnPoints[playerIndex % SpawnPoints.Length];
+	}
+
+	public Vector2 GetPosition()
+	{
+		return transform.position;
 	}
 
 	public Vector2 GetVelocity()

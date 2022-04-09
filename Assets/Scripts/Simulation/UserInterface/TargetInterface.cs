@@ -54,7 +54,7 @@ public class TargetInterface : MonoBehaviour
 
 		if (_target != null)
 		{
-			string targetName = _target.GetComponentInParent<ITargetNameProvider>()?.GetName() ?? string.Empty;
+			string targetName = _target.GetComponentInParent<ITargetLockInfoProvider>()?.GetName() ?? string.Empty;
 			float distance = Vector2.Distance(
 				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
 				_target.GetComponent<IGuidedWeaponTarget>().GetEffectivePosition()

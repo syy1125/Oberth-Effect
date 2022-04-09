@@ -6,20 +6,20 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation
 {
-[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(ITargetLockInfoProvider))]
 public class TargetLockTarget : MonoBehaviourPun, IGuidedWeaponTarget, IVehicleDeathListener
 {
 	public static readonly List<TargetLockTarget> ActiveTargets = new List<TargetLockTarget>();
 
 	public int PhotonViewId { get; private set; }
 
-	private Rigidbody2D _body;
+	private ITargetLockInfoProvider _infoProvider;
 
 	private void Awake()
 	{
 		PhotonViewId = photonView.ViewID;
-		_body = GetComponent<Rigidbody2D>();
+		_infoProvider = GetComponent<ITargetLockInfoProvider>();
 	}
 
 	private void OnEnable()
@@ -39,12 +39,12 @@ public class TargetLockTarget : MonoBehaviourPun, IGuidedWeaponTarget, IVehicleD
 
 	public Vector2 GetEffectivePosition()
 	{
-		return _body.bodyType == RigidbodyType2D.Static ? (Vector2) transform.position : _body.worldCenterOfMass;
+		return _infoProvider.GetPosition();
 	}
 
 	public Vector2 GetEffectiveVelocity()
 	{
-		return _body.velocity;
+		return _infoProvider.GetVelocity();
 	}
 }
 }

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace Syy1125.OberthEffect.Simulation
 {
 [RequireComponent(typeof(BoxCollider2D))]
-public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
+public class TargetDummy : MonoBehaviour, IDamageable, ITargetLockInfoProvider
 {
 	public struct DamageInstance
 	{
@@ -70,6 +70,16 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetNameProvider
 	public string GetName()
 	{
 		return $"Target Dummy ({ArmorValue:0.#} Armor, {TimeInterval:0.#}s)";
+	}
+
+	public Vector2 GetPosition()
+	{
+		return transform.position;
+	}
+
+	public Vector2 GetVelocity()
+	{
+		return Vector2.zero;
 	}
 
 	private void LateUpdate()
