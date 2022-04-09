@@ -315,6 +315,10 @@ public class Missile : MonoBehaviourPun, IPunInstantiateMagicCallback
 				_targetAcceleration = acceleration;
 				_hitTime = hitTime;
 			}
+			else
+			{
+				_hitTime = null;
+			}
 		}
 	}
 
