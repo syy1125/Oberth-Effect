@@ -219,6 +219,13 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 				RaycastHit2D hit = _raycastHits[i];
 				IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
 
+				// Raycast needs to hit triggers for PD usage, but celestial bodies have big trigger colliders for gravity.
+				// Create special case to ignore celestial body trigger colliders.
+				if (hit.collider.isTrigger && hit.collider.gameObject.layer == LayerConstants.CELESTIAL_BODY_LAYER)
+				{
+					continue;
+				}
+
 				if (target != null && target.OwnerId != _ownerContext.OwnerId)
 				{
 					hitTarget = target;
