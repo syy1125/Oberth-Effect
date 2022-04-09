@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 2356713703974539940}
   - component: {fileID: 2356713703974539942}
   - component: {fileID: 2356713703974539943}
+  - component: {fileID: 6489358947048321784}
   m_Layer: 5
   m_Name: Inertia Dampener
   m_TagString: Untagged
@@ -317,6 +318,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Inertia Dampener <color="cyan">ON</color>
+--- !u!114 &6489358947048321784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2356713703974539941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &2356713704153815769
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,6 +344,7 @@ GameObject:
   - component: {fileID: 2356713704153815768}
   - component: {fileID: 2356713704153815770}
   - component: {fileID: 2356713704153815771}
+  - component: {fileID: 3834121039263427484}
   m_Layer: 5
   m_Name: Control Mode
   m_TagString: Untagged
@@ -396,6 +413,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Control Mode <color="lightblue">MOUSE</color>
+--- !u!114 &3834121039263427484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2356713704153815769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &2356713704547970729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,6 +1172,7 @@ GameObject:
   - component: {fileID: 8401801716408163705}
   - component: {fileID: 2766365182634387544}
   - component: {fileID: 3520543712096093677}
+  - component: {fileID: 6883213399052480377}
   m_Layer: 5
   m_Name: Health Bar Mode
   m_TagString: Untagged
@@ -1208,6 +1241,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Show Health Bar <color="lime">IF DAMAGED</color>
+--- !u!114 &6883213399052480377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738797861739433897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &4969614592899628345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,6 +1267,7 @@ GameObject:
   - component: {fileID: 325906369574372731}
   - component: {fileID: 1719423634478888392}
   - component: {fileID: 2482333885417157036}
+  - component: {fileID: 5892662589850081607}
   m_Layer: 5
   m_Name: Control Notification
   m_TagString: Untagged
@@ -1287,6 +1336,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &5892662589850081607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4969614592899628345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &5398616813083222783
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,6 +1598,7 @@ GameObject:
   - component: {fileID: 7092372397194032248}
   - component: {fileID: 1736036066782208552}
   - component: {fileID: 6804682126278640406}
+  - component: {fileID: 5128246587464408502}
   m_Layer: 5
   m_Name: Invert Aim
   m_TagString: Untagged
@@ -1602,6 +1667,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Aim Poin <color="cyan">STANDARD</color>
+--- !u!114 &5128246587464408502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6946701885554332009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &6970798215819105436
 GameObject:
   m_ObjectHideFlags: 0
