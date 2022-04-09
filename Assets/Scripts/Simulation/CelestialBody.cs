@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Math;
@@ -20,6 +21,12 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public float Eccentricity;
 	public float ArgumentOfPeriapsis;
 	public float TrueAnomalyAtEpoch;
+
+	[Header("Config")]
+	public Color RadarColor;
+	public float RadarSize;
+
+	public static List<CelestialBody> CelestialBodies = new List<CelestialBody>();
 
 	private Orbit2D _orbit;
 	private float _referenceTime;
@@ -43,6 +50,8 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 
 	private void OnEnable()
 	{
+		CelestialBodies.Add(this);
+		
 		if (ParentBody != null)
 		{
 			ParentBody.OnOrbitUpdate += UpdateOrbit;
@@ -71,6 +80,8 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 
 	private void OnDisable()
 	{
+		CelestialBodies.Remove(this);
+		
 		if (ParentBody != null)
 		{
 			ParentBody.OnOrbitUpdate -= UpdateOrbit;

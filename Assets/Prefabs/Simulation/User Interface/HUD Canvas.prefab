@@ -2386,11 +2386,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OwnVehicle: {fileID: 0}
   RadarPingPrefab: {fileID: 4625651757324952422, guid: 15a02526a384dcd449d928576a229cf9, type: 3}
-  VehiclePingSprite: {fileID: 21300000, guid: a3b0e670261bec8498d481ca5f2b43ab, type: 3}
   ShipyardPingSprite: {fileID: 21300000, guid: 694cf3e029eef02498b46a2fff1029c5, type: 3}
+  CelestialBodyPingSprite: {fileID: 21300000, guid: f3297d1cf4180a24899a566df5645368, type: 3}
+  VehiclePingSprite: {fileID: 21300000, guid: a3b0e670261bec8498d481ca5f2b43ab, type: 3}
   ZoomAction: {fileID: -2696474880559036273, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ZoomInterval: 0.25
   Scales:
+  - 0.01
   - 0.02
   - 0.05
   - 0.1

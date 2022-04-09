@@ -139,9 +139,29 @@ PrefabInstance:
       value: The Interloper
       objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarSize
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: ParentBody
       value: 
       objectReference: {fileID: 1294432813}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.b
+      value: 0.44313726
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.g
+      value: 0.44313726
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.r
+      value: 0.44313726
+      objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: SemiLatusRectum
       value: 8000
@@ -249,9 +269,21 @@ PrefabInstance:
       value: Id
       objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarSize
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: ParentBody
       value: 
       objectReference: {fileID: 1294432813}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: SemiLatusRectum
       value: 2000
@@ -558,9 +590,25 @@ PrefabInstance:
       value: Superego
       objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarSize
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: ParentBody
       value: 
       objectReference: {fileID: 1294432813}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: SemiLatusRectum
       value: 5000
@@ -664,9 +712,29 @@ PrefabInstance:
       value: Ego
       objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarSize
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: ParentBody
       value: 
       objectReference: {fileID: 1294432813}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.g
+      value: 0.7372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.r
+      value: 0.47058824
+      objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: SemiLatusRectum
       value: 3000
@@ -977,6 +1045,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -35
       objectReference: {fileID: 0}
+    - target: {fileID: 9097917500179578096, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
+      propertyPath: MaxExponent
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6d1e009565a5a84193ab1144a5deb06, type: 3}
 --- !u!224 &1943348017 stripped
@@ -1116,6 +1188,22 @@ PrefabInstance:
     - target: {fileID: 2166859036579683026, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: m_Name
       value: Janus
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarSize
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.g
+      value: 0.24705882
+      objectReference: {fileID: 0}
+    - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
+      propertyPath: RadarColor.r
+      value: 0.49019608
       objectReference: {fileID: 0}
     - target: {fileID: 2166859036579683028, guid: f1912a53654a56540b26c71ed0df3dae, type: 3}
       propertyPath: GravitationalParameter

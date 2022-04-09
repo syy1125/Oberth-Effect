@@ -14,11 +14,15 @@ public class Radar : MonoBehaviour
 {
 	public Rigidbody2D OwnVehicle;
 	public GameObject RadarPingPrefab;
-	public Sprite VehiclePingSprite;
 	public Sprite ShipyardPingSprite;
+	public Sprite CelestialBodyPingSprite;
+	public Sprite VehiclePingSprite;
 	public InputActionReference ZoomAction;
 	public float ZoomInterval = 0.4f;
 
+	/// <summary>
+	/// Multiplicative scale. For example, a scale of 0.1 would mean 1 unit in the simulation would translate to 0.1 unit on the radar.
+	/// </summary>
 	public float[] Scales;
 	public int ScaleIndex;
 
@@ -110,37 +114,45 @@ public class Radar : MonoBehaviour
 		int i = 0;
 		Vector2 centerOfMass = OwnVehicle.worldCenterOfMass;
 
-		foreach (VehicleCore vehicle in VehicleCore.ActiveVehicles)
-		{
-			if (vehicle == null) continue;
-
-			Vector2 relativePosition = vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass - centerOfMass;
-
-			GameObject ping = GetOrCreatePing(i);
-
-			ping.transform.localPosition = relativePosition * _scale;
-			ping.transform.rotation = vehicle.transform.rotation;
-			ping.GetComponent<Image>().sprite = VehiclePingSprite;
-			ping.GetComponent<Image>().color =
-				PhotonTeamHelper.GetPlayerTeamColors(vehicle.GetComponent<PhotonView>().Owner).PrimaryColor;
-
-			i++;
-		}
-
 		foreach (Shipyard shipyard in Shipyard.ActiveShipyards.Values)
 		{
 			if (shipyard == null) continue;
 
 			Vector2 relativePosition = (Vector2) shipyard.transform.position - centerOfMass;
-
-			GameObject ping = GetOrCreatePing(i);
-
+			GameObject ping = GetOrCreatePing(i++);
 			ping.transform.localPosition = relativePosition * _scale;
 			ping.transform.rotation = Quaternion.identity;
+			ping.transform.localScale = Vector3.one;
 			ping.GetComponent<Image>().sprite = ShipyardPingSprite;
 			ping.GetComponent<Image>().color = PhotonTeamHelper.GetTeamColors(shipyard.TeamIndex).PrimaryColor;
+		}
 
-			i++;
+		foreach (CelestialBody body in CelestialBody.CelestialBodies)
+		{
+			if (body == null) continue;
+
+			Vector2 relativePosition = (Vector2) body.transform.position - centerOfMass;
+			GameObject ping = GetOrCreatePing(i++);
+			ping.transform.localPosition = relativePosition * _scale;
+			ping.transform.rotation = Quaternion.identity;
+			// The width and height of a standard radar ping is 20 units
+			ping.transform.localScale = Vector3.one * Mathf.Max(body.RadarSize * _scale / 20f, 0.8f);
+			ping.GetComponent<Image>().sprite = CelestialBodyPingSprite;
+			ping.GetComponent<Image>().color = body.RadarColor;
+		}
+
+		foreach (VehicleCore vehicle in VehicleCore.ActiveVehicles)
+		{
+			if (vehicle == null) continue;
+
+			Vector2 relativePosition = vehicle.GetComponent<Rigidbody2D>().worldCenterOfMass - centerOfMass;
+			GameObject ping = GetOrCreatePing(i++);
+			ping.transform.localPosition = relativePosition * _scale;
+			ping.transform.rotation = vehicle.transform.rotation;
+			ping.transform.localScale = Vector3.one;
+			ping.GetComponent<Image>().sprite = VehiclePingSprite;
+			ping.GetComponent<Image>().color =
+				PhotonTeamHelper.GetPlayerTeamColors(vehicle.GetComponent<PhotonView>().Owner).PrimaryColor;
 		}
 
 		for (; i < _pings.Count; i++)
