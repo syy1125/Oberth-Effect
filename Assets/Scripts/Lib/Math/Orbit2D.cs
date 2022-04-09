@@ -126,14 +126,13 @@ public class Orbit2D
 		// Compute position and velocity in local frame (periapsis is on the +x axis)
 
 		Vector2 position = new Vector2(radius * Mathf.Cos(trueAnomaly), radius * Mathf.Sin(trueAnomaly));
-
 		// Compute velocity by calculating speed using physics
 		// then pointing it in the expected direction calculated from differentiating position
 		float energyPerUnitMass =
 			-ParentGravitationalParameter * (1 - Eccentricity * Eccentricity) / (2 * SemiLatusRectum);
 		float speed = Mathf.Sqrt(2 * (energyPerUnitMass + ParentGravitationalParameter / radius));
 		// Velocity direction computed as derivative of position w.r.t. true anomaly
-		Vector2 velocity = new Vector2(-Mathf.Sin(trueAnomaly), Eccentricity * Mathf.Cos(trueAnomaly)).normalized
+		Vector2 velocity = new Vector2(-Mathf.Sin(trueAnomaly), Eccentricity + Mathf.Cos(trueAnomaly)).normalized
 		                   * speed;
 
 		// Account for argument of periapsis and convert to global frame

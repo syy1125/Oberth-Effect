@@ -13,26 +13,34 @@ public class PhotonTimeTest : MonoBehaviourPunCallbacks
 {
 	public Orbit2D TestOrbit;
 
-	private void Start()
-	{
-		PhotonNetwork.ConnectUsingSettings();
-	}
+	// private void Start()
+	// {
+	// 	PhotonNetwork.ConnectUsingSettings();
+	// }
+	//
+	// public override void OnConnectedToMaster()
+	// {
+	// 	PhotonNetwork.JoinLobby();
+	// }
+	//
+	// public override void OnJoinedLobby()
+	// {
+	// 	PhotonNetwork.CreateRoom("test");
+	// }
 
-	public override void OnConnectedToMaster()
-	{
-		PhotonNetwork.JoinLobby();
-	}
+	// private void FixedUpdate()
+	// {
+	// 	if (PhotonNetwork.CurrentRoom == null) return;
+	// 	(Vector2 position, Vector2 _) = TestOrbit.GetStateVectorAt((float) PhotonNetwork.Time);
+	// 	GetComponent<Rigidbody2D>().MovePosition(position);
+	// }
 
-	public override void OnJoinedLobby()
+	private void OnDrawGizmos()
 	{
-		PhotonNetwork.CreateRoom("test");
-	}
-
-	private void FixedUpdate()
-	{
-		if (PhotonNetwork.CurrentRoom == null) return;
-		(Vector2 position, Vector2 _) = TestOrbit.GetStateVectorAt((float) PhotonNetwork.Time);
-		GetComponent<Rigidbody2D>().MovePosition(position);
+		(Vector2 position, Vector2 velocity) = TestOrbit.GetStateVectorAt(Time.time);
+		Gizmos.color = Color.magenta;
+		transform.position = position;
+		Gizmos.DrawLine(position, position + velocity);
 	}
 }
 }

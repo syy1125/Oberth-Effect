@@ -5213,7 +5213,7 @@ GameObject:
   - component: {fileID: 1790844203}
   - component: {fileID: 1790844204}
   m_Layer: 0
-  m_Name: Photon Time
+  m_Name: Orbit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5227,7 +5227,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790844200}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.78574425, y: 15.451481, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5297,9 +5297,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TestOrbit:
-    ParentGravitationalParameter: 100000
-    SemiLatusRectum: 1500
-    Eccentricity: 0
+    ParentGravitationalParameter: 100
+    SemiLatusRectum: 15
+    Eccentricity: 0.6
     ArgumentOfPeriapsis: 0
     TrueAnomalyAtEpoch: 0
 --- !u!50 &1790844204

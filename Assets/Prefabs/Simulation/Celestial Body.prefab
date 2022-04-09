@@ -75,6 +75,8 @@ MonoBehaviour:
   Eccentricity: 0
   ArgumentOfPeriapsis: 0
   TrueAnomalyAtEpoch: 0
+  RadarColor: {r: 0, g: 0, b: 0, a: 0}
+  RadarSize: 0
 --- !u!114 &4932270462478352237
 MonoBehaviour:
   m_ObjectHideFlags: 0
