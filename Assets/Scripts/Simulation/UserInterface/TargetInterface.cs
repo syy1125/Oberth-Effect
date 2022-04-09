@@ -59,14 +59,20 @@ public class TargetInterface : MonoBehaviour
 				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
 				_target.GetComponent<IGuidedWeaponTarget>().GetEffectivePosition()
 			);
+			float relativeVelocity = Vector2.Distance(
+				WeaponControl.GetComponent<Rigidbody2D>().velocity,
+				_target.GetComponent<IGuidedWeaponTarget>().GetEffectiveVelocity()
+			);
 
 			if (WeaponControl.TargetLock)
 			{
-				TargetText.text = $"Target locked: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}";
+				TargetText.text =
+					$"Target locked: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity)}";
 			}
 			else
 			{
-				TargetText.text = $"Target: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}";
+				TargetText.text =
+					$"Target: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity)}";
 			}
 		}
 	}
