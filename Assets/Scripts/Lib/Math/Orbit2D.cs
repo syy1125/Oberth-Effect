@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Lib.Math
 {
+[Serializable]
 public class Orbit2D
 {
 	public float ParentGravitationalParameter;
