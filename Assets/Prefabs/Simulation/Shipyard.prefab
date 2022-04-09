@@ -374,7 +374,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 3882299210583740430}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5bb1b29dd4b60ac4b8571fc15e7a01d5, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -531,6 +531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c95cfd710f40c2b52dc0b187e40f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParentBody: {fileID: 0}
+  OrbitRadius: 0
+  TrueAnomalyAtEpoch: 0
   BaseMaxHealth: 10000
   SpawnPoints:
   - {fileID: 3882299211580952301}
@@ -559,7 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bdb5c151304f2aa99710160095fd9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ResupplyRange: 30
+  ResupplyRange: 50
   ResourceEmissionRate:
   - Resource: OberthEffect/Energy
     Amount: 500
@@ -786,7 +789,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 3882299211593379714}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5bb1b29dd4b60ac4b8571fc15e7a01d5, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -895,7 +898,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 3882299211658595250}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5bb1b29dd4b60ac4b8571fc15e7a01d5, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
