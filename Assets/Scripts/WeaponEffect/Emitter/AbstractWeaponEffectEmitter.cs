@@ -46,7 +46,7 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 		ResourceSatisfaction = level;
 	}
 
-	public abstract Vector2 GetInterceptPoint(
+	public abstract Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	);
 

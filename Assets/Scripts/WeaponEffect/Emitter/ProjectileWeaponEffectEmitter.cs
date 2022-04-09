@@ -180,20 +180,37 @@ public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public override Vector2 GetInterceptPoint(
+	public override Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{
 		Vector2 relativePosition = targetPosition - ownPosition;
 		Vector2 relativeVelocity = targetVelocity - ownVelocity;
 
-		InterceptSolver.ProjectileIntercept(
+		bool success = InterceptSolver.ProjectileIntercept(
 			relativePosition, relativeVelocity, _maxSpeed,
 			out Vector2 interceptVelocity, out float hitTime
 		);
 
-		// Because of how aim point calculation is done, we actually should omit our own velocity here.
-		return ownPosition + interceptVelocity * hitTime;
+		if (success)
+		{
+			// Because of how aim point calculation is done, we actually should omit our own velocity here.
+			return ownPosition + interceptVelocity * hitTime;
+		}
+
+		// If weapon has AOE, see if closest approach is good enough
+		if (_projectileConfig.DamageType == DamageType.Explosive)
+		{
+			float missMargin = Vector2.Distance(
+				relativePosition + relativeVelocity * hitTime, interceptVelocity * hitTime
+			);
+			if (missMargin < _projectileConfig.ExplosionRadius)
+			{
+				return ownPosition + interceptVelocity * hitTime;
+			}
+		}
+
+		return null;
 	}
 
 	public override void EmitterFixedUpdate(bool isMine, bool firing)

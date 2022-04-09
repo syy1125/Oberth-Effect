@@ -9,7 +9,7 @@ public interface IWeaponEffectEmitter
 	public int? TargetPhotonId { get; set; }
 	void SetAimPoint(Vector2? aimPoint);
 
-	public Vector2 GetInterceptPoint(
+	public Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	);
 

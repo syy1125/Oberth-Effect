@@ -168,11 +168,11 @@ public abstract class AbstractWeapon :
 		{
 			var target = targetData[i];
 
-			Vector2 interceptPoint = WeaponEmitter.GetInterceptPoint(
+			Vector2? interceptPoint = WeaponEmitter.GetInterceptPoint(
 				position, localVelocity,
 				target.Target.transform.position, target.Target.GetComponent<Rigidbody2D>().velocity
 			);
-			if ((interceptPoint - position).sqrMagnitude > rangeSqrLimit) continue;
+			if (interceptPoint == null || (interceptPoint.Value - position).sqrMagnitude > rangeSqrLimit) continue;
 
 			float score = target.PriorityScore;
 
@@ -180,7 +180,7 @@ public abstract class AbstractWeapon :
 			{
 				bestIndex = i;
 				bestScore = targetData[i].PriorityScore;
-				bestAimPoint = interceptPoint;
+				bestAimPoint = interceptPoint.Value;
 			}
 		}
 

@@ -115,7 +115,7 @@ public class MissileLauncherEffectEmitter : AbstractWeaponEffectEmitter
 		return ReloadResourceUse.ToDictionary(entry => entry.Key, entry => entry.Value * multiplier);
 	}
 
-	public override Vector2 GetInterceptPoint(
+	public override Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{

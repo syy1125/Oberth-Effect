@@ -137,7 +137,7 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 		return builder.ToString();
 	}
 
-	public override Vector2 GetInterceptPoint(
+	public override Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	)
 	{
