@@ -10,13 +10,12 @@ using Syy1125.OberthEffect.Lib.Math;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Syy1125.OberthEffect.Simulation.Game
 {
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(RoomViewTeamProvider))]
-public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetLockInfoProvider
+public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITargetLockInfoProvider
 {
 	[Header("Orbit")]
 	public CelestialBody ParentBody;
@@ -240,15 +239,27 @@ public class Shipyard : MonoBehaviourPun, IDamageable, IPunObservable, ITargetLo
 		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
-		photonView.RPC(nameof(TakeBeamDamage), photonView.Owner, damageType, damage, armorPierce);
+		photonView.RPC(nameof(TakeBeamDamageRpc), photonView.Owner, damageType, damage, armorPierce);
 	}
 
 	// Shipyard is stationary, no need to re-do raycast on this end.
 	[PunRPC]
-	public void TakeBeamDamage(DamageType damageType, float damage, float armorPierce)
+	private void TakeBeamDamageRpc(DamageType damageType, float damage, float armorPierce)
 	{
 		// Shipyard's dead and that's the most important part. In a 2-team game that's game over.
 		// TODO in the future we could do overpenetration, especially if there are more than 2 teams.
+		TakeDamage(damageType, ref damage, armorPierce, out bool _);
+	}
+
+	public void RequestDirectDamage(DamageType damageType, float damage, float armorPierce)
+	{
+		photonView.RPC(nameof(TakeDirectDamageRpc), photonView.Owner, damageType, damage, armorPierce);
+	}
+
+	[PunRPC]
+	private void TakeDirectDamageRpc(DamageType damageType, float damage, float armorPierce)
+	{
+		if (!IsMine) return;
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);
 	}
 

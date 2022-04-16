@@ -136,7 +136,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
 			gameObject, null,
 			(relay, _) => relay.InvokeBlockRpc(
-				_core.RootPosition, typeof(BlockHealth), nameof(TakeBeamDamageRpc), RpcTarget.All,
+				_core.RootPosition, typeof(BlockHealth), nameof(TakeBeamDamageRpc), relay.photonView.Owner,
 				damageType, damage, armorPierce, ownerId, beamStart, beamEnd
 			)
 		);

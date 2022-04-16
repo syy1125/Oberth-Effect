@@ -126,7 +126,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	)
 	{
 		photonView.RPC(
-			nameof(TakeBeamDamageRpc), RpcTarget.All,
+			nameof(TakeBeamDamageRpc), photonView.Owner,
 			damageType, damage, armorPierce, ownerId, beamStart, beamEnd
 		);
 	}

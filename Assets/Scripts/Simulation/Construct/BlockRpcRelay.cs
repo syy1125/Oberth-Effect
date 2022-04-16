@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Photon.Pun;
+using Photon.Realtime;
 using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 
@@ -10,6 +11,16 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(ConstructBlockManager))]
 public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 {
+	public void InvokeBlockRpc(
+		Vector2Int position, Type componentType, string methodName, Player target, params object[] parameters
+	)
+	{
+		photonView.RPC(
+			nameof(BlockRpc), target,
+			position.x, position.y, componentType.ToString(), methodName, parameters
+		);
+	}
+
 	public void InvokeBlockRpc(
 		Vector2Int position, Type componentType, string methodName,
 		RpcTarget target, params object[] parameters
