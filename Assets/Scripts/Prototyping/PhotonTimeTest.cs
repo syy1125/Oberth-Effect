@@ -1,9 +1,5 @@
-﻿using System;
-using ExitGames.Client.Photon;
-using Photon.Pun;
-using Photon.Realtime;
+﻿using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
-using Syy1125.OberthEffect.Foundation.Match;
 using Syy1125.OberthEffect.Lib.Math;
 using UnityEngine;
 

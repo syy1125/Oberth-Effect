@@ -31,7 +31,7 @@ public class SynchronizeTransformView : MonoBehaviourPun, IPunObservable
 			_body.angularVelocity = (float) stream.ReceiveNext();
 
 			float lag = Mathf.Abs((float) (PhotonNetwork.Time - info.SentServerTime));
-			
+
 			_body.position += _body.velocity * lag;
 			_body.rotation += _body.angularVelocity * lag;
 		}

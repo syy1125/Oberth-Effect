@@ -45,7 +45,8 @@ public static class PhysicsUnitUtils
 
 	private static string FormatValue(float value, string format, string baseUnit)
 	{
-		(float unit, string prefix) = MetricPrefixes.FindLast(item => value / item.Item1 >= UNIT_TOLERANCE) ?? MetricPrefixes[0];
+		(float unit, string prefix) =
+			MetricPrefixes.FindLast(item => value / item.Item1 >= UNIT_TOLERANCE) ?? MetricPrefixes[0];
 		return $"{(value / unit).ToString(format)}{prefix}{baseUnit}";
 	}
 

@@ -54,7 +54,7 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 	public void LoadSpec(BurstBeamWeaponEffectSpec spec)
 	{
 		base.LoadSpec(spec);
-		
+
 		_preciseDuration = spec.PreciseDuration;
 		_durationTicks = spec.DurationTicks;
 		_durationSeconds = spec.DurationSeconds;
@@ -299,7 +299,7 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 	{
 		if (_preciseDuration) _beamTicksRemaining = _durationTicks;
 		else _beamSecondsRemaining = _durationSeconds;
-		
+
 		ExecuteWeaponSideEffects();
 	}
 }

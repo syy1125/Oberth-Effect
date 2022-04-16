@@ -60,7 +60,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 	) :
 		this(contentDirectory, modsRoot, contentDirectory, preprocess)
 	{}
-	
+
 	private void ResolveIdField()
 	{
 		FieldInfo[] fields = typeof(TSpec).GetFields(BindingFlags.Public | BindingFlags.Instance);

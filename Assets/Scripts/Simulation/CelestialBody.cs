@@ -51,7 +51,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	private void OnEnable()
 	{
 		CelestialBodies.Add(this);
-		
+
 		if (ParentBody != null)
 		{
 			ParentBody.OnOrbitUpdate += UpdateOrbit;
@@ -81,7 +81,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	private void OnDisable()
 	{
 		CelestialBodies.Remove(this);
-		
+
 		if (ParentBody != null)
 		{
 			ParentBody.OnOrbitUpdate -= UpdateOrbit;

@@ -1,6 +1,4 @@
-﻿using System;
-using Syy1125.OberthEffect.Simulation.Construct;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface

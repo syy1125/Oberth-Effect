@@ -10,8 +10,6 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Match;
 using Syy1125.OberthEffect.Foundation.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Lobby.Multiplayer

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;

@@ -9,7 +9,6 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Syy1125.OberthEffect.WeaponEffect
 {

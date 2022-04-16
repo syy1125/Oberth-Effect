@@ -1,5 +1,4 @@
-﻿using System;
-using Photon.Pun;
+﻿using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Foundation.Utils;
 using UnityEngine;

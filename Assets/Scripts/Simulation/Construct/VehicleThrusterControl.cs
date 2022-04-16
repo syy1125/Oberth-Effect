@@ -309,7 +309,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 			{
 				velocity -= _weaponControl.CurrentTarget.GetEffectiveVelocity();
 			}
-			
+
 			Vector2 localVelocity = transform.InverseTransformVector(velocity);
 
 			HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
