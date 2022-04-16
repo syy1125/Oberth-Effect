@@ -17,7 +17,9 @@ public class TargetInterface : MonoBehaviour
 	[Header("References")]
 	public CameraFollow CameraFollow;
 	public Image Frame;
-	public Text TargetText;
+	public Text TargetNameText;
+	public Text TargetInfoText;
+	public Transform RelativeVelocityDirection;
 	public HighlightTarget TargetLockHighlight;
 
 	[Header("Config")]
@@ -59,21 +61,13 @@ public class TargetInterface : MonoBehaviour
 				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
 				_target.GetComponent<IGuidedWeaponTarget>().GetEffectivePosition()
 			);
-			float relativeVelocity = Vector2.Distance(
-				WeaponControl.GetComponent<Rigidbody2D>().velocity,
-				_target.GetComponent<IGuidedWeaponTarget>().GetEffectiveVelocity()
-			);
+			Vector2 relativeVelocity = _target.GetComponent<IGuidedWeaponTarget>().GetEffectiveVelocity()
+			                           - WeaponControl.GetComponent<Rigidbody2D>().velocity;
 
-			if (WeaponControl.TargetLock)
-			{
-				TargetText.text =
-					$"Target locked: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity)}";
-			}
-			else
-			{
-				TargetText.text =
-					$"Target: {targetName}\nDistance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity)}";
-			}
+			TargetNameText.text = WeaponControl.TargetLock ? $"Target locked: {targetName}" : $"Target: {targetName}";
+			TargetInfoText.text =
+				$"Distance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity.magnitude)}";
+			RelativeVelocityDirection.rotation = Quaternion.LookRotation(Vector3.forward, relativeVelocity);
 		}
 	}
 
@@ -104,9 +98,16 @@ public class TargetInterface : MonoBehaviour
 
 		if (WeaponControl.TargetLock)
 		{
-			Frame.color = TargetLockColor;
-			TargetText.fontStyle = FontStyle.Bold;
-			TargetText.color = TargetLockColor;
+			TargetInfoText.fontStyle = FontStyle.Bold;
+			TargetNameText.fontStyle = FontStyle.Bold;
+
+			foreach (Transform child in transform)
+			{
+				foreach (Graphic graphic in child.GetComponentsInChildren<Graphic>())
+				{
+					graphic.color = TargetLockColor;
+				}
+			}
 
 			foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
 			{
@@ -116,9 +117,16 @@ public class TargetInterface : MonoBehaviour
 		}
 		else
 		{
-			Frame.color = TargetColor;
-			TargetText.fontStyle = FontStyle.Normal;
-			TargetText.color = TargetColor;
+			TargetNameText.fontStyle = FontStyle.Normal;
+			TargetInfoText.fontStyle = FontStyle.Normal;
+
+			foreach (Transform child in transform)
+			{
+				foreach (Graphic graphic in child.GetComponentsInChildren<Graphic>())
+				{
+					graphic.color = TargetColor;
+				}
+			}
 
 			foreach (Image image in TargetLockHighlight.GetComponentsInChildren<Image>())
 			{
