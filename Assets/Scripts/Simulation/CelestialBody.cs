@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Photon.Pun;
+using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Math;
 using Syy1125.OberthEffect.WeaponEffect;
@@ -29,7 +30,6 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public static List<CelestialBody> CelestialBodies = new List<CelestialBody>();
 
 	private Orbit2D _orbit;
-	private float _referenceTime;
 
 	public Rigidbody2D Body { get; private set; }
 	public event OrbitUpdateEvent OnOrbitUpdate;
@@ -64,7 +64,6 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 				ArgumentOfPeriapsis = ArgumentOfPeriapsis * Mathf.Deg2Rad,
 				TrueAnomalyAtEpoch = TrueAnomalyAtEpoch * Mathf.Deg2Rad
 			};
-			_referenceTime = (float) PhotonNetwork.Time;
 		}
 	}
 
@@ -100,7 +99,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 
 	private void UpdateOrbit(Vector2 parentPosition, bool init)
 	{
-		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt(SynchronizedTimer.Instance.SynchronizedTime);
 		Vector2 position = parentPosition + localPosition;
 
 		if (init)

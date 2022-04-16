@@ -41,7 +41,6 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	private Rigidbody2D _body;
 	private RoomViewTeamProvider _teamProvider;
 	private Orbit2D _orbit;
-	private float _referenceTime;
 
 	private GameMode _gameMode;
 	private bool _damageable;
@@ -88,7 +87,6 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 				ArgumentOfPeriapsis = 0f,
 				TrueAnomalyAtEpoch = TrueAnomalyAtEpoch * Mathf.Deg2Rad
 			};
-			_referenceTime = (float) PhotonNetwork.Time;
 
 			_body.isKinematic = true;
 		}
@@ -128,7 +126,7 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 
 	private void UpdateOrbit(Vector2 parentPosition, bool init)
 	{
-		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
+		(Vector2 localPosition, Vector2 _) = _orbit.GetStateVectorAt(SynchronizedTimer.Instance.SynchronizedTime);
 		Vector2 position = parentPosition + localPosition;
 
 		if (init)
@@ -182,7 +180,7 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	{
 		if (_orbit == null) return Vector2.zero;
 
-		float time = (float) PhotonNetwork.Time - _referenceTime;
+		float time = SynchronizedTimer.Instance.SynchronizedTime;
 		return ParentBody.GetEffectiveVelocity(time) + _orbit.GetStateVectorAt(time).Item2;
 	}
 
