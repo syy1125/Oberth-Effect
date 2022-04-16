@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Init;
+using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
+using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
@@ -16,9 +18,13 @@ public class PlayerControlConfig : MonoBehaviour
 {
 	public static PlayerControlConfig Instance;
 
+	public InputActionReference CycleHudModeAction;
 	public InputActionReference ToggleInertiaDampenerAction;
 	public InputActionReference CycleControlModeAction;
 	public InputActionReference InvertAimAction;
+
+	public HeadsUpDisplayMode HudMode { get; private set; }
+	public UnityEvent HudModeChanged;
 
 	public bool InertiaDampenerActive { get; private set; }
 	public UnityEvent InertiaDampenerChanged;
@@ -51,6 +57,7 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void OnEnable()
 	{
+		CycleHudModeAction.action.performed += CycleHudMode;
 		ToggleInertiaDampenerAction.action.performed += ToggleInertiaDampener;
 		CycleControlModeAction.action.performed += CycleControlMode;
 		InvertAimAction.action.performed += ToggleInvertAim;
@@ -74,6 +81,9 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void Start()
 	{
+		HudMode = HeadsUpDisplayMode.Standard;
+		HudModeChanged?.Invoke();
+
 		InertiaDampenerActive = false;
 		InertiaDampenerChanged?.Invoke();
 
@@ -86,6 +96,7 @@ public class PlayerControlConfig : MonoBehaviour
 
 	private void OnDisable()
 	{
+		CycleHudModeAction.action.performed -= CycleHudMode;
 		ToggleInertiaDampenerAction.action.performed -= ToggleInertiaDampener;
 		CycleControlModeAction.action.performed -= CycleControlMode;
 		InvertAimAction.action.performed -= ToggleInvertAim;
@@ -129,6 +140,19 @@ public class PlayerControlConfig : MonoBehaviour
 		{
 			ControlGroupStateChanged.Invoke(_changed);
 		}
+	}
+
+	private void CycleHudMode(InputAction.CallbackContext context)
+	{
+		HudMode = HudMode switch
+		{
+			HeadsUpDisplayMode.Standard => HeadsUpDisplayMode.Extended,
+			HeadsUpDisplayMode.Extended => HeadsUpDisplayMode.Minimal,
+			HeadsUpDisplayMode.Minimal => HeadsUpDisplayMode.Standard,
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
+		HudModeChanged?.Invoke();
 	}
 
 	private void ToggleInertiaDampener(InputAction.CallbackContext context)

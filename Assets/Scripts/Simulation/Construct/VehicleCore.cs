@@ -14,6 +14,9 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 public class VehicleCore :
 	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry, ITargetLockInfoProvider
 {
+	/// <summary>
+	/// List of all "alive" vehicles.
+	/// </summary>
 	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
 
 	public UnityEvent OnVehicleDeath;

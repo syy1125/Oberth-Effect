@@ -1034,9 +1034,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b31507ceb3425ab84a29321fa986ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CycleHudModeAction: {fileID: 6718977615495373032, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ToggleInertiaDampenerAction: {fileID: 7433065827582890450, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   CycleControlModeAction: {fileID: -3588560342972414599, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   InvertAimAction: {fileID: 4938711316215951410, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
+  HudModeChanged:
+    m_PersistentCalls:
+      m_Calls: []
   InertiaDampenerChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2117,6 +2121,26 @@ PrefabInstance:
     - target: {fileID: 4546019637110273796, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
       propertyPath: m_RootOrder
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682026209851522574, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682026209851522574, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682026209851522574, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682026209851522574, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682026209851522574, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6329504427768116977, guid: 31b36c4a4b714114fb86c6320ea9caaf, type: 3}
       propertyPath: m_AnchorMax.y

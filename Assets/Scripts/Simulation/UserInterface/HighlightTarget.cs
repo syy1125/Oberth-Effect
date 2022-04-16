@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using Syy1125.OberthEffect.Foundation.Physics;
 using Syy1125.OberthEffect.Simulation.Construct;
 using UnityEngine;
@@ -12,6 +13,9 @@ public class HighlightTarget : MonoBehaviour
 	public RectTransform Label;
 	public float TargetSizeMultiplier;
 	public float OffScreenSize;
+
+	public Vector2 ScreenPosition { get; private set; }
+	public bool OnScreen { get; private set; }
 
 	private Camera _mainCamera;
 	private RectTransform _rectTransform;
@@ -34,12 +38,13 @@ public class HighlightTarget : MonoBehaviour
 		if (Target == null) return;
 
 		(Vector2 targetPosition, float targetSize) = GetTargetPositionAndSize();
-		Vector2 screenPosition = _mainCamera.WorldToViewportPoint(targetPosition);
+		ScreenPosition = _mainCamera.WorldToViewportPoint(targetPosition);
+		OnScreen = ScreenPosition.x >= 0 && ScreenPosition.x <= 1 && ScreenPosition.y >= 0 && ScreenPosition.y <= 1;
 
-		if (screenPosition.x >= 0 && screenPosition.x <= 1 && screenPosition.y >= 0 && screenPosition.y <= 1)
+		if (OnScreen)
 		{
-			_rectTransform.anchorMin = screenPosition;
-			_rectTransform.anchorMax = screenPosition;
+			_rectTransform.anchorMin = ScreenPosition;
+			_rectTransform.anchorMax = ScreenPosition;
 
 			float apparentSize = targetSize
 			                     * TargetSizeMultiplier
@@ -51,7 +56,7 @@ public class HighlightTarget : MonoBehaviour
 
 			if (Label != null)
 			{
-				if (screenPosition.y < 0.5f)
+				if (ScreenPosition.y < 0.5f)
 				{
 					Label.anchorMin = new Vector2(0.5f, 1f);
 					Label.anchorMax = new Vector2(0.5f, 1f);
@@ -67,7 +72,7 @@ public class HighlightTarget : MonoBehaviour
 		}
 		else
 		{
-			Vector2 targetDirection = screenPosition - new Vector2(0.5f, 0.5f);
+			Vector2 targetDirection = ScreenPosition - new Vector2(0.5f, 0.5f);
 			Vector2 edgePoint =
 				targetDirection / Mathf.Max(Mathf.Abs(targetDirection.x), Mathf.Abs(targetDirection.y)) * 0.5f
 				+ new Vector2(0.5f, 0.5f);

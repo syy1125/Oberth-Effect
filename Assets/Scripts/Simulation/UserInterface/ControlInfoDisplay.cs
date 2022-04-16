@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation.UserInterface
@@ -15,6 +16,7 @@ public class ControlInfoDisplay : MonoBehaviour
 {
 	public BlockHealthBarControl HealthBarControl;
 
+	public Text HudModeDisplay;
 	public Text InertiaDampenerDisplay;
 	public Text ControlModeDisplay;
 	public Text InvertAimDisplay;
@@ -31,67 +33,71 @@ public class ControlInfoDisplay : MonoBehaviour
 	private Coroutine _fadeNotification;
 	private Dictionary<string, Text> _controlGroupDisplays;
 
+	private UnityEvent OnDetachListeners;
+
+	private void Awake()
+	{
+		OnDetachListeners = new UnityEvent();
+	}
+
 	private void OnEnable()
 	{
 		AttachControlListeners();
-		AttachHealthBarListeners();
 	}
 
 	private void Start()
 	{
 		_started = true;
-		CreateDisplay();
-		UpdateDisplay();
+		UpdatePlayerControlDisplay();
+		CreateControlGroupDisplay();
+		UpdateControlGroupDisplay();
 		_initNotification = StartCoroutine(InitNotification());
 	}
 
 	private void OnDisable()
 	{
 		DetachControlListeners();
-		DetachHealthBarListeners();
 	}
 
 	private void AttachControlListeners()
 	{
-		PlayerControlConfig.Instance.InertiaDampenerChanged.AddListener(UpdateDisplay);
-		PlayerControlConfig.Instance.InertiaDampenerChanged.AddListener(NotifyInertiaDampenerChange);
-		PlayerControlConfig.Instance.ControlModeChanged.AddListener(UpdateDisplay);
-		PlayerControlConfig.Instance.ControlModeChanged.AddListener(NotifyControlModeChange);
-		PlayerControlConfig.Instance.InvertAimChanged.AddListener(UpdateDisplay);
-		PlayerControlConfig.Instance.InvertAimChanged.AddListener(NotifyInvertAimChange);
+		LinkControlDisplay(HudModeDisplay, PlayerControlConfig.Instance.HudModeChanged, GetHudModeText);
+		LinkControlDisplay(
+			InertiaDampenerDisplay, PlayerControlConfig.Instance.InertiaDampenerChanged, GetInertiaDampenerText
+		);
+		LinkControlDisplay(ControlModeDisplay, PlayerControlConfig.Instance.ControlModeChanged, GetControlModeText);
+		LinkControlDisplay(InvertAimDisplay, PlayerControlConfig.Instance.InvertAimChanged, GetInvertAimText);
+		LinkControlDisplay(HealthBarModeDisplay, HealthBarControl.DisplayModeChanged, GetHealthBarStatusText);
 
-		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(UpdateControlGroupDisplay);
 		PlayerControlConfig.Instance.ControlGroupStateChanged.AddListener(NotifyControlGroupChange);
-		PlayerControlConfig.Instance.ActiveControlGroupChanged.AddListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ActiveControlGroupChanged.AddListener(UpdateControlGroupDisplay);
 	}
 
 	private void DetachControlListeners()
 	{
-		PlayerControlConfig.Instance.InertiaDampenerChanged.RemoveListener(UpdateDisplay);
-		PlayerControlConfig.Instance.InertiaDampenerChanged.RemoveListener(NotifyInertiaDampenerChange);
-		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(UpdateDisplay);
-		PlayerControlConfig.Instance.ControlModeChanged.RemoveListener(NotifyControlModeChange);
-		PlayerControlConfig.Instance.InvertAimChanged.RemoveListener(UpdateDisplay);
-		PlayerControlConfig.Instance.InvertAimChanged.RemoveListener(NotifyInvertAimChange);
+		OnDetachListeners?.Invoke();
+		OnDetachListeners?.RemoveAllListeners();
 
-		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(UpdateControlGroupDisplay);
 		PlayerControlConfig.Instance.ControlGroupStateChanged.RemoveListener(NotifyControlGroupChange);
-		PlayerControlConfig.Instance.ActiveControlGroupChanged.RemoveListener(UpdateDisplay);
+		PlayerControlConfig.Instance.ActiveControlGroupChanged.RemoveListener(UpdateControlGroupDisplay);
 	}
 
-	private void AttachHealthBarListeners()
+	private void LinkControlDisplay(Text display, UnityEvent changeEvent, Func<string> getText)
 	{
-		HealthBarControl.DisplayModeChanged.AddListener(UpdateDisplay);
-		HealthBarControl.DisplayModeChanged.AddListener(NotifyHealthBarStatusChange);
+		void ChangeHandler()
+		{
+			string text = getText();
+			display.text = text;
+			SetNotification(text);
+		}
+
+		changeEvent.AddListener(ChangeHandler);
+		OnDetachListeners.AddListener(() => changeEvent.RemoveListener(ChangeHandler));
 	}
 
-	private void DetachHealthBarListeners()
-	{
-		HealthBarControl.DisplayModeChanged.RemoveListener(UpdateDisplay);
-		HealthBarControl.DisplayModeChanged.RemoveListener(NotifyHealthBarStatusChange);
-	}
-
-	private void CreateDisplay()
+	private void CreateControlGroupDisplay()
 	{
 		_controlGroupDisplays = new Dictionary<string, Text>();
 
@@ -107,6 +113,8 @@ public class ControlInfoDisplay : MonoBehaviour
 		float delay = NotificationFadeDelay * 0.8f;
 		ControlNotification.CrossFadeAlpha(1f, 0f, true);
 
+		ControlNotification.text = GetHudModeText();
+		yield return new WaitForSecondsRealtime(delay);
 		ControlNotification.text = GetInertiaDampenerText();
 		yield return new WaitForSecondsRealtime(delay);
 		ControlNotification.text = GetControlModeText();
@@ -126,19 +134,25 @@ public class ControlInfoDisplay : MonoBehaviour
 		ControlNotification.CrossFadeAlpha(0f, NotificationFadeTime, true);
 	}
 
-	private void UpdateDisplay(List<string> _)
-	{
-		UpdateDisplay();
-	}
-
-	private void UpdateDisplay()
+	private void UpdatePlayerControlDisplay()
 	{
 		if (!_started) return;
 
+		HudModeDisplay.text = GetHudModeText();
 		InertiaDampenerDisplay.text = GetInertiaDampenerText();
 		ControlModeDisplay.text = GetControlModeText();
 		InvertAimDisplay.text = GetInvertAimText();
 		HealthBarModeDisplay.text = GetHealthBarStatusText();
+	}
+
+	private void UpdateControlGroupDisplay(List<string> _)
+	{
+		UpdateControlGroupDisplay();
+	}
+
+	private void UpdateControlGroupDisplay()
+	{
+		if (!_started) return;
 
 		foreach (var entry in _controlGroupDisplays)
 		{
@@ -147,7 +161,20 @@ public class ControlInfoDisplay : MonoBehaviour
 		}
 	}
 
-	private string GetInertiaDampenerText()
+	private string GetHudModeText()
+	{
+		string hudModeStatus = PlayerControlConfig.Instance.HudMode switch
+		{
+			HeadsUpDisplayMode.Standard => "<color=\"lime\">STANDARD</color>",
+			HeadsUpDisplayMode.Extended => "<color=\"yellow\">EXTENDED</color>",
+			HeadsUpDisplayMode.Minimal => "<color=\"lightblue\">MINIMAL</color>",
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
+		return $"HUD Level {hudModeStatus}";
+	}
+
+	private static string GetInertiaDampenerText()
 	{
 		string inertiaDampenerStatus = PlayerControlConfig.Instance.InertiaDampenerActive
 			? "<color=\"cyan\">ON</color>"
@@ -155,7 +182,7 @@ public class ControlInfoDisplay : MonoBehaviour
 		return $"Inertia Dampener {inertiaDampenerStatus}";
 	}
 
-	private string GetControlModeText()
+	private static string GetControlModeText()
 	{
 		string controlModeStatus = PlayerControlConfig.Instance.ControlMode switch
 		{
@@ -168,7 +195,7 @@ public class ControlInfoDisplay : MonoBehaviour
 		return $"Control Mode {controlModeStatus}";
 	}
 
-	private string GetInvertAimText()
+	private static string GetInvertAimText()
 	{
 		string aimPointStatus = PlayerControlConfig.Instance.InvertAim
 			? "<color=\"red\">INVERTED</color>"
@@ -199,21 +226,6 @@ public class ControlInfoDisplay : MonoBehaviour
 			? $"<color=\"{state.DisplayColor}\">{state.DisplayName}</color>"
 			: state.DisplayName;
 		return $"{controlGroup.DisplayName} {stateDisplay}";
-	}
-
-	private void NotifyInertiaDampenerChange()
-	{
-		SetNotification(GetInertiaDampenerText());
-	}
-
-	private void NotifyControlModeChange()
-	{
-		SetNotification(GetControlModeText());
-	}
-
-	private void NotifyInvertAimChange()
-	{
-		SetNotification(GetInvertAimText());
 	}
 
 	private void NotifyHealthBarStatusChange()

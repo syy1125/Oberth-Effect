@@ -86,6 +86,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Cycle HUD Mode",
+                    "type": "Button",
+                    "id": "5fcaa2b2-4add-4114-a81d-0ee76bbb2295",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Inertia Dampener",
                     "type": "Button",
                     "id": "c5115309-4d01-4d7f-9da3-cafaaab753f0",
@@ -553,6 +561,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Invert Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b2786ee0-b0fc-40a7-a522-16de4809a191",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Cycle HUD Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
