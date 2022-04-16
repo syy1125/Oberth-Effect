@@ -32,7 +32,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	private float _referenceTime;
 
 	public Rigidbody2D Body { get; private set; }
-	public OrbitUpdateEvent OnOrbitUpdate;
+	public event OrbitUpdateEvent OnOrbitUpdate;
 
 	private void Awake()
 	{

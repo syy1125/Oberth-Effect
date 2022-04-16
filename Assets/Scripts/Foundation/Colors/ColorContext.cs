@@ -10,9 +10,9 @@ public class ColorContext : MonoBehaviour, IPunInstantiateMagicCallback
 	private ColorScheme _colorScheme = ColorScheme.DefaultColorScheme;
 	public ColorScheme ColorScheme => _colorScheme;
 
-	public ColorChangeEvent OnPrimaryColorChanged;
-	public ColorChangeEvent OnSecondaryColorChanged;
-	public ColorChangeEvent OnTertiaryColorChanged;
+	public event ColorChangeEvent OnPrimaryColorChanged;
+	public event ColorChangeEvent OnSecondaryColorChanged;
+	public event ColorChangeEvent OnTertiaryColorChanged;
 
 	public void SetPrimaryColor(Color color)
 	{

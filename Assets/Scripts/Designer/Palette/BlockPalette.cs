@@ -18,7 +18,7 @@ public class BlockPalette : MonoBehaviour
 
 	public delegate void SelectionChangeEvent();
 
-	public SelectionChangeEvent OnSelectionChanged;
+	public event SelectionChangeEvent OnSelectionChanged;
 
 	private void Awake()
 	{
