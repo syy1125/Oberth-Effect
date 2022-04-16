@@ -13,34 +13,48 @@ public class PhotonTimeTest : MonoBehaviourPunCallbacks
 {
 	public Orbit2D TestOrbit;
 
-	// private void Start()
-	// {
-	// 	PhotonNetwork.ConnectUsingSettings();
-	// }
-	//
-	// public override void OnConnectedToMaster()
-	// {
-	// 	PhotonNetwork.JoinLobby();
-	// }
-	//
-	// public override void OnJoinedLobby()
-	// {
-	// 	PhotonNetwork.CreateRoom("test");
-	// }
+	private float _referenceTime;
 
-	// private void FixedUpdate()
-	// {
-	// 	if (PhotonNetwork.CurrentRoom == null) return;
-	// 	(Vector2 position, Vector2 _) = TestOrbit.GetStateVectorAt((float) PhotonNetwork.Time);
-	// 	GetComponent<Rigidbody2D>().MovePosition(position);
-	// }
-
-	private void OnDrawGizmos()
+	private void Start()
 	{
-		(Vector2 position, Vector2 velocity) = TestOrbit.GetStateVectorAt(Time.time);
-		Gizmos.color = Color.magenta;
-		transform.position = position;
-		Gizmos.DrawLine(position, position + velocity);
+		PhotonNetwork.ConnectUsingSettings();
+		Camera.main.GetComponent<Rigidbody2D>().velocity = Vector2.right * 20;
 	}
+
+	public override void OnConnectedToMaster()
+	{
+		PhotonNetwork.JoinLobby();
+	}
+
+	public override void OnJoinedLobby()
+	{
+		PhotonNetwork.CreateRoom("test");
+	}
+
+	public override void OnJoinedRoom()
+	{
+		_referenceTime = (float) PhotonNetwork.Time;
+		Camera.main.GetComponent<Rigidbody2D>().velocity = Vector2.right * 20;
+	}
+
+	private void FixedUpdate()
+	{
+		if (!PhotonNetwork.InRoom) return;
+
+		// transform.position = new Vector3((float) (PhotonNetwork.Time - _referenceTime) * 20, 4000);
+		// transform.position = new Vector3(Time.timeSinceLevelLoad * 20, 4000);
+		transform.position = new Vector3(SynchronizedTimer.Instance.SynchronizedTime * 20, 4000);
+		// if (PhotonNetwork.CurrentRoom == null) return;
+		// (Vector2 position, Vector2 _) = TestOrbit.GetStateVectorAt((float) PhotonNetwork.Time);
+		// GetComponent<Rigidbody2D>().MovePosition(position);
+	}
+
+	// private void OnDrawGizmos()
+	// {
+	// 	(Vector2 position, Vector2 velocity) = TestOrbit.GetStateVectorAt(Time.time);
+	// 	Gizmos.color = Color.magenta;
+	// 	transform.position = position;
+	// 	Gizmos.DrawLine(position, position + velocity);
+	// }
 }
 }

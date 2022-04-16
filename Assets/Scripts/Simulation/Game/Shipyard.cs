@@ -145,8 +145,10 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	{
 		if (_orbit != null)
 		{
-			(Vector2 position, Vector2 _) = _orbit.GetStateVectorAt((float) PhotonNetwork.Time - _referenceTime);
-			_body.MovePosition(ParentBody.Body.position + position);
+			(Vector2 localPosition, Vector2 localVelocity) =
+				_orbit.GetStateVectorAt(SynchronizedTimer.Instance.SynchronizedTime);
+			transform.position = ParentBody.Body.position + localPosition;
+			_body.velocity = ParentBody.Body.velocity + localVelocity;
 		}
 	}
 

@@ -2603,6 +2603,7 @@ MonoBehaviour:
   ZoomAction: {fileID: -2696474880559036273, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   ZoomInterval: 0.25
   Scales:
+  - 0.005
   - 0.01
   - 0.02
   - 0.05
