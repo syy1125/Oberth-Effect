@@ -24,7 +24,7 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 	private Rigidbody2D _body;
 	private bool _isMine;
 
-	private bool _active;
+	public bool PropulsionActive { get; private set; }
 	private float _response;
 	private Dictionary<string, float> _resourceRequests;
 	private float _satisfaction;
@@ -60,7 +60,7 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 		var provider = GetComponentInParent<IControlConditionProvider>();
 		if (provider != null)
 		{
-			_active = provider.IsConditionTrue(_activationCondition);
+			PropulsionActive = provider.IsConditionTrue(_activationCondition);
 		}
 
 		StartCoroutine(LateFixedUpdate());
@@ -75,12 +75,13 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 
 	public void OnControlGroupsChanged(IControlConditionProvider provider)
 	{
-		_active = provider.IsConditionTrue(_activationCondition);
+		PropulsionActive = provider.IsConditionTrue(_activationCondition);
+		GetComponentInParent<IPropulsionBlockRegistry>()?.NotifyPropulsionBlockStateChange();
 	}
 
 	public void SetPropulsionCommands(InputCommand horizontal, InputCommand vertical, InputCommand rotate)
 	{
-		if (!_active)
+		if (!PropulsionActive)
 		{
 			_response = 0f;
 			return;

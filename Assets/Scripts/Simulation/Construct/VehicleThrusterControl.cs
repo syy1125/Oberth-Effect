@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Editor.PropertyDrawers;
 using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Pid;
 using Syy1125.OberthEffect.Simulation.Input;
 using UnityEngine;
@@ -33,6 +36,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	#endregion
 
 	private readonly List<IPropulsionBlock> _propulsionBlocks = new List<IPropulsionBlock>();
+	private float? _maxForwardThrust = null;
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
@@ -173,6 +177,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	public void RegisterBlock(IPropulsionBlock block)
 	{
 		_propulsionBlocks.Add(block);
+
+		InvalidateCache();
 	}
 
 	public void UnregisterBlock(IPropulsionBlock block)
@@ -182,6 +188,18 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		{
 			Debug.LogError($"Failed to remove propulsion block {block}");
 		}
+
+		InvalidateCache();
+	}
+
+	public void NotifyPropulsionBlockStateChange()
+	{
+		InvalidateCache();
+	}
+
+	private void InvalidateCache()
+	{
+		_maxForwardThrust = null;
 	}
 
 	#endregion
@@ -388,6 +406,29 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	private void OnControlModeChanged()
 	{
 		_rotationPid.Reset();
+	}
+
+	public float GetMaxForwardThrust()
+	{
+		if (_maxForwardThrust == null)
+		{
+			_maxForwardThrust = 0f;
+			foreach (
+				IPropulsionBlock propulsion in _propulsionBlocks.Where(
+					propulsion => propulsion.RespondToTranslation && propulsion.PropulsionActive
+				)
+			)
+			{
+				_maxForwardThrust +=
+					propulsion.GetMaxPropulsionForce(
+						CardinalDirectionUtils.InverseRotate(
+							CardinalDirection.Up, propulsion.GetComponent<BlockCore>().Rotation
+						)
+					);
+			}
+		}
+
+		return _maxForwardThrust.Value;
 	}
 }
 }

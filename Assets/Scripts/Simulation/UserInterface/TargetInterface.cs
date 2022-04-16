@@ -20,6 +20,8 @@ public class TargetInterface : MonoBehaviour
 	public Text TargetNameText;
 	public Text TargetInfoText;
 	public Transform RelativeVelocityDirection;
+	public Text BrakingBurnText;
+	public Text ClosestApproachText;
 	public HighlightTarget TargetLockHighlight;
 
 	[Header("Config")]
@@ -56,19 +58,49 @@ public class TargetInterface : MonoBehaviour
 
 		if (_target != null)
 		{
-			string targetName = _target.GetComponentInParent<ITargetLockInfoProvider>()?.GetName() ?? string.Empty;
-			float distance = Vector2.Distance(
-				WeaponControl.GetComponent<Rigidbody2D>().worldCenterOfMass,
-				_target.GetComponent<IGuidedWeaponTarget>().GetEffectivePosition()
-			);
-			Vector2 relativeVelocity = _target.GetComponent<IGuidedWeaponTarget>().GetEffectiveVelocity()
-			                           - WeaponControl.GetComponent<Rigidbody2D>().velocity;
+			Rigidbody2D vehicleBody = WeaponControl.GetComponent<Rigidbody2D>();
+			ITargetLockInfoProvider infoProvider = _target.GetComponent<ITargetLockInfoProvider>();
 
+			string targetName = infoProvider.GetName();
+			Vector2 relativePosition = infoProvider.GetPosition() - vehicleBody.worldCenterOfMass;
+			Vector2 relativeVelocity = infoProvider.GetVelocity() - vehicleBody.velocity;
 			TargetNameText.text = WeaponControl.TargetLock ? $"Target locked: {targetName}" : $"Target: {targetName}";
 			TargetInfoText.text =
-				$"Distance: {PhysicsUnitUtils.FormatDistance(distance)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity.magnitude)}";
+				$"Distance: {PhysicsUnitUtils.FormatDistance(relativePosition.magnitude)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity.magnitude)}";
 			RelativeVelocityDirection.rotation = Quaternion.LookRotation(Vector3.forward, relativeVelocity);
+			RelativeVelocityDirection.gameObject.SetActive(relativeVelocity.sqrMagnitude > 0.01f);
+
+			UpdateBrakingBurnDisplay(relativePosition, relativeVelocity);
 		}
+	}
+
+	private void UpdateBrakingBurnDisplay(Vector2 relativePosition, Vector2 relativeVelocity)
+	{
+		if (relativeVelocity.sqrMagnitude < 0.01f)
+		{
+			BrakingBurnText.text = "";
+			ClosestApproachText.text = "";
+			return;
+		}
+
+		float maxAcceleration = WeaponControl.GetComponent<VehicleThrusterControl>().GetMaxForwardThrust()
+		                        / WeaponControl.GetComponent<Rigidbody2D>().mass;
+
+		if (Mathf.Approximately(maxAcceleration, 0f))
+		{
+			BrakingBurnText.text = "";
+			ClosestApproachText.text = "";
+			return;
+		}
+
+		float brakingBurnTime = relativeVelocity.magnitude / maxAcceleration;
+		Vector2 closestApproach = Vector3.ProjectOnPlane(relativePosition, relativeVelocity);
+		float brakingBurnDistance = 0.5f * relativeVelocity.sqrMagnitude / maxAcceleration;
+		float brakingBurnCountdown = (Vector2.Distance(relativePosition, closestApproach) - brakingBurnDistance)
+		                             / relativeVelocity.magnitude;
+
+		BrakingBurnText.text = $"Est. braking burn of {brakingBurnTime:F1}s starting in {brakingBurnCountdown:F1}s";
+		ClosestApproachText.text = $"Closest approach {PhysicsUnitUtils.FormatDistance(closestApproach.magnitude)}";
 	}
 
 	private void UpdateTarget(int? targetId, bool targetLock)
@@ -98,8 +130,10 @@ public class TargetInterface : MonoBehaviour
 
 		if (WeaponControl.TargetLock)
 		{
-			TargetInfoText.fontStyle = FontStyle.Bold;
-			TargetNameText.fontStyle = FontStyle.Bold;
+			foreach (Text text in GetComponentsInChildren<Text>())
+			{
+				text.fontStyle = FontStyle.Bold;
+			}
 
 			foreach (Transform child in transform)
 			{
@@ -117,8 +151,10 @@ public class TargetInterface : MonoBehaviour
 		}
 		else
 		{
-			TargetNameText.fontStyle = FontStyle.Normal;
-			TargetInfoText.fontStyle = FontStyle.Normal;
+			foreach (Text text in GetComponentsInChildren<Text>())
+			{
+				text.fontStyle = FontStyle.Normal;
+			}
 
 			foreach (Transform child in transform)
 			{

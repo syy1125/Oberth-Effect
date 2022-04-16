@@ -25,7 +25,7 @@ public abstract class AbstractThrusterBase :
 	protected IBlockSoundAttenuator SoundAttenuator;
 	protected bool IsMine;
 
-	protected bool PropulsionActive;
+	public bool PropulsionActive { get; private set; }
 	protected Dictionary<string, float> ResourceRequests;
 	protected float Satisfaction;
 
@@ -74,6 +74,7 @@ public abstract class AbstractThrusterBase :
 	public void OnControlGroupsChanged(IControlConditionProvider provider)
 	{
 		PropulsionActive = provider.IsConditionTrue(ActivationCondition);
+		GetComponentInParent<IPropulsionBlockRegistry>()?.NotifyPropulsionBlockStateChange();
 	}
 
 	public void SetPropulsionCommands(InputCommand horizontal, InputCommand vertical, InputCommand rotate)
