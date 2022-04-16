@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Text;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +13,9 @@ namespace Syy1125.OberthEffect.Lobby.Multiplayer
 {
 public class PlayerPanel : MonoBehaviourPunCallbacks
 {
-	public Text PlayerName;
+	public TMP_Text PlayerName;
 	public Text PlayerStatus;
+	public Text ReadyStatus;
 
 	public Button KickButton;
 
@@ -69,10 +72,12 @@ public class PlayerPanel : MonoBehaviourPunCallbacks
 	{
 		bool ready = PhotonHelper.IsPlayerReady(Player);
 
-		StringBuilder playerNameBuilder = new StringBuilder(Player.NickName);
-		if (Player.IsMasterClient) playerNameBuilder.Append(" (Host)");
-		if (!ready) playerNameBuilder.Append(" (Not Ready)");
-		PlayerName.text = playerNameBuilder.ToString();
+		PlayerName.text = Player.NickName;
+
+		List<string> playerTags = new List<string>();
+		if (Player.IsMasterClient) playerTags.Add("Host");
+		if (!ready) playerTags.Add("Not Ready");
+		ReadyStatus.text = string.Join(", ", playerTags);
 
 		ReadyDisplay.CrossFadeColor(
 			ready ? ReadyColor : Color.white,
