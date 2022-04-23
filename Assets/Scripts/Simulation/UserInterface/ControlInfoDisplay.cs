@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -184,7 +183,7 @@ public class ControlInfoDisplay : MonoBehaviour
 			VehicleInertiaDampenerMode.Relative => "<color=\"lightblue\">RELATIVE</color>",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-			
+
 		return $"Inertia Dampener {inertiaDampenerStatus}";
 	}
 

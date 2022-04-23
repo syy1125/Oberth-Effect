@@ -67,10 +67,10 @@ public static class BuildScript
 				options = debug ? BuildOptions.Development : BuildOptions.None
 			}
 		);
-		
+
 		if (report.summary.result != BuildResult.Succeeded)
 		{
-			Debug.Log("Linux build id not succeed!");
+			Debug.Log("Linux build did not succeed!");
 		}
 	}
 }

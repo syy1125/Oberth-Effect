@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Database;

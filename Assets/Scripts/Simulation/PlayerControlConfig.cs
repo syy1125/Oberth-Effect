@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Init;
-using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Foundation.Enums;

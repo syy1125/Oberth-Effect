@@ -10,7 +10,6 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
-using Syy1125.OberthEffect.Simulation.UserInterface;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -190,7 +189,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	private void BeginRespawn()
 	{
 		Vehicle = null;
-		
+
 		_selfDestructStart = null;
 		_spawnTextTemplate = "Respawn in {0}";
 		_respawn = StartCoroutine(RespawnSequence());

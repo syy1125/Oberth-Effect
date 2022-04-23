@@ -1,8 +1,6 @@
-﻿using System;
-using Photon.Pun;
+﻿using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Simulation.Construct;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 
