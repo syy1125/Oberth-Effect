@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.Foundation;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
@@ -176,9 +177,14 @@ public class ControlInfoDisplay : MonoBehaviour
 
 	private static string GetInertiaDampenerText()
 	{
-		string inertiaDampenerStatus = PlayerControlConfig.Instance.InertiaDampenerActive
-			? "<color=\"cyan\">ON</color>"
-			: "<color=\"red\">OFF</color>";
+		string inertiaDampenerStatus = PlayerControlConfig.Instance.InertiaDampenerMode switch
+		{
+			VehicleInertiaDampenerMode.Disabled => "<color=\"yellow\">DISABLED</color>",
+			VehicleInertiaDampenerMode.ParentBody => "<color=\"lime\">PARENT BODY</color>",
+			VehicleInertiaDampenerMode.Relative => "<color=\"lightblue\">RELATIVE</color>",
+			_ => throw new ArgumentOutOfRangeException()
+		};
+			
 		return $"Inertia Dampener {inertiaDampenerStatus}";
 	}
 

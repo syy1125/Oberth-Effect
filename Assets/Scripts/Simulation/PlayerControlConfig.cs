@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Common.Init;
+using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.ControlGroup;
@@ -25,7 +27,7 @@ public class PlayerControlConfig : MonoBehaviour
 	public HeadsUpDisplayMode HudMode { get; private set; }
 	public UnityEvent HudModeChanged;
 
-	public bool InertiaDampenerActive { get; private set; }
+	public VehicleInertiaDampenerMode InertiaDampenerMode;
 	public UnityEvent InertiaDampenerChanged;
 
 	public VehicleControlMode ControlMode { get; private set; }
@@ -57,7 +59,7 @@ public class PlayerControlConfig : MonoBehaviour
 	private void OnEnable()
 	{
 		CycleHudModeAction.action.performed += CycleHudMode;
-		ToggleInertiaDampenerAction.action.performed += ToggleInertiaDampener;
+		ToggleInertiaDampenerAction.action.performed += CycleInertiaDampener;
 		CycleControlModeAction.action.performed += CycleControlMode;
 		InvertAimAction.action.performed += ToggleInvertAim;
 
@@ -83,7 +85,7 @@ public class PlayerControlConfig : MonoBehaviour
 		HudMode = HeadsUpDisplayMode.Standard;
 		HudModeChanged?.Invoke();
 
-		InertiaDampenerActive = false;
+		InertiaDampenerMode = VehicleInertiaDampenerMode.Disabled;
 		InertiaDampenerChanged?.Invoke();
 
 		ControlMode = VehicleSelection.SelectedVehicle.DefaultControlMode;
@@ -96,7 +98,7 @@ public class PlayerControlConfig : MonoBehaviour
 	private void OnDisable()
 	{
 		CycleHudModeAction.action.performed -= CycleHudMode;
-		ToggleInertiaDampenerAction.action.performed -= ToggleInertiaDampener;
+		ToggleInertiaDampenerAction.action.performed -= CycleInertiaDampener;
 		CycleControlModeAction.action.performed -= CycleControlMode;
 		InvertAimAction.action.performed -= ToggleInvertAim;
 
@@ -154,9 +156,15 @@ public class PlayerControlConfig : MonoBehaviour
 		HudModeChanged?.Invoke();
 	}
 
-	private void ToggleInertiaDampener(InputAction.CallbackContext context)
+	private void CycleInertiaDampener(InputAction.CallbackContext context)
 	{
-		InertiaDampenerActive = !InertiaDampenerActive;
+		InertiaDampenerMode = InertiaDampenerMode switch
+		{
+			VehicleInertiaDampenerMode.Disabled => VehicleInertiaDampenerMode.ParentBody,
+			VehicleInertiaDampenerMode.ParentBody => VehicleInertiaDampenerMode.Relative,
+			VehicleInertiaDampenerMode.Relative => VehicleInertiaDampenerMode.Disabled,
+			_ => throw new ArgumentOutOfRangeException()
+		};
 		InertiaDampenerChanged?.Invoke();
 	}
 

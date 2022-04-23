@@ -6,6 +6,7 @@ using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Components.UserInterface;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
+using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.UserInterface;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Database;

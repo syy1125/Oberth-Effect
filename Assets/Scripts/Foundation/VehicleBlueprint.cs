@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Foundation.Colors;
+using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Foundation

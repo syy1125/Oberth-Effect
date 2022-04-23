@@ -319,30 +319,53 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void ApplyInertiaDampener()
 	{
-		if (PlayerControlConfig.Instance.InertiaDampenerActive)
+		Vector2 localVelocity = _body.velocity;
+
+		switch (PlayerControlConfig.Instance.InertiaDampenerMode)
 		{
-			Vector2 velocity = _body.velocity;
+			case VehicleInertiaDampenerMode.Disabled:
+				localVelocity = Vector2.zero;
+				break;
+			case VehicleInertiaDampenerMode.ParentBody:
+				if (CelestialBody.CelestialBodies.Count > 0)
+				{
+					Vector2 parentVelocity = CelestialBody.CelestialBodies
+						.Select(
+							body => new
+							{
+								Velocity = body.GetEffectiveVelocity(SynchronizedTimer.Instance.SynchronizedTime),
+								Gravity = body.GravitationalParameter
+								          / (_body.worldCenterOfMass - (Vector2) body.transform.position).sqrMagnitude
+							}
+						)
+						.Aggregate((item, acc) => item.Gravity > acc.Gravity ? item : acc)
+						.Velocity;
+					localVelocity -= parentVelocity;
+				}
 
-			if (_weaponControl != null & _weaponControl.TargetLock)
-			{
-				velocity -= _weaponControl.CurrentTarget.GetEffectiveVelocity();
-			}
+				break;
+			case VehicleInertiaDampenerMode.Relative:
+				if (_weaponControl == null || !_weaponControl.TargetLock)
+				{
+					localVelocity = Vector2.zero;
+					break;
+				}
 
-			Vector2 localVelocity = transform.InverseTransformVector(velocity);
-
-			HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
-				? -localVelocity.x * InertiaDampenerStrength
-				: 0f;
-
-			VerticalCommand.AutoValue = Mathf.Approximately(VerticalCommand.PlayerValue, 0)
-				? -localVelocity.y * InertiaDampenerStrength
-				: 0f;
+				localVelocity -= _weaponControl.CurrentTarget.GetEffectiveVelocity();
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
-		else
-		{
-			HorizontalCommand.AutoValue = 0f;
-			VerticalCommand.AutoValue = 0f;
-		}
+
+		localVelocity = transform.InverseTransformVector(localVelocity);
+
+		HorizontalCommand.AutoValue = Mathf.Approximately(HorizontalCommand.PlayerValue, 0)
+			? -localVelocity.x * InertiaDampenerStrength
+			: 0f;
+
+		VerticalCommand.AutoValue = Mathf.Approximately(VerticalCommand.PlayerValue, 0)
+			? -localVelocity.y * InertiaDampenerStrength
+			: 0f;
 	}
 
 	private void NetAndClampCommands()
