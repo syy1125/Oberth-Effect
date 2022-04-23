@@ -40,8 +40,9 @@ public class ResourceDisplay : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		VehicleResourceManager resourceManager =
-			PlayerVehicleSpawner.Instance.Vehicle.GetComponent<VehicleResourceManager>();
+		VehicleResourceManager resourceManager = PlayerVehicleSpawner.Instance.Vehicle == null
+			? null
+			: PlayerVehicleSpawner.Instance.Vehicle.GetComponent<VehicleResourceManager>();
 
 		foreach (ResourceDisplayRow row in _rows)
 		{

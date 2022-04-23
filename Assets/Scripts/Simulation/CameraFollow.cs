@@ -32,6 +32,11 @@ public class CameraFollow : MonoBehaviour
 		StartCoroutine(LateFixedUpdate());
 	}
 
+	public void SetTarget(GameObject target)
+	{
+		Target = target.transform;
+	}
+
 	public void EnterInitMode()
 	{
 		_initTimer = InitTime;

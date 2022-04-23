@@ -12,25 +12,24 @@ using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Simulation.Game;
 using Syy1125.OberthEffect.Simulation.UserInterface;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Simulation
 {
+[Serializable]
+public class VehicleChangeEvent : UnityEvent<GameObject>
+{}
+
 public class PlayerVehicleSpawner : MonoBehaviour
 {
 	public static PlayerVehicleSpawner Instance { get; private set; }
-	
+
 	public float RespawnInterval = 5f;
 
 	[Header("References")]
 	public CameraFollow CameraRig;
-	public CameraFollow VehicleCamera;
-	public ResourceDisplay ResourceDisplay;
-	public BlockHealthBarControl HealthBarControl;
-	public Radar Radar;
-	public TargetInterface TargetInterface;
-	public AlertDisplay AlertDisplay;
 
 	public GameObject VehiclePrefab;
 
@@ -46,6 +45,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public Text SelfDestructDisplay;
 
 	public GameObject Vehicle { get; private set; }
+	public VehicleChangeEvent OnVehicleChanged = new VehicleChangeEvent();
 
 	private Coroutine _respawn;
 	private string _spawnTextTemplate;
@@ -149,18 +149,10 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		);
 
 		Vehicle.GetComponent<Rigidbody2D>().velocity = velocity;
-
-		CameraRig.Target = Vehicle.transform;
-		VehicleCamera.Target = Vehicle.transform;
-
-		HealthBarControl.SetTarget(Vehicle.GetComponent<VehicleCore>());
-		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
-		TargetInterface.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();
-		AlertDisplay.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();
-
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
-
 		ReferenceFrameProvider.MainReferenceFrame = Vehicle.GetComponent<ReferenceFrameProvider>();
+
+		OnVehicleChanged.Invoke(Vehicle);
 	}
 
 	private Tuple<Vector3, Quaternion, Vector2> GetSpawnConditions()
@@ -197,6 +189,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 	private void BeginRespawn()
 	{
+		Vehicle = null;
+		
 		_selfDestructStart = null;
 		_spawnTextTemplate = "Respawn in {0}";
 		_respawn = StartCoroutine(RespawnSequence());

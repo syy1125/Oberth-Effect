@@ -11,9 +11,6 @@ namespace Syy1125.OberthEffect.Simulation.UserInterface
 [RequireComponent(typeof(CanvasGroup))]
 public class TargetInterface : MonoBehaviour
 {
-	[NonSerialized]
-	public VehicleWeaponControl WeaponControl;
-
 	[Header("References")]
 	public CameraFollow CameraFollow;
 	public Image Frame;
@@ -45,36 +42,40 @@ public class TargetInterface : MonoBehaviour
 
 	private void Update()
 	{
-		if (WeaponControl == null || !WeaponControl.isActiveAndEnabled)
+		GameObject vehicle = PlayerVehicleSpawner.Instance.Vehicle;
+
+		if (vehicle == null)
 		{
 			UpdateTarget(null, false);
 			return;
 		}
 
-		if (WeaponControl.TargetPhotonViewId != _targetId || WeaponControl.TargetLock != _targetLock)
+		VehicleWeaponControl weaponControl = PlayerVehicleSpawner.Instance.Vehicle.GetComponent<VehicleWeaponControl>();
+
+		if (weaponControl.TargetPhotonViewId != _targetId || weaponControl.TargetLock != _targetLock)
 		{
-			UpdateTarget(WeaponControl.TargetPhotonViewId, WeaponControl.TargetLock);
+			UpdateTarget(weaponControl.TargetPhotonViewId, weaponControl.TargetLock);
 		}
 
 		if (_target != null)
 		{
-			Rigidbody2D vehicleBody = WeaponControl.GetComponent<Rigidbody2D>();
+			Rigidbody2D vehicleBody = weaponControl.GetComponent<Rigidbody2D>();
 			ITargetLockInfoProvider infoProvider = _target.GetComponent<ITargetLockInfoProvider>();
 
 			string targetName = infoProvider.GetName();
 			Vector2 relativePosition = infoProvider.GetPosition() - vehicleBody.worldCenterOfMass;
 			Vector2 relativeVelocity = infoProvider.GetVelocity() - vehicleBody.velocity;
-			TargetNameText.text = WeaponControl.TargetLock ? $"Target locked: {targetName}" : $"Target: {targetName}";
+			TargetNameText.text = weaponControl.TargetLock ? $"Target locked: {targetName}" : $"Target: {targetName}";
 			TargetInfoText.text =
 				$"Distance: {PhysicsUnitUtils.FormatDistance(relativePosition.magnitude)}, RVel: {PhysicsUnitUtils.FormatSpeed(relativeVelocity.magnitude)}";
 			RelativeVelocityDirection.rotation = Quaternion.LookRotation(Vector3.forward, relativeVelocity);
 			RelativeVelocityDirection.gameObject.SetActive(relativeVelocity.sqrMagnitude > 0.01f);
 
-			UpdateBrakingBurnDisplay(relativePosition, relativeVelocity);
+			UpdateBrakingBurnDisplay(vehicle, relativePosition, relativeVelocity);
 		}
 	}
 
-	private void UpdateBrakingBurnDisplay(Vector2 relativePosition, Vector2 relativeVelocity)
+	private void UpdateBrakingBurnDisplay(GameObject vehicle, Vector2 relativePosition, Vector2 relativeVelocity)
 	{
 		if (relativeVelocity.sqrMagnitude < 0.01f)
 		{
@@ -83,8 +84,8 @@ public class TargetInterface : MonoBehaviour
 			return;
 		}
 
-		float maxAcceleration = WeaponControl.GetComponent<VehicleThrusterControl>().GetMaxForwardThrust()
-		                        / WeaponControl.GetComponent<Rigidbody2D>().mass;
+		float maxAcceleration = vehicle.GetComponent<VehicleThrusterControl>().GetMaxForwardThrust()
+		                        / vehicle.GetComponent<Rigidbody2D>().mass;
 
 		if (Mathf.Approximately(maxAcceleration, 0f))
 		{
@@ -128,7 +129,7 @@ public class TargetInterface : MonoBehaviour
 		TargetLockHighlight.Target = _target.transform;
 		TargetLockHighlight.gameObject.SetActive(true);
 
-		if (WeaponControl.TargetLock)
+		if (targetLock)
 		{
 			foreach (Text text in GetComponentsInChildren<Text>())
 			{

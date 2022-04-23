@@ -18,27 +18,6 @@ public class AlertDisplay : MonoBehaviour
 
 	private VehicleWeaponControl _weaponControl;
 
-	public VehicleWeaponControl WeaponControl
-	{
-		get => _weaponControl;
-		set
-		{
-			if (_weaponControl == value) return;
-
-			if (_weaponControl != null)
-			{
-				_weaponControl.OnIncomingMissileAdded.RemoveListener(AlertMissileLaunch);
-			}
-
-			_weaponControl = value;
-
-			if (_weaponControl != null)
-			{
-				_weaponControl.OnIncomingMissileAdded.AddListener(AlertMissileLaunch);
-			}
-		}
-	}
-
 	public Text MissileCountDisplay;
 	public Text MissileTimerDisplay;
 	public AudioSource AlertAudio;
@@ -54,11 +33,19 @@ public class AlertDisplay : MonoBehaviour
 		_missileMarkers = new Dictionary<Missile, GameObject>();
 	}
 
-	private void AlertMissileLaunch()
+	public void SetVehicle(GameObject vehicle)
 	{
-		if (_alertState == AlertState.Idle && !AlertAudio.isPlaying)
+		if (_weaponControl != null)
 		{
-			AlertAudio.Play();
+			_weaponControl.OnIncomingMissileAdded.RemoveListener(AlertMissileLaunch);
+		}
+
+		_weaponControl = null;
+
+		if (vehicle != null)
+		{
+			_weaponControl = vehicle.GetComponent<VehicleWeaponControl>();
+			_weaponControl.OnIncomingMissileAdded.AddListener(AlertMissileLaunch);
 		}
 	}
 
@@ -68,9 +55,17 @@ public class AlertDisplay : MonoBehaviour
 		UpdateMissileAlertSound();
 	}
 
+	private void AlertMissileLaunch()
+	{
+		if (_alertState == AlertState.Idle && !AlertAudio.isPlaying)
+		{
+			AlertAudio.Play();
+		}
+	}
+
 	private void UpdateMissileDisplay()
 	{
-		if (WeaponControl == null || !WeaponControl.isActiveAndEnabled || WeaponControl.IncomingMissiles.Count == 0)
+		if (_weaponControl == null || !_weaponControl.isActiveAndEnabled || _weaponControl.IncomingMissiles.Count == 0)
 		{
 			MissileCountDisplay.gameObject.SetActive(false);
 			MissileTimerDisplay.gameObject.SetActive(false);
@@ -89,13 +84,13 @@ public class AlertDisplay : MonoBehaviour
 		Color textColor = Time.unscaledTime % 1 >= 0.5f ? Color.red : Color.white;
 
 		MissileCountDisplay.gameObject.SetActive(true);
-		MissileCountDisplay.text = WeaponControl.IncomingMissiles.Count > 1
-			? $"< {WeaponControl.IncomingMissiles.Count} Incoming Missiles >"
+		MissileCountDisplay.text = _weaponControl.IncomingMissiles.Count > 1
+			? $"< {_weaponControl.IncomingMissiles.Count} Incoming Missiles >"
 			: "< Incoming Missile >";
 		MissileCountDisplay.color = textColor;
 
 		// Use HashSet for efficient removal when calculating missile markers
-		HashSet<Missile> missiles = new HashSet<Missile>(WeaponControl.IncomingMissiles);
+		HashSet<Missile> missiles = new HashSet<Missile>(_weaponControl.IncomingMissiles);
 		float? minTime = missiles.Select(missile => missile.GetHitTime())
 			.Where(hitTime => hitTime != null && hitTime > 0f)
 			.Min();

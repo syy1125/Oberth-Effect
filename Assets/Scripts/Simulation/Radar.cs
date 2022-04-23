@@ -12,7 +12,6 @@ namespace Syy1125.OberthEffect.Simulation
 {
 public class Radar : MonoBehaviour
 {
-	public Rigidbody2D OwnVehicle;
 	public GameObject RadarPingPrefab;
 	public Sprite ShipyardPingSprite;
 	public Sprite CelestialBodyPingSprite;
@@ -47,11 +46,17 @@ public class Radar : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (OwnVehicle == null) return;
-
 		UpdateScale();
 		UpdateRuler();
-		UpdatePings();
+
+		if (PlayerVehicleSpawner.Instance.Vehicle == null)
+		{
+			HidePings();
+			return;
+		}
+
+		Rigidbody2D vehicleBody = PlayerVehicleSpawner.Instance.Vehicle.GetComponent<Rigidbody2D>();
+		UpdatePings(vehicleBody);
 	}
 
 	private void UpdateScale()
@@ -109,10 +114,18 @@ public class Radar : MonoBehaviour
 		RulerText.text = PhysicsUnitUtils.FormatDistance(_rulerUnit);
 	}
 
-	private void UpdatePings()
+	private void HidePings()
+	{
+		foreach (GameObject ping in _pings)
+		{
+			ping.SetActive(false);
+		}
+	}
+
+	private void UpdatePings(Rigidbody2D vehicleBody)
 	{
 		int i = 0;
-		Vector2 centerOfMass = OwnVehicle.worldCenterOfMass;
+		Vector2 centerOfMass = vehicleBody.worldCenterOfMass;
 
 		foreach (Shipyard shipyard in Shipyard.ActiveShipyards.Values)
 		{

@@ -70,7 +70,7 @@ public class BlockHealthBarControl : MonoBehaviour
 		DisplayModeChanged.Invoke();
 	}
 
-	public void SetTarget(VehicleCore target)
+	public void SetTargetVehicle(GameObject target)
 	{
 		if (_target != null)
 		{
@@ -82,8 +82,12 @@ public class BlockHealthBarControl : MonoBehaviour
 			_healthBars.Clear();
 		}
 
-		_target = target;
-		_target.AfterLoad(SpawnHealthBars);
+		_target = target.GetComponent<VehicleCore>();
+
+		if (_target != null)
+		{
+			_target.AfterLoad(SpawnHealthBars);
+		}
 	}
 
 	private void SpawnHealthBars()
