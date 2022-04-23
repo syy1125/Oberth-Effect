@@ -19,6 +19,8 @@ namespace Syy1125.OberthEffect.Simulation
 {
 public class PlayerVehicleSpawner : MonoBehaviour
 {
+	public static PlayerVehicleSpawner Instance { get; private set; }
+	
 	public float RespawnInterval = 5f;
 
 	[Header("References")]
@@ -48,6 +50,19 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	private Coroutine _respawn;
 	private string _spawnTextTemplate;
 	private float? _selfDestructStart;
+
+	private void Awake()
+	{
+		if (Instance == null)
+		{
+			Instance = this;
+		}
+		else if (Instance != this)
+		{
+			Debug.LogError("Multiple PlayerVehicleSpawner were instantiated");
+			Destroy(this);
+		}
+	}
 
 	private void OnEnable()
 	{
@@ -105,6 +120,14 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		}
 	}
 
+	private void OnDestroy()
+	{
+		if (Instance == this)
+		{
+			Instance = null;
+		}
+	}
+
 	private void SpawnVehicle()
 	{
 		(Vector3 spawnPosition, Quaternion spawnRotation, Vector2 velocity) = GetSpawnConditions();
@@ -130,7 +153,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		CameraRig.Target = Vehicle.transform;
 		VehicleCamera.Target = Vehicle.transform;
 
-		ResourceDisplay.ResourceManager = Vehicle.GetComponent<VehicleResourceManager>();
 		HealthBarControl.SetTarget(Vehicle.GetComponent<VehicleCore>());
 		Radar.OwnVehicle = Vehicle.GetComponent<Rigidbody2D>();
 		TargetInterface.WeaponControl = Vehicle.GetComponent<VehicleWeaponControl>();

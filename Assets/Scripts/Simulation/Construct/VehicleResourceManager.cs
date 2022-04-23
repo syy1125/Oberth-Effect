@@ -23,6 +23,7 @@ public class VehicleResourceManager :
 	private Dictionary<string, float> _resourceCapacities;
 
 	private List<IResourceGenerator> _generatorBlocks;
+	private Dictionary<string, float> _generationRate;
 	private Dictionary<string, float> _currentResources;
 
 	private List<IResourceConsumer> _consumerBlocks;
@@ -38,6 +39,7 @@ public class VehicleResourceManager :
 		_resourceCapacities = new Dictionary<string, float>();
 
 		_generatorBlocks = new List<IResourceGenerator>();
+		_generationRate = new Dictionary<string, float>();
 		_currentResources = new Dictionary<string, float>();
 
 		_consumerBlocks = new List<IResourceConsumer>();
@@ -134,15 +136,15 @@ public class VehicleResourceManager :
 
 	private void GenerateResources()
 	{
+		_generationRate.Clear();
 		DictionaryUtils.SumDictionaries(
 			_generatorBlocks
-				.Select(
-					generator => generator.GetGenerationRate()?.ToDictionary(
-						pair => pair.Key,
-						pair => pair.Value * Time.fixedDeltaTime
-					)
-				)
+				.Select(generator => generator.GetGenerationRate())
 				.Where(dict => dict != null && dict.Count > 0),
+			_generationRate
+		);
+		DictionaryUtils.AddDictionary(
+			_generationRate.ToDictionary(entry => entry.Key, entry => entry.Value * Time.fixedDeltaTime),
 			_currentResources
 		);
 	}
@@ -252,25 +254,25 @@ public class VehicleResourceManager :
 	{
 		public float CurrentAmount;
 		public float StorageCapacity;
+		public float GenerationRate;
+		public float ConsumptionRequestRate;
 		public float Satisfaction;
 	}
 
 	// Returns null if the vehicle is not capable of holding the specified resource
 	public ResourceStatus GetResourceStatus(string resource)
 	{
-		if (_resourceCapacities.TryGetValue(resource, out float capacity))
+		if (!_resourceCapacities.TryGetValue(resource, out float capacity)) return null;
+
+		return new ResourceStatus
 		{
-			return new ResourceStatus
-			{
-				CurrentAmount = _currentResources.TryGetValue(resource, out float stored) ? stored : 0f,
-				StorageCapacity = capacity,
-				Satisfaction = _resourceSatisfaction.TryGetValue(resource, out float satisfaction) ? satisfaction : 1f
-			};
-		}
-		else
-		{
-			return null;
-		}
+			CurrentAmount = _currentResources.TryGetValue(resource, out float stored) ? stored : 0f,
+			StorageCapacity = capacity,
+			GenerationRate = _generationRate.TryGetValue(resource, out float generation) ? generation : 0f,
+			ConsumptionRequestRate =
+				_resourceRequestRate.TryGetValue(resource, out float consumption) ? consumption : 0f,
+			Satisfaction = _resourceSatisfaction.TryGetValue(resource, out float satisfaction) ? satisfaction : 1f
+		};
 	}
 
 	public void AddResources(IReadOnlyDictionary<string, float> amount)

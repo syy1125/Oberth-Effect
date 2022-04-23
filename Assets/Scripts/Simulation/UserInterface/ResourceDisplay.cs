@@ -12,14 +12,11 @@ public class ResourceDisplay : MonoBehaviour
 
 	public string[] DisplayResources;
 
-	[NonSerialized]
-	public VehicleResourceManager ResourceManager;
-
-	private Dictionary<string, ResourceDisplayRow> _rows;
+	private List<ResourceDisplayRow> _rows;
 
 	private void Awake()
 	{
-		_rows = new Dictionary<string, ResourceDisplayRow>();
+		_rows = new List<ResourceDisplayRow>();
 
 		foreach (string resourceId in DisplayResources)
 		{
@@ -32,63 +29,23 @@ public class ResourceDisplay : MonoBehaviour
 			var row = Instantiate(ResourceRowPrefab, transform).GetComponent<ResourceDisplayRow>();
 			var spec = VehicleResourceDatabase.Instance.GetResourceSpec(resourceId).Spec;
 
+			row.ResourceId = resourceId;
 			row.ShortName.text = spec.ShortName;
 			row.ShortName.color = spec.GetDisplayColor();
 			row.FillBar.color = spec.GetDisplayColor();
 
-			_rows.Add(resourceId, row);
+			_rows.Add(row);
 		}
 	}
 
 	private void LateUpdate()
 	{
-		if (ResourceManager != null)
+		VehicleResourceManager resourceManager =
+			PlayerVehicleSpawner.Instance.Vehicle.GetComponent<VehicleResourceManager>();
+
+		foreach (ResourceDisplayRow row in _rows)
 		{
-			foreach (KeyValuePair<string, ResourceDisplayRow> entry in _rows)
-			{
-				ResourceDisplayRow row = entry.Value;
-				var resourceStatus = ResourceManager.GetResourceStatus(entry.Key);
-
-				if (resourceStatus == null)
-				{
-					row.FillBar.fillAmount = 0f;
-					row.FillPercent.text = "N/A";
-					row.WarningIcon.SetActive(false);
-					row.ErrorIcon.SetActive(false);
-					row.EfficiencyDisplay.gameObject.SetActive(false);
-				}
-				else
-				{
-					float fillAmount = resourceStatus.CurrentAmount / resourceStatus.StorageCapacity;
-					row.FillBar.fillAmount = fillAmount;
-					row.FillPercent.text = $"{fillAmount * 100:F1}%";
-
-					if (Mathf.Approximately(resourceStatus.Satisfaction, 1f))
-					{
-						row.WarningIcon.SetActive(false);
-						row.ErrorIcon.SetActive(false);
-						row.EfficiencyDisplay.gameObject.SetActive(false);
-					}
-					else
-					{
-						row.EfficiencyDisplay.gameObject.SetActive(true);
-						row.EfficiencyDisplay.text = $"({resourceStatus.Satisfaction:0%} eff.)";
-
-						if (resourceStatus.Satisfaction >= 0.5f)
-						{
-							row.WarningIcon.SetActive(true);
-							row.ErrorIcon.SetActive(false);
-							row.EfficiencyDisplay.color = new Color(1f, 0.5f, 0f);
-						}
-						else
-						{
-							row.WarningIcon.SetActive(false);
-							row.ErrorIcon.SetActive(true);
-							row.EfficiencyDisplay.color = Color.red;
-						}
-					}
-				}
-			}
+			row.UpdateFrom(resourceManager);
 		}
 	}
 }
