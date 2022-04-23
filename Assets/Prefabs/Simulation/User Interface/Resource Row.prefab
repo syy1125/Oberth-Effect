@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 6965628574863563090}
   - component: {fileID: 8079241826939557767}
   - component: {fileID: 2154906950884741268}
+  - component: {fileID: 4217774898056863459}
   m_Layer: 5
   m_Name: Efficiency
   m_TagString: Untagged
@@ -196,6 +197,21 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4217774898056863459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5346955583882356612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &7110796840275177472
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,7 +444,8 @@ MonoBehaviour:
   WarningIcon: {fileID: 1472347091485694753}
   ErrorIcon: {fileID: 7110796840275177472}
   EfficiencyDisplay: {fileID: 8079241826939557767}
-  DampRate: 4
+  DampRate: 8
+  TimeEpsilon: 0.05
   RateEpsilon: 0.001
 --- !u!114 &1613100210030278947
 MonoBehaviour:
@@ -665,6 +682,7 @@ GameObject:
   - component: {fileID: 8614274827505851087}
   - component: {fileID: 8614274827505851084}
   - component: {fileID: 250916545207961763}
+  - component: {fileID: 2262265978724853145}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -753,3 +771,18 @@ MonoBehaviour:
   m_FlexibleWidth: 0
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2262265978724853145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8614274827505851082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1

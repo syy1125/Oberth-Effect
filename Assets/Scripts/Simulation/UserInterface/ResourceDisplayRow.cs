@@ -20,6 +20,7 @@ public class ResourceDisplayRow : MonoBehaviour
 
 	[Header("Configuration")]
 	public float DampRate = 4f;
+	public float TimeEpsilon = 1e-2f;
 	public float RateEpsilon = 1e-3f;
 
 	private float _displayChangeRate;
@@ -64,8 +65,8 @@ public class ResourceDisplayRow : MonoBehaviour
 				float fillTime = (resourceStatus.StorageCapacity - resourceStatus.CurrentAmount) / _displayChangeRate;
 				WarningIcon.SetActive(false);
 				ErrorIcon.SetActive(false);
-				EfficiencyDisplay.text = $"(+{fillTime:F1}s)";
-				EfficiencyDisplay.color = Color.white;
+				EfficiencyDisplay.text = fillTime < TimeEpsilon ? "" : $"(+{fillTime:F1}s)";
+				EfficiencyDisplay.color = Color.green;
 			}
 			else // _displayChangeRate < 0f
 			{
@@ -73,7 +74,7 @@ public class ResourceDisplayRow : MonoBehaviour
 				WarningIcon.SetActive(emptyTime < 5);
 				ErrorIcon.SetActive(false);
 				EfficiencyDisplay.text = $"(-{emptyTime:F1}s)";
-				EfficiencyDisplay.color = WarningIcon.activeSelf ? new Color(1f, 0.5f, 0f) : Color.white;
+				EfficiencyDisplay.color = WarningIcon.activeSelf ? new Color(1f, 0.5f, 0f) : Color.yellow;
 			}
 		}
 		else
