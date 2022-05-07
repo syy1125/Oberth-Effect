@@ -19,7 +19,9 @@ public class DesignerGridMove : MonoBehaviour
 
 	private Vector2? _dragHandle;
 	public bool Dragging => _dragHandle != null;
-	private float _zoomExponent;
+	private float _targetZoomExponent;
+	private float _currentZoomExponent;
+	private float _zoomVelocity;
 
 	private void Awake()
 	{
@@ -55,7 +57,8 @@ public class DesignerGridMove : MonoBehaviour
 		_dragHandle = null;
 		Vector3 areaCenter = AreaMask.GetComponent<RectTransform>().position;
 		transform.position = new Vector3(areaCenter.x, areaCenter.y, transform.position.z);
-		_zoomExponent = 0f;
+		_targetZoomExponent = 0f;
+		_currentZoomExponent = 0f;
 		transform.localScale = Vector3.one;
 	}
 
@@ -91,14 +94,19 @@ public class DesignerGridMove : MonoBehaviour
 	private void UpdateZoom()
 	{
 		var scroll = ZoomAction.action.ReadValue<float>();
-
+		
 		if (AreaMask.Hovering && !Mathf.Approximately(scroll, 0f))
 		{
+			_targetZoomExponent = Mathf.Clamp(_targetZoomExponent + scroll / 10f, -2f, 1f);
+		}
+		
+		float zoomExponent = Mathf.SmoothDamp(_currentZoomExponent, _targetZoomExponent, ref _zoomVelocity, 0.1f);
+		
+		if (!Mathf.Approximately(zoomExponent, _currentZoomExponent))
+		{
+			_currentZoomExponent = zoomExponent;
 			Vector2 oldLocalPosition = GetLocalMousePosition();
-
-			_zoomExponent = Mathf.Clamp(_zoomExponent + scroll / 10f, -2f, 1f);
-			transform.localScale = Vector3.one * Mathf.Exp(_zoomExponent);
-
+			transform.localScale = Vector3.one * Mathf.Exp(_currentZoomExponent);
 			Vector2 newLocalPosition = GetLocalMousePosition();
 			transform.Translate(newLocalPosition - oldLocalPosition);
 		}
