@@ -70,9 +70,14 @@ public class BlockPalette : MonoBehaviour
 		SelectCursor();
 	}
 
-	public void SetSelectedCategory(string category)
+	/// <summary>
+	/// Set palette to show only blocks from a given category.
+	/// An empty category id is interpreted to mean all blocks.
+	/// Mutually exclusive with using a search term.
+	/// </summary>
+	public void SetSelectedCategory(string categoryId)
 	{
-		if (string.IsNullOrEmpty(category))
+		if (string.IsNullOrEmpty(categoryId))
 		{
 			foreach (BlockButton button in _buttons.Values)
 			{
@@ -84,16 +89,37 @@ public class BlockPalette : MonoBehaviour
 			foreach (KeyValuePair<string, BlockButton> entry in _buttons)
 			{
 				BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(entry.Key);
-				entry.Value.gameObject.SetActive(blockSpec.CategoryId == category);
+				entry.Value.gameObject.SetActive(blockSpec.CategoryId == categoryId);
 			}
 
 			if (CurrentSelection is BlockSelection blockSelection)
 			{
 				BlockSpec selectedSpec = BlockDatabase.Instance.GetBlockSpec(blockSelection.BlockId);
-				if (selectedSpec.CategoryId != category)
+				if (selectedSpec.CategoryId != categoryId)
 				{
 					SetSelection(CursorSelection.Instance);
 				}
+			}
+		}
+	}
+
+	public void SetSearchString(string search)
+	{
+		if (string.IsNullOrWhiteSpace(search))
+		{
+			foreach (BlockButton button in _buttons.Values)
+			{
+				button.gameObject.SetActive(true);
+			}
+		}
+		else
+		{
+			BlockPaletteSearch paletteSearch = new BlockPaletteSearch(search);
+			
+			foreach (KeyValuePair<string, BlockButton> entry in _buttons)
+			{
+				BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(entry.Key);
+				entry.Value.gameObject.SetActive(paletteSearch.Match(blockSpec));
 			}
 		}
 	}

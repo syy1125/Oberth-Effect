@@ -62,6 +62,11 @@ public class BlockDatabase : MonoBehaviour, IGameContentDatabase
 		return blockId != null && _specs.ContainsKey(blockId);
 	}
 
+	public SpecInstance<BlockSpec> GetBlockSpecInstance(string blockId)
+	{
+		return _specs.TryGetValue(blockId, out SpecInstance<BlockSpec> instance) ? instance : default;
+	}
+
 	public BlockSpec GetBlockSpec(string blockId)
 	{
 		return _specs.TryGetValue(blockId, out SpecInstance<BlockSpec> instance) ? instance.Spec : null;

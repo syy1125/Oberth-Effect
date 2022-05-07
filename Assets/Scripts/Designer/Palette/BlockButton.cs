@@ -37,7 +37,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	private BlockPalette _controller;
 	private Image _image;
-	private Tooltip _tooltip;
+	public Tooltip TooltipProvider { get; private set; }
 	private bool _hover;
 
 	private RenderTexture _rt;
@@ -48,7 +48,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	{
 		_controller = GetComponentInParent<BlockPalette>();
 		_image = GetComponent<Image>();
-		_tooltip = GetComponent<Tooltip>();
+		TooltipProvider = GetComponent<Tooltip>();
 		GetComponent<Button>().onClick.AddListener(SelectBlock);
 	}
 
@@ -110,7 +110,7 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		LayerUtils.SetLayerRecursively(previewObject, BlockRenderLayer);
 
 		string tooltip = TooltipProviderUtils.CombineTooltips(previewObject);
-		_tooltip.SetTooltip(tooltip);
+		TooltipProvider.SetTooltip(tooltip);
 	}
 
 	private void SelectBlock()

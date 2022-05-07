@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Syy1125.OberthEffect.Designer.Palette;
 using Syy1125.OberthEffect.Lib.Utils;
 using UnityEngine;
 
@@ -26,25 +27,15 @@ public class Playground : MonoBehaviour
 
 	private void Start()
 	{
-		int counter = 0;
-
-		IEnumerable<int> merged = new List<int[]>
-		{
-			RandArray(),
-			RandArray(),
-			RandArray(),
-			RandArray()
-		}.MergeSorted(
-			item =>
-			{
-				counter++;
-				return item;
-			}
-		);
-
-		Debug.Log(string.Join(" ", merged));
-
-		Debug.Log($"Key count {counter}");
+		Debug.Log(new BlockPaletteSearch("hello world"));
+		Debug.Log(new BlockPaletteSearch("hello|world"));
+		Debug.Log(new BlockPaletteSearch("#hello|world"));
+		Debug.Log(new BlockPaletteSearch("hello#world"));
+		Debug.Log(new BlockPaletteSearch("this #is &a # complicated | filter"));
+		Debug.Log(new BlockPaletteSearch("what && happens |&| in a bad ##$ state?"));
+		Debug.Log(new BlockPaletteSearch("escape\\ space or \\&op or \\#tag"));
+		Debug.Log(new BlockPaletteSearch("unpaired)closing"));
+		Debug.Log(new BlockPaletteSearch("unpaired(opening paren"));
 	}
 }
 }

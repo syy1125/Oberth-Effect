@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using Syy1125.OberthEffect.Spec.Database;
+﻿using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Palette
@@ -10,9 +10,9 @@ public class PaletteControls : MonoBehaviour
 	public BlockPalette Palette;
 	public Transform BlockCategoryParent;
 	public GameObject BlockCategoryButtonPrefab;
+	public InputField SearchInput;
+	public Button ClearSearchButton;
 	public float HighlightFadeTime = 0.2f;
-
-	public RectTransform BlockButtonFrame;
 
 	private string _selectedCategoryId;
 	private bool _started;
@@ -22,10 +22,11 @@ public class PaletteControls : MonoBehaviour
 		if (_started)
 		{
 			SetCategoryId(_selectedCategoryId, true);
+			if (!string.IsNullOrWhiteSpace(SearchInput.text)) SetSearchString(SearchInput.text);
 		}
 	}
 
-	private IEnumerator Start()
+	private void Start()
 	{
 		foreach (var category in BlockDatabase.Instance.ListCategories())
 		{
@@ -46,41 +47,48 @@ public class PaletteControls : MonoBehaviour
 		}
 
 		SetCategoryId("");
-		LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
 
-		// Give layout controller a tick to arrange things
-		yield return null;
-
-		float height = 0f;
-
-		foreach (Transform child in transform)
-		{
-			var layoutElement = child.GetComponent<ILayoutElement>();
-
-			if (layoutElement != null)
-			{
-				height += layoutElement.preferredHeight;
-			}
-		}
-
-		GetComponent<RectTransform>().offsetMin = new Vector2(0f, -height);
-		BlockButtonFrame.offsetMax = new Vector2(0f, -height);
+		SearchInput.onValueChanged.AddListener(SetSearchString);
+		ClearSearchButton.onClick.AddListener(ClearSearchString);
+		ClearSearchButton.interactable = false;
 
 		_started = true;
 	}
 
-	public void SetCategoryId(string value, bool immediate = false)
+	public void SetCategoryId(string value, bool skipAnimate = false)
 	{
 		_selectedCategoryId = value;
+
+		float fadeTime = skipAnimate ? 0f : HighlightFadeTime;
 
 		foreach (BlockCategoryButton button in GetComponentsInChildren<BlockCategoryButton>())
 		{
 			button.SelectHighlight.CrossFadeAlpha(
-				button.BlockCategoryId == _selectedCategoryId ? 1f : 0f, immediate ? 0f : HighlightFadeTime, true
+				button.BlockCategoryId == _selectedCategoryId ? 1f : 0f, fadeTime, true
 			);
 		}
 
 		Palette.SetSelectedCategory(_selectedCategoryId);
+	}
+
+	private void SetSearchString(string search)
+	{
+		if (!string.IsNullOrWhiteSpace(search))
+		{
+			ClearSearchButton.interactable = true;
+			SetCategoryId("");
+			Palette.SetSearchString(search);
+		}
+		else
+		{
+			ClearSearchButton.interactable = false;
+			Palette.SetSelectedCategory(_selectedCategoryId);
+		}
+	}
+
+	private void ClearSearchString()
+	{
+		SearchInput.text = "";
 	}
 }
 }
