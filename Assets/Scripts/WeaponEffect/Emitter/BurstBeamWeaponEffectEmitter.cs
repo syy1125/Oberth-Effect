@@ -240,7 +240,7 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 			}
 		}
 
-		_visual.UpdateState(true, localEnd, normal);
+		_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
 
 		if (isMine && damageThisTick > Mathf.Epsilon)
 		{
