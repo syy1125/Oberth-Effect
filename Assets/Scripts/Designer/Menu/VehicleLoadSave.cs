@@ -42,11 +42,11 @@ public class VehicleLoadSave : MonoBehaviour, IModal
 			{
 				VehicleList.SelectName(vehicleName);
 				FileNameInput.text = vehicleName;
-				FileNameInput.interactable = true;
+				SaveLoadButton.interactable = true;
 			}
 			else
 			{
-				FileNameInput.interactable = false;
+				SaveLoadButton.interactable = false;
 			}
 
 			FileNameInput.onValueChanged.AddListener(HandleFileNameChange);

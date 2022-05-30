@@ -243,7 +243,10 @@ public class VehicleSelectionList : MonoBehaviour
 		if (_vehicles != null && _vehicles.Count > 0)
 		{
 			int index = _vehicles.FindIndex(item => item.Blueprint.Name == vehicleName);
-			SelectIndex(index);
+			if (index >= 0)
+			{
+				SelectIndex(index);
+			}
 		}
 		else
 		{
