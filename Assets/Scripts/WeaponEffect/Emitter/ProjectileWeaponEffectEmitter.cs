@@ -128,6 +128,11 @@ public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 				$"    Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(MaxRange)}"
 			);
 
+		if (AimCorrection > Mathf.Epsilon)
+		{
+			builder.AppendLine($"    {AimCorrection}° aim correction");
+		}
+
 		if (_projectileConfig.IsPointDefenseTarget)
 		{
 			builder.AppendLine(

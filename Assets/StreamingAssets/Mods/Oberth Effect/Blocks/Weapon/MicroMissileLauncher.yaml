@@ -8,6 +8,7 @@ Info:
   Description: |
     The Micro Missile Launcher is designed to be a harrasement weapon, with limited range and damage.
     They are effective against lightly armored targets as well as incoming projectiles, but struggle against hardened vehicles.
+    <i>Not the bees!</i>
 Renderers:
   - TextureId: OberthEffect/MicroMissileLauncher
 Construction:
