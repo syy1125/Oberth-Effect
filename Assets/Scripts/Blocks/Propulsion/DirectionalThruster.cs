@@ -39,7 +39,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 			if (spec.ThrustSound != null)
 			{
 				_thrustSoundId = spec.ThrustSound.SoundId;
-				_thrustSoundSource = parent.gameObject.AddComponent<AudioSource>();
+				_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(parent.gameObject);
 				_minVolume = spec.ThrustSound.MinVolume;
 				_maxVolume = spec.ThrustSound.MaxVolume;
 

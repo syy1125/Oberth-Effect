@@ -42,7 +42,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		if (spec.ThrustSound != null)
 		{
 			_thrustSoundId = spec.ThrustSound.SoundId;
-			_thrustSoundSource = gameObject.AddComponent<AudioSource>();
+			_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
 			_minVolume = spec.ThrustSound.MinVolume;
 			_maxVolume = spec.ThrustSound.MaxVolume;
 
