@@ -14,6 +14,8 @@ namespace Syy1125.OberthEffect.Designer.Palette
 {
 public class DesignerPaletteUse : MonoBehaviour
 {
+	private static readonly BlockContext previewContext = new BlockContext { IsMainVehicle = false };
+
 	[Header("References")]
 	public VehicleDesigner Designer;
 	public VehicleMirror Mirror;
@@ -236,7 +238,7 @@ public class DesignerPaletteUse : MonoBehaviour
 	private GameObject CreatePreview(BlockSpec blockSpec)
 	{
 		var preview = BlockBuilder.BuildFromSpec(
-			blockSpec, PreviewParent, Vector2Int.zero, 0
+			blockSpec, PreviewParent, Vector2Int.zero, 0, previewContext
 		);
 
 		foreach (SpriteRenderer sprite in preview.GetComponentsInChildren<SpriteRenderer>())

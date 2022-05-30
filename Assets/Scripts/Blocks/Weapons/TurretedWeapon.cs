@@ -15,7 +15,7 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 	private Transform _turretTransform;
 	private float _turretAngle;
 
-	public void LoadSpec(TurretedWeaponSpec spec)
+	public void LoadSpec(TurretedWeaponSpec spec, in BlockContext context)
 	{
 		_rotationSpeed = spec.Turret.RotationSpeed;
 
@@ -31,15 +31,15 @@ public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 
 		if (spec.ProjectileWeaponEffect != null)
 		{
-			LoadProjectileWeapon(spec.ProjectileWeaponEffect);
+			LoadProjectileWeapon(spec.ProjectileWeaponEffect, context);
 		}
 		else if (spec.BurstBeamWeaponEffect != null)
 		{
-			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
+			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect, context);
 		}
 		else if (spec.MissileLauncherEffect != null)
 		{
-			LoadMissileWeapon(spec.MissileLauncherEffect);
+			LoadMissileWeapon(spec.MissileLauncherEffect, context);
 		}
 
 		DefaultBinding = spec.DefaultBinding;

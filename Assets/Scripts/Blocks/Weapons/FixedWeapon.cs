@@ -10,19 +10,19 @@ public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
 {
 	public const string CLASS_KEY = "FixedWeapon";
 
-	public void LoadSpec(FixedWeaponSpec spec)
+	public void LoadSpec(FixedWeaponSpec spec, in BlockContext context)
 	{
 		if (spec.ProjectileWeaponEffect != null)
 		{
-			LoadProjectileWeapon(spec.ProjectileWeaponEffect);
+			LoadProjectileWeapon(spec.ProjectileWeaponEffect, context);
 		}
 		else if (spec.BurstBeamWeaponEffect != null)
 		{
-			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect);
+			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect, context);
 		}
 		else if (spec.MissileLauncherEffect != null)
 		{
-			LoadMissileWeapon(spec.MissileLauncherEffect);
+			LoadMissileWeapon(spec.MissileLauncherEffect, context);
 		}
 
 		DefaultBinding = spec.DefaultBinding;

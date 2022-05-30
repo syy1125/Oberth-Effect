@@ -108,11 +108,11 @@ public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 		return _sounds.TryGetValue(soundId, out AudioClip clip) ? clip : null;
 	}
 
-	public AudioSource CreateBlockAudioSource(GameObject go)
+	public AudioSource CreateBlockAudioSource(GameObject go, bool attenuate)
 	{
 		var audioSource = go.AddComponent<AudioSource>();
 		audioSource.outputAudioMixerGroup = BlockSoundGroup;
-		audioSource.spatialBlend = 0.6f;
+		audioSource.spatialBlend = attenuate ? 0.9f : 0f;
 		return audioSource;
 	}
 }

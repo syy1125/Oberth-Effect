@@ -31,7 +31,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 	private float _trueThrustScale;
 	private Vector3 _localUp;
 
-	public void LoadSpec(LinearEngineSpec spec)
+	public void LoadSpec(LinearEngineSpec spec, in BlockContext context)
 	{
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
@@ -42,7 +42,7 @@ public class LinearEngine : AbstractThrusterBase, ITooltipProvider
 		if (spec.ThrustSound != null)
 		{
 			_thrustSoundId = spec.ThrustSound.SoundId;
-			_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
+			_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject, !context.IsMainVehicle);
 			_minVolume = spec.ThrustSound.MinVolume;
 			_maxVolume = spec.ThrustSound.MaxVolume;
 

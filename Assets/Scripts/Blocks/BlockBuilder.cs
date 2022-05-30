@@ -14,7 +14,9 @@ public static class BlockBuilder
 {
 	private static Material _vehicleBlockMaterial;
 
-	public static GameObject BuildFromSpec(BlockSpec blockSpec, Transform parent, Vector2Int rootPosition, int rotation)
+	public static GameObject BuildFromSpec(
+		BlockSpec blockSpec, Transform parent, Vector2Int rootPosition, int rotation, in BlockContext context
+	)
 	{
 		var blockObject = new GameObject(blockSpec.Info.FullName);
 
@@ -67,25 +69,25 @@ public static class BlockBuilder
 		if (blockSpec.Resource?.ResourceGenerator != null)
 		{
 			var freeGenerator = blockObject.AddComponent<ResourceGenerator>();
-			freeGenerator.LoadSpec(blockSpec.Resource.ResourceGenerator);
+			freeGenerator.LoadSpec(blockSpec.Resource.ResourceGenerator, context);
 		}
 
 		if (blockSpec.Propulsion?.Engine != null)
 		{
 			var linearEngine = blockObject.AddComponent<LinearEngine>();
-			linearEngine.LoadSpec(blockSpec.Propulsion.Engine);
+			linearEngine.LoadSpec(blockSpec.Propulsion.Engine, context);
 		}
 
 		if (blockSpec.Propulsion?.OmniThruster != null)
 		{
 			var omniThruster = blockObject.AddComponent<OmniThruster>();
-			omniThruster.LoadSpec(blockSpec.Propulsion.OmniThruster);
+			omniThruster.LoadSpec(blockSpec.Propulsion.OmniThruster, context);
 		}
 
 		if (blockSpec.Propulsion?.DirectionalThruster != null)
 		{
 			var directionalThruster = blockObject.AddComponent<DirectionalThruster>();
-			directionalThruster.LoadSpec(blockSpec.Propulsion.DirectionalThruster);
+			directionalThruster.LoadSpec(blockSpec.Propulsion.DirectionalThruster, context);
 		}
 
 		if (blockSpec.Propulsion?.ReactionWheel != null)
@@ -97,13 +99,13 @@ public static class BlockBuilder
 		if (blockSpec.TurretedWeapon != null)
 		{
 			var turretedWeapon = blockObject.AddComponent<TurretedWeapon>();
-			turretedWeapon.LoadSpec(blockSpec.TurretedWeapon);
+			turretedWeapon.LoadSpec(blockSpec.TurretedWeapon, context);
 		}
 
 		if (blockSpec.FixedWeapon != null)
 		{
 			var fixedWeapon = blockObject.AddComponent<FixedWeapon>();
-			fixedWeapon.LoadSpec(blockSpec.FixedWeapon);
+			fixedWeapon.LoadSpec(blockSpec.FixedWeapon, context);
 		}
 
 		if (blockSpec.Volatile != null)

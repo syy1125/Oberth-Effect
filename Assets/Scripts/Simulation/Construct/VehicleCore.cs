@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
@@ -18,6 +19,9 @@ public class VehicleCore :
 	/// List of all "alive" vehicles.
 	/// </summary>
 	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
+
+	[NonSerialized]
+	public bool IsMainVehicle;
 
 	public UnityEvent OnVehicleDeath;
 
@@ -53,7 +57,10 @@ public class VehicleCore :
 	{
 		if (_blueprint != null)
 		{
-			GetComponent<ConstructBlockManager>().LoadBlocks(_blueprint.Blocks);
+			GetComponent<ConstructBlockManager>().LoadBlocks(
+				_blueprint.Blocks,
+				new BlockContext { IsMainVehicle = IsMainVehicle }
+			);
 			transform.position -= transform.TransformVector(GetComponent<Rigidbody2D>().centerOfMass);
 
 			_loaded = true;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -47,9 +48,9 @@ public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 		_colorContext = GetComponentInParent<ColorContext>();
 	}
 
-	public void LoadSpec(ProjectileWeaponEffectSpec spec)
+	public void LoadSpec(ProjectileWeaponEffectSpec spec, in BlockContext context)
 	{
-		base.LoadSpec(spec);
+		base.LoadSpec(spec, context);
 
 		_burstCount = spec.BurstCount;
 		_burstInterval = spec.BurstInterval;

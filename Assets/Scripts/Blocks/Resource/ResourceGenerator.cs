@@ -41,7 +41,7 @@ public class ResourceGenerator :
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
-	public void LoadSpec(ResourceGeneratorSpec spec)
+	public void LoadSpec(ResourceGeneratorSpec spec, in BlockContext context)
 	{
 		_consumptionRate = spec.ConsumptionRate;
 		_generationRate = spec.GenerationRate;
@@ -69,7 +69,7 @@ public class ResourceGenerator :
 
 		if (_startSound != null || _stopSound != null)
 		{
-			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
+			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject, !context.IsMainVehicle);
 		}
 
 		if (spec.ActivationRenderers != null)

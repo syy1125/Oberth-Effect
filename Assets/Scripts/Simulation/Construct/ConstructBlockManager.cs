@@ -50,13 +50,13 @@ public class ConstructBlockManager : MonoBehaviourPun,
 
 	#region Loading
 
-	public void LoadBlocks(IList<VehicleBlueprint.BlockInstance> blockInstances)
+	public void LoadBlocks(IList<VehicleBlueprint.BlockInstance> blockInstances, BlockContext context)
 	{
-		LoadBlocks(blockInstances, null);
+		LoadBlocks(blockInstances, context, null);
 	}
 
 	private void LoadBlocks(
-		IList<VehicleBlueprint.BlockInstance> blockInstances, Action<int, GameObject> post
+		IList<VehicleBlueprint.BlockInstance> blockInstances, BlockContext context, Action<int, GameObject> postAction
 	)
 	{
 		_loaded = false;
@@ -86,12 +86,12 @@ public class ConstructBlockManager : MonoBehaviourPun,
 				new BlockBounds(blockSpec.Construction.BoundsMin, blockSpec.Construction.BoundsMax)
 					.Transformed(blockInstance.Position, blockInstance.Rotation);
 			GameObject blockObject = InstantiateBlock(
-				blockSpec, blockInstance.Position, blockInstance.Rotation,
+				blockSpec, blockInstance.Position, blockInstance.Rotation, context,
 				ref totalMass, ref centerOfMass, momentOfInertiaData
 			);
 			BlockConfigHelper.LoadConfig(blockInstance, blockObject);
 
-			post?.Invoke(index, blockObject);
+			postAction?.Invoke(index, blockObject);
 			_blockTable.Add(blockInstance, blockObject, blockBounds);
 
 			if (photonView.IsMine)
@@ -175,11 +175,11 @@ public class ConstructBlockManager : MonoBehaviourPun,
 	}
 
 	private GameObject InstantiateBlock(
-		BlockSpec spec, Vector2Int position, int rotation,
+		BlockSpec spec, Vector2Int position, int rotation, in BlockContext context,
 		ref float totalMass, ref Vector2 centerOfMass, LinkedList<MomentOfInertiaData> momentOfInertiaData
 	)
 	{
-		GameObject blockObject = BlockBuilder.BuildFromSpec(spec, transform, position, rotation);
+		GameObject blockObject = BlockBuilder.BuildFromSpec(spec, transform, position, rotation, context);
 
 		Vector2 blockCenter = position + TransformUtils.RotatePoint(spec.Physics.CenterOfMass, rotation);
 		totalMass += spec.Physics.Mass;
@@ -374,6 +374,7 @@ public class ConstructBlockManager : MonoBehaviourPun,
 
 		receiver.LoadBlocks(
 			blockInstances,
+			new BlockContext { IsMainVehicle = false },
 			(index, blockObject) => LoadDebrisState(blockObject, debrisBlocks[index].DebrisState)
 		);
 	}

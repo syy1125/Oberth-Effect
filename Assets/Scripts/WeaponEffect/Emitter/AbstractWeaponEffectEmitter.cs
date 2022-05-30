@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Database;
@@ -23,14 +24,14 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 	private AudioClip _fireSound;
 	private float _fireSoundVolume;
 
-	protected void LoadSpec(AbstractWeaponEffectSpec spec)
+	protected void LoadSpec(AbstractWeaponEffectSpec spec, in BlockContext context)
 	{
 		AimCorrection = spec.AimCorrection;
 		ReloadResourceUse = spec.MaxResourceUse;
 
 		if (spec.FireSound != null)
 		{
-			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject);
+			_audioSource = SoundDatabase.Instance.CreateBlockAudioSource(gameObject, !context.IsMainVehicle);
 			_fireSoundId = spec.FireSound.SoundId;
 			_fireSound = SoundDatabase.Instance.GetAudioClip(_fireSoundId);
 			_fireSoundVolume = spec.FireSound.Volume;

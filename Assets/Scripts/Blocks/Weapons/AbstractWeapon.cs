@@ -51,38 +51,38 @@ public abstract class AbstractWeapon :
 		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 	}
 
-	protected void LoadProjectileWeapon(ProjectileWeaponEffectSpec spec)
+	protected void LoadProjectileWeapon(ProjectileWeaponEffectSpec spec, in BlockContext context)
 	{
 		var weaponEffectObject = new GameObject("ProjectileWeaponEffect");
 
 		SetWeaponEffectTransform(weaponEffectObject, spec);
 
 		var weaponEmitter = weaponEffectObject.AddComponent<ProjectileWeaponEffectEmitter>();
-		weaponEmitter.LoadSpec(spec);
+		weaponEmitter.LoadSpec(spec, context);
 
 		WeaponEmitter = weaponEmitter;
 	}
 
-	protected void LoadBurstBeamWeapon(BurstBeamWeaponEffectSpec spec)
+	protected void LoadBurstBeamWeapon(BurstBeamWeaponEffectSpec spec, in BlockContext context)
 	{
 		var weaponEffectObject = new GameObject("BurstBeamWeaponEffect");
 
 		SetWeaponEffectTransform(weaponEffectObject, spec);
 
 		var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
-		weaponEmitter.LoadSpec(spec);
+		weaponEmitter.LoadSpec(spec, context);
 
 		WeaponEmitter = weaponEmitter;
 	}
 
-	protected void LoadMissileWeapon(MissileLauncherEffectSpec spec)
+	protected void LoadMissileWeapon(MissileLauncherEffectSpec spec, in BlockContext context)
 	{
 		var weaponEffectObject = new GameObject("MissileLauncherWeaponEffect");
 
 		SetWeaponEffectTransform(weaponEffectObject, spec);
 
 		var weaponEmitter = weaponEffectObject.AddComponent<MissileLauncherEffectEmitter>();
-		weaponEmitter.LoadSpec(spec);
+		weaponEmitter.LoadSpec(spec, context);
 
 		WeaponEmitter = weaponEmitter;
 	}

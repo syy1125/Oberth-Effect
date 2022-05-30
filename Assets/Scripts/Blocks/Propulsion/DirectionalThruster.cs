@@ -29,7 +29,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 		private float _maxVolume;
 		private ParticleSystemWrapper[] _particles;
 
-		public Module(DirectionalThruster parent, DirectionalThrusterModuleSpec spec)
+		public Module(DirectionalThruster parent, DirectionalThrusterModuleSpec spec, in BlockContext context)
 		{
 			_parent = parent;
 
@@ -39,7 +39,7 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 			if (spec.ThrustSound != null)
 			{
 				_thrustSoundId = spec.ThrustSound.SoundId;
-				_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(parent.gameObject);
+				_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(parent.gameObject, !context.IsMainVehicle);
 				_minVolume = spec.ThrustSound.MinVolume;
 				_maxVolume = spec.ThrustSound.MaxVolume;
 
@@ -105,28 +105,28 @@ public class DirectionalThruster : AbstractThrusterBase, ITooltipProvider
 	private Vector2 _rotateResponse;
 	private Vector2 _response;
 
-	public void LoadSpec(DirectionalThrusterSpec spec)
+	public void LoadSpec(DirectionalThrusterSpec spec, in BlockContext context)
 	{
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 
 		if (spec.Up != null)
 		{
-			_upModule = new Module(this, spec.Up);
+			_upModule = new Module(this, spec.Up, context);
 		}
 
 		if (spec.Down != null)
 		{
-			_downModule = new Module(this, spec.Down);
+			_downModule = new Module(this, spec.Down, context);
 		}
 
 		if (spec.Left != null)
 		{
-			_leftModule = new Module(this, spec.Left);
+			_leftModule = new Module(this, spec.Left, context);
 		}
 
 		if (spec.Right != null)
 		{
-			_rightModule = new Module(this, spec.Right);
+			_rightModule = new Module(this, spec.Right, context);
 		}
 
 		ComputeMaxResourceUse();

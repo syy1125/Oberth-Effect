@@ -147,6 +147,8 @@ public class PlayerVehicleSpawner : MonoBehaviour
 			}
 		);
 
+		Vehicle.GetComponent<VehicleCore>().IsMainVehicle = true;
+
 		Vehicle.GetComponent<Rigidbody2D>().velocity = velocity;
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
 		ReferenceFrameProvider.MainReferenceFrame = Vehicle.GetComponent<ReferenceFrameProvider>();

@@ -33,6 +33,8 @@ internal class BlockNotErasable : Exception
 // Designer component responsible for interacting with the blueprint
 public class VehicleBuilder : MonoBehaviour
 {
+	private static readonly BlockContext designerContext = new BlockContext { IsMainVehicle = true };
+
 	public VehicleDesigner Designer;
 
 	public int VehicleCost { get; private set; }
@@ -69,7 +71,7 @@ public class VehicleBuilder : MonoBehaviour
 	{
 		GameObject blockObject = BlockBuilder.BuildFromSpec(
 			BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId), transform,
-			blockInstance.Position, blockInstance.Rotation
+			blockInstance.Position, blockInstance.Rotation, designerContext
 		);
 
 		blockObject.layer = gameObject.layer;

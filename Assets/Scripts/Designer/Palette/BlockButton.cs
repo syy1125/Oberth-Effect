@@ -17,6 +17,8 @@ namespace Syy1125.OberthEffect.Designer.Palette
 [RequireComponent(typeof(Tooltip))]
 public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+	private static readonly BlockContext paletteContext = new BlockContext { IsMainVehicle = false };
+
 	[Header("References")]
 	public RawImage PreviewImage;
 	public Camera BlockCamera;
@@ -81,7 +83,9 @@ public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 		BlockCategorySpec category = BlockDatabase.Instance.GetCategory(instance.Spec.CategoryId);
 		CategoryIcon.sprite = TextureDatabase.Instance.GetSprite(category.IconTextureId);
 
-		GameObject previewObject = BlockBuilder.BuildFromSpec(instance.Spec, BlockCamera.transform, Vector2Int.zero, 0);
+		GameObject previewObject = BlockBuilder.BuildFromSpec(
+			instance.Spec, BlockCamera.transform, Vector2Int.zero, 0, paletteContext
+		);
 
 		var previewTransform = previewObject.transform;
 		Vector3 previewPosition = previewTransform.position;
