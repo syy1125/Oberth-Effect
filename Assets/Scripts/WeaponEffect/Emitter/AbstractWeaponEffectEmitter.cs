@@ -55,11 +55,12 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 
 	protected float GetCorrectionAngle()
 	{
+		if (Mathf.Approximately(AimCorrection, 0f)) return 0f;
+
 		var correctionAngle = AimPoint != null
 			? Vector2.SignedAngle(transform.InverseTransformPoint(AimPoint.Value), Vector2.up)
 			: 0f;
-		correctionAngle = Mathf.Clamp(correctionAngle, -AimCorrection, AimCorrection);
-		return correctionAngle;
+		return Mathf.Clamp(correctionAngle, -AimCorrection, AimCorrection);
 	}
 
 	public abstract void EmitterFixedUpdate(bool isMine, bool firing);
