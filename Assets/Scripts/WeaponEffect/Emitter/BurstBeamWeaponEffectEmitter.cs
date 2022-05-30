@@ -203,7 +203,10 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 
 	private void FireBeamTick(bool isMine, float damageThisTick)
 	{
-		Vector3 worldEnd = transform.TransformPoint(new Vector3(0f, MaxRange, 0f));
+		float correctionAngle = GetCorrectionAngle() * Mathf.Deg2Rad;
+		Vector3 localEnd = new Vector3(MaxRange * Mathf.Sin(correctionAngle), MaxRange * Mathf.Cos(correctionAngle));
+		Vector3 worldEnd = transform.TransformPoint(localEnd);
+
 		Vector3? normal = null;
 		IDamageable hitTarget = null;
 		int count = Physics2D.Raycast(
@@ -236,7 +239,7 @@ public class BurstBeamWeaponEffectEmitter : AbstractWeaponEffectEmitter
 			}
 		}
 
-		_visual.UpdateState(true, transform.InverseTransformPoint(worldEnd), normal);
+		_visual.UpdateState(true, localEnd, normal);
 
 		if (isMine && damageThisTick > Mathf.Epsilon)
 		{

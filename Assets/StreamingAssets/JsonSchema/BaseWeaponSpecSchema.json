@@ -24,6 +24,7 @@
                 },
                 "SpreadAngle": { "type": "number" },
                 "SpreadProfile": { "enum": ["None", "Gaussian", "Uniform"] },
+                "Recoil": { "type": "number" },
                 "ColliderSize": { "$ref": "Vector2Schema.json" },
                 "MaxSpeed": {
                     "type": "number",

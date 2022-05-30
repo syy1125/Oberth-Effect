@@ -250,6 +250,8 @@ public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 			);
 		}
 
+		float correctionAngle = GetCorrectionAngle();
+
 		foreach (float baseAngle in _clusterBaseAngles)
 		{
 			float speed = _maxSpeed;
@@ -269,10 +271,12 @@ public class ProjectileWeaponEffectEmitter : AbstractWeaponEffectEmitter
 					throw new ArgumentOutOfRangeException();
 			}
 
-			float deviationAngle = (baseAngle + WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle))
-			                       * Mathf.Deg2Rad;
+			float deviationAngle =
+				(correctionAngle + baseAngle + WeaponSpreadUtils.GetDeviationAngle(_spreadProfile, _spreadAngle))
+				* Mathf.Deg2Rad;
+			var projectileRotation = Quaternion.AngleAxis(deviationAngle * Mathf.Rad2Deg, Vector3.back) * rotation;
 			GameObject projectile = PhotonNetwork.Instantiate(
-				"Weapon Projectile", position, rotation,
+				"Weapon Projectile", position, projectileRotation,
 				data: new object[]
 				{
 					CompressionUtils.Compress(JsonUtility.ToJson(_projectileConfig)),

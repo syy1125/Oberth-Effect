@@ -19,6 +19,8 @@ public abstract class AbstractWeaponEffectSpec : ICustomValidation
 	public float ArmorPierce = 1f;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float ExplosionRadius; // Only relevant for explosive damage
+	[ValidateRangeFloat(0f, 180f)]
+	public float AimCorrection;
 
 	public Dictionary<string, float> MaxResourceUse;
 

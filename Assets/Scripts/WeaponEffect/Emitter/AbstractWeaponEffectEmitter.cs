@@ -10,11 +10,13 @@ namespace Syy1125.OberthEffect.WeaponEffect.Emitter
 public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffectEmitter
 {
 	protected float MaxRange;
+	protected float AimCorrection;
 
 	public int? TargetPhotonId { get; set; }
 	protected Vector2? AimPoint;
 	protected Dictionary<string, float> ReloadResourceUse;
 	protected float ResourceSatisfaction;
+
 
 	private AudioSource _audioSource;
 	private string _fireSoundId;
@@ -23,6 +25,7 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 
 	protected void LoadSpec(AbstractWeaponEffectSpec spec)
 	{
+		AimCorrection = spec.AimCorrection;
 		ReloadResourceUse = spec.MaxResourceUse;
 
 		if (spec.FireSound != null)
@@ -49,6 +52,15 @@ public abstract class AbstractWeaponEffectEmitter : MonoBehaviour, IWeaponEffect
 	public abstract Vector2? GetInterceptPoint(
 		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
 	);
+
+	protected float GetCorrectionAngle()
+	{
+		var correctionAngle = AimPoint != null
+			? Vector2.SignedAngle(transform.InverseTransformPoint(AimPoint.Value), Vector2.up)
+			: 0f;
+		correctionAngle = Mathf.Clamp(correctionAngle, -AimCorrection, AimCorrection);
+		return correctionAngle;
+	}
 
 	public abstract void EmitterFixedUpdate(bool isMine, bool firing);
 

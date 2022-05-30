@@ -2,27 +2,19 @@
     "$id": "BaseWeaponEffectSpecSchema",
     "type": "object",
     "properties": {
-        "FiringPortOffset": {
-            "$ref": "Vector2Schema.json"
-        },
+        "FiringPortOffset": { "$ref": "Vector2Schema.json" },
         "Damage": {
             "type": "number",
             "description": "The amount of damage this weapon does. This value may be interpreted differently depending on the weapon."
         },
-        "DamageType": {
-            "enum": ["Kinetic", "Energy", "Explosive"]
-        },
+        "DamageType": { "enum": ["Kinetic", "Energy", "Explosive"] },
         "ArmorPierce": {
             "type": "number",
             "minimum": 1,
             "maximum": 10
         },
-        "ExplosionRadius": {
-            "type": "number"
-        },
-        "Recoil": {
-            "type": "number"
-        },
+        "ExplosionRadius": { "type": "number" },
+        "AimCorrection": { "type": "number" },
         "MaxResourceUse": {
             "patternProperties": {
                 "^.*$": { "type": "number" }
@@ -36,11 +28,7 @@
                 "DecayCurve": { "enum": ["Linear", "Quadratic", "Cubic"] }
             }
         },
-        "FireSound": {
-            "$ref": "SoundReferenceSpecSchema.json"
-        },
-        "FireParticles": {
-            "$ref": "ParticleSystemSpecArraySchema.json"
-        }
+        "FireSound": { "$ref": "SoundReferenceSpecSchema.json" },
+        "FireParticles": { "$ref": "ParticleSystemSpecArraySchema.json" }
     }
 }

@@ -41,6 +41,7 @@ FixedWeapon:
     DamageType: Kinetic
     ArmorPierce: 10
     SpreadProfile: None
+    AimCorrection: 2.5
     Recoil: 50
     MaxResourceUse:
       OberthEffect/Energy: 100
