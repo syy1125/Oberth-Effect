@@ -60,6 +60,8 @@ FixedWeapon:
       Strength: 0.5
       Duration: 1
       DecayCurve: Linear
+    FireSound: 
+      SoundId: OberthEffect/TorpedoLaunch
     Renderers:
       - TextureId: OberthEffect/Torpedo
     PropulsionParticles:
