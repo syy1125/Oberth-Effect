@@ -31,7 +31,7 @@ namespace YamlDotNet.Serialization.TypeInspectors
     public sealed class CachedTypeInspector : TypeInspectorSkeleton
     {
         private readonly ITypeInspector innerTypeDescriptor;
-        private readonly Dictionary<Type, List<IPropertyDescriptor>> cache = new Dictionary<Type, List<IPropertyDescriptor>>();
+        private readonly Dictionary<Type, List<IPropertyDescriptor>> cache = new();
 
         public CachedTypeInspector(ITypeInspector innerTypeDescriptor)
         {

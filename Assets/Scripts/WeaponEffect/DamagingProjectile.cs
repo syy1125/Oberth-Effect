@@ -21,10 +21,10 @@ public class DamagingProjectile : MonoBehaviourPun
 	private float _deathTime;
 	private bool _expectExploded;
 
-	private List<ReferenceFrameProvider.RayStep[]> _allSteps = new List<ReferenceFrameProvider.RayStep[]>();
+	private List<ReferenceFrameProvider.RayStep[]> _allSteps = new();
 
 #if UNITY_EDITOR
-	private List<Tuple<Vector2, Vector2>> _tracePoints = new List<Tuple<Vector2, Vector2>>();
+	private List<Tuple<Vector2, Vector2>> _tracePoints = new();
 #endif
 
 	public void Init(

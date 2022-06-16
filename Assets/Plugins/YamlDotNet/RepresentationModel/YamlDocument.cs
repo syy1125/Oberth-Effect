@@ -87,11 +87,11 @@ namespace YamlDotNet.RepresentationModel
         /// </summary>
         private class AnchorAssigningVisitor : YamlVisitorBase
         {
-            private readonly HashSet<string> existingAnchors = new HashSet<string>();
+            private readonly HashSet<string> existingAnchors = new();
             /// <summary>
             /// Key: Node, Value: IsDuplicate
             /// </summary>
-            private readonly Dictionary<YamlNode, bool> visitedNodes = new Dictionary<YamlNode, bool>();
+            private readonly Dictionary<YamlNode, bool> visitedNodes = new();
 
             public void AssignAnchors(YamlDocument document)
             {

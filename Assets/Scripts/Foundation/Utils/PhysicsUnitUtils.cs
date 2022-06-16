@@ -21,7 +21,7 @@ public static class PhysicsUnitUtils
 	public const float NM_PER_UNIT_TORQUE = 1e5f;
 	public const float MNM_PER_UNIT_TORQUE = 0.1f;
 
-	private static readonly List<Tuple<float, string>> MetricPrefixes = new List<Tuple<float, string>>
+	private static readonly List<Tuple<float, string>> MetricPrefixes = new()
 	{
 		Tuple.Create(1e-3f, "m"),
 		Tuple.Create(1f, ""),

@@ -110,7 +110,7 @@ namespace YamlDotNet.Serialization
             }
         }
 
-        private readonly Dictionary<AttributeKey, List<AttributeMapping>> overrides = new Dictionary<AttributeKey, List<AttributeMapping>>();
+        private readonly Dictionary<AttributeKey, List<AttributeMapping>> overrides = new();
 
         public T GetAttribute<T>(Type type, string member) where T : Attribute
         {

@@ -6,12 +6,9 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 {
 public class BlockInstanceTable
 {
-	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _rootPosIndex =
-		new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>();
-	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posIndex =
-		new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>();
-	private Dictionary<VehicleBlueprint.BlockInstance, GameObject> _instanceToBlock =
-		new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
+	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _rootPosIndex = new();
+	private Dictionary<Vector2Int, VehicleBlueprint.BlockInstance> _posIndex = new();
+	private Dictionary<VehicleBlueprint.BlockInstance, GameObject> _instanceToBlock = new();
 
 	public void Add(VehicleBlueprint.BlockInstance blockInstance, GameObject blockObject, BlockBounds bounds)
 	{

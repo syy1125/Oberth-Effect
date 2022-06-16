@@ -29,7 +29,7 @@ public class ConstructBlockManager : MonoBehaviourPun,
 
 	private bool _loaded;
 
-	private BlockInstanceTable _blockTable = new BlockInstanceTable();
+	private BlockInstanceTable _blockTable = new();
 
 	private BlockConnectivityGraph _connectivityGraph;
 

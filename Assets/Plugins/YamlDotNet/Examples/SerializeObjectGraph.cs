@@ -37,14 +37,14 @@ namespace YamlDotNet.Samples
                 },
                 items = new Item[]
                 {
-                    new Item
+                    new()
                     {
                         part_no = "A4786",
                         descrip = "Water Bucket (Filled)",
                         price = 1.47M,
                         quantity = 4
                     },
-                    new Item
+                    new()
                     {
                         part_no = "E1628",
                         descrip = "High Heeled \"Ruby\" Slippers",

@@ -60,9 +60,9 @@ namespace YamlDotNet.Core
             { 'P', '\x2029' }
         };
 
-        private readonly Stack<int> indents = new Stack<int>();
-        private readonly InsertionQueue<Token> tokens = new InsertionQueue<Token>();
-        private readonly Stack<SimpleKey> simpleKeys = new Stack<SimpleKey>();
+        private readonly Stack<int> indents = new();
+        private readonly InsertionQueue<Token> tokens = new();
+        private readonly Stack<SimpleKey> simpleKeys = new();
         private readonly CharacterAnalyzer<LookAheadBuffer> analyzer;
 
         private readonly Cursor cursor;

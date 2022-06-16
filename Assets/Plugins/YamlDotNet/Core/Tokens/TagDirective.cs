@@ -68,7 +68,7 @@ namespace YamlDotNet.Core.Tokens
         {
         }
 
-        private static readonly Regex tagHandleValidator = new Regex(@"^!([0-9A-Za-z_\-]*!)?$", StandardRegexOptions.Compiled);
+        private static readonly Regex tagHandleValidator = new(@"^!([0-9A-Za-z_\-]*!)?$", StandardRegexOptions.Compiled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TagDirective"/> class.

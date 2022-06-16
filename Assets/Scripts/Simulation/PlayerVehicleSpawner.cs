@@ -44,7 +44,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	public Text SelfDestructDisplay;
 
 	public GameObject Vehicle { get; private set; }
-	public VehicleChangeEvent OnVehicleChanged = new VehicleChangeEvent();
+	public VehicleChangeEvent OnVehicleChanged = new();
 
 	private Coroutine _respawn;
 	private string _spawnTextTemplate;

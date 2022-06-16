@@ -26,7 +26,7 @@ namespace YamlDotNet.Serialization
 {
     internal static class YamlFormatter
     {
-        public static readonly NumberFormatInfo NumberFormat = new NumberFormatInfo
+        public static readonly NumberFormatInfo NumberFormat = new()
         {
             CurrencyDecimalSeparator = ".",
             CurrencyGroupSeparator = "_",

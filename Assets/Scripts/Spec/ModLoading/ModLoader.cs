@@ -31,7 +31,7 @@ public static class ModLoader
 		ValidateDocuments
 	}
 
-	public static readonly object LoadStateLock = new object();
+	public static readonly object LoadStateLock = new();
 	public static State LoadState;
 	public static Tuple<int, int> LoadProgress;
 	public static string LoadDescription;

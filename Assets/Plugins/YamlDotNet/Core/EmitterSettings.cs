@@ -27,7 +27,7 @@ namespace YamlDotNet.Core
         /// </remarks>
         public int MaxSimpleKeyLength { get; } = 1024;
 
-        public static readonly EmitterSettings Default = new EmitterSettings();
+        public static readonly EmitterSettings Default = new();
 
         public EmitterSettings()
         {

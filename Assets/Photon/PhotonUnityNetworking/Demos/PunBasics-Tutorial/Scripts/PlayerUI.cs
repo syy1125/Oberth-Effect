@@ -25,7 +25,7 @@ namespace Photon.Pun.Demo.PunBasics
 
 	    [Tooltip("Pixel offset from the player target")]
         [SerializeField]
-        private Vector3 screenOffset = new Vector3(0f, 30f, 0f);
+        private Vector3 screenOffset = new(0f, 30f, 0f);
 
 	    [Tooltip("UI Text to display Player's Name")]
 	    [SerializeField]

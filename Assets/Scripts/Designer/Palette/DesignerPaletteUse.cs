@@ -14,7 +14,7 @@ namespace Syy1125.OberthEffect.Designer.Palette
 {
 public class DesignerPaletteUse : MonoBehaviour
 {
-	private static readonly BlockContext previewContext = new BlockContext { IsMainVehicle = false };
+	private static readonly BlockContext previewContext = new() { IsMainVehicle = false };
 
 	[Header("References")]
 	public VehicleDesigner Designer;

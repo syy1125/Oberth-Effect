@@ -20,7 +20,7 @@ public class TargetInterface : MonoBehaviour
 	public HighlightTarget TargetLockHighlight;
 
 	[Header("Config")]
-	public Color TargetColor = new Color(0.75f, 0f, 0f);
+	public Color TargetColor = new(0.75f, 0f, 0f);
 	public Color TargetLockColor = Color.red;
 
 	private CanvasGroup _group;

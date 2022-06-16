@@ -6,7 +6,7 @@ namespace Syy1125.OberthEffect.Foundation.ControlCondition
 {
 public class EmptyCondition : IControlCondition
 {
-	public static EmptyCondition Instance = new EmptyCondition();
+	public static EmptyCondition Instance = new();
 
 	private EmptyCondition()
 	{}

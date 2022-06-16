@@ -13,12 +13,12 @@ using UnityEditor;
 namespace YamlDotNet.Samples.Helpers {
     public class ExampleRunner : MonoBehaviour {
 
-        private StringTestOutputHelper helper = new StringTestOutputHelper();
+        private StringTestOutputHelper helper = new();
 
         public string[] disabledTests = new string[] {};
 
         private class StringTestOutputHelper : ITestOutputHelper {
-            private StringBuilder output = new StringBuilder();
+            private StringBuilder output = new();
             public void WriteLine() {
                 output.AppendLine();
             }

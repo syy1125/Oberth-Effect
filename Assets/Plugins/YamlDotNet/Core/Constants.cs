@@ -30,8 +30,8 @@ namespace YamlDotNet.Core
     {
         public static readonly TagDirective[] DefaultTagDirectives =
         {
-            new TagDirective("!", "!"),
-            new TagDirective("!!", "tag:yaml.org,2002:")
+            new("!", "!"),
+            new("!!", "tag:yaml.org,2002:")
         };
 
         public const int MajorVersion = 1;

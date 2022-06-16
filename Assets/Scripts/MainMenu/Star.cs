@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace MainMenu
+namespace Syy1125.OberthEffect.MainMenu
 {
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SpriteRenderer))]

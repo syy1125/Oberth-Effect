@@ -29,7 +29,7 @@ namespace YamlDotNet.Serialization.ObjectFactories
     /// </summary>
     public sealed class DefaultObjectFactory : IObjectFactory
     {
-        private static readonly Dictionary<Type, Type> defaultInterfaceImplementations = new Dictionary<Type, Type>
+        private static readonly Dictionary<Type, Type> defaultInterfaceImplementations = new()
         {
             { typeof(IEnumerable<>), typeof(List<>) },
             { typeof(ICollection<>), typeof(List<>) },

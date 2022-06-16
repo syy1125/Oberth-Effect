@@ -18,7 +18,7 @@ public class BlockPaletteSearch
 		BlockId,
 	}
 
-	private static HashSet<char> TermControls = new HashSet<char> { '#', '@', '%', '&' };
+	private static HashSet<char> TermControls = new() { '#', '@', '%', '&' };
 
 	private interface ISearchTerm
 	{
@@ -217,7 +217,7 @@ public class BlockPaletteSearch
 		And
 	}
 
-	private static HashSet<char> Operators = new HashSet<char> { '&', '|', '(', ')' };
+	private static HashSet<char> Operators = new() { '&', '|', '(', ')' };
 
 	// Parses the search string. If it encounters parentheses (meaning grouped search term), it calls itself recursively to parse the inner search term.
 	private static ISearchTerm Parse(string search, ref int pos)

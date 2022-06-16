@@ -38,7 +38,7 @@ namespace Photon.Pun.Demo.Hub
 			public string DocLink;
 		}
 
-		Dictionary<string,DemoData> _data = new Dictionary<string, DemoData>();
+		Dictionary<string,DemoData> _data = new();
 
 		string currentSelection;
 

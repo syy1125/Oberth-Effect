@@ -37,7 +37,7 @@ namespace Photon.Pun.Demo.Cockpit
 
         bool _firstUpdate = true;
 
-        Dictionary<string, RoomListCell> roomCellList = new Dictionary<string, RoomListCell>();
+        Dictionary<string, RoomListCell> roomCellList = new();
 
 
         public override void OnEnable()

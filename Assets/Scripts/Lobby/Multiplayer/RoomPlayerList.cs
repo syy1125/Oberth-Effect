@@ -19,8 +19,8 @@ public class RoomPlayerList : MonoBehaviourPunCallbacks
 
 	public GameObject TeamColorPicker;
 
-	private SortedDictionary<int, GameObject> _teamPanels = new SortedDictionary<int, GameObject>();
-	private SortedDictionary<int, GameObject> _playerPanels = new SortedDictionary<int, GameObject>();
+	private SortedDictionary<int, GameObject> _teamPanels = new();
+	private SortedDictionary<int, GameObject> _playerPanels = new();
 	private bool _teamMode;
 
 	public override void OnEnable()

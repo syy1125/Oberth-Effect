@@ -18,7 +18,7 @@ public class VehicleCore :
 	/// <summary>
 	/// List of all "alive" vehicles.
 	/// </summary>
-	public static readonly List<VehicleCore> ActiveVehicles = new List<VehicleCore>();
+	public static readonly List<VehicleCore> ActiveVehicles = new();
 
 	[NonSerialized]
 	public bool IsMainVehicle;

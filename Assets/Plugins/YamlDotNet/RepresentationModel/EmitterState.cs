@@ -28,7 +28,7 @@ namespace YamlDotNet.RepresentationModel
     /// </summary>
     internal class EmitterState
     {
-        private readonly HashSet<string> emittedAnchors = new HashSet<string>();
+        private readonly HashSet<string> emittedAnchors = new();
 
         /// <summary>
         /// Gets the already emitted anchors.

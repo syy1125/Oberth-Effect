@@ -18,7 +18,7 @@ public struct ColorScheme
 		TertiaryColor = tertiary;
 	}
 
-	public static ColorScheme DefaultColorScheme = new ColorScheme(
+	public static ColorScheme DefaultColorScheme = new(
 		new Color(0f, 0.5f, 1f, 1f), Color.blue, Color.yellow
 	);
 

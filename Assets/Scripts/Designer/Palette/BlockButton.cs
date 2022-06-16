@@ -17,7 +17,7 @@ namespace Syy1125.OberthEffect.Designer.Palette
 [RequireComponent(typeof(Tooltip))]
 public class BlockButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-	private static readonly BlockContext paletteContext = new BlockContext { IsMainVehicle = false };
+	private static readonly BlockContext paletteContext = new() { IsMainVehicle = false };
 
 	[Header("References")]
 	public RawImage PreviewImage;

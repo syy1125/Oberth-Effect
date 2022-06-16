@@ -33,7 +33,7 @@ internal class BlockNotErasable : Exception
 // Designer component responsible for interacting with the blueprint
 public class VehicleBuilder : MonoBehaviour
 {
-	private static readonly BlockContext designerContext = new BlockContext { IsMainVehicle = true };
+	private static readonly BlockContext designerContext = new() { IsMainVehicle = true };
 
 	public VehicleDesigner Designer;
 

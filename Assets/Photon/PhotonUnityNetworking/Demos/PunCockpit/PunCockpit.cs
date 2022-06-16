@@ -108,9 +108,9 @@ namespace Photon.Pun.Demo.Cockpit
         [Header("Friends Options")]
         public FriendListView.FriendDetail[] FriendsList =
             new FriendListView.FriendDetail[]{
-            new FriendListView.FriendDetail("Joe","Joe"),
-            new FriendListView.FriendDetail("Jane","Jane"),
-            new FriendListView.FriendDetail("Bob","Bob")
+            new("Joe","Joe"),
+            new("Jane","Jane"),
+            new("Bob","Bob")
             };
 
 		[Header("Modal window")]

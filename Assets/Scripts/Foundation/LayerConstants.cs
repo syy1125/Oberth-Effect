@@ -20,7 +20,7 @@ public static class LayerConstants
 		| (1 << WEAPON_PROJECTILE_LAYER)
 		| (1 << SHIPYARD_LAYER);
 
-	public static readonly ContactFilter2D WeaponHitFilter = new ContactFilter2D
+	public static readonly ContactFilter2D WeaponHitFilter = new()
 	{
 		layerMask = DAMAGEABLE_LAYER_MASK,
 		useLayerMask = true,

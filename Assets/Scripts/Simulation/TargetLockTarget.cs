@@ -10,7 +10,7 @@ namespace Syy1125.OberthEffect.Simulation
 [RequireComponent(typeof(ITargetLockInfoProvider))]
 public class TargetLockTarget : MonoBehaviourPun, IGuidedWeaponTarget, IVehicleDeathListener
 {
-	public static readonly List<TargetLockTarget> ActiveTargets = new List<TargetLockTarget>();
+	public static readonly List<TargetLockTarget> ActiveTargets = new();
 
 	public int PhotonViewId { get; private set; }
 

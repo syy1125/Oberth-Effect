@@ -40,7 +40,7 @@ namespace YamlDotNet.Core
         private const int MinBestIndent = 2;
         private const int MaxBestIndent = 9;
 
-        private static readonly Regex uriReplacer = new Regex(@"[^0-9A-Za-z_\-;?@=$~\\\)\]/:&+,\.\*\(\[!]",
+        private static readonly Regex uriReplacer = new(@"[^0-9A-Za-z_\-;?@=$~\\\)\]/:&+,\.\*\(\[!]",
             StandardRegexOptions.Compiled | RegexOptions.Singleline);
 
         private readonly TextWriter output;
@@ -52,10 +52,10 @@ namespace YamlDotNet.Core
         private readonly int bestWidth;
         private EmitterState state;
 
-        private readonly Stack<EmitterState> states = new Stack<EmitterState>();
-        private readonly Queue<ParsingEvent> events = new Queue<ParsingEvent>();
-        private readonly Stack<int> indents = new Stack<int>();
-        private readonly TagDirectiveCollection tagDirectives = new TagDirectiveCollection();
+        private readonly Stack<EmitterState> states = new();
+        private readonly Queue<ParsingEvent> events = new();
+        private readonly Stack<int> indents = new();
+        private readonly TagDirectiveCollection tagDirectives = new();
         private int indent;
         private int flowLevel;
         private bool isMappingContext;
@@ -69,9 +69,9 @@ namespace YamlDotNet.Core
         private bool isOpenEnded;
         private bool isDocumentEndWritten;
 
-        private readonly AnchorData anchorData = new AnchorData();
-        private readonly TagData tagData = new TagData();
-        private readonly ScalarData scalarData = new ScalarData();
+        private readonly AnchorData anchorData = new();
+        private readonly TagData tagData = new();
+        private readonly ScalarData scalarData = new();
 
         private class AnchorData
         {

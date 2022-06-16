@@ -47,7 +47,7 @@ public class KeybindManager : MonoBehaviour
 	public InputActionAsset InputActions;
 
 	private KeybindProfile _profile;
-	private Dictionary<string, string> _controlGroupOverrides = new Dictionary<string, string>();
+	private Dictionary<string, string> _controlGroupOverrides = new();
 	public bool Ready { get; private set; } = true;
 
 	private void Awake()

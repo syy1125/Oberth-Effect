@@ -27,7 +27,7 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public Color RadarColor;
 	public float RadarSize;
 
-	public static List<CelestialBody> CelestialBodies = new List<CelestialBody>();
+	public static List<CelestialBody> CelestialBodies = new();
 
 	private Orbit2D _orbit;
 

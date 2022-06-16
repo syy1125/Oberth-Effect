@@ -41,7 +41,7 @@ namespace Photon.Pun.Demo.Cockpit
         public GameObject NotInRoomLabel;
 
 
-        Dictionary<string, PropertyCell> builtInPropsCellList = new Dictionary<string, PropertyCell>();
+        Dictionary<string, PropertyCell> builtInPropsCellList = new();
 
         Player _player;
 

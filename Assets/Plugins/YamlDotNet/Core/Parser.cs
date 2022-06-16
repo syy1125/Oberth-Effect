@@ -35,8 +35,8 @@ namespace YamlDotNet.Core
     /// </summary>
     public class Parser : IParser
     {
-        private readonly Stack<ParserState> states = new Stack<ParserState>();
-        private readonly TagDirectiveCollection tagDirectives = new TagDirectiveCollection();
+        private readonly Stack<ParserState> states = new();
+        private readonly TagDirectiveCollection tagDirectives = new();
         private ParserState state;
 
         private readonly IScanner scanner;
@@ -95,7 +95,7 @@ namespace YamlDotNet.Core
             }
         }
 
-        private readonly EventQueue pendingEvents = new EventQueue();
+        private readonly EventQueue pendingEvents = new();
 
         /// <summary>
         /// Moves to the next event.
@@ -986,8 +986,8 @@ namespace YamlDotNet.Core
         {
             // This class is specialized for our specific use case where there are exactly two priority levels.
             // If more levels are required, a more generic implementation should be used instead.
-            private readonly Queue<ParsingEvent> highPriorityEvents = new Queue<ParsingEvent>();
-            private readonly Queue<ParsingEvent> normalPriorityEvents = new Queue<ParsingEvent>();
+            private readonly Queue<ParsingEvent> highPriorityEvents = new();
+            private readonly Queue<ParsingEvent> normalPriorityEvents = new();
 
             public void Enqueue(ParsingEvent @event)
             {

@@ -52,7 +52,7 @@ namespace Photon.Pun.Demo.Cockpit
 
         public OnJoinRoomEvent OnJoinRoom;
 
-        Dictionary<string, FriendListCell> FriendCellList = new Dictionary<string, FriendListCell>();
+        Dictionary<string, FriendListCell> FriendCellList = new();
 
         string[] FriendsLUT = new string[0];
 

@@ -54,7 +54,7 @@ namespace Photon.Realtime
 
         protected internal byte PingId;
 
-        private static readonly System.Random RandomIdProvider = new System.Random();
+        private static readonly System.Random RandomIdProvider = new();
 
         public virtual bool StartPing(string ip)
         {

@@ -16,7 +16,7 @@ public class FlytextManager : MonoBehaviour
 	public float StayTime = 1.5f;
 	public float FadeTime = 0.5f;
 
-	private Queue<Tuple<GameObject, Coroutine>> _instances = new Queue<Tuple<GameObject, Coroutine>>();
+	private Queue<Tuple<GameObject, Coroutine>> _instances = new();
 
 	public void CreateNotificationFlytext(Vector3 worldPosition, string text)
 	{

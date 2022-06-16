@@ -30,7 +30,7 @@ namespace Photon.Pun.Demo.Cockpit
 
         public Text UpdateStatusText;
 
-        Dictionary<int, PlayerListCell> playerCellList = new Dictionary<int, PlayerListCell>();
+        Dictionary<int, PlayerListCell> playerCellList = new();
 
 
         void Awake()

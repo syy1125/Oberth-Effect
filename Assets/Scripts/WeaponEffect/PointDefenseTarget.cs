@@ -13,7 +13,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	public bool IsMine { get; private set; }
 	public int OwnerId { get; private set; }
 
-	public UnityEvent OnDestroyedByDamage = new UnityEvent();
+	public UnityEvent OnDestroyedByDamage = new();
 
 	private Rigidbody2D _body;
 

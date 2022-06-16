@@ -32,7 +32,7 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	public GameObject ProtectIndicatorPrefab;
 	public GameObject DestroyIndicatorPrefab;
 
-	public static readonly Dictionary<int, Shipyard> ActiveShipyards = new Dictionary<int, Shipyard>();
+	public static readonly Dictionary<int, Shipyard> ActiveShipyards = new();
 
 	public bool IsMine => PhotonNetwork.LocalPlayer.IsMasterClient;
 	public int OwnerId => -1;

@@ -68,9 +68,9 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 	public GameObject FriendListUiItemtoInstantiate;
 
-	private readonly Dictionary<string, Toggle> channelToggles = new Dictionary<string, Toggle>();
+	private readonly Dictionary<string, Toggle> channelToggles = new();
 
-	private readonly Dictionary<string,FriendItem> friendListItemLUT =  new Dictionary<string, FriendItem>();
+	private readonly Dictionary<string,FriendItem> friendListItemLUT =  new();
 
 	public bool ShowState = true;
 	public GameObject Title;

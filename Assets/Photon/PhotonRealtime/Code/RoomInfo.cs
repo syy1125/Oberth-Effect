@@ -39,7 +39,7 @@ namespace Photon.Realtime
         public bool RemovedFromList;
 
         /// <summary>Backing field for property.</summary>
-        private Hashtable customProperties = new Hashtable();
+        private Hashtable customProperties = new();
 
         /// <summary>Backing field for property.</summary>
         protected byte maxPlayers = 0;

@@ -256,7 +256,7 @@ namespace Photon.Pun
 
         public void OnJoinRandomFailed(short returnCode, string message) { }
 
-        protected List<int> reusableIntList = new List<int>();
+        protected List<int> reusableIntList = new();
 
         public void OnJoinedRoom()
         {

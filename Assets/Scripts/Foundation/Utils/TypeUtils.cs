@@ -8,7 +8,7 @@ namespace Syy1125.OberthEffect.Foundation.Utils
 {
 public static class TypeUtils
 {
-	private static readonly Dictionary<Type, string> KeyCache = new Dictionary<Type, string>();
+	private static readonly Dictionary<Type, string> KeyCache = new();
 
 	public static string GetClassKey(Type type)
 	{

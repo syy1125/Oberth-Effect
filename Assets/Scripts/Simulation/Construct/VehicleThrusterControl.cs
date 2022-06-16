@@ -35,7 +35,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	#endregion
 
-	private readonly List<IPropulsionBlock> _propulsionBlocks = new List<IPropulsionBlock>();
+	private readonly List<IPropulsionBlock> _propulsionBlocks = new();
 	private float? _maxForwardThrust = null;
 
 	private Camera _mainCamera;

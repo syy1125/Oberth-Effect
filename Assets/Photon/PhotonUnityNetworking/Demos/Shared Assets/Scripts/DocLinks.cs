@@ -72,7 +72,7 @@ namespace Photon.Pun.Demo.Shared
 		/// <summary>
 		/// LookUp dictionnary for doc versions to avoid parsing this every link request
 		/// </summary>
-		static Dictionary<Products,string> ProductsFolders = new Dictionary<Products, string>
+		static Dictionary<Products,string> ProductsFolders = new()
 		{
 			{Products.Bolt, "bolt"},
 			{Products.Chat, "chat"},
@@ -86,7 +86,7 @@ namespace Photon.Pun.Demo.Shared
 		/// <summary>
 		/// LookUp dictionnary for api languages to avoid parsing this every link request
 		/// </summary>
-		static Dictionary<Languages,string> ApiLanguagesFolder = new Dictionary<Languages, string>
+		static Dictionary<Languages,string> ApiLanguagesFolder = new()
 		{
 			{Languages.English, "en"},
 			{Languages.Japanese, "ja-jp"},
@@ -97,7 +97,7 @@ namespace Photon.Pun.Demo.Shared
 		/// <summary>
 		/// LookUp dictionnary for doc languages to avoid parsing this every link request
 		/// </summary>
-		static Dictionary<Languages,string> DocLanguagesFolder = new Dictionary<Languages, string>
+		static Dictionary<Languages,string> DocLanguagesFolder = new()
 		{
 			{Languages.English, "en-us"},
 			{Languages.Japanese, "ja-jp"},
@@ -108,7 +108,7 @@ namespace Photon.Pun.Demo.Shared
 		/// <summary>
 		/// LookUp dictionnary for doc versions to avoid parsing this every link request
 		/// </summary>
-		static Dictionary<Versions,string> VersionsFolder = new Dictionary<Versions, string>
+		static Dictionary<Versions,string> VersionsFolder = new()
 		{
 			{Versions.Current, "current"},
 			{Versions.V1, "v1"},

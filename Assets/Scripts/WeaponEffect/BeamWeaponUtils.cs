@@ -7,7 +7,7 @@ namespace Syy1125.OberthEffect.WeaponEffect
 {
 public static class BeamWeaponUtils
 {
-	private static readonly List<RaycastHit2D> hits = new List<RaycastHit2D>();
+	private static readonly List<RaycastHit2D> hits = new();
 
 	public static void HandleBeamDamage(
 		DamageType damageType, float damage, float armorPierce, int ownerId,

@@ -19,7 +19,7 @@ namespace Photon.Pun.Demo.Cockpit
     {
         public Graphic UpdateIndicator;
 
-        private YieldInstruction fadeInstruction = new YieldInstruction();
+        private YieldInstruction fadeInstruction = new();
 
         float Duration = 1f;
         public void OnValueChanged()

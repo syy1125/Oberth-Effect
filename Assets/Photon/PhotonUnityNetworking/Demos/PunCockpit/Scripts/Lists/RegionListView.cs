@@ -21,7 +21,7 @@ namespace Photon.Pun.Demo.Cockpit
 
         public RegionListCell CellPrototype;
 
-		Dictionary<string, RegionListCell> regionCellList = new Dictionary<string, RegionListCell>();
+		Dictionary<string, RegionListCell> regionCellList = new();
 
 
         public void OnEnable()

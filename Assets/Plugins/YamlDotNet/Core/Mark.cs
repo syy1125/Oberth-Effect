@@ -32,7 +32,7 @@ namespace YamlDotNet.Core
         /// <summary>
         /// Gets a <see cref="Mark"/> with empty values.
         /// </summary>
-        public static readonly Mark Empty = new Mark();
+        public static readonly Mark Empty = new();
 
         /// <summary>
         /// Gets / sets the absolute offset in the file

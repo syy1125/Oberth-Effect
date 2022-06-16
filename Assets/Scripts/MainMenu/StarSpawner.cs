@@ -1,4 +1,5 @@
 using System.Collections;
+using Syy1125.OberthEffect.MainMenu;
 using UnityEngine;
 
 namespace MainMenu
