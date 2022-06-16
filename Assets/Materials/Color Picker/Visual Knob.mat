@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Visual Slider
-  m_Shader: {fileID: 4800000, guid: 005938f1b6525f844b7f59da18e193cf, type: 3}
+  m_Name: Visual Knob
+  m_Shader: {fileID: 4800000, guid: fab0b6ea27b1111448748a6774cac90c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4

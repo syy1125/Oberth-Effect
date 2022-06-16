@@ -50,8 +50,7 @@ public class ColorVisualSquare : MonoBehaviour, IPointerDownHandler, IDragHandle
 
 	public void UpdateColor(Vector3 hsv)
 	{
-		Color fullColor = Color.HSVToRGB(hsv.x, 1f, 1f);
-		_image.color = fullColor;
+		_image.color = new Color(hsv.x, 1, 1);
 
 		var anchor = new Vector2(hsv.y, hsv.z);
 		Knob.anchorMin = anchor;

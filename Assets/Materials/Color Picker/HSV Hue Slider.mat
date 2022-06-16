@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Visual Slider
-  m_Shader: {fileID: 4800000, guid: 005938f1b6525f844b7f59da18e193cf, type: 3}
+  m_Name: HSV Hue Slider
+  m_Shader: {fileID: 4800000, guid: 8b03c6a29745b1749bf505ade2b0e156, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -33,5 +33,5 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     m_Colors:
-    - _ColorChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _ColorChannel: {r: 0, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
