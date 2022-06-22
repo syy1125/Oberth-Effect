@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
@@ -78,9 +79,11 @@ public static class ModLoader
 		Initialized = true;
 	}
 
-	public static void ResetData()
+	public static void ResetMods()
 	{
-		foreach (IModLoadingPipeline pipeline in Pipelines)
+		BlockSpec.ComponentTypes.Clear();
+
+		foreach (var pipeline in Pipelines)
 		{
 			pipeline.ResetData();
 		}
@@ -90,7 +93,7 @@ public static class ModLoader
 	{
 		return (filePath, document) =>
 		{
-			var mappingNode = (YamlMappingNode) document.RootNode;
+			var mappingNode = (YamlMappingNode)document.RootNode;
 
 			foreach (string field in fields)
 			{
@@ -98,7 +101,7 @@ public static class ModLoader
 				{
 					mappingNode.Children[field] = Path.Combine(
 						Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
-						((YamlScalarNode) node).Value
+						((YamlScalarNode)node).Value
 					);
 				}
 			}
@@ -113,6 +116,7 @@ public static class ModLoader
 	#region Mod List
 
 	public static IReadOnlyList<ModListElement> AllMods { get; private set; }
+	public static IEnumerable<ModListElement> EnabledMods => AllMods.Where(mod => mod.Enabled);
 
 	public static void LoadModList()
 	{
@@ -175,7 +179,7 @@ public static class ModLoader
 			{
 				// Mod exists and validated
 				var modSpec = modList[i];
-				modSpec.Mod = LoadModSpec(modList[i].Directory);
+				modSpec.Spec = LoadModSpec(modList[i].Directory);
 				modList[i] = modSpec;
 
 				modDirectories.RemoveAt(index);
@@ -199,7 +203,7 @@ public static class ModLoader
 				{
 					Directory = modDirectory,
 					Enabled = true,
-					Mod = LoadModSpec(modDirectory)
+					Spec = LoadModSpec(modDirectory)
 				}
 			);
 		}
@@ -249,15 +253,63 @@ public static class ModLoader
 
 	public static void LoadAllEnabledContent()
 	{
+		LoadCodeMods();
+
 		LoadDocuments();
 		ParseDocuments();
 		ValidateData();
 		DataReady = true;
 	}
 
+	private static void LoadCodeMods()
+	{
+		foreach (var mod in EnabledMods)
+		{
+			if (string.IsNullOrWhiteSpace(mod.Spec.CodeModPath) ||
+			    string.IsNullOrWhiteSpace(mod.Spec.CodeModEntryPoint))
+			{
+				continue;
+			}
+			
+			Debug.Log($"Loading code mod \"{mod.Spec.DisplayName}\"");
+
+			Assembly modAssembly;
+			try
+			{
+				// Path.Join only takes up to 3 args?
+				modAssembly = Assembly.LoadFrom(
+					Path.Join(
+						Path.Join(Application.streamingAssetsPath, "Mods"),
+						Path.Join(mod.Directory, mod.Spec.CodeModPath)
+					)
+				);
+			}
+			catch (FileNotFoundException)
+			{
+				Debug.LogError(
+					$"Could not find assembly at specified location for code mod \"{mod.Spec.DisplayName}\""
+				);
+				continue;
+			}
+
+			var entryClass = modAssembly.GetType(mod.Spec.CodeModEntryPoint);
+
+			if (entryClass == null)
+			{
+				Debug.LogError(
+					$"Failed to find entry point class `{mod.Spec.CodeModEntryPoint}` for code mod \"{mod.Spec.DisplayName}\""
+				);
+				continue;
+			}
+
+			var initMethod = entryClass.GetMethod("Init", BindingFlags.Public | BindingFlags.Static);
+			initMethod?.Invoke(null, Array.Empty<object>());
+		}
+	}
+
 	private static void LoadDocuments()
 	{
-		var enabledMods = AllMods.Where(mod => mod.Enabled).ToList();
+		var enabledMods = EnabledMods.ToList();
 
 		for (var i = 0; i < enabledMods.Count; i++)
 		{
@@ -266,7 +318,7 @@ public static class ModLoader
 			{
 				LoadState = State.LoadDocuments;
 				LoadProgress = Tuple.Create(i + 1, enabledMods.Count);
-				LoadDescription = enabledMods[i].Mod.DisplayName;
+				LoadDescription = enabledMods[i].Spec.DisplayName;
 			}
 
 			foreach (IModLoadingPipeline pipeline in Pipelines)
@@ -278,11 +330,17 @@ public static class ModLoader
 
 	private static void ParseDocuments()
 	{
-		var deserializer = new DeserializerBuilder()
+		var deserializerBuilder = new DeserializerBuilder()
 			.WithTypeConverter(new Vector2TypeConverter())
 			.WithTypeConverter(new Vector2IntTypeConverter())
-			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())))
-			.Build();
+			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())));
+
+		foreach (var entry in BlockSpec.ComponentTypes)
+		{
+			deserializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
+		}
+
+		var deserializer = deserializerBuilder.Build();
 
 		foreach (IModLoadingPipeline pipeline in Pipelines)
 		{
@@ -350,7 +408,7 @@ public static class ModLoader
 		ushort stockVehicleChecksum = GetChecksum(StockVehiclePipeline.Results, level);
 
 		// Convert throws OverflowException even in unchecked. So start with uint and then truncate it down to ushort.
-		return (ushort) Convert.ToUInt32(
+		return (ushort)Convert.ToUInt32(
 			blockSpecChecksum
 			+ blockCategorySpecChecksum
 			+ textureSpecChecksum
@@ -383,7 +441,7 @@ public static class ModLoader
 
 	private static ushort CompactChecksum(ulong sum)
 	{
-		return (ushort) ((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) & 0xffff));
+		return (ushort)((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) & 0xffff));
 	}
 }
 }

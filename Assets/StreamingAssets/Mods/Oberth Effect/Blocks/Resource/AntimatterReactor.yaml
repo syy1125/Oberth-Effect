@@ -34,7 +34,8 @@ Resource:
   ResourceGenerator:
     GenerationRate:
       OberthEffect/Energy: 500
-Volatile:
-  AlwaysExplode: true
-  MaxDamage: 2000
-  MaxRadius: 10
+BlockComponents:
+  Volatile: !Volatile
+    AlwaysExplode: true
+    MaxDamage: 2000
+    MaxRadius: 10

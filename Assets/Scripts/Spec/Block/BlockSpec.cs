@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Block.Resource;
@@ -31,14 +32,47 @@ public class BlockSpec : ICustomChecksum
 	public ConstructionSpec Construction;
 	public PhysicsSpec Physics;
 	public CombatSpec Combat;
-
 	public ControlCoreSpec ControlCore;
+
+	#region Block Component Types
+
+	internal static readonly Dictionary<string, (Type SpecType, Type ComponentType)> ComponentTypes = new();
+
+	public static void Register<TSpec, TComponent>(string name) where TComponent : IBlockComponent<TSpec>
+	{
+		Register(name, typeof(TSpec), typeof(TComponent));
+	}
+
+	public static void Register(string name, Type specType, Type componentType)
+	{
+		if (!typeof(IBlockComponent<>).MakeGenericType(specType).IsAssignableFrom(componentType))
+		{
+			Debug.LogError(
+				$"Mapped component type `{componentType.FullName}` for component key `{name}` does not implement `IBlockComponent<{specType.FullName}>` and may not load correctly!"
+			);
+		}
+
+		ComponentTypes.Add(name, (specType, componentType));
+	}
+	
+	public static Type GetSpecType(string name)
+	{
+		return ComponentTypes.TryGetValue(name, out var types) ? types.SpecType : null;
+	}
+
+	public static Type GetComponentType(string name)
+	{
+		return ComponentTypes.TryGetValue(name, out var types) ? types.ComponentType : null;
+	}
+
+	#endregion
+
+	public Dictionary<string, object> BlockComponents = new();
+
 	public ResourceSpec Resource;
 	public PropulsionSpec Propulsion;
 	public TurretedWeaponSpec TurretedWeapon;
 	public FixedWeaponSpec FixedWeapon;
-
-	public VolatileSpec Volatile;
 
 	public void GetBytes(Stream stream, ChecksumLevel level)
 	{

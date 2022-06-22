@@ -103,7 +103,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		{
 			LoadFileDocuments(
 				reader,
-				new ModListElement { Mod = new ModSpec { DisplayName = modName, AllowDuplicateDefs = false } },
+				new ModListElement { Spec = new ModSpec { DisplayName = modName, AllowDuplicateDefs = false } },
 				null
 			);
 		}
@@ -173,12 +173,12 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 				if (altered.TryGetValue(id, out YamlDocument current))
 				{
-					if (!mod.Mod.AllowDuplicateDefs)
+					if (!mod.Spec.AllowDuplicateDefs)
 					{
 						Debug.LogError(
 							string.Join(
 								"\n",
-								$"Mod {mod.Mod.DisplayName} contains multiple definitions for {_name} \"{id}\".",
+								$"Mod {mod.Spec.DisplayName} contains multiple definitions for {_name} \"{id}\".",
 								"This is most likely an issue with the mod, but we will attempt to merge the definitions together anyway.",
 								$"To disable this warning, set \"{nameof(ModSpec.AllowDuplicateDefs)}\" to true in mod.json."
 							)
@@ -213,7 +213,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 			if (_documents.TryGetValue(entry.Key, out GameSpecDocument document))
 			{
 				document.SpecDocument = entry.Value;
-				document.OverrideOrder.Add(mod.Mod.DisplayName);
+				document.OverrideOrder.Add(mod.Spec.DisplayName);
 				_documents[entry.Key] = document;
 			}
 			else
@@ -222,7 +222,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 					entry.Key, new GameSpecDocument
 					{
 						SpecDocument = entry.Value,
-						OverrideOrder = new List<string>(new[] { mod.Mod.DisplayName })
+						OverrideOrder = new List<string>(new[] { mod.Spec.DisplayName })
 					}
 				);
 			}
@@ -254,8 +254,9 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 			}
 			catch (YamlException e)
 			{
+				string id = ((YamlScalarNode) document.SpecDocument.RootNode[_idField]).Value;
 				Debug.LogError(
-					$"Deserialization error {e.Message} when deserializing document\n{document.SpecDocument}"
+					$"Deserialization error {e.Message} when deserializing document with id \"{id}\""
 				);
 				var serializer = new SerializerBuilder().Build();
 				Debug.Log(serializer.Serialize(document.SpecDocument));

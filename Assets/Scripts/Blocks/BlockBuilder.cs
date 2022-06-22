@@ -108,10 +108,35 @@ public static class BlockBuilder
 			fixedWeapon.LoadSpec(blockSpec.FixedWeapon, context);
 		}
 
-		if (blockSpec.Volatile != null)
+		foreach (var entry in blockSpec.BlockComponents)
 		{
-			var volatileBlock = blockObject.AddComponent<VolatileBlock>();
-			volatileBlock.LoadSpec(blockSpec.Volatile);
+			var componentType = BlockSpec.GetComponentType(entry.Key);
+			var specType = BlockSpec.GetSpecType(entry.Key);
+			if (componentType == null || specType == null)
+			{
+				Debug.LogError($"Failed to find component types for \"{entry.Key}\"");
+				continue;
+			}
+
+			if (!specType.IsInstanceOfType(entry.Value))
+			{
+				Debug.LogError(
+					$"Received spec under key \"{entry.Key}\" but it is not of type `{specType.FullName}`. You may have forgotten to tag the component spec (\"!{entry.Key}\")."
+				);
+				continue;
+			}
+
+			var component = blockObject.AddComponent(componentType);
+
+			if (!typeof(IBlockComponent<>).MakeGenericType(specType).IsAssignableFrom(componentType))
+			{
+				Debug.LogError(
+					$"`{componentType.FullName}` does not implement `IBlockComponent<{specType.FullName}>`. Skipping spec loading."
+				);
+				continue;
+			}
+
+			componentType.GetMethod(nameof(IBlockComponent<object>.LoadSpec)).Invoke(component, new[] { entry.Value });
 		}
 
 		var blockDescription = blockObject.AddComponent<BlockDescription>();

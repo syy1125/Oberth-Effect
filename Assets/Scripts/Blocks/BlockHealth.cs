@@ -11,7 +11,7 @@ namespace Syy1125.OberthEffect.Blocks
 /// <remarks>
 /// This interface is used by block scripts to execute effects on its destruction
 /// </remarks>
-internal interface IBlockDestructionEffect : IEventSystemHandler
+public interface IBlockDestructionEffect : IEventSystemHandler
 {
 	void OnDestroyedByDamage();
 }

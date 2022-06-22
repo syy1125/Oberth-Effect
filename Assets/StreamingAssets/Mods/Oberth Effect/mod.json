@@ -1,5 +1,8 @@
-﻿{
+{
     "DisplayName": "Oberth Effect",
     "Version": "0.1",
-    "Description": "The content that comes packaged with the game"
+    "Description": "The content that comes packaged with the game",
+    "CodeModPath": "CoreMod.dll",
+    "CodeModEntryPoint": "Syy1125.OberthEffect.CoreMod.CoreMod",
+    "AllowDuplicateDefs": false
 }

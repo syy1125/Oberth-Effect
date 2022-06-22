@@ -33,7 +33,7 @@ public class GameInitializer : MonoBehaviour
 
 	private IEnumerator LoadGame()
 	{
-		Task resetTask = Task.Run(ModLoader.ResetData);
+		Task resetTask = Task.Run(ModLoader.ResetMods);
 
 		LoadText.text = "Initializing";
 		LoadProgress.Progress = null;

@@ -38,7 +38,7 @@ public static class YamlMergeHelper
 							case YamlScalarNode rightScalarNode:
 								if (rightScalarNode.Value == null)
 								{
-									output.Children[entry.Key] = new YamlScalarNode(null);
+									output.Children[entry.Key] = DeepCopy(rightScalarNode);
 									break;
 								}
 								else goto default;
@@ -66,7 +66,7 @@ public static class YamlMergeHelper
 						switch (entry.Value)
 						{
 							case YamlScalarNode rightScalarNode:
-								output.Children[entry.Key] = new YamlScalarNode(rightScalarNode.Value);
+								output.Children[entry.Key] = DeepCopy(rightScalarNode);
 								break;
 							case YamlMappingNode rightMappingNode:
 								if (leftScalarNode.Value == null)
@@ -106,14 +106,15 @@ public static class YamlMergeHelper
 		{
 			YamlMappingNode mappingNode => DeepCopy(mappingNode),
 			YamlSequenceNode sequenceNode => DeepCopy(sequenceNode),
-			YamlScalarNode scalarNode => new YamlScalarNode(scalarNode.Value),
+			YamlScalarNode scalarNode => new YamlScalarNode(scalarNode.Value)
+				{ Anchor = scalarNode.Anchor, Style = scalarNode.Style, Tag = scalarNode.Tag },
 			_ => throw new ArgumentOutOfRangeException(nameof(node))
 		};
 	}
 
 	public static YamlMappingNode DeepCopy(YamlMappingNode node)
 	{
-		var output = new YamlMappingNode();
+		var output = new YamlMappingNode { Anchor = node.Anchor, Style = node.Style, Tag = node.Tag };
 
 		foreach (KeyValuePair<YamlNode, YamlNode> entry in node.Children)
 		{
@@ -125,7 +126,7 @@ public static class YamlMergeHelper
 
 	public static YamlNode DeepCopy(YamlSequenceNode node)
 	{
-		var output = new YamlSequenceNode();
+		var output = new YamlSequenceNode { Anchor = node.Anchor, Style = node.Style, Tag = node.Tag };
 
 		foreach (YamlNode childNode in node.Children)
 		{

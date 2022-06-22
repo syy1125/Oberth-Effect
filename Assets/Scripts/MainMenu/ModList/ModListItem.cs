@@ -43,8 +43,8 @@ public class ModListItem : MonoBehaviour,
 	{
 		UpdatingElements = true;
 
-		ModName.text = $"{element.Mod.DisplayName} <size=12>v{element.Mod.Version}</size>";
-		GetComponent<Tooltip>().SetTooltip(element.Mod.Description);
+		ModName.text = $"{element.Spec.DisplayName} <size=12>v{element.Spec.Version}</size>";
+		GetComponent<Tooltip>().SetTooltip(element.Spec.Description);
 		EnableToggle.isOn = element.Enabled;
 		EnableToggle.onValueChanged.AddListener(SetModEnabled);
 

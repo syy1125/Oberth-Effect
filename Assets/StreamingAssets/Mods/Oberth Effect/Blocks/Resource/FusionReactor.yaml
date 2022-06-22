@@ -53,10 +53,11 @@ Resource:
     ActivationRenderers:
       - TextureId: OberthEffect/FusionReactorRing
         Offset: { X: 0.5, Y: 0.5 }
-Volatile:
-  AlwaysExplode: false
-  ActivationCondition:
-    ControlGroupId: OberthEffect/FusionReactor
-    MatchValues: [ On ]
-  MaxDamage: 1000
-  MaxRadius: 8
+BlockComponents:
+  Volatile: !Volatile
+    AlwaysExplode: false
+    ActivationCondition:
+      ControlGroupId: OberthEffect/FusionReactor
+      MatchValues: [ On ]
+    MaxDamage: 1000
+    MaxRadius: 8

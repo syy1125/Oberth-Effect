@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Spec.Block
+namespace Syy1125.OberthEffect.CoreMod
 {
 public class VolatileSpec
 {

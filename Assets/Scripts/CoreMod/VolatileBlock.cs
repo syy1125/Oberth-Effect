@@ -4,11 +4,12 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.WeaponEffect;
+using Syy1125.OberthEffect.Blocks;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks
+namespace Syy1125.OberthEffect.CoreMod
 {
-public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipProvider
+public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBlockDestructionEffect, ITooltipProvider
 {
 	private bool _alwaysExplode;
 	private IControlCondition _activationCondition;
@@ -18,6 +19,8 @@ public class VolatileBlock : MonoBehaviour, IBlockDestructionEffect, ITooltipPro
 
 	public void LoadSpec(VolatileSpec spec)
 	{
+		Debug.Log("Load volatile");
+		
 		_alwaysExplode = spec.AlwaysExplode;
 		_activationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_explosionOffset = spec.ExplosionOffset;

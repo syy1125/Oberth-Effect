@@ -7,7 +7,7 @@ Info:
   FullName: Compact Fusion Reactor
   Description: |
     A smaller version of the fusion reactor.
-    Minifying the fusion controls produces an adverse effect on the efficiency of the fusion reactor, though of course it is still much more powerful than fission reactors. 
+    Minifying the fusion controls produces an adverse effect on the efficiency of the fusion reactor, though it is still much more powerful than fission reactors. 
     Just like its bigger cousin, the compact fusion reactor can explode when subjected to enemy fire.
     Fusion reactors can be shut down to prevent explosions, though of course the reactor would not output any power when shut down.
 Renderers:
@@ -42,11 +42,12 @@ Resource:
       MatchValues: [ On ]
     ActivationRenderers:
       - TextureId: OberthEffect/FusionReactorSparseRing
-Volatile:
-  AlwaysExplode: false
-  ActivationCondition:
-    ControlGroupId: OberthEffect/FusionReactor
-    MatchValues: [ On ]
-  MaxDamage: 500
-  MaxRadius: 4
+BlockComponents:
+  Volatile: !Volatile
+    AlwaysExplode: false
+    ActivationCondition:
+      ControlGroupId: OberthEffect/FusionReactor
+      MatchValues: [ On ]
+    MaxDamage: 500
+    MaxRadius: 4
     

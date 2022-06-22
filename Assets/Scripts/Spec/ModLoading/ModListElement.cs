@@ -10,6 +10,6 @@ public struct ModListElement
 	public bool Enabled;
 
 	[NonSerialized]
-	public ModSpec Mod;
+	public ModSpec Spec;
 }
 }
