@@ -19,8 +19,10 @@ namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
 public abstract class AbstractWeapon :
 	MonoBehaviour,
-	IWeaponSystem, IWeaponEffectRpcRelay,
-	IResourceConsumer, IConfigComponent
+	IWeaponSystem,
+	IWeaponEffectRpcRelay,
+	IResourceConsumer,
+	IConfigComponent
 {
 	protected BlockCore Core;
 	protected IWeaponEffectEmitter WeaponEmitter;

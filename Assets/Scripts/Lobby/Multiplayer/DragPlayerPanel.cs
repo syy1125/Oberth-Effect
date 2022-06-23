@@ -10,7 +10,10 @@ namespace Syy1125.OberthEffect.Lobby.Multiplayer
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(LayoutElement))]
 [RequireComponent(typeof(PlayerPanel))]
-public class DragPlayerPanel : MonoBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler,
+public class DragPlayerPanel : MonoBehaviour,
+	IInitializePotentialDragHandler,
+	IBeginDragHandler,
+	IDragHandler,
 	IEndDragHandler
 {
 	public Texture2D GrabTexture;

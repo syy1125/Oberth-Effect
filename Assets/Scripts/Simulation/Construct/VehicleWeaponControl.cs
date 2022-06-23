@@ -17,7 +17,10 @@ using UnityEngine.InputSystem;
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class VehicleWeaponControl : MonoBehaviourPun, IWeaponSystemRegistry, IPunObservable, IVehicleDeathListener,
+public class VehicleWeaponControl : MonoBehaviourPun,
+	IWeaponSystemRegistry,
+	IPunObservable,
+	IVehicleDeathListener,
 	IIncomingMissileReceiver
 {
 	public InputActionReference LookAction;

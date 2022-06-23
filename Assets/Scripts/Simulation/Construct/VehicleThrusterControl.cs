@@ -18,7 +18,9 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(VehicleWeaponControl))]
 public class VehicleThrusterControl : MonoBehaviourPun,
-	IPunObservable, IPropulsionBlockRegistry, IVehicleDeathListener
+	IPunObservable,
+	IPropulsionBlockRegistry,
+	IVehicleDeathListener
 {
 	#region Unity Fields
 

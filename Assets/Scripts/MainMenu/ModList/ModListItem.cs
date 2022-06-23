@@ -11,7 +11,10 @@ namespace Syy1125.OberthEffect.MainMenu.ModList
 [RequireComponent(typeof(LayoutElement))]
 [RequireComponent(typeof(CanvasGroup))]
 public class ModListItem : MonoBehaviour,
-	IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler,
+	IInitializePotentialDragHandler,
+	IBeginDragHandler,
+	IDragHandler,
+	IEndDragHandler,
 	IElementControllerContext
 {
 	public GameObject DropShadowPrefab;

@@ -13,7 +13,10 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ConstructBlockManager))]
 public class VehicleCore :
-	MonoBehaviourPun, IPunInstantiateMagicCallback, IControlCoreRegistry, ITargetLockInfoProvider
+	MonoBehaviourPun,
+	IPunInstantiateMagicCallback,
+	IControlCoreRegistry,
+	ITargetLockInfoProvider
 {
 	/// <summary>
 	/// List of all "alive" vehicles.

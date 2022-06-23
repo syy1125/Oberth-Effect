@@ -94,14 +94,14 @@ public class DesignerGridMove : MonoBehaviour
 	private void UpdateZoom()
 	{
 		var scroll = ZoomAction.action.ReadValue<float>();
-		
+
 		if (AreaMask.Hovering && !Mathf.Approximately(scroll, 0f))
 		{
 			_targetZoomExponent = Mathf.Clamp(_targetZoomExponent + scroll / 10f, -2f, 1f);
 		}
-		
+
 		float zoomExponent = Mathf.SmoothDamp(_currentZoomExponent, _targetZoomExponent, ref _zoomVelocity, 0.1f);
-		
+
 		if (!Mathf.Approximately(zoomExponent, _currentZoomExponent))
 		{
 			_currentZoomExponent = zoomExponent;

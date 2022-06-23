@@ -21,7 +21,8 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(ColorContext))]
 public class ConstructBlockManager : MonoBehaviourPun,
-	IBlockCoreRegistry, IBlockLifecycleListener,
+	IBlockCoreRegistry,
+	IBlockLifecycleListener,
 	ICollisionRadiusProvider,
 	IPunObservable
 {

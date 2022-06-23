@@ -115,7 +115,7 @@ public class BlockPalette : MonoBehaviour
 		else
 		{
 			BlockPaletteSearch paletteSearch = new BlockPaletteSearch(search);
-			
+
 			foreach (KeyValuePair<string, BlockButton> entry in _buttons)
 			{
 				BlockSpec blockSpec = BlockDatabase.Instance.GetBlockSpec(entry.Key);

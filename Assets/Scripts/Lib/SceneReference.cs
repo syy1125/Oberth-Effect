@@ -63,9 +63,9 @@ public class SceneReference : ISerializationCallbackReceiver
 			// In editor we always use the asset's path
 			return GetScenePathFromAsset();
 #else
-            // At runtime we rely on the stored path value which we assume was serialized correctly at build time.
-            // See OnBeforeSerialize and OnAfterDeserialize
-            return scenePath;
+			// At runtime we rely on the stored path value which we assume was serialized correctly at build time.
+			// See OnBeforeSerialize and OnAfterDeserialize
+			return scenePath;
 #endif
 		}
 		set

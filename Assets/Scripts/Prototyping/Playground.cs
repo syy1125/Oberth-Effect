@@ -10,12 +10,13 @@ public class Playground : MonoBehaviour
 	{
 		public Dictionary<string, object> TestField;
 	}
-	
+
 	private void Start()
 	{
 		var deserializer = new DeserializerBuilder().Build();
 
-		var output = deserializer.Deserialize<TestObject>(@"---
+		var output = deserializer.Deserialize<TestObject>(
+			@"---
 TestField:
   Name: Hello
   Desc: World
@@ -25,10 +26,10 @@ TestField:
     - And:
         Some: More
         Deeply: Nested
-");
-		
+"
+		);
+
 		Debug.Log(output);
-		
 	}
 }
 }

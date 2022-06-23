@@ -93,7 +93,7 @@ public static class ModLoader
 	{
 		return (filePath, document) =>
 		{
-			var mappingNode = (YamlMappingNode)document.RootNode;
+			var mappingNode = (YamlMappingNode) document.RootNode;
 
 			foreach (string field in fields)
 			{
@@ -101,7 +101,7 @@ public static class ModLoader
 				{
 					mappingNode.Children[field] = Path.Combine(
 						Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
-						((YamlScalarNode)node).Value
+						((YamlScalarNode) node).Value
 					);
 				}
 			}
@@ -270,7 +270,7 @@ public static class ModLoader
 			{
 				continue;
 			}
-			
+
 			Debug.Log($"Loading code mod \"{mod.Spec.DisplayName}\"");
 
 			Assembly modAssembly;
@@ -408,7 +408,7 @@ public static class ModLoader
 		ushort stockVehicleChecksum = GetChecksum(StockVehiclePipeline.Results, level);
 
 		// Convert throws OverflowException even in unchecked. So start with uint and then truncate it down to ushort.
-		return (ushort)Convert.ToUInt32(
+		return (ushort) Convert.ToUInt32(
 			blockSpecChecksum
 			+ blockCategorySpecChecksum
 			+ textureSpecChecksum
@@ -441,7 +441,7 @@ public static class ModLoader
 
 	private static ushort CompactChecksum(ulong sum)
 	{
-		return (ushort)((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) & 0xffff));
+		return (ushort) ((sum & 0xffff) ^ ((sum >> 8) & 0xffff) ^ ((sum >> 16) & 0xffff) ^ ((sum >> 24) & 0xffff));
 	}
 }
 }

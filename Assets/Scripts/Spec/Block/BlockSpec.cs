@@ -52,7 +52,7 @@ public class BlockSpec : ICustomChecksum
 
 		ComponentTypes.Add(name, (specType, componentType));
 	}
-	
+
 	public static Type GetSpecType(string name)
 	{
 		return ComponentTypes.TryGetValue(name, out var types) ? types.SpecType : null;

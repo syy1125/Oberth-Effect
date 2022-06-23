@@ -73,7 +73,9 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 			if (spec.ThrustSound != null)
 			{
 				_thrustSoundId = spec.ThrustSound.SoundId;
-				_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(parent.gameObject, !context.IsMainVehicle);
+				_thrustSoundSource = SoundDatabase.Instance.CreateBlockAudioSource(
+					parent.gameObject, !context.IsMainVehicle
+				);
 				_minVolume = spec.ThrustSound.MinVolume;
 				_maxVolume = spec.ThrustSound.MaxVolume;
 

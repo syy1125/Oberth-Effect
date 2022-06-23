@@ -75,7 +75,9 @@ public static class BlockBuilder
 		return blockObject;
 	}
 
-	private static void LoadModComponent(GameObject blockObject, KeyValuePair<string, object> entry, BlockContext context)
+	private static void LoadModComponent(
+		GameObject blockObject, KeyValuePair<string, object> entry, BlockContext context
+	)
 	{
 		var componentType = BlockSpec.GetComponentType(entry.Key);
 		var specType = BlockSpec.GetSpecType(entry.Key);
@@ -103,7 +105,8 @@ public static class BlockBuilder
 			return;
 		}
 
-		componentType.GetMethod(nameof(IBlockComponent<object>.LoadSpec)).Invoke(component, new[] { entry.Value, context });
+		componentType.GetMethod(nameof(IBlockComponent<object>.LoadSpec))
+			.Invoke(component, new[] { entry.Value, context });
 	}
 }
 }
