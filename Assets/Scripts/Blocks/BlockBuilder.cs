@@ -1,4 +1,5 @@
-﻿using Syy1125.OberthEffect.Blocks.Propulsion;
+﻿using System.Collections.Generic;
+using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Foundation;
@@ -72,30 +73,6 @@ public static class BlockBuilder
 			freeGenerator.LoadSpec(blockSpec.Resource.ResourceGenerator, context);
 		}
 
-		if (blockSpec.Propulsion?.Engine != null)
-		{
-			var linearEngine = blockObject.AddComponent<LinearEngine>();
-			linearEngine.LoadSpec(blockSpec.Propulsion.Engine, context);
-		}
-
-		if (blockSpec.Propulsion?.OmniThruster != null)
-		{
-			var omniThruster = blockObject.AddComponent<OmniThruster>();
-			omniThruster.LoadSpec(blockSpec.Propulsion.OmniThruster, context);
-		}
-
-		if (blockSpec.Propulsion?.DirectionalThruster != null)
-		{
-			var directionalThruster = blockObject.AddComponent<DirectionalThruster>();
-			directionalThruster.LoadSpec(blockSpec.Propulsion.DirectionalThruster, context);
-		}
-
-		if (blockSpec.Propulsion?.ReactionWheel != null)
-		{
-			var reactionWheel = blockObject.AddComponent<ReactionWheel>();
-			reactionWheel.LoadSpec(blockSpec.Propulsion.ReactionWheel);
-		}
-
 		if (blockSpec.TurretedWeapon != null)
 		{
 			var turretedWeapon = blockObject.AddComponent<TurretedWeapon>();
@@ -110,33 +87,7 @@ public static class BlockBuilder
 
 		foreach (var entry in blockSpec.BlockComponents)
 		{
-			var componentType = BlockSpec.GetComponentType(entry.Key);
-			var specType = BlockSpec.GetSpecType(entry.Key);
-			if (componentType == null || specType == null)
-			{
-				Debug.LogError($"Failed to find component types for \"{entry.Key}\"");
-				continue;
-			}
-
-			if (!specType.IsInstanceOfType(entry.Value))
-			{
-				Debug.LogError(
-					$"Received spec under key \"{entry.Key}\" but it is not of type `{specType.FullName}`. You may have forgotten to tag the component spec (\"!{entry.Key}\")."
-				);
-				continue;
-			}
-
-			var component = blockObject.AddComponent(componentType);
-
-			if (!typeof(IBlockComponent<>).MakeGenericType(specType).IsAssignableFrom(componentType))
-			{
-				Debug.LogError(
-					$"`{componentType.FullName}` does not implement `IBlockComponent<{specType.FullName}>`. Skipping spec loading."
-				);
-				continue;
-			}
-
-			componentType.GetMethod(nameof(IBlockComponent<object>.LoadSpec)).Invoke(component, new[] { entry.Value });
+			LoadModComponent(blockObject, entry, context);
 		}
 
 		var blockDescription = blockObject.AddComponent<BlockDescription>();
@@ -149,6 +100,37 @@ public static class BlockBuilder
 		blockObject.GetComponent<ColorSchemePainter>()?.ApplyColorScheme();
 
 		return blockObject;
+	}
+
+	private static void LoadModComponent(GameObject blockObject, KeyValuePair<string, object> entry, BlockContext context)
+	{
+		var componentType = BlockSpec.GetComponentType(entry.Key);
+		var specType = BlockSpec.GetSpecType(entry.Key);
+		if (componentType == null || specType == null)
+		{
+			Debug.LogError($"Failed to find component types for \"{entry.Key}\"");
+			return;
+		}
+
+		if (!specType.IsInstanceOfType(entry.Value))
+		{
+			Debug.LogError(
+				$"Received spec under key \"{entry.Key}\" but it is not of type `{specType.FullName}`. You may have forgotten to tag the component spec (\"!{entry.Key}\")."
+			);
+			return;
+		}
+
+		var component = blockObject.AddComponent(componentType);
+
+		if (!typeof(IBlockComponent<>).MakeGenericType(specType).IsAssignableFrom(componentType))
+		{
+			Debug.LogError(
+				$"`{componentType.FullName}` does not implement `IBlockComponent<{specType.FullName}>`. Skipping spec loading."
+			);
+			return;
+		}
+
+		componentType.GetMethod(nameof(IBlockComponent<object>.LoadSpec)).Invoke(component, new[] { entry.Value, context });
 	}
 }
 }

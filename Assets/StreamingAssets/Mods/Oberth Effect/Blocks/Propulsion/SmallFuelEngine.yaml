@@ -28,8 +28,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 1
-Propulsion:
-  Engine:
+BlockComponents:
+  LinearEngine: !LinearEngine
     MaxForce: 250
     MaxResourceUse:
       OberthEffect/Fuel: 5

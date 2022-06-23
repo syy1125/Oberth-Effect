@@ -29,8 +29,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 1
-Propulsion:
-  DirectionalThruster:
+BlockComponents:
+  DirectionalThruster: !DirectionalThruster
     Up:
       MaxForce: 20
       MaxResourceUse:

@@ -28,8 +28,8 @@ Physics:
 Combat: 
   MaxHealth: 50
   ArmorValue: 1
-Propulsion: 
-  ReactionWheel: 
+BlockComponents: 
+  ReactionWheel: !ReactionWheel 
     MaxTorque: 100
     MaxResourceUse: 
       OberthEffect/Energy: 50

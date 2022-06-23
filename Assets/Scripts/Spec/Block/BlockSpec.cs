@@ -70,7 +70,6 @@ public class BlockSpec : ICustomChecksum
 	public Dictionary<string, object> BlockComponents = new();
 
 	public ResourceSpec Resource;
-	public PropulsionSpec Propulsion;
 	public TurretedWeaponSpec TurretedWeapon;
 	public FixedWeaponSpec FixedWeapon;
 

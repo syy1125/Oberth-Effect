@@ -28,8 +28,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 1
-Propulsion:
-  OmniThruster:
+BlockComponents:
+  OmniThruster: !OmniThruster
     MaxForce: 15
     MaxResourceUse:
       OberthEffect/Energy: 30

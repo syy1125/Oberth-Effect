@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
+using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Propulsion
+namespace Syy1125.OberthEffect.CoreMod.Propulsion
 {
-public abstract class AbstractThrusterBase :
-	MonoBehaviour,
+public abstract class AbstractThrusterBase : MonoBehaviour,
 	IPropulsionBlock,
 	IResourceConsumer,
 	IControlConditionReceiver,

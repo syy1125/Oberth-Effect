@@ -1,16 +1,41 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Syy1125.OberthEffect.CoreMod.Propulsion;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Spec.Validation;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class OmniThruster : AbstractThrusterBase, ITooltipProvider
+public class OmniThrusterSpec : ICustomValidation
+{
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float MaxForce;
+	public Dictionary<string, float> MaxResourceUse;
+	public ControlConditionSpec ActivationCondition;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundCurveSpec ThrustSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public ParticleSystemSpec[] Particles;
+
+	public void Validate(List<string> path, List<string> errors)
+	{
+		ValidationHelper.ValidateFields(path, this, errors);
+		path.Add(nameof(MaxResourceUse));
+		ValidationHelper.ValidateResourceDictionary(path, MaxResourceUse, errors);
+		path.RemoveAt(path.Count - 1);
+	}
+}
+
+public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSpec>, ITooltipProvider
 {
 	public const string CLASS_KEY = "OmniThruster";
 

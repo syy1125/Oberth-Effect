@@ -2,6 +2,7 @@
     "name": "Syy1125.OberthEffect.CoreMod",
     "rootNamespace": "Syy1125.OberthEffect.CoreMod",
     "references": [
+        "GUID:662c051191ee30048bf9e521db4ec4f9",
         "GUID:82f52fc1a2cecfe4e95661e70562f517",
         "GUID:d2fdbd3f39d20dc40908b031f77a2418",
         "GUID:8cc9fe19d38318c4b9a2e9d906c80dff",

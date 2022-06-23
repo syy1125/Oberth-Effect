@@ -7,14 +7,27 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
-using Syy1125.OberthEffect.Spec.Block.Propulsion;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
-public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer, IControlConditionReceiver,
+public class ReactionWheelSpec
+{
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float MaxTorque;
+	public Dictionary<string, float> MaxResourceUse;
+	public ControlConditionSpec ActivationCondition;
+}
+
+public class ReactionWheel : MonoBehaviour,
+	IBlockComponent<ReactionWheelSpec>,
+	IPropulsionBlock,
+	IResourceConsumer,
+	IControlConditionReceiver,
 	ITooltipProvider
 {
 	private float _maxTorque;
@@ -42,7 +55,7 @@ public class ReactionWheel : MonoBehaviour, IPropulsionBlock, IResourceConsumer,
 		GetComponentInParent<IControlConditionProvider>()?.RegisterBlock(this);
 	}
 
-	public void LoadSpec(ReactionWheelSpec spec)
+	public void LoadSpec(ReactionWheelSpec spec, in BlockContext context)
 	{
 		_maxTorque = spec.MaxTorque;
 		_maxResourceUse = spec.MaxResourceUse;
