@@ -1,13 +1,29 @@
 using System.Collections.Generic;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.Validation;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
-public interface IResourceStorageRegistry : IBlockRegistry<ResourceStorage>
-{}
+public class ResourceStorageSpec : ICustomValidation
+{
+	public Dictionary<string, float> StorageCapacity;
 
-public class ResourceStorage : MonoBehaviour, ITooltipProvider
+	public void Validate(List<string> path, List<string> errors)
+	{
+		ValidationHelper.ValidateFields(path, this, errors);
+		path.Add(nameof(StorageCapacity));
+		ValidationHelper.ValidateResourceDictionary(path, StorageCapacity, errors);
+		path.RemoveAt(path.Count - 1);
+	}
+}
+
+
+public class ResourceStorage : MonoBehaviour,
+	IBlockComponent<ResourceStorageSpec>,
+	IResourceStorage,
+	ITooltipProvider
 {
 	private Dictionary<string, float> _capacity;
 
@@ -16,9 +32,9 @@ public class ResourceStorage : MonoBehaviour, ITooltipProvider
 		GetComponentInParent<IResourceStorageRegistry>()?.RegisterBlock(this);
 	}
 
-	public void LoadSpec(Dictionary<string, float> spec)
+	public void LoadSpec(ResourceStorageSpec spec, in BlockContext context)
 	{
-		_capacity = spec;
+		_capacity = spec.StorageCapacity;
 	}
 
 	private void OnDisable()

@@ -30,35 +30,36 @@ Physics:
 Combat:
   MaxHealth: 150
   ArmorValue: 8
-TurretedWeapon:
-  Turret:
-    RotationSpeed: 60
-    Renderers:
-      - TextureId: OberthEffect/ArtilleryTurret
-        Scale: { X: 1.2, Y: 1.2 }
-  ProjectileWeaponEffect:
-    FiringPortOffset: { X: 0, Y: 0.6 }
-    DamageType: Kinetic
-    Damage: 400
-    ArmorPierce: 10
-    SpreadProfile: None
-    Recoil: 50
-    MaxResourceUse:
-      OberthEffect/Energy: 100
-    ColliderSize: { X: 0.2, Y: 0.5 }
-    MaxSpeed: 15
-    MaxLifetime: 8
-    PointDefenseTarget:
-      MaxHealth: 5
-      ArmorValue: 2
-    HealthDamageScaling: 0.8
-    ReloadTime: 2.5
-    ScreenShake:
-      Strength: 0.5
-      Duration: 0.8
-      DecayCurve: Quadratic
-    FireSound: 
-      SoundId: OberthEffect/Artillery
-    Renderers:
-      - TextureId: OberthEffect/Square
-        Scale: { X: 0.2, Y: 0.5 }
+BlockComponents:
+  TurretedWeapon: !TurretedWeapon
+    Turret:
+      RotationSpeed: 60
+      Renderers:
+        - TextureId: OberthEffect/ArtilleryTurret
+          Scale: { X: 1.2, Y: 1.2 }
+    ProjectileWeaponEffect:
+      FiringPortOffset: { X: 0, Y: 0.6 }
+      DamageType: Kinetic
+      Damage: 400
+      ArmorPierce: 10
+      SpreadProfile: None
+      Recoil: 50
+      MaxResourceUse:
+        OberthEffect/Energy: 100
+      ColliderSize: { X: 0.2, Y: 0.5 }
+      MaxSpeed: 15
+      MaxLifetime: 8
+      PointDefenseTarget:
+        MaxHealth: 5
+        ArmorValue: 2
+      HealthDamageScaling: 0.8
+      ReloadTime: 2.5
+      ScreenShake:
+        Strength: 0.5
+        Duration: 0.8
+        DecayCurve: Quadratic
+      FireSound: 
+        SoundId: OberthEffect/Artillery
+      Renderers:
+        - TextureId: OberthEffect/Square
+          Scale: { X: 0.2, Y: 0.5 }

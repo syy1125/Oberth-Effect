@@ -3,7 +3,7 @@ using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Weapons
+namespace Syy1125.OberthEffect.Blocks
 {
 public interface IWeaponSystemRegistry : IBlockRegistry<IWeaponSystem>
 {}

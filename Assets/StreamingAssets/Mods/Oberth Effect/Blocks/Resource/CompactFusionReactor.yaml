@@ -33,8 +33,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 2
-Resource:
-  ResourceGenerator:
+BlockComponents:
+  ResourceGenerator: !ResourceGenerator
     GenerationRate:
       OberthEffect/Energy: 100
     ActivationCondition:
@@ -42,7 +42,6 @@ Resource:
       MatchValues: [ On ]
     ActivationRenderers:
       - TextureId: OberthEffect/FusionReactorSparseRing
-BlockComponents:
   Volatile: !Volatile
     AlwaysExplode: false
     ActivationCondition:

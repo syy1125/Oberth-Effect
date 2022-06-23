@@ -31,36 +31,37 @@ Physics:
 Combat:
   MaxHealth: 150
   ArmorValue: 8
-TurretedWeapon:
-  Turret:
-    RotationSpeed: 180
-    Renderers:
-      - TextureId: OberthEffect/BeamTurret
-        Offset: { X: 0, Y: 0.2 }
-  BurstBeamWeaponEffect:
-    FiringPortOffset: { X: 0, Y: 0.6 }
-    Damage: 100
-    DamageType: Energy
-    ArmorPierce: 7.5
-    MaxResourceUse:
-      OberthEffect/Energy: 80
-    ReloadTime: 2.5
-    PreciseDuration: false
-    DurationSeconds: 0.8
-    MaxRange: 40
-    BeamWidth: 0.1
-    BeamColor: tertiary
-    ScreenShake: 
-      Strength: 0.05
-      Duration: 0.1
-      DecayCurve: Linear
-    FireSound:
-      SoundId: OberthEffect/BurstLaser
-    HitParticles:
-      - Direction: { X: 0, Y: -1 }
-        Size: 0.1
-        SpreadAngle: 30
-        MaxSpeed: 5
-        Lifetime: 0.5
-        EmissionRateOverTime: 20
-        Color: tertiary
+BlockComponents:
+  TurretedWeapon: !TurretedWeapon
+    Turret:
+      RotationSpeed: 180
+      Renderers:
+        - TextureId: OberthEffect/BeamTurret
+          Offset: { X: 0, Y: 0.2 }
+    BurstBeamWeaponEffect:
+      FiringPortOffset: { X: 0, Y: 0.6 }
+      Damage: 100
+      DamageType: Energy
+      ArmorPierce: 7.5
+      MaxResourceUse:
+        OberthEffect/Energy: 80
+      ReloadTime: 2.5
+      PreciseDuration: false
+      DurationSeconds: 0.8
+      MaxRange: 40
+      BeamWidth: 0.1
+      BeamColor: tertiary
+      ScreenShake:
+        Strength: 0.05
+        Duration: 0.1
+        DecayCurve: Linear
+      FireSound:
+        SoundId: OberthEffect/BurstLaser
+      HitParticles:
+        - Direction: { X: 0, Y: -1 }
+          Size: 0.1
+          SpreadAngle: 30
+          MaxSpeed: 5
+          Lifetime: 0.5
+          EmissionRateOverTime: 20
+          Color: tertiary

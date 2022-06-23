@@ -18,7 +18,7 @@ public class VehicleResourceManager :
 {
 	private VehicleCore _core;
 
-	private List<ResourceStorage> _storageBlocks;
+	private List<IResourceStorage> _storageBlocks;
 	private bool _storageChanged;
 	private Dictionary<string, float> _resourceCapacities;
 
@@ -34,7 +34,7 @@ public class VehicleResourceManager :
 	{
 		_core = GetComponent<VehicleCore>();
 
-		_storageBlocks = new List<ResourceStorage>();
+		_storageBlocks = new List<IResourceStorage>();
 		_storageChanged = false;
 		_resourceCapacities = new Dictionary<string, float>();
 
@@ -54,13 +54,13 @@ public class VehicleResourceManager :
 
 	#region Resource Block Access
 
-	public void RegisterBlock(ResourceStorage block)
+	public void RegisterBlock(IResourceStorage block)
 	{
 		_storageBlocks.Add(block);
 		_storageChanged = true;
 	}
 
-	public void UnregisterBlock(ResourceStorage block)
+	public void UnregisterBlock(IResourceStorage block)
 	{
 		bool success = _storageBlocks.Remove(block);
 		if (success)

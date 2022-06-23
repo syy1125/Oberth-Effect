@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Syy1125.OberthEffect.Spec.Block.Propulsion;
-using Syy1125.OberthEffect.Spec.Block.Resource;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
@@ -68,10 +66,6 @@ public class BlockSpec : ICustomChecksum
 	#endregion
 
 	public Dictionary<string, object> BlockComponents = new();
-
-	public ResourceSpec Resource;
-	public TurretedWeaponSpec TurretedWeapon;
-	public FixedWeaponSpec FixedWeapon;
 
 	public void GetBytes(Stream stream, ChecksumLevel level)
 	{

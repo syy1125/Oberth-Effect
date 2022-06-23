@@ -1,7 +1,8 @@
 ﻿using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 
-namespace Syy1125.OberthEffect.Spec.Block.Weapon
+namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
 public abstract class AbstractWeaponSpec
 {

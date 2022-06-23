@@ -1,13 +1,32 @@
 ﻿using System.Collections;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Weapons
+namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
-public class TurretedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
+public struct TurretSpec
+{
+	[ValidateRangeFloat(0f, float.PositiveInfinity)]
+	public float RotationSpeed;
+	public Vector2 TurretPivotOffset;
+	public RendererSpec[] Renderers;
+}
+
+public class TurretedWeaponSpec : AbstractWeaponSpec
+{
+	public TurretSpec Turret;
+}
+
+public class TurretedWeapon : AbstractWeapon,
+	IBlockComponent<TurretedWeaponSpec>,
+	IHasDebrisState,
+	ITooltipProvider
 {
 	public const string CLASS_KEY = "TurretedWeapon";
 

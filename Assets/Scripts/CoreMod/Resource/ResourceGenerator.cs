@@ -1,20 +1,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
-using Syy1125.OberthEffect.Spec.Block.Resource;
+using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Unity;
+using Syy1125.OberthEffect.Spec.Validation;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Resource
+namespace Syy1125.OberthEffect.CoreMod.Resource
 {
-public class ResourceGenerator :
-	MonoBehaviour,
-	IResourceConsumer, IResourceGenerator,
-	IControlConditionReceiver, IHasDebrisState, ITooltipProvider
+public class ResourceGeneratorSpec : ICustomValidation
+{
+	public Dictionary<string, float> ConsumptionRate;
+	public Dictionary<string, float> GenerationRate;
+	public ControlConditionSpec ActivationCondition;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundReferenceSpec StartSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public SoundReferenceSpec StopSound;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public RendererSpec[] ActivationRenderers;
+
+	public void Validate(List<string> path, List<string> errors)
+	{
+		ValidationHelper.ValidateFields(path, this, errors);
+		path.Add(nameof(ConsumptionRate));
+		ValidationHelper.ValidateResourceDictionary(path, ConsumptionRate, errors);
+		path.RemoveAt(path.Count - 1);
+		path.Add(nameof(GenerationRate));
+		ValidationHelper.ValidateResourceDictionary(path, GenerationRate, errors);
+		path.RemoveAt(path.Count - 1);
+	}
+}
+
+public class ResourceGenerator : MonoBehaviour,
+	IBlockComponent<ResourceGeneratorSpec>,
+	IResourceConsumer,
+	IResourceGenerator,
+	IControlConditionReceiver,
+	IHasDebrisState,
+	ITooltipProvider
 {
 	public const string CLASS_KEY = "ResourceGenerator";
 
@@ -85,7 +116,8 @@ public class ResourceGenerator :
 			_activeRenderersParent.gameObject.SetActive(_active);
 		}
 
-		GetComponentInParent<IControlConditionProvider>()?
+		GetComponentInParent<IControlConditionProvider>()
+			?
 			.MarkControlGroupsActive(_activationCondition.GetControlGroups());
 	}
 

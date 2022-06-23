@@ -28,8 +28,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 2
-Resource:
-  ResourceGenerator:
+BlockComponents:
+  ResourceGenerator: !ResourceGenerator
     ConsumptionRate:
       OberthEffect/Fuel: 5
     GenerationRate:

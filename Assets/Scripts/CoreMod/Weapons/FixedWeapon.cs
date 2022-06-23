@@ -1,12 +1,20 @@
 ﻿using System.Collections;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Weapons
+namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
-public class FixedWeapon : AbstractWeapon, IHasDebrisState, ITooltipProvider
+public class FixedWeaponSpec : AbstractWeaponSpec
+{}
+
+public class FixedWeapon : AbstractWeapon,
+	IBlockComponent<FixedWeaponSpec>,
+	IHasDebrisState,
+	ITooltipProvider
 {
 	public const string CLASS_KEY = "FixedWeapon";
 

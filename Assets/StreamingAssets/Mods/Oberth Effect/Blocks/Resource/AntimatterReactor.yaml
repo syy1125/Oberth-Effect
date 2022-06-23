@@ -30,11 +30,10 @@ Physics:
 Combat:
   MaxHealth: 120
   ArmorValue: 5
-Resource:
-  ResourceGenerator:
+BlockComponents:
+  ResourceGenerator: !ResourceGenerator
     GenerationRate:
       OberthEffect/Energy: 500
-BlockComponents:
   Volatile: !Volatile
     AlwaysExplode: true
     MaxDamage: 2000

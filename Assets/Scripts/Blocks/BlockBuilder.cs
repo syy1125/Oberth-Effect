@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using Syy1125.OberthEffect.Blocks.Propulsion;
-using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Utils;
@@ -59,30 +56,6 @@ public static class BlockBuilder
 		if (blockSpec.ControlCore != null)
 		{
 			blockObject.AddComponent<ControlCore>();
-		}
-
-		if (blockSpec.Resource?.StorageCapacity != null)
-		{
-			var resourceStorage = blockObject.AddComponent<ResourceStorage>();
-			resourceStorage.LoadSpec(blockSpec.Resource.StorageCapacity);
-		}
-
-		if (blockSpec.Resource?.ResourceGenerator != null)
-		{
-			var freeGenerator = blockObject.AddComponent<ResourceGenerator>();
-			freeGenerator.LoadSpec(blockSpec.Resource.ResourceGenerator, context);
-		}
-
-		if (blockSpec.TurretedWeapon != null)
-		{
-			var turretedWeapon = blockObject.AddComponent<TurretedWeapon>();
-			turretedWeapon.LoadSpec(blockSpec.TurretedWeapon, context);
-		}
-
-		if (blockSpec.FixedWeapon != null)
-		{
-			var fixedWeapon = blockObject.AddComponent<FixedWeapon>();
-			fixedWeapon.LoadSpec(blockSpec.FixedWeapon, context);
 		}
 
 		foreach (var entry in blockSpec.BlockComponents)

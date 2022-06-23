@@ -34,37 +34,38 @@ Physics:
 Combat:
   MaxHealth: 500
   ArmorValue: 8
-FixedWeapon:
-  ProjectileWeaponEffect:
-    FiringPortOffset: { X: 0, Y: -1 }
-    Damage: 200
-    DamageType: Kinetic
-    ArmorPierce: 10
-    SpreadProfile: None
-    AimCorrection: 2.5
-    Recoil: 50
-    MaxResourceUse:
-      OberthEffect/Energy: 100
-    ColliderSize: { X: 0.2, Y: 0.5 }
-    MaxSpeed: 250
-    MaxLifetime: 4
-    ReloadTime: 3
-    ScreenShake:
-      Strength: 1.5
-      Duration: 0.4
-      DecayCurve: Cubic
-    FireSound:
-      SoundId: OberthEffect/Railgun
-    Renderers:
-      - TextureId: OberthEffect/Square
-        Scale: { X: 0.2, Y: 0.5 }
-    TrailParticles:
-      - Direction: { X: 0, Y: -1 }
-        SpreadAngle: 180
-        EmissionRateOverTime: 0
-        EmissionRateOverDistance: 1.5
-        Size: 0.5
-        MaxSpeed: 2
-        Lifetime: 0.5
-        Color: tertiary
+BlockComponents:
+  FixedWeapon: !FixedWeapon
+    ProjectileWeaponEffect:
+      FiringPortOffset: { X: 0, Y: -1 }
+      Damage: 200
+      DamageType: Kinetic
+      ArmorPierce: 10
+      SpreadProfile: None
+      AimCorrection: 2.5
+      Recoil: 50
+      MaxResourceUse:
+        OberthEffect/Energy: 100
+      ColliderSize: { X: 0.2, Y: 0.5 }
+      MaxSpeed: 250
+      MaxLifetime: 4
+      ReloadTime: 3
+      ScreenShake:
+        Strength: 1.5
+        Duration: 0.4
+        DecayCurve: Cubic
+      FireSound:
+        SoundId: OberthEffect/Railgun
+      Renderers:
+        - TextureId: OberthEffect/Square
+          Scale: { X: 0.2, Y: 0.5 }
+      TrailParticles:
+        - Direction: { X: 0, Y: -1 }
+          SpreadAngle: 180
+          EmissionRateOverTime: 0
+          EmissionRateOverDistance: 1.5
+          Size: 0.5
+          MaxSpeed: 2
+          Lifetime: 0.5
+          Color: tertiary
         

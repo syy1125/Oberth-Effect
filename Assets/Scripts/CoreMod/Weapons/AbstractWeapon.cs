@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -14,7 +15,7 @@ using Syy1125.OberthEffect.WeaponEffect;
 using Syy1125.OberthEffect.WeaponEffect.Emitter;
 using UnityEngine;
 
-namespace Syy1125.OberthEffect.Blocks.Weapons
+namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
 public abstract class AbstractWeapon :
 	MonoBehaviour,

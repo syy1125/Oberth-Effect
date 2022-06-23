@@ -28,10 +28,3 @@ Combat:
   MaxHealth: 200
   ArmorValue: 5
 ControlCore: { }
-Resource:
-  ResourceGenerator:
-    GenerationRate:
-      OberthEffect/Energy: 100
-  StorageCapacity:
-    OberthEffect/Energy: 1000
-    OberthEffect/Fuel: 100

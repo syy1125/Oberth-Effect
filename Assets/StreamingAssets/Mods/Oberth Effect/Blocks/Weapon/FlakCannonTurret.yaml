@@ -29,35 +29,36 @@ Physics:
 Combat:
   MaxHealth: 150
   ArmorValue: 8
-TurretedWeapon:
-  Turret:
-    RotationSpeed: 720
-    Renderers:
-      - TextureId: OberthEffect/CannonTurret
-        Scale: { X: 0.8, Y: 0.8 }
-  ProjectileWeaponEffect:
-    FiringPortOffset: { X: 0, Y: 0.4 }
-    Damage: 25
-    DamageType: Explosive
-    ExplosionRadius: 1.5
-    SpreadAngle: 2.5
-    SpreadProfile: Uniform
-    Recoil: 1
-    MaxResourceUse:
-      OberthEffect/Energy: 20
-    ColliderSize: { X: 0.05, Y: 0.1 }
-    MaxSpeed: 100
-    MaxLifetime: 0.4
-    AimPointScaling: Lifetime
-    ReloadTime: 0.1
-    ScreenShake:
-      Strength: 0.1
-      Duration: 0.1
-      DecayCurve: Linear
-    FireSound: 
-      SoundId: OberthEffect/Flak
-      Volume: 0.6
-    Renderers:
-      - TextureId: OberthEffect/Square
-        Scale: { X: 0.05, Y: 0.1 }
-  DefaultBinding: PointDefense
+BlockComponents:
+  TurretedWeapon: !TurretedWeapon
+    Turret:
+      RotationSpeed: 720
+      Renderers:
+        - TextureId: OberthEffect/CannonTurret
+          Scale: { X: 0.8, Y: 0.8 }
+    ProjectileWeaponEffect:
+      FiringPortOffset: { X: 0, Y: 0.4 }
+      Damage: 25
+      DamageType: Explosive
+      ExplosionRadius: 1.5
+      SpreadAngle: 2.5
+      SpreadProfile: Uniform
+      Recoil: 1
+      MaxResourceUse:
+        OberthEffect/Energy: 20
+      ColliderSize: { X: 0.05, Y: 0.1 }
+      MaxSpeed: 100
+      MaxLifetime: 0.4
+      AimPointScaling: Lifetime
+      ReloadTime: 0.1
+      ScreenShake:
+        Strength: 0.1
+        Duration: 0.1
+        DecayCurve: Linear
+      FireSound: 
+        SoundId: OberthEffect/Flak
+        Volume: 0.6
+      Renderers:
+        - TextureId: OberthEffect/Square
+          Scale: { X: 0.05, Y: 0.1 }
+    DefaultBinding: PointDefense

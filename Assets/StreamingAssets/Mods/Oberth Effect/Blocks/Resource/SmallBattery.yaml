@@ -27,7 +27,8 @@ Physics:
 Combat:
   MaxHealth: 50
   ArmorValue: 1
-Resource:
-  StorageCapacity:
-    OberthEffect/Energy: 2000
+BlockComponents:
+  ResourceStorage: !ResourceStorage
+    StorageCapacity:
+      OberthEffect/Energy: 2000
       

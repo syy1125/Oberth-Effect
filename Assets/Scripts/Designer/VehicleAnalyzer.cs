@@ -7,7 +7,6 @@ using System.Text;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
-using Syy1125.OberthEffect.Blocks.Weapons;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -277,7 +276,7 @@ public class VehicleAnalyzer : MonoBehaviour
 				DictionaryUtils.AddDictionary(maxResourceUse, categoryResourceUse);
 			}
 
-			if (behaviour is ResourceStorage storage)
+			if (behaviour is IResourceStorage storage)
 			{
 				DictionaryUtils.AddDictionary(storage.GetCapacity(), _result.MaxResourceStorage);
 			}

@@ -32,43 +32,44 @@ Physics:
 Combat:
   MaxHealth: 200
   ArmorValue: 8
-FixedWeapon:
-  MissileLauncherEffect:
-    FiringPortOffset: { X: 0, Y: 0.5 }
-    DamageType: Kinetic
-    Damage: 500
-    ArmorPierce: 10
-    MaxResourceUse:
-      OberthEffect/Energy: 200
-    ColliderSize: { X: 0.16, Y: 1.4 }
-    LaunchTubes:
-      - Position: { X: -0.25, Y: 0 }
-        Rotation: 0
-        LaunchVelocity: { X: -5, Y: 0 }
-    MaxAcceleration: 10
-    MaxAngularAcceleration: 45
-    MaxLifetime: 20
-    ThrustActivationDelay: 0.5
-    GuidanceAlgorithm: Predictive
-    GuidanceActivationDelay: 0.1
-    PointDefenseTarget:
-      MaxHealth: 10
-      ArmorValue: 1
-    HealthDamageScaling: 0.8
-    ReloadTime: 15
-    ScreenShake:
-      Strength: 0.5
-      Duration: 1
-      DecayCurve: Linear
-    FireSound:
-      SoundId: OberthEffect/TorpedoLaunch
-    Renderers:
-      - TextureId: OberthEffect/Torpedo
-    PropulsionParticles:
-      - Offset: { X: 0, Y: -0.7 }
-        Direction: { X: 0, Y: -1 }
-        Size: 0.16
-        MaxSpeed: 10
-        EmissionRateOverTime: 200
-        Lifetime: 0.2
-        Color: orange
+BlockComponents:
+  FixedWeapon: !FixedWeapon
+    MissileLauncherEffect:
+      FiringPortOffset: { X: 0, Y: 0.5 }
+      DamageType: Kinetic
+      Damage: 500
+      ArmorPierce: 10
+      MaxResourceUse:
+        OberthEffect/Energy: 200
+      ColliderSize: { X: 0.16, Y: 1.4 }
+      LaunchTubes:
+        - Position: { X: -0.25, Y: 0 }
+          Rotation: 0
+          LaunchVelocity: { X: -5, Y: 0 }
+      MaxAcceleration: 10
+      MaxAngularAcceleration: 45
+      MaxLifetime: 20
+      ThrustActivationDelay: 0.5
+      GuidanceAlgorithm: Predictive
+      GuidanceActivationDelay: 0.1
+      PointDefenseTarget:
+        MaxHealth: 10
+        ArmorValue: 1
+      HealthDamageScaling: 0.8
+      ReloadTime: 15
+      ScreenShake:
+        Strength: 0.5
+        Duration: 1
+        DecayCurve: Linear
+      FireSound:
+        SoundId: OberthEffect/TorpedoLaunch
+      Renderers:
+        - TextureId: OberthEffect/Torpedo
+      PropulsionParticles:
+        - Offset: { X: 0, Y: -0.7 }
+          Direction: { X: 0, Y: -1 }
+          Size: 0.16
+          MaxSpeed: 10
+          EmissionRateOverTime: 200
+          Lifetime: 0.2
+          Color: orange

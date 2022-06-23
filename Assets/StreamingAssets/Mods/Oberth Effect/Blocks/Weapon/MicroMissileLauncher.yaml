@@ -30,64 +30,65 @@ Physics:
 Combat:
   MaxHealth: 200
   ArmorValue: 8
-FixedWeapon:
-  MissileLauncherEffect:
-    FiringPortOffset: { X: 0, Y: 0 }
-    DamageType: Explosive
-    Damage: 80
-    ExplosionRadius: 2
-    ProximityFuseRadius: 1
-    MaxResourceUse:
-      OberthEffect/Energy: 100
-    ColliderSize: { X: 0.1, Y: 0.2 }
-    LaunchTubes:
-      - Position: { X: -0.3, Y: 0.3 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: -0.15, Y: 0.3 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: 0.15, Y: 0.3 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: 0.3, Y: 0.3 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: -0.3, Y: -0.1 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: -0.15, Y: -0.1 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: 0.15, Y: -0.1 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-      - Position: { X: 0.3, Y: -0.1 }
-        Rotation: 0
-        LaunchVelocity: { X: 0, Y: 5 }
-    LaunchInterval: 0.1
-    MaxAcceleration: 20
-    MaxAngularAcceleration: 360
-    MaxLifetime: 4
-    ThrustActivationDelay: 0.2
-    GuidanceAlgorithm: Predictive
-    GuidanceActivationDelay: 0
-    RetargetingBehaviour: IfInvalid
-    ReloadTime: 5
-    ScreenShake:
-      Strength: 0.1
-      Duration: 0.2
-      DecayCurve: Linear
-    FireSound: 
-      SoundId: OberthEffect/MicroMissileLaunch
-    Renderers:
-      - TextureId: OberthEffect/Square
-        Scale: { X: 0.1, Y: 0.2 }
-    PropulsionParticles:
-      - Offset: { X: 0, Y: -0.1 }
-        Direction: { X: 0, Y: -1 }
-        Size: 0.08
-        MaxSpeed: 15
-        EmissionRateOverTime: 500
-        Lifetime: 0.1
-        Color: orange
+BlockComponents:
+  FixedWeapon: !FixedWeapon
+    MissileLauncherEffect:
+      FiringPortOffset: { X: 0, Y: 0 }
+      DamageType: Explosive
+      Damage: 80
+      ExplosionRadius: 2
+      ProximityFuseRadius: 1
+      MaxResourceUse:
+        OberthEffect/Energy: 100
+      ColliderSize: { X: 0.1, Y: 0.2 }
+      LaunchTubes:
+        - Position: { X: -0.3, Y: 0.3 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: -0.15, Y: 0.3 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: 0.15, Y: 0.3 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: 0.3, Y: 0.3 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: -0.3, Y: -0.1 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: -0.15, Y: -0.1 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: 0.15, Y: -0.1 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+        - Position: { X: 0.3, Y: -0.1 }
+          Rotation: 0
+          LaunchVelocity: { X: 0, Y: 5 }
+      LaunchInterval: 0.1
+      MaxAcceleration: 20
+      MaxAngularAcceleration: 360
+      MaxLifetime: 4
+      ThrustActivationDelay: 0.2
+      GuidanceAlgorithm: Predictive
+      GuidanceActivationDelay: 0
+      RetargetingBehaviour: IfInvalid
+      ReloadTime: 5
+      ScreenShake:
+        Strength: 0.1
+        Duration: 0.2
+        DecayCurve: Linear
+      FireSound: 
+        SoundId: OberthEffect/MicroMissileLaunch
+      Renderers:
+        - TextureId: OberthEffect/Square
+          Scale: { X: 0.1, Y: 0.2 }
+      PropulsionParticles:
+        - Offset: { X: 0, Y: -0.1 }
+          Direction: { X: 0, Y: -1 }
+          Size: 0.08
+          MaxSpeed: 15
+          EmissionRateOverTime: 500
+          Lifetime: 0.1
+          Color: orange
