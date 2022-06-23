@@ -7,7 +7,6 @@ public static class CoreMod
 {
 	public static void Init()
 	{
-		Debug.Log("Hello world!");
 		BlockSpec.Register<VolatileSpec, VolatileBlock>("Volatile");
 	}
 }

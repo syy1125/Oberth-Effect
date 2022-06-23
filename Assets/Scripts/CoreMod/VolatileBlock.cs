@@ -19,8 +19,6 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 
 	public void LoadSpec(VolatileSpec spec)
 	{
-		Debug.Log("Load volatile");
-		
 		_alwaysExplode = spec.AlwaysExplode;
 		_activationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 		_explosionOffset = spec.ExplosionOffset;
