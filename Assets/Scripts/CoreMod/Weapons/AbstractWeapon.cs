@@ -8,24 +8,36 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Config;
 using Syy1125.OberthEffect.Blocks.Resource;
+using Syy1125.OberthEffect.CombatSystem;
+using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Database;
-using Syy1125.OberthEffect.WeaponEffect;
-using Syy1125.OberthEffect.WeaponEffect.Emitter;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
+public abstract class AbstractWeaponSpec
+{
+	// Choose one. Only one will be installed anyway.
+	public ProjectileLauncherSpec ProjectileLauncher;
+	public MissileLauncherSpec MissileLauncher;
+	public BurstBeamLauncherSpec BurstBeamLauncher;
+
+	[RequireChecksumLevel(ChecksumLevel.Everything)]
+	public WeaponBindingGroup DefaultBinding;
+}
+
 public abstract class AbstractWeapon :
 	MonoBehaviour,
-	IWeaponSystem,
+	IWeaponBlock,
 	IWeaponEffectRpcRelay,
 	IResourceConsumer,
 	IConfigComponent
 {
 	protected BlockCore Core;
-	protected IWeaponEffectEmitter WeaponEmitter;
+	protected AbstractWeaponLauncher WeaponLauncher;
 
 	protected bool Firing;
 	protected Vector2? AimPoint;
@@ -44,53 +56,53 @@ public abstract class AbstractWeapon :
 
 	protected void OnEnable()
 	{
-		GetComponentInParent<IWeaponSystemRegistry>()?.RegisterBlock(this);
+		GetComponentInParent<IWeaponBlockRegistry>()?.RegisterBlock(this);
 		GetComponentInParent<IResourceConsumerRegistry>()?.RegisterBlock(this);
 	}
 
 	protected void OnDisable()
 	{
-		GetComponentInParent<IWeaponSystemRegistry>()?.UnregisterBlock(this);
+		GetComponentInParent<IWeaponBlockRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 	}
 
-	protected void LoadProjectileWeapon(ProjectileWeaponEffectSpec spec, in BlockContext context)
+	protected void LoadProjectileWeapon(ProjectileLauncherSpec spec, in BlockContext context)
 	{
-		var weaponEffectObject = new GameObject("ProjectileWeaponEffect");
-
-		SetWeaponEffectTransform(weaponEffectObject, spec);
-
-		var weaponEmitter = weaponEffectObject.AddComponent<ProjectileWeaponEffectEmitter>();
-		weaponEmitter.LoadSpec(spec, context);
-
-		WeaponEmitter = weaponEmitter;
+		var launcherObject = new GameObject("ProjectileLauncher");
+		
+		SetWeaponLauncherTransform(launcherObject, spec);
+		
+		var launcher = launcherObject.AddComponent<ProjectileLauncher>();
+		launcher.LoadSpec(spec, context);
+		
+		WeaponLauncher = launcher;
 	}
 
-	protected void LoadBurstBeamWeapon(BurstBeamWeaponEffectSpec spec, in BlockContext context)
+	protected void LoadBurstBeamWeapon(BurstBeamLauncherSpec spec, in BlockContext context)
 	{
-		var weaponEffectObject = new GameObject("BurstBeamWeaponEffect");
-
-		SetWeaponEffectTransform(weaponEffectObject, spec);
-
-		var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
-		weaponEmitter.LoadSpec(spec, context);
-
-		WeaponEmitter = weaponEmitter;
+		// var weaponEffectObject = new GameObject("BurstBeamWeaponEffect");
+		//
+		// SetWeaponEffectTransform(weaponEffectObject, spec);
+		//
+		// var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
+		// weaponEmitter.LoadSpec(spec, context);
+		//
+		// WeaponEmitter = weaponEmitter;
 	}
 
-	protected void LoadMissileWeapon(MissileLauncherEffectSpec spec, in BlockContext context)
+	protected void LoadMissileWeapon(MissileLauncherSpec spec, in BlockContext context)
 	{
-		var weaponEffectObject = new GameObject("MissileLauncherWeaponEffect");
-
-		SetWeaponEffectTransform(weaponEffectObject, spec);
-
-		var weaponEmitter = weaponEffectObject.AddComponent<MissileLauncherEffectEmitter>();
-		weaponEmitter.LoadSpec(spec, context);
-
-		WeaponEmitter = weaponEmitter;
+		// var weaponEffectObject = new GameObject("MissileLauncherWeaponEffect");
+		//
+		// SetWeaponEffectTransform(weaponEffectObject, spec);
+		//
+		// var weaponEmitter = weaponEffectObject.AddComponent<MissileLauncherEffectEmitter>();
+		// weaponEmitter.LoadSpec(spec, context);
+		//
+		// WeaponEmitter = weaponEmitter;
 	}
 
-	protected abstract void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec);
+	protected abstract void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec);
 
 	#endregion
 
@@ -122,7 +134,7 @@ public abstract class AbstractWeapon :
 
 	public List<ConfigItemBase> GetConfigItems()
 	{
-		return new List<ConfigItemBase>
+		return new()
 		{
 			new StringSwitchSelectConfigItem
 			{
@@ -171,7 +183,7 @@ public abstract class AbstractWeapon :
 		{
 			var target = targetData[i];
 
-			Vector2? interceptPoint = WeaponEmitter.GetInterceptPoint(
+			Vector2? interceptPoint = WeaponLauncher.GetInterceptPoint(
 				position, localVelocity,
 				target.Target.transform.position, target.Target.GetComponent<Rigidbody2D>().velocity
 			);
@@ -204,13 +216,13 @@ public abstract class AbstractWeapon :
 	public void SetAimPoint(Vector2? aimPoint)
 	{
 		AimPoint = aimPoint;
-		WeaponEmitter.SetAimPoint(aimPoint);
+		WeaponLauncher.SetAimPoint(aimPoint);
 	}
 
 	public void SetTargetPhotonId(int? targetId)
 	{
 		TargetPhotonId = targetId;
-		WeaponEmitter.TargetPhotonId = targetId;
+		WeaponLauncher.TargetPhotonId = targetId;
 	}
 
 	public void SetFiring(bool firing)
@@ -230,45 +242,45 @@ public abstract class AbstractWeapon :
 
 	public void ReceiveWeaponEmitterRpc(string methodName, object[] parameters)
 	{
-		var method = WeaponEmitter.GetType().GetMethod(
+		var method = WeaponLauncher.GetType().GetMethod(
 			methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
 		);
 
 		if (method == null)
 		{
-			Debug.LogError($"Method {methodName} does not exist for {WeaponEmitter.GetType()}");
+			Debug.LogError($"Method {methodName} does not exist for {WeaponLauncher.GetType()}");
 			return;
 		}
 
-		method.Invoke(WeaponEmitter, parameters);
+		method.Invoke(WeaponLauncher, parameters);
 	}
 
 	#endregion
 
 	public IReadOnlyDictionary<string, float> GetResourceConsumptionRateRequest()
 	{
-		return WeaponEmitter.GetResourceConsumptionRateRequest();
+		return WeaponLauncher.GetResourceConsumptionRateRequest();
 	}
 
 	public float SatisfyResourceRequestAtLevel(float level)
 	{
-		WeaponEmitter.SatisfyResourceRequestAtLevel(level);
+		WeaponLauncher.SatisfyResourceRequestAtLevel(level);
 		return level;
 	}
 
 	public float GetMaxRange()
 	{
-		return WeaponEmitter.GetMaxRange();
+		return WeaponLauncher.GetMaxRange();
 	}
 
 	public void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
-		WeaponEmitter.GetMaxFirepower(entries);
+		WeaponLauncher.GetMaxFirepower(entries);
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxResourceUseRate()
 	{
-		return WeaponEmitter.GetMaxResourceUseRate();
+		return WeaponLauncher.GetMaxResourceUseRate();
 	}
 
 	protected void AppendAggregateDamageInfo(StringBuilder builder)

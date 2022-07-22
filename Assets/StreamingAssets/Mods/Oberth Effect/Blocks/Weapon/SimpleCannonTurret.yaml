@@ -37,7 +37,7 @@ BlockComponents:
       Renderers:
         - TextureId: OberthEffect/CannonTurret
           Scale: { X: 1.2, Y: 1.2 }
-    ProjectileWeaponEffect:
+    ProjectileLauncher:
       FiringPortOffset: { X: 0, Y: 0.6 }
       DamageType: Kinetic
       Damage: 80
@@ -56,7 +56,7 @@ BlockComponents:
         DecayCurve: Quadratic
       FireSound:
         SoundId: OberthEffect/Cannon
-      Renderers:
+      ProjectileRenderers:
         - TextureId: OberthEffect/Square
           Scale: { X: 0.1, Y: 0.2 }
     

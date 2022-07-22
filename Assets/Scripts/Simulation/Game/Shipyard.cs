@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Match;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Math;
 using Syy1125.OberthEffect.Simulation.UserInterface;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Game

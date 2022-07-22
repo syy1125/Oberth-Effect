@@ -6,7 +6,7 @@ namespace Syy1125.OberthEffect.Blocks
 public class BlockDescription : MonoBehaviour, ITooltipProvider
 {
 	private string _description;
-
+	
 	public void LoadSpec(BlockSpec spec)
 	{
 		_description = spec.Info.Description?.Trim();

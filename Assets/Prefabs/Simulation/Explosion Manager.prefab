@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6895076179277297539}
   - component: {fileID: 6128263826617479159}
-  - component: {fileID: 6895076179277297538}
+  - component: {fileID: 2678943402230686335}
   m_Layer: 0
   m_Name: Explosion Manager
   m_TagString: Untagged
@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -54,7 +55,7 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &6895076179277297538
+--- !u!114 &2678943402230686335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,7 +64,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6895076179277297540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b02e337c2e35423eb7a16c055510588b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a31b3a35cd543748352a2fd24a45e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ExplosionEffectPrefab: {fileID: 5730694378348532235, guid: 8ed694af2d30df140ab2c709c58acc86, type: 3}

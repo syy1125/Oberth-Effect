@@ -14,8 +14,6 @@ GameObject:
   - component: {fileID: 1250838901545897485}
   - component: {fileID: 2320581857795097522}
   - component: {fileID: 6245963710458929962}
-  - component: {fileID: 1195545175624516676}
-  - component: {fileID: 5455290349961236363}
   - component: {fileID: 5123786432896332026}
   m_Layer: 11
   m_Name: Missile
@@ -34,6 +32,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -132,32 +131,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c17676e232c4f34a3899b94b3d53c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1195545175624516676
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7789702252903111475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eefcf20c0e64c8992a20f27cb3bf729, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5455290349961236363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7789702252903111475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af46442e4a92482799f1771c475313e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationPidResponse: 0.1
-  RotationPidBaseDerivativeTime: 5
 --- !u!114 &5123786432896332026
 MonoBehaviour:
   m_ObjectHideFlags: 0

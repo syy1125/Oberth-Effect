@@ -103,13 +103,6 @@ public class BlockSpecFactory : IObjectFactory
 				EmissionRateOverTime = 50
 			};
 		}
-		else if (type == typeof(ProjectileWeaponEffectSpec))
-		{
-			return new ProjectileWeaponEffectSpec
-			{
-				ClusterBaseAngles = new[] { 0f }
-			};
-		}
 
 
 		return _fallback.Create(type);

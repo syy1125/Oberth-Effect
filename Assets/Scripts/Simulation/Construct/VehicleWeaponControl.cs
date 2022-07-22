@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation.Game;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -18,10 +18,10 @@ namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
 public class VehicleWeaponControl : MonoBehaviourPun,
-	IWeaponSystemRegistry,
+	IWeaponBlockRegistry,
 	IPunObservable,
 	IVehicleDeathListener,
-	IIncomingMissileReceiver
+	IMissileAlertReceiver
 {
 	public InputActionReference LookAction;
 	public InputActionReference FireAction1;
@@ -34,14 +34,14 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 	private Rigidbody2D _body;
 	private Vector2 _localAimPoint;
 
-	private List<IWeaponSystem> _weapons;
+	private List<IWeaponBlock> _weapons;
 	private bool _weaponListChanged;
-	public List<Missile> IncomingMissiles { get; private set; }
+	public List<IMissileAlertSource> IncomingMissiles { get; private set; }
 	public UnityEvent OnIncomingMissileAdded;
 
 	public bool TargetLock { get; private set; }
 	public TargetLockTarget CurrentTarget { get; private set; }
-	public int? TargetPhotonViewId => CurrentTarget == null ? (int?) null : CurrentTarget.PhotonViewId;
+	public int? TargetPhotonViewId => CurrentTarget == null ? null : CurrentTarget.PhotonViewId;
 
 	private float _pdRange;
 	private ContactFilter2D _pdFilter;
@@ -51,8 +51,8 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
-		_weapons = new List<IWeaponSystem>();
-		IncomingMissiles = new List<Missile>();
+		_weapons = new();
+		IncomingMissiles = new();
 
 		_pdFilter = new ContactFilter2D
 		{
@@ -80,7 +80,7 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 
 	public void OnVehicleDeath()
 	{
-		foreach (IWeaponSystem weapon in _weapons)
+		foreach (IWeaponBlock weapon in _weapons)
 		{
 			weapon.SetFiring(false);
 		}
@@ -90,13 +90,13 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 
 	#region Weapon Registry
 
-	public void RegisterBlock(IWeaponSystem block)
+	public void RegisterBlock(IWeaponBlock block)
 	{
 		_weapons.Add(block);
 		_weaponListChanged = true;
 	}
 
-	public void UnregisterBlock(IWeaponSystem block)
+	public void UnregisterBlock(IWeaponBlock block)
 	{
 		bool success = _weapons.Remove(block);
 		if (success)
@@ -223,7 +223,7 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 		);
 	}
 
-	public void AddIncomingMissile(Missile missile)
+	public void AddIncomingMissile(IMissileAlertSource missile)
 	{
 		if (photonView.IsMine)
 		{
@@ -232,7 +232,7 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 		}
 	}
 
-	public void RemoveIncomingMissile(Missile missile)
+	public void RemoveIncomingMissile(IMissileAlertSource missile)
 	{
 		if (photonView.IsMine)
 		{
@@ -271,7 +271,7 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 		if (_pdRange > Mathf.Epsilon)
 		{
 			// If an incoming missiles is a valid point defense target, always consider it for interception
-			foreach (Missile missile in IncomingMissiles)
+			foreach (IMissileAlertSource missile in IncomingMissiles)
 			{
 				var target = missile.GetComponent<PointDefenseTarget>();
 				var hitTime = missile.GetHitTime();
@@ -326,7 +326,7 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 		List<PointDefenseTargetData> pdTargets
 	)
 	{
-		foreach (IWeaponSystem weapon in _weapons)
+		foreach (IWeaponBlock weapon in _weapons)
 		{
 			switch (weapon.WeaponBinding)
 			{

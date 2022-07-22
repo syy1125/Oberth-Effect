@@ -1,4 +1,6 @@
-﻿namespace Syy1125.OberthEffect.Spec.Validation.Attributes
+﻿using System.Linq;
+
+namespace Syy1125.OberthEffect.Spec.Validation.Attributes
 {
 public class ValidateRangeFloatAttribute : AbstractValidationAttribute
 {
@@ -20,6 +22,13 @@ public class ValidateRangeFloatAttribute : AbstractValidationAttribute
 			if (floatValue < _min || floatValue > _max)
 			{
 				throw new ValidationError($"should be in the range [{_min}, {_max}]");
+			}
+		}
+		else if (value is float[] floatArrayValue)
+		{
+			if (floatArrayValue.Any(f => f < _min || f > _max))
+			{
+				throw new ValidationError($"all elements should be in the range [{_min}, {_max}]");
 			}
 		}
 		else

@@ -2,6 +2,7 @@
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using UnityEngine;
@@ -20,23 +21,23 @@ public class FixedWeapon : AbstractWeapon,
 
 	public void LoadSpec(FixedWeaponSpec spec, in BlockContext context)
 	{
-		if (spec.ProjectileWeaponEffect != null)
+		if (spec.ProjectileLauncher != null)
 		{
-			LoadProjectileWeapon(spec.ProjectileWeaponEffect, context);
+			LoadProjectileWeapon(spec.ProjectileLauncher, context);
 		}
-		else if (spec.BurstBeamWeaponEffect != null)
+		else if (spec.BurstBeamLauncher != null)
 		{
-			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect, context);
+			LoadBurstBeamWeapon(spec.BurstBeamLauncher, context);
 		}
-		else if (spec.MissileLauncherEffect != null)
+		else if (spec.MissileLauncher != null)
 		{
-			LoadMissileWeapon(spec.MissileLauncherEffect, context);
+			LoadMissileWeapon(spec.MissileLauncher, context);
 		}
 
 		DefaultBinding = spec.DefaultBinding;
 	}
 
-	protected override void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec)
+	protected override void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec)
 	{
 		var weaponEffectTransform = weaponEffectObject.transform;
 		weaponEffectTransform.SetParent(transform);
@@ -56,7 +57,7 @@ public class FixedWeapon : AbstractWeapon,
 
 		while (isActiveAndEnabled)
 		{
-			WeaponEmitter.EmitterFixedUpdate(Core.IsMine, Firing);
+			WeaponLauncher.LauncherFixedUpdate(Core.IsMine, Firing);
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -77,7 +78,7 @@ public class FixedWeapon : AbstractWeapon,
 
 		builder.AppendLine("Fixed Weapon");
 
-		builder.Append(WeaponEmitter.GetEmitterTooltip());
+		builder.Append(WeaponLauncher.GetEmitterTooltip());
 
 		AppendAggregateDamageInfo(builder);
 

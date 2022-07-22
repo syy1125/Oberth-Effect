@@ -5,6 +5,7 @@ using System.Linq;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Foundation;
@@ -15,7 +16,6 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Unity;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -761,73 +761,75 @@ public class GameGuide : MonoBehaviour
 		);
 
 		UnpauseSimulation();
-		Rigidbody2D vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
-		GameObject missile = PhotonNetwork.Instantiate(
-			MissilePrefab.name,
-			vehicle.worldCenterOfMass + new Vector2(80f, 0f),
-			Quaternion.AngleAxis(90f, Vector3.forward),
-			data: new object[]
-			{
-				CompressionUtils.Compress(
-					JsonUtility.ToJson(
-						new MissileConfig
-						{
-							ColliderSize = new Vector2(0.16f, 1.4f),
-							Damage = 10f,
-							DamageType = DamageType.Kinetic,
-							ArmorPierce = 1f,
-							Lifetime = 60f,
+		
+		// TODO fix me
+		// Rigidbody2D vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
+		// GameObject missile = PhotonNetwork.Instantiate(
+		// 	MissilePrefab.name,
+		// 	vehicle.worldCenterOfMass + new Vector2(80f, 0f),
+		// 	Quaternion.AngleAxis(90f, Vector3.forward),
+		// 	data: new object[]
+		// 	{
+		// 		CompressionUtils.Compress(
+		// 			JsonUtility.ToJson(
+		// 				new MissileConfig
+		// 				{
+		// 					ColliderSize = new Vector2(0.16f, 1.4f),
+		// 					Damage = 10f,
+		// 					DamageType = DamageType.Kinetic,
+		// 					ArmorPierce = 1f,
+		// 					Lifetime = 60f,
+		//
+		// 					HasTarget = true,
+		// 					TargetPhotonId = vehicle.GetComponent<PhotonView>().ViewID,
+		// 					MaxAcceleration = 10f,
+		// 					MaxAngularAcceleration = 45f,
+		// 					ThrustActivationDelay = 0.1f,
+		// 					GuidanceAlgorithm = MissileGuidanceAlgorithm.Predictive,
+		// 					GuidanceActivationDelay = 0f,
+		//
+		// 					IsPointDefenseTarget = true,
+		// 					MaxHealth = 10f,
+		// 					ArmorValue = 1f,
+		// 					HealthDamageScaling = 0.8f,
+		//
+		// 					Renderers = new[]
+		// 					{
+		// 						new RendererSpec
+		// 						{
+		// 							TextureId = MissileTextureId,
+		// 							Scale = Vector2.one
+		// 						}
+		// 					},
+		// 					PropulsionParticles = new[]
+		// 					{
+		// 						new ParticleSystemSpec
+		// 						{
+		// 							Offset = new Vector2(0f, -0.7f),
+		// 							Direction = Vector2.down,
+		// 							Size = 0.16f,
+		// 							MaxSpeed = 10f,
+		// 							EmissionRateOverTime = 200f,
+		// 							Lifetime = 0.2f,
+		// 							Color = "orange"
+		// 						}
+		// 					}
+		// 				}
+		// 			)
+		// 		),
+		// 		JsonUtility.ToJson(VehicleSpawner.Vehicle.GetComponent<ColorContext>().ColorScheme)
+		// 	}
+		// );
+		// missile.GetComponent<Rigidbody2D>().velocity = vehicle.velocity;
+		// missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
 
-							HasTarget = true,
-							TargetPhotonId = vehicle.GetComponent<PhotonView>().ViewID,
-							MaxAcceleration = 10f,
-							MaxAngularAcceleration = 45f,
-							ThrustActivationDelay = 0.1f,
-							GuidanceAlgorithm = MissileGuidanceAlgorithm.Predictive,
-							GuidanceActivationDelay = 0f,
-
-							IsPointDefenseTarget = true,
-							MaxHealth = 10f,
-							ArmorValue = 1f,
-							HealthDamageScaling = 0.8f,
-
-							Renderers = new[]
-							{
-								new RendererSpec
-								{
-									TextureId = MissileTextureId,
-									Scale = Vector2.one
-								}
-							},
-							PropulsionParticles = new[]
-							{
-								new ParticleSystemSpec
-								{
-									Offset = new Vector2(0f, -0.7f),
-									Direction = Vector2.down,
-									Size = 0.16f,
-									MaxSpeed = 10f,
-									EmissionRateOverTime = 200f,
-									Lifetime = 0.2f,
-									Color = "orange"
-								}
-							}
-						}
-					)
-				),
-				JsonUtility.ToJson(VehicleSpawner.Vehicle.GetComponent<ColorContext>().ColorScheme)
-			}
-		);
-		missile.GetComponent<Rigidbody2D>().velocity = vehicle.velocity;
-		missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
-
-		yield return StartCoroutine(
-			Step(
-				"Point Defense",
-				"Now watch as your point defense cannons destroy the incoming torpedo.",
-				() => missile == null || !missile.gameObject.activeSelf
-			)
-		);
+		// yield return StartCoroutine(
+		// 	Step(
+		// 		"Point Defense",
+		// 		"Now watch as your point defense cannons destroy the incoming torpedo.",
+		// 		() => missile == null || !missile.gameObject.activeSelf
+		// 	)
+		// );
 
 		Highlight(MinimapFrame);
 		yield return StartCoroutine(

@@ -36,7 +36,7 @@ Combat:
   ArmorValue: 8
 BlockComponents:
   FixedWeapon: !FixedWeapon
-    ProjectileWeaponEffect:
+    ProjectileLauncher:
       FiringPortOffset: { X: 0, Y: -1 }
       Damage: 200
       DamageType: Kinetic
@@ -56,7 +56,7 @@ BlockComponents:
         DecayCurve: Cubic
       FireSound:
         SoundId: OberthEffect/Railgun
-      Renderers:
+      ProjectileRenderers:
         - TextureId: OberthEffect/Square
           Scale: { X: 0.2, Y: 0.5 }
       TrailParticles:

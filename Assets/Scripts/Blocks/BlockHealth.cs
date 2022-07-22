@@ -1,8 +1,8 @@
 ﻿using System;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

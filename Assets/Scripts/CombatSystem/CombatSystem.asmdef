@@ -1,0 +1,21 @@
+{
+    "name": "Syy1125.OberthEffect.CombatSystem",
+    "rootNamespace": "syy1125.OberthEffect.CombatSystem",
+    "references": [
+        "GUID:22d5dd6afdba5264eb9779354630b801",
+        "GUID:82f52fc1a2cecfe4e95661e70562f517",
+        "GUID:831409e8f9d13b5479a3baef9822ad34",
+        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
+        "GUID:d2fdbd3f39d20dc40908b031f77a2418",
+        "GUID:662c051191ee30048bf9e521db4ec4f9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

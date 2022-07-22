@@ -52,7 +52,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		_modsRoot = modsRoot;
 		_contentDirectory = contentDirectory;
 		_preprocess = preprocess;
-		_documents = new Dictionary<string, GameSpecDocument>();
+		_documents = new();
 	}
 
 	public ModLoadingPipeline(
@@ -103,7 +103,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		{
 			LoadFileDocuments(
 				reader,
-				new ModListElement { Spec = new ModSpec { DisplayName = modName, AllowDuplicateDefs = false } },
+				new() { Spec = new() { DisplayName = modName, AllowDuplicateDefs = false } },
 				null
 			);
 		}
@@ -256,7 +256,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 			{
 				string id = ((YamlScalarNode) document.SpecDocument.RootNode[_idField]).Value;
 				Debug.LogError(
-					$"Deserialization error {e.Message} when deserializing document with id \"{id}\""
+					$"Deserialization error {e} when deserializing document with id \"{id}\""
 				);
 				var serializer = new SerializerBuilder().Build();
 				Debug.Log(serializer.Serialize(document.SpecDocument));

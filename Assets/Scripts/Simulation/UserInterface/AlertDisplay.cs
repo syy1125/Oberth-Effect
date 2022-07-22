@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Simulation.Construct;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,11 +26,11 @@ public class AlertDisplay : MonoBehaviour
 	public GameObject MissileMarkerPrefab;
 
 	private AlertState _alertState;
-	private Dictionary<Missile, GameObject> _missileMarkers;
+	private Dictionary<IMissileAlertSource, GameObject> _missileMarkers;
 
 	private void Awake()
 	{
-		_missileMarkers = new Dictionary<Missile, GameObject>();
+		_missileMarkers = new();
 	}
 
 	public void SetVehicle(GameObject vehicle)
@@ -90,7 +90,7 @@ public class AlertDisplay : MonoBehaviour
 		MissileCountDisplay.color = textColor;
 
 		// Use HashSet for efficient removal when calculating missile markers
-		HashSet<Missile> missiles = new HashSet<Missile>(_weaponControl.IncomingMissiles);
+		HashSet<IMissileAlertSource> missiles = new(_weaponControl.IncomingMissiles);
 		float? minTime = missiles.Select(missile => missile.GetHitTime())
 			.Where(hitTime => hitTime != null && hitTime > 0f)
 			.Min();
@@ -120,8 +120,8 @@ public class AlertDisplay : MonoBehaviour
 			_alertState = AlertState.Idle;
 		}
 
-		List<Missile> removedKeys = new List<Missile>();
-		foreach (KeyValuePair<Missile, GameObject> entry in _missileMarkers)
+		List<IMissileAlertSource> removedKeys = new ();
+		foreach (KeyValuePair<IMissileAlertSource, GameObject> entry in _missileMarkers)
 		{
 			if (!missiles.Remove(entry.Key))
 			{
@@ -129,13 +129,13 @@ public class AlertDisplay : MonoBehaviour
 			}
 		}
 
-		foreach (Missile missile in removedKeys)
+		foreach (IMissileAlertSource missile in removedKeys)
 		{
 			Destroy(_missileMarkers[missile]);
 			_missileMarkers.Remove(missile);
 		}
 
-		foreach (Missile missile in missiles)
+		foreach (IMissileAlertSource missile in missiles)
 		{
 			var marker = Instantiate(MissileMarkerPrefab, MissileMarkerParent);
 			marker.GetComponent<HighlightTarget>().Target = missile.transform;

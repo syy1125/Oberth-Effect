@@ -7,6 +7,7 @@ using System.Text;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
+using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Common.Utils;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -14,7 +15,6 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
-using Syy1125.OberthEffect.WeaponEffect;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -306,7 +306,7 @@ public class VehicleAnalyzer : MonoBehaviour
 				}
 			}
 
-			if (behaviour is IWeaponSystem weaponSystem)
+			if (behaviour is IWeaponBlock weaponSystem)
 			{
 				weaponSystem.GetMaxFirepower(_result.MaxFirepower);
 			}

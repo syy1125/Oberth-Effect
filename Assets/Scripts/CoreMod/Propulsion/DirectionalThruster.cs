@@ -6,7 +6,6 @@ using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.Spec.Block.Propulsion;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;

@@ -16,7 +16,7 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 	)
 	{
 		photonView.RPC(
-			nameof(BlockRpc), target,
+			nameof(ReceiveBlockRpc), target,
 			position.x, position.y, componentType.ToString(), methodName, parameters
 		);
 	}
@@ -27,13 +27,13 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 	)
 	{
 		photonView.RPC(
-			nameof(BlockRpc), target,
+			nameof(ReceiveBlockRpc), target,
 			position.x, position.y, componentType.ToString(), methodName, parameters
 		);
 	}
 
 	[PunRPC]
-	public void BlockRpc(int x, int y, string type, string methodName, object[] parameters)
+	public void ReceiveBlockRpc(int x, int y, string componentType, string methodName, object[] parameters)
 	{
 		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockOccupying(new Vector2Int(x, y));
 
@@ -43,11 +43,11 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 			return;
 		}
 
-		var component = blockObject.GetComponent(type);
+		var component = blockObject.GetComponent(componentType);
 		if (component == null)
 		{
 			Debug.LogError(
-				$"Component of type `{type}` does not exist at {blockObject.name} ({x}, {y}) in {gameObject.name}"
+				$"Component of type `{componentType}` does not exist at {blockObject.name} ({x}, {y}) in {gameObject.name}"
 			);
 			return;
 		}

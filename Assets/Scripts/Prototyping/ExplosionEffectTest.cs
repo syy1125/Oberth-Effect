@@ -1,4 +1,4 @@
-﻿using Syy1125.OberthEffect.WeaponEffect;
+﻿using Syy1125.OberthEffect.CombatSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

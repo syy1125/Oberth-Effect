@@ -2,8 +2,8 @@
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Spec.Block;
-using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -48,23 +48,23 @@ public class TurretedWeapon : AbstractWeapon,
 
 		RendererHelper.AttachRenderers(_turretTransform, spec.Turret.Renderers);
 
-		if (spec.ProjectileWeaponEffect != null)
+		if (spec.ProjectileLauncher != null)
 		{
-			LoadProjectileWeapon(spec.ProjectileWeaponEffect, context);
+			LoadProjectileWeapon(spec.ProjectileLauncher, context);
 		}
-		else if (spec.BurstBeamWeaponEffect != null)
+		else if (spec.BurstBeamLauncher != null)
 		{
-			LoadBurstBeamWeapon(spec.BurstBeamWeaponEffect, context);
+			LoadBurstBeamWeapon(spec.BurstBeamLauncher, context);
 		}
-		else if (spec.MissileLauncherEffect != null)
+		else if (spec.MissileLauncher != null)
 		{
-			LoadMissileWeapon(spec.MissileLauncherEffect, context);
+			LoadMissileWeapon(spec.MissileLauncher, context);
 		}
 
 		DefaultBinding = spec.DefaultBinding;
 	}
 
-	protected override void SetWeaponEffectTransform(GameObject weaponEffectObject, AbstractWeaponEffectSpec spec)
+	protected override void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec)
 	{
 		var weaponEffectTransform = weaponEffectObject.transform;
 		weaponEffectTransform.SetParent(_turretTransform);
@@ -90,7 +90,7 @@ public class TurretedWeapon : AbstractWeapon,
 			UpdateTurretRotationState();
 			ApplyTurretRotation();
 
-			WeaponEmitter.EmitterFixedUpdate(Core.IsMine, Firing);
+			WeaponLauncher.LauncherFixedUpdate(Core.IsMine, Firing);
 
 			yield return new WaitForFixedUpdate();
 		}
@@ -117,7 +117,7 @@ public class TurretedWeapon : AbstractWeapon,
 
 	public JObject SaveDebrisState()
 	{
-		return new JObject { { "TurretAngle", _turretAngle } };
+		return new() { { "TurretAngle", _turretAngle } };
 	}
 
 	public void LoadDebrisState(JObject state)
@@ -135,7 +135,7 @@ public class TurretedWeapon : AbstractWeapon,
 			.AppendLine("  Turret")
 			.AppendLine($"    Rotation speed {_rotationSpeed}°/s");
 
-		builder.Append(WeaponEmitter.GetEmitterTooltip());
+		builder.Append(WeaponLauncher.GetEmitterTooltip());
 
 		AppendAggregateDamageInfo(builder);
 
