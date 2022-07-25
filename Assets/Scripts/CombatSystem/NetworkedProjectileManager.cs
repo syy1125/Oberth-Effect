@@ -12,7 +12,7 @@ public class NetworkedProjectileManager : SceneSingletonBehaviour
 
 	public GameObject NetworkedProjectilePrefab;
 
-	public void CreateProjectile(
+	public GameObject CreateProjectile(
 		Vector3 position, Quaternion rotation, Vector2 velocity, NetworkedProjectileConfig config
 	)
 	{
@@ -26,6 +26,8 @@ public class NetworkedProjectileManager : SceneSingletonBehaviour
 		);
 
 		projectile.GetComponent<Rigidbody2D>().velocity = velocity;
+
+		return projectile;
 	}
 }
 }

@@ -7,7 +7,7 @@ Info:
   FullName: Light Artillery Turret
   Description: |
     A powerful weapon system capable of dealing devastating damage to stationary or slow-moving targets.
-    However, the large size of artilery shells makes them vulnerable to point defense weaponry.
+    However, the large size of artillery shells makes them vulnerable to point defense weaponry.
 Renderers:
   - TextureId: OberthEffect/Square
 Construction:
@@ -52,7 +52,7 @@ BlockComponents:
       PointDefenseTarget:
         MaxHealth: 5
         ArmorValue: 2
-      HealthDamageScaling: 0.8
+      HealthDamageScaling: 0.75
       ReloadTime: 2.5
       ScreenShake:
         Strength: 0.5

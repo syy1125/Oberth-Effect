@@ -57,7 +57,7 @@ public class ProjectileLauncherSpec : AbstractWeaponLauncherSpec
 
 	public PointDefenseTargetSpec PointDefenseTarget;
 	[ValidateRangeFloat(0f, 1f)]
-	public float HealthDamageScaling = 0.8f;
+	public float HealthDamageScaling = 0.75f;
 
 	public ScreenShakeSpec ScreenShake;
 
@@ -209,7 +209,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			if (!Mathf.Approximately(networkedProjectileConfig.HealthDamageScaling, 0f))
 			{
 				builder.AppendLine(
-					$"    Damage reduced by up to {networkedProjectileConfig.HealthDamageScaling:P}, scaling with fraction of health lost"
+					$"    Damage reduced by up to {networkedProjectileConfig.HealthDamageScaling:00.#%}, scaling with fraction of health lost"
 				);
 			}
 		}
