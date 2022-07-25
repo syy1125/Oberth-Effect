@@ -83,10 +83,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 	private Rigidbody2D _body;
 	private ColorContext _colorContext;
 
-	private SimpleProjectileConfig _projectileConfig;
-
-	private PointDefenseTargetSpec _pointDefenseTarget;
-	private float _healthDamageScaling;
+	private ProjectileConfig _projectileConfig;
 
 	private int _burstCount;
 	private float _burstInterval;
@@ -115,19 +112,32 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 	{
 		base.LoadSpec(spec, context);
 
-		_projectileConfig = new()
-		{
-			ColliderSize = spec.ColliderSize,
-			Damage = spec.Damage,
-			DamageType = spec.DamageType,
-			ArmorPierce = spec.ArmorPierce,
-			ExplosionRadius = spec.ExplosionRadius,
-			ColorScheme = _colorContext.ColorScheme,
-			Renderers = spec.ProjectileRenderers,
-			TrailParticles = spec.TrailParticles
-		};
-		_pointDefenseTarget = spec.PointDefenseTarget;
-		_healthDamageScaling = spec.HealthDamageScaling;
+		_projectileConfig = spec.PointDefenseTarget == null
+			? new()
+			{
+				ColliderSize = spec.ColliderSize,
+				Damage = spec.Damage,
+				DamageType = spec.DamageType,
+				ArmorPierce = spec.ArmorPierce,
+				ExplosionRadius = spec.ExplosionRadius,
+				ColorScheme = _colorContext.ColorScheme,
+				Renderers = spec.ProjectileRenderers,
+				TrailParticles = spec.TrailParticles
+			}
+			: new NetworkedProjectileConfig
+			{
+				ColliderSize = spec.ColliderSize,
+				Damage = spec.Damage,
+				DamageType = spec.DamageType,
+				ArmorPierce = spec.ArmorPierce,
+				ExplosionRadius = spec.ExplosionRadius,
+				ColorScheme = _colorContext.ColorScheme,
+				Renderers = spec.ProjectileRenderers,
+				TrailParticles = spec.TrailParticles,
+
+				PointDefenseTarget = spec.PointDefenseTarget,
+				HealthDamageScaling = spec.HealthDamageScaling,
+			};
 
 		_burstCount = spec.BurstCount;
 		_burstInterval = spec.BurstInterval;
@@ -170,7 +180,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override string GetEmitterTooltip()
+	public override string GetLauncherTooltip()
 	{
 		var builder = new StringBuilder();
 
@@ -190,16 +200,16 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			builder.AppendLine($"    {AimCorrection}° aim correction");
 		}
 
-		if (_pointDefenseTarget != null)
+		if (_projectileConfig is NetworkedProjectileConfig { PointDefenseTarget: {} } networkedProjectileConfig)
 		{
 			builder.AppendLine(
-				$"    Projectile has <color=\"red\">{_pointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{_pointDefenseTarget.ArmorValue} armor</color>"
+				$"    Projectile has <color=\"red\">{networkedProjectileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{networkedProjectileConfig.PointDefenseTarget.ArmorValue} armor</color>"
 			);
 
-			if (!Mathf.Approximately(_healthDamageScaling, 0f))
+			if (!Mathf.Approximately(networkedProjectileConfig.HealthDamageScaling, 0f))
 			{
 				builder.AppendLine(
-					$"    Damage reduced by up to {_healthDamageScaling:P}, scaling with fraction of health lost"
+					$"    Damage reduced by up to {networkedProjectileConfig.HealthDamageScaling:P}, scaling with fraction of health lost"
 				);
 			}
 		}
@@ -351,9 +361,18 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 					speed * Mathf.Sin(deviationAngle), speed * Mathf.Cos(deviationAngle), 0f
 				);
 
-			SimpleProjectileManager.Instance.CreateProjectile(
-				position, projectileRotation, projectileVelocity, _projectileConfig
-			);
+			if (_projectileConfig is NetworkedProjectileConfig networkedProjectileConfig)
+			{
+				NetworkedProjectileManager.Instance.CreateProjectile(
+					position, projectileRotation, projectileVelocity, networkedProjectileConfig
+				);
+			}
+			else
+			{
+				SimpleProjectileManager.Instance.CreateProjectile(
+					position, projectileRotation, projectileVelocity, _projectileConfig
+				);
+			}
 		}
 
 		if (_recoil > Mathf.Epsilon)

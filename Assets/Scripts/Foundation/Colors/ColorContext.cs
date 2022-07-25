@@ -43,6 +43,7 @@ public class ColorContext : MonoBehaviour, IPunInstantiateMagicCallback
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
+		if (instantiationData.Length <= 1) return;
 		var colorScheme = JsonUtility.FromJson<ColorScheme>((string) instantiationData[1]);
 		SetColorScheme(colorScheme);
 	}

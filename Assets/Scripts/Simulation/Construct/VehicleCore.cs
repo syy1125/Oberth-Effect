@@ -41,7 +41,7 @@ public class VehicleCore :
 	private void Awake()
 	{
 		_body = GetComponent<Rigidbody2D>();
-		_controlCores = new List<ControlCore>();
+		_controlCores = new();
 	}
 
 	public void OnPhotonInstantiate(PhotonMessageInfo info)

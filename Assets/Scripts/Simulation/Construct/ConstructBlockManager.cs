@@ -448,6 +448,11 @@ public class ConstructBlockManager : MonoBehaviourPun,
 		return _collisionRadius;
 	}
 
+	public float GetCollisionSqrRadius()
+	{
+		return _collisionRadius * _collisionRadius;
+	}
+
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)

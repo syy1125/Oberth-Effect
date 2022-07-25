@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.CombatSystem
 {
+/// <summary>
+/// Represents something that can be hit by weapons and take damage.
+/// Damage calculation is generally transmitted to the owner of the damageable object as a request, where the owner will update its health accordingly.
+/// </summary>
 public interface IDamageable
 {
 	Transform transform { get; }
@@ -12,7 +16,7 @@ public interface IDamageable
 
 	int OwnerId { get; }
 
-	Tuple<Vector2, Vector2> GetExplosionDamageBounds();
+	(Vector2 Min, Vector2 Max) GetExplosionDamageBounds();
 
 	int GetExplosionGridResolution();
 

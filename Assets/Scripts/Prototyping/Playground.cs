@@ -13,23 +13,7 @@ public class Playground : MonoBehaviour
 
 	private void Start()
 	{
-		var deserializer = new DeserializerBuilder().Build();
-
-		var output = deserializer.Deserialize<TestObject>(
-			@"---
-TestField:
-  Name: Hello
-  Desc: World
-  Other:
-    - This
-    - That
-    - And:
-        Some: More
-        Deeply: Nested
-"
-		);
-
-		Debug.Log(output);
+		Debug.Log(JsonUtility.ToJson(new Color(1f, 0f, 0f, 1f)));
 	}
 }
 }

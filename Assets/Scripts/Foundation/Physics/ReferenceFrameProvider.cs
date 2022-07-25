@@ -50,28 +50,28 @@ public class ReferenceFrameProvider : MonoBehaviourPun
 		}
 	}
 
-	public float GetMinApproachDistance(Vector2 start, Vector2 end)
+	public float GetMinApproachSqrDistance(Vector2 start, Vector2 end)
 	{
 		start -= PrevPosition;
 		end -= (Vector2) transform.position;
 
 		// Project start -> origin vector onto start -> end vector and find t, the interpolation factor
 		Vector2 line = end - start;
-		if (Mathf.Approximately(line.sqrMagnitude, 0f)) return start.magnitude;
+		if (Mathf.Approximately(line.sqrMagnitude, 0f)) return start.sqrMagnitude;
 		float t = -Vector2.Dot(start, line) / line.sqrMagnitude;
 
-		// If t is within [0,1], the perpendicular line is the shortest. Otherwise, one of the endpoints is the closes.
+		// If t is within [0,1], the perpendicular line is the shortest. Otherwise, one of the endpoints is the closest.
 		if (t <= 0)
 		{
-			return start.magnitude;
+			return start.sqrMagnitude;
 		}
 		else if (t >= 1)
 		{
-			return end.magnitude;
+			return end.sqrMagnitude;
 		}
 		else
 		{
-			return Vector2.Lerp(start, end, t).magnitude;
+			return Vector2.Lerp(start, end, t).sqrMagnitude;
 		}
 	}
 
@@ -116,7 +116,7 @@ public class ReferenceFrameProvider : MonoBehaviourPun
 		RayStep[] steps = new RayStep[stepCount];
 		for (int i = 0; i < stepCount; i++)
 		{
-			steps[i] = new RayStep
+			steps[i] = new()
 			{
 				T = (float) i / stepCount,
 				WorldStart = worldPoints[i],

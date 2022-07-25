@@ -20,7 +20,7 @@ internal interface IModLoadingPipeline
 {
 	void ResetData();
 	void LoadModContent(ModListElement mod);
-	void ParseSpecInstances(IDeserializer deserializer, Action<string, int, int> onProgress);
+	void ParseSpecInstances(Action<string, int, int> onProgress);
 	void ValidateResults();
 }
 
@@ -229,7 +229,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		}
 	}
 
-	public void ParseSpecInstances(IDeserializer deserializer, Action<string, int, int> onProgress)
+	public void ParseSpecInstances(Action<string, int, int> onProgress)
 	{
 		List<SpecInstance<TSpec>> instances = new List<SpecInstance<TSpec>>();
 
@@ -243,9 +243,9 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 			try
 			{
-				var spec = deserializer.Deserialize<TSpec>(new YamlStreamParserAdapter(document.SpecDocument.RootNode));
+				var spec = ModLoader.Deserializer.Deserialize<TSpec>(new YamlStreamParserAdapter(document.SpecDocument.RootNode));
 				instances.Add(
-					new SpecInstance<TSpec>
+					new()
 					{
 						Spec = spec,
 						OverrideOrder = document.OverrideOrder
@@ -258,8 +258,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 				Debug.LogError(
 					$"Deserialization error {e} when deserializing document with id \"{id}\""
 				);
-				var serializer = new SerializerBuilder().Build();
-				Debug.Log(serializer.Serialize(document.SpecDocument));
+				Debug.Log(ModLoader.Serializer.Serialize(document.SpecDocument));
 			}
 		}
 
@@ -292,12 +291,12 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		}
 	}
 
-	public IEnumerable<T> GetResultIds<T>(Predicate<TSpec> @where = null)
+	public IEnumerable<T> GetResultIds<T>(Predicate<TSpec> where = null)
 	{
 		FieldInfo idField = typeof(TSpec).GetField(_idField, BindingFlags.Public | BindingFlags.Instance);
 		Debug.Assert(idField != null, nameof(idField) + " != null");
 
-		return @where == null
+		return where == null
 			? Results.Select(instance => (T) idField.GetValue(instance.Spec))
 			: Results.Where(instance => @where(instance.Spec)).Select(instance => (T) idField.GetValue(instance.Spec));
 	}

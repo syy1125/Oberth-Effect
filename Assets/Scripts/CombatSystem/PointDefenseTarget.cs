@@ -1,6 +1,7 @@
 ﻿using System;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Spec.Block.Weapon;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -34,16 +35,11 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 		_body = GetComponent<Rigidbody2D>();
 	}
 
-	public void Init(float maxHealth, float armorValue, Vector2 colliderSize)
+	public void Init(PointDefenseTargetSpec spec, Vector2 colliderSize)
 	{
-		_maxHealth = maxHealth;
-		_armor = armorValue;
+		_health = _maxHealth = spec.MaxHealth;
+		_armor = spec.ArmorValue;
 		_boundHalfSize = colliderSize / 2;
-	}
-
-	private void Start()
-	{
-		_health = _maxHealth;
 	}
 
 	public void TutorialSetOwnerOverride(int ownerId)
@@ -51,9 +47,9 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 		OwnerId = ownerId;
 	}
 
-	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
+	public (Vector2 Min, Vector2 Max) GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(-_boundHalfSize, _boundHalfSize);
+		return (-_boundHalfSize, _boundHalfSize);
 	}
 
 	public int GetExplosionGridResolution()

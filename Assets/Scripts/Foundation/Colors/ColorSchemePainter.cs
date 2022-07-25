@@ -15,7 +15,7 @@ public class ColorSchemePainter : MonoBehaviour
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
-		_block = new MaterialPropertyBlock();
+		_block = new();
 	}
 
 	private void OnEnable()

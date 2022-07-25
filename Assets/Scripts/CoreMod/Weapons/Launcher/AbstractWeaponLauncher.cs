@@ -111,15 +111,15 @@ public abstract class AbstractWeaponLauncher : MonoBehaviour
 		return ReloadResourceUse;
 	}
 
-	public abstract string GetEmitterTooltip();
+	public abstract string GetLauncherTooltip();
 
 	protected void ExecuteWeaponSideEffects()
 	{
 		if (_fireSound != null)
 		{
 			PlayFireSound();
-			GetComponentInParent<IWeaponEffectRpcRelay>()
-				.InvokeWeaponEffectRpc(nameof(PlayFireSound), RpcTarget.Others);
+			GetComponentInParent<IWeaponLauncherRpcRelay>()
+				.InvokeWeaponLauncherRpc(nameof(PlayFireSound), RpcTarget.Others);
 		}
 	}
 

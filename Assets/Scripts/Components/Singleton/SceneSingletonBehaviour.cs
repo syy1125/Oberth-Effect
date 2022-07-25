@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Components.Singleton
 {
-public abstract class SceneSingletonBehaviour<T> : MonoBehaviour where T : SceneSingletonBehaviour<T>
+public abstract class SceneSingletonBehaviour : MonoBehaviour
 {
 	private PropertyInfo _instance;
 

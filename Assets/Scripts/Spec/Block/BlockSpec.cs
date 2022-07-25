@@ -34,7 +34,18 @@ public class BlockSpec : ICustomChecksum
 
 	#region Block Component Types
 
-	internal static readonly Dictionary<string, (Type SpecType, Type ComponentType)> ComponentTypes = new();
+	private static readonly Dictionary<string, (Type SpecType, Type ComponentType)> ComponentTypes = new();
+
+	static BlockSpec()
+	{
+		ModLoader.OnAugmentSerializer += AugmentSerializer;
+		ModLoader.OnResetMods += ResetComponentTypes;
+	}
+
+	private static void ResetComponentTypes()
+	{
+		ComponentTypes.Clear();
+	}
 
 	public static void Register<TSpec, TComponent>(string name) where TComponent : IBlockComponent<TSpec>
 	{
@@ -46,11 +57,20 @@ public class BlockSpec : ICustomChecksum
 		if (!typeof(IBlockComponent<>).MakeGenericType(specType).IsAssignableFrom(componentType))
 		{
 			Debug.LogError(
-				$"Mapped component type `{componentType.FullName}` for component key `{name}` does not implement `IBlockComponent<{specType.FullName}>` and may not load correctly!"
+				$"Mapped block component type `{componentType.FullName}` for key `{name}` does not implement `IBlockComponent<{specType.FullName}>` and may not load correctly!"
 			);
 		}
 
 		ComponentTypes.Add(name, (specType, componentType));
+	}
+
+	private static void AugmentSerializer(SerializerBuilder serializerBuilder, DeserializerBuilder deserializerBuilder)
+	{
+		foreach (var entry in ComponentTypes)
+		{
+			serializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
+			deserializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
+		}
 	}
 
 	public static Type GetSpecType(string name)

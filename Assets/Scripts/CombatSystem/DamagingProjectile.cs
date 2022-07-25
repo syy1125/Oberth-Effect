@@ -27,6 +27,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 	private Coroutine _lateFixedUpdate;
 
 	private List<ReferenceFrameProvider.RayStep[]> _allSteps = new();
+	private List<RaycastHit2D> _hitResults = new();
 
 #if UNITY_EDITOR
 	private List<Tuple<Vector2, Vector2>> _tracePoints = new();
@@ -119,8 +120,8 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 			var radiusProvider = referenceFrame.GetComponent<ICollisionRadiusProvider>();
 			if (radiusProvider == null) continue;
 
-			float approachDistance = referenceFrame.GetMinApproachDistance(prevPosition, currentPosition);
-			if (approachDistance <= radiusProvider.GetCollisionRadius())
+			float approachSqrDistance = referenceFrame.GetMinApproachSqrDistance(prevPosition, currentPosition);
+			if (approachSqrDistance <= radiusProvider.GetCollisionSqrRadius())
 			{
 				_allSteps.Add(referenceFrame.GetRaySteps(prevPosition, currentPosition));
 			}
@@ -136,9 +137,8 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 
 	private void TraceRaySteps(IEnumerable<ReferenceFrameProvider.RayStep> steps, float timeLimit)
 	{
-		StringBuilder warningBuilder = new StringBuilder();
+		var warningBuilder = new StringBuilder();
 
-		RaycastHit2D[] results = new RaycastHit2D[5];
 		bool damageChanged = false;
 
 		foreach (var step in steps)
@@ -151,7 +151,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 
 			Vector2 direction = step.WorldEnd - step.WorldStart;
 			int hits = Physics2D.Raycast(
-				step.WorldStart, direction, LayerConstants.WeaponHitFilter, results, direction.magnitude
+				step.WorldStart, direction, LayerConstants.WeaponHitFilter, _hitResults, direction.magnitude
 			);
 
 			if (hits >= 5)
@@ -161,7 +161,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 
 			for (int i = 0; i < hits; i++)
 			{
-				var hitResult = ResolveHit(step, results[i]);
+				var hitResult = ResolveHit(step, _hitResults[i]);
 
 				switch (hitResult)
 				{

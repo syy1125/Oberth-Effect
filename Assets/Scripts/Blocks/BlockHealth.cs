@@ -74,9 +74,9 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		_health = _maxHealth;
 	}
 
-	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
+	public (Vector2 Min, Vector2 Max) GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(_explosionBoundsMin, _explosionBoundsMax);
+		return (_explosionBoundsMin, _explosionBoundsMax);
 	}
 
 	public int GetExplosionGridResolution()

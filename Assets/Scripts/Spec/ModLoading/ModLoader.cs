@@ -37,6 +37,9 @@ public static class ModLoader
 	public static Tuple<int, int> LoadProgress;
 	public static string LoadDescription;
 
+	public static Action OnResetMods;
+	public static Action<SerializerBuilder, DeserializerBuilder> OnAugmentSerializer;
+
 	private static string _modsRoot = null;
 
 	internal static ModLoadingPipeline<BlockSpec> BlockPipeline;
@@ -46,6 +49,9 @@ public static class ModLoader
 	internal static ModLoadingPipeline<VehicleResourceSpec> VehicleResourcePipeline;
 	internal static ModLoadingPipeline<ControlGroupSpec> ControlGroupPipeline;
 	internal static ModLoadingPipeline<StockVehicleSpec> StockVehiclePipeline;
+
+	public static ISerializer Serializer { get; private set; }
+	public static IDeserializer Deserializer { get; private set; }
 
 	private static IEnumerable<IModLoadingPipeline> Pipelines => new IModLoadingPipeline[]
 	{
@@ -59,19 +65,19 @@ public static class ModLoader
 	{
 		_modsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
 
-		BlockPipeline = new ModLoadingPipeline<BlockSpec>(_modsRoot, "Blocks");
-		BlockCategoryPipeline = new ModLoadingPipeline<BlockCategorySpec>(_modsRoot, "Block Categories");
-		TexturePipeline = new ModLoadingPipeline<TextureSpec>(
+		BlockPipeline = new(_modsRoot, "Blocks");
+		BlockCategoryPipeline = new(_modsRoot, "Block Categories");
+		TexturePipeline = new(
 			_modsRoot, "Textures",
 			ResolveAbsolutePaths(nameof(TextureSpec.ImagePath))
 		);
-		SoundPipeline = new ModLoadingPipeline<SoundSpec>(
+		SoundPipeline = new(
 			_modsRoot, "Sounds",
 			ResolveAbsolutePaths(nameof(SoundSpec.SoundPath))
 		);
-		VehicleResourcePipeline = new ModLoadingPipeline<VehicleResourceSpec>(_modsRoot, "Vehicle Resources");
-		ControlGroupPipeline = new ModLoadingPipeline<ControlGroupSpec>(_modsRoot, "Control Groups");
-		StockVehiclePipeline = new ModLoadingPipeline<StockVehicleSpec>(
+		VehicleResourcePipeline = new(_modsRoot, "Vehicle Resources");
+		ControlGroupPipeline = new(_modsRoot, "Control Groups");
+		StockVehiclePipeline = new(
 			_modsRoot, "Stock Vehicles",
 			ResolveAbsolutePaths(nameof(StockVehicleSpec.VehiclePath))
 		);
@@ -81,7 +87,7 @@ public static class ModLoader
 
 	public static void ResetMods()
 	{
-		BlockSpec.ComponentTypes.Clear();
+		OnResetMods.Invoke();
 
 		foreach (var pipeline in Pipelines)
 		{
@@ -330,21 +336,24 @@ public static class ModLoader
 
 	private static void ParseDocuments()
 	{
+		var serializerBuilder = new SerializerBuilder()
+			.WithTypeConverter(new Vector2TypeConverter())
+			.WithTypeConverter(new Vector2IntTypeConverter())
+			.WithTypeConverter(new ColorTypeConverter());
+
 		var deserializerBuilder = new DeserializerBuilder()
 			.WithTypeConverter(new Vector2TypeConverter())
 			.WithTypeConverter(new Vector2IntTypeConverter())
 			.WithObjectFactory(new TextureSpecFactory(new BlockSpecFactory(new DefaultObjectFactory())));
 
-		foreach (var entry in BlockSpec.ComponentTypes)
-		{
-			deserializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
-		}
+		OnAugmentSerializer?.Invoke(serializerBuilder, deserializerBuilder);
 
-		var deserializer = deserializerBuilder.Build();
+		Serializer = serializerBuilder.Build();
+		Deserializer = deserializerBuilder.Build();
 
 		foreach (IModLoadingPipeline pipeline in Pipelines)
 		{
-			pipeline.ParseSpecInstances(deserializer, OnParseProgress);
+			pipeline.ParseSpecInstances(OnParseProgress);
 		}
 	}
 
@@ -367,18 +376,13 @@ public static class ModLoader
 			LoadDescription = null;
 		}
 
-		ValidateBlockIdAttribute.ValidIds =
-			new HashSet<string>(BlockPipeline.GetResultIds<string>(spec => spec.Enabled));
+		ValidateBlockIdAttribute.ValidIds = new(BlockPipeline.GetResultIds<string>(spec => spec.Enabled));
 		ValidateBlockCategoryIdAttribute.ValidIds =
-			new HashSet<string>(BlockCategoryPipeline.GetResultIds<string>(spec => spec.Enabled));
-		ValidateTextureIdAttribute.ValidIds =
-			new HashSet<string>(TexturePipeline.GetResultIds<string>());
-		ValidateSoundIdAttribute.ValidIds =
-			new HashSet<string>(SoundPipeline.GetResultIds<string>());
-		ValidateVehicleResourceIdAttribute.ValidIds =
-			new HashSet<string>(VehicleResourcePipeline.GetResultIds<string>());
-		ValidateControlGroupIdAttribute.ValidIds =
-			new HashSet<string>(ControlGroupPipeline.GetResultIds<string>());
+			new(BlockCategoryPipeline.GetResultIds<string>(spec => spec.Enabled));
+		ValidateTextureIdAttribute.ValidIds = new(TexturePipeline.GetResultIds<string>());
+		ValidateSoundIdAttribute.ValidIds = new(SoundPipeline.GetResultIds<string>());
+		ValidateVehicleResourceIdAttribute.ValidIds = new(VehicleResourcePipeline.GetResultIds<string>());
+		ValidateControlGroupIdAttribute.ValidIds = new(ControlGroupPipeline.GetResultIds<string>());
 
 		foreach (IModLoadingPipeline pipeline in Pipelines)
 		{

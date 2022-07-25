@@ -135,7 +135,7 @@ public class TurretedWeapon : AbstractWeapon,
 			.AppendLine("  Turret")
 			.AppendLine($"    Rotation speed {_rotationSpeed}°/s");
 
-		builder.Append(WeaponLauncher.GetEmitterTooltip());
+		builder.Append(WeaponLauncher.GetLauncherTooltip());
 
 		AppendAggregateDamageInfo(builder);
 

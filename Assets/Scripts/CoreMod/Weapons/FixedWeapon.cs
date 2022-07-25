@@ -78,7 +78,7 @@ public class FixedWeapon : AbstractWeapon,
 
 		builder.AppendLine("Fixed Weapon");
 
-		builder.Append(WeaponLauncher.GetEmitterTooltip());
+		builder.Append(WeaponLauncher.GetLauncherTooltip());
 
 		AppendAggregateDamageInfo(builder);
 

@@ -4,31 +4,13 @@ using System.Reflection;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Components.Singleton;
-using Syy1125.OberthEffect.Foundation.Colors;
-using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Lib.Utils;
-using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CombatSystem
 {
-[Serializable]
-public struct SimpleProjectileConfig
-{
-	public Vector2 ColliderSize;
-	public float Damage;
-	public DamageType DamageType;
-	public float ArmorPierce; // Note that explosive damage will always have armor pierce of 1
-	public float ExplosionRadius; // Only relevant for explosive damage
-	public float Lifetime;
-
-	public ColorScheme ColorScheme;
-	public RendererSpec[] Renderers;
-	public ParticleSystemSpec[] TrailParticles;
-}
-
 [RequireComponent(typeof(PhotonView))]
-public class SimpleProjectileManager : SceneSingletonBehaviourPun<SimpleProjectileManager>
+public class SimpleProjectileManager : SceneSingletonBehaviourPun
 {
 	public static SimpleProjectileManager Instance { get; private set; }
 
@@ -46,7 +28,7 @@ public class SimpleProjectileManager : SceneSingletonBehaviourPun<SimpleProjecti
 	private Queue<int> _recycledIds = new();
 
 	public void CreateProjectile(
-		Vector3 position, Quaternion rotation, Vector2 velocity, SimpleProjectileConfig config
+		Vector3 position, Quaternion rotation, Vector2 velocity, ProjectileConfig config
 	)
 	{
 		int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
@@ -83,7 +65,7 @@ public class SimpleProjectileManager : SceneSingletonBehaviourPun<SimpleProjecti
 
 		double lag = (PhotonNetwork.Time + 4294967.295 - createTime) % 4294967.295;
 		Vector3 spawnPosition = position + (Vector3) velocity * (float) lag;
-		var config = JsonUtility.FromJson<SimpleProjectileConfig>(CompressionUtils.Decompress(configData));
+		var config = JsonUtility.FromJson<ProjectileConfig>(CompressionUtils.Decompress(configData));
 
 		if (playerProjectiles[projectileId] == null)
 		{

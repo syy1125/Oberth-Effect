@@ -32,12 +32,12 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetLockInfoProvider
 	private void Awake()
 	{
 		_collider = GetComponent<BoxCollider2D>();
-		_damage = new LinkedList<DamageInstance>();
+		_damage = new();
 	}
 
-	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
+	public (Vector2 Min, Vector2 Max) GetExplosionDamageBounds()
 	{
-		return Tuple.Create(_collider.offset - _collider.size / 2, _collider.offset + _collider.size / 2);
+		return (_collider.offset - _collider.size / 2, _collider.offset + _collider.size / 2);
 	}
 
 	public int GetExplosionGridResolution()

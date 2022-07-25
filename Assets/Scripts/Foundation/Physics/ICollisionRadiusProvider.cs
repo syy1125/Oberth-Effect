@@ -3,5 +3,6 @@
 public interface ICollisionRadiusProvider
 {
 	float GetCollisionRadius();
+	float GetCollisionSqrRadius();
 }
 }

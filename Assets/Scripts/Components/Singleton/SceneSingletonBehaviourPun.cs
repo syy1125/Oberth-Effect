@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Components.Singleton
 {
-public abstract class SceneSingletonBehaviourPun<T> : MonoBehaviourPun where T : SceneSingletonBehaviourPun<T>
+public abstract class SceneSingletonBehaviourPun : MonoBehaviourPun
 {
 	private PropertyInfo _instance;
 

@@ -184,9 +184,9 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 		return ParentBody.GetEffectiveVelocity(time) + _orbit.GetStateVectorAt(time).Item2;
 	}
 
-	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
+	public (Vector2 Min, Vector2 Max) GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(_explosionHull.min, _explosionHull.max);
+		return (_explosionHull.min, _explosionHull.max);
 	}
 
 	public int GetExplosionGridResolution()

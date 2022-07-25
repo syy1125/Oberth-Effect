@@ -139,4 +139,41 @@ public sealed class Vector2IntTypeConverter : IYamlTypeConverter
 		emitter.Emit(new MappingEnd());
 	}
 }
+
+/// <summary>
+/// Only used for serialization. Default deserialization works just fine.
+/// </summary>
+public sealed class ColorTypeConverter : IYamlTypeConverter
+{
+	public bool Accepts(Type type)
+	{
+		return type == typeof(Color);
+	}
+
+	public object ReadYaml(IParser parser, Type type)
+	{
+		throw new NotImplementedException();
+	}
+
+	public void WriteYaml(IEmitter emitter, object value, Type type)
+	{
+		var color = (Color) value;
+		
+		emitter.Emit(new MappingStart(null, null, false, MappingStyle.Any));
+		
+		emitter.Emit(new Scalar(null, "r"));
+		emitter.Emit(new Scalar(null, color.r.ToString(CultureInfo.InvariantCulture)));
+		
+		emitter.Emit(new Scalar(null, "g"));
+		emitter.Emit(new Scalar(null, color.g.ToString(CultureInfo.InvariantCulture)));
+		
+		emitter.Emit(new Scalar(null, "b"));
+		emitter.Emit(new Scalar(null, color.b.ToString(CultureInfo.InvariantCulture)));
+		
+		emitter.Emit(new Scalar(null, "a"));
+		emitter.Emit(new Scalar(null, color.a.ToString(CultureInfo.InvariantCulture)));
+		
+		emitter.Emit(new MappingEnd());
+	}
+}
 }

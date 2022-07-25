@@ -12,6 +12,11 @@ public class ConstantCollisionRadiusProvider : MonoBehaviour, ICollisionRadiusPr
 		return Radius;
 	}
 
+	public float GetCollisionSqrRadius()
+	{
+		return Radius * Radius;
+	}
+
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Color.magenta;

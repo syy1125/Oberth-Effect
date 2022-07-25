@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
 [RequireComponent(typeof(Rigidbody2D))]
-public class SynchronizeTransformView : MonoBehaviourPun, IPunObservable
+public class SynchronizeTransformRigidbody2DView : MonoBehaviourPun, IPunObservable
 {
 	private Rigidbody2D _body;
 

@@ -18,7 +18,7 @@ public class SimpleProjectileController : MonoBehaviour, IProjectileController
 	public bool IsMine { get; set; }
 	public int OwnerId => PlayerId;
 
-	public void LoadConfig(SimpleProjectileConfig config)
+	public void LoadConfig(ProjectileConfig config)
 	{
 		GetComponent<ColorContext>().SetColorScheme(config.ColorScheme);
 
@@ -35,6 +35,8 @@ public class SimpleProjectileController : MonoBehaviour, IProjectileController
 		{
 			gameObject.AddComponent<ProjectileParticleTrail>().LoadTrailParticles(config.TrailParticles);
 		}
+		
+		GetComponent<ColorSchemePainter>()?.ApplyColorScheme();
 	}
 
 	public void InvokeProjectileRpc(Type componentType, string methodName, Player target, params object[] parameters)

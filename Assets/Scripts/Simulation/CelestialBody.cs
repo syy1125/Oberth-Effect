@@ -125,9 +125,9 @@ public class CelestialBody : MonoBehaviourPun, IDamageable
 	public bool IsMine => true;
 	public int OwnerId => photonView.OwnerActorNr;
 
-	public Tuple<Vector2, Vector2> GetExplosionDamageBounds()
+	public (Vector2 Min, Vector2 Max) GetExplosionDamageBounds()
 	{
-		return new Tuple<Vector2, Vector2>(Vector2.zero, Vector2.zero);
+		return (Vector2.zero, Vector2.zero);
 	}
 
 	public int GetExplosionGridResolution()

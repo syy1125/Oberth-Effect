@@ -11,7 +11,6 @@ using Syy1125.OberthEffect.Blocks.Resource;
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Foundation.Enums;
-using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -32,7 +31,7 @@ public abstract class AbstractWeaponSpec
 public abstract class AbstractWeapon :
 	MonoBehaviour,
 	IWeaponBlock,
-	IWeaponEffectRpcRelay,
+	IWeaponLauncherRpcRelay,
 	IResourceConsumer,
 	IConfigComponent
 {
@@ -80,14 +79,14 @@ public abstract class AbstractWeapon :
 
 	protected void LoadBurstBeamWeapon(BurstBeamLauncherSpec spec, in BlockContext context)
 	{
-		// var weaponEffectObject = new GameObject("BurstBeamWeaponEffect");
-		//
-		// SetWeaponEffectTransform(weaponEffectObject, spec);
-		//
-		// var weaponEmitter = weaponEffectObject.AddComponent<BurstBeamWeaponEffectEmitter>();
-		// weaponEmitter.LoadSpec(spec, context);
-		//
-		// WeaponEmitter = weaponEmitter;
+		var launcherObject = new GameObject("BurstBeamLauncher");
+		
+		SetWeaponLauncherTransform(launcherObject, spec);
+		
+		var launcher = launcherObject.AddComponent<BurstBeamLauncher>();
+		launcher.LoadSpec(spec, context);
+		
+		WeaponLauncher = launcher;
 	}
 
 	protected void LoadMissileWeapon(MissileLauncherSpec spec, in BlockContext context)
@@ -230,17 +229,17 @@ public abstract class AbstractWeapon :
 		Firing = firing;
 	}
 
-	public void InvokeWeaponEffectRpc(
+	public void InvokeWeaponLauncherRpc(
 		string methodName, RpcTarget rpcTarget, params object[] parameters
 	)
 	{
 		GetComponentInParent<IBlockRpcRelay>().InvokeBlockRpc(
-			Core.RootPosition, GetType(), nameof(ReceiveWeaponEmitterRpc), rpcTarget,
+			Core.RootPosition, GetType(), nameof(ReceiveWeaponLauncherRpc), rpcTarget,
 			methodName, parameters
 		);
 	}
 
-	public void ReceiveWeaponEmitterRpc(string methodName, object[] parameters)
+	public void ReceiveWeaponLauncherRpc(string methodName, object[] parameters)
 	{
 		var method = WeaponLauncher.GetType().GetMethod(
 			methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance

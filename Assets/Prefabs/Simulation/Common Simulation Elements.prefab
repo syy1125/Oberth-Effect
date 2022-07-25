@@ -480,8 +480,9 @@ GameObject:
   - component: {fileID: 605100185742460136}
   - component: {fileID: 3487553513624847125}
   - component: {fileID: 8015784617388321867}
+  - component: {fileID: 4994967164016987784}
   m_Layer: 0
-  m_Name: Simple Projectile Manager
+  m_Name: Projectile Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -537,6 +538,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SimpleProjectilePrefab: {fileID: 7789702252903111475, guid: 21e4e24b22cbe084f926c15507cc2a3e, type: 3}
+--- !u!114 &4994967164016987784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743851114057752490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 952c614909ed436ba8b533436748df7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkedProjectilePrefab: {fileID: 7789702252903111475, guid: 8cd236ee3b1666844bbb7a8519e20188, type: 3}
 --- !u!1 &2437504665083030365
 GameObject:
   m_ObjectHideFlags: 0

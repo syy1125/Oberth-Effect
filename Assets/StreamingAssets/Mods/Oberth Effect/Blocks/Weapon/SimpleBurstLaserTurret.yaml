@@ -38,7 +38,7 @@ BlockComponents:
       Renderers:
         - TextureId: OberthEffect/BeamTurret
           Offset: { X: 0, Y: 0.2 }
-    BurstBeamWeaponEffect:
+    BurstBeamLauncher:
       FiringPortOffset: { X: 0, Y: 0.6 }
       Damage: 100
       DamageType: Energy

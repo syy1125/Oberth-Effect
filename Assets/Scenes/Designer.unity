@@ -1681,7 +1681,7 @@ MonoBehaviour:
   HelpScreen: {fileID: 490843313}
   TestDriveScene:
     sceneAsset: {fileID: 102900000, guid: 5d4fb7245d9a8304b84d56ef2fd63b8f, type: 3}
-    scenePath: Assets/Scenes/Test Drive Room.unity
+    scenePath: Assets/Scenes/Levels/Test Drive Room.unity
   MainMenuScene:
     sceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
     scenePath: Assets/Scenes/Main Menu.unity
@@ -5559,6 +5559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}

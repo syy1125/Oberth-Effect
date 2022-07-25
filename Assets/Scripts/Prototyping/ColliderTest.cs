@@ -49,7 +49,7 @@ public class ColliderTest : MonoBehaviour
 			foreach (var referenceFrame in ReferenceFrameProvider.ReferenceFrames)
 			{
 				Debug.Log(
-					$"Estimated min distance to {referenceFrame.name} is {referenceFrame.GetMinApproachDistance(prevPosition, transform.position)}"
+					$"Estimated min distance to {referenceFrame.name} is {referenceFrame.GetMinApproachSqrDistance(prevPosition, transform.position)}"
 				);
 			}
 

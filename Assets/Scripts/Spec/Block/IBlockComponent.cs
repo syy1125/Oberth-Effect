@@ -2,7 +2,7 @@
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
-public interface IBlockComponent<TSpec>
+public interface IBlockComponent<in TSpec>
 {
 	void LoadSpec(TSpec spec, in BlockContext context);
 }
