@@ -49,10 +49,10 @@ public class VehicleBuilder : MonoBehaviour
 
 	private void Awake()
 	{
-		_posToBlock = new Dictionary<Vector2Int, VehicleBlueprint.BlockInstance>();
-		_blockToPos = new Dictionary<VehicleBlueprint.BlockInstance, Vector2Int[]>();
-		_blockToObject = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
-		_connectedBlocks = new HashSet<VehicleBlueprint.BlockInstance>();
+		_posToBlock = new();
+		_blockToPos = new();
+		_blockToObject = new();
+		_connectedBlocks = new();
 	}
 
 	public void InitBlueprint()

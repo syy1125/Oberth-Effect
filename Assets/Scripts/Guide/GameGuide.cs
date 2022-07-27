@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks.Propulsion;
 using Syy1125.OberthEffect.Blocks.Resource;
@@ -761,75 +762,80 @@ public class GameGuide : MonoBehaviour
 		);
 
 		UnpauseSimulation();
-		
-		// TODO fix me
-		// Rigidbody2D vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
-		// GameObject missile = PhotonNetwork.Instantiate(
-		// 	MissilePrefab.name,
-		// 	vehicle.worldCenterOfMass + new Vector2(80f, 0f),
-		// 	Quaternion.AngleAxis(90f, Vector3.forward),
-		// 	data: new object[]
-		// 	{
-		// 		CompressionUtils.Compress(
-		// 			JsonUtility.ToJson(
-		// 				new MissileConfig
-		// 				{
-		// 					ColliderSize = new Vector2(0.16f, 1.4f),
-		// 					Damage = 10f,
-		// 					DamageType = DamageType.Kinetic,
-		// 					ArmorPierce = 1f,
-		// 					Lifetime = 60f,
-		//
-		// 					HasTarget = true,
-		// 					TargetPhotonId = vehicle.GetComponent<PhotonView>().ViewID,
-		// 					MaxAcceleration = 10f,
-		// 					MaxAngularAcceleration = 45f,
-		// 					ThrustActivationDelay = 0.1f,
-		// 					GuidanceAlgorithm = MissileGuidanceAlgorithm.Predictive,
-		// 					GuidanceActivationDelay = 0f,
-		//
-		// 					IsPointDefenseTarget = true,
-		// 					MaxHealth = 10f,
-		// 					ArmorValue = 1f,
-		// 					HealthDamageScaling = 0.8f,
-		//
-		// 					Renderers = new[]
-		// 					{
-		// 						new RendererSpec
-		// 						{
-		// 							TextureId = MissileTextureId,
-		// 							Scale = Vector2.one
-		// 						}
-		// 					},
-		// 					PropulsionParticles = new[]
-		// 					{
-		// 						new ParticleSystemSpec
-		// 						{
-		// 							Offset = new Vector2(0f, -0.7f),
-		// 							Direction = Vector2.down,
-		// 							Size = 0.16f,
-		// 							MaxSpeed = 10f,
-		// 							EmissionRateOverTime = 200f,
-		// 							Lifetime = 0.2f,
-		// 							Color = "orange"
-		// 						}
-		// 					}
-		// 				}
-		// 			)
-		// 		),
-		// 		JsonUtility.ToJson(VehicleSpawner.Vehicle.GetComponent<ColorContext>().ColorScheme)
-		// 	}
-		// );
-		// missile.GetComponent<Rigidbody2D>().velocity = vehicle.velocity;
-		// missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
 
-		// yield return StartCoroutine(
-		// 	Step(
-		// 		"Point Defense",
-		// 		"Now watch as your point defense cannons destroy the incoming torpedo.",
-		// 		() => missile == null || !missile.gameObject.activeSelf
-		// 	)
-		// );
+		var vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
+
+		// Reflection hell as this part cannot reference CoreMod in compile time.
+		var guidanceSpecType =
+			Type.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystemSpec")!;
+		var predictiveGuidance = Activator.CreateInstance(guidanceSpecType);
+
+		guidanceSpecType.GetField("MaxAcceleration").SetValue(predictiveGuidance, 10f);
+		guidanceSpecType.GetField("MaxAngularAcceleration").SetValue(predictiveGuidance, 45f);
+		guidanceSpecType.GetField("ThrustActivationDelay").SetValue(predictiveGuidance, 0.1f);
+		guidanceSpecType.GetField("GuidanceActivationDelay").SetValue(predictiveGuidance, 0f);
+		guidanceSpecType.GetField("PropulsionParticles").SetValue(
+			predictiveGuidance, new[]
+			{
+				new ParticleSystemSpec
+				{
+					Offset = new Vector2(0f, -0.7f),
+					Direction = Vector2.down,
+					Size = 0.16f,
+					MaxSpeed = 10f,
+					EmissionRateOverTime = 200f,
+					Lifetime = 0.2f,
+					Color = "orange"
+				}
+			}
+		);
+
+		GameObject missile = NetworkedProjectileManager.Instance.CreateProjectile(
+			vehicle.worldCenterOfMass + new Vector2(80f, 0f),
+			Quaternion.AngleAxis(90f, Vector3.forward),
+			vehicle.velocity,
+			new()
+			{
+				ColliderSize = new(0.16f, 1.4f),
+				Damage = 10f,
+				DamageType = DamageType.Kinetic,
+				ArmorPierce = 1f,
+				Lifetime = 60f,
+
+				PointDefenseTarget = new()
+				{
+					MaxHealth = 10f,
+					ArmorValue = 1f,
+				},
+				HealthDamageScaling = 0.75f,
+
+				ProjectileComponents = new() { { "PredictiveGuidance", predictiveGuidance } },
+
+				Renderers = new[]
+				{
+					new RendererSpec
+					{
+						TextureId = MissileTextureId,
+						Scale = Vector2.one
+					}
+				},
+			}
+		);
+
+		var guidanceSystemType =
+			Type.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystem");
+		guidanceSystemType.GetMethod("SetTargetId", BindingFlags.NonPublic).Invoke(
+			missile.GetComponent(guidanceSystemType), new object[] { vehicle.GetComponent<PhotonView>().ViewID }
+		);
+		missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
+
+		yield return StartCoroutine(
+			Step(
+				"Point Defense",
+				"Now watch as your point defense cannons destroy the incoming torpedo.",
+				() => missile == null || !missile.gameObject.activeSelf
+			)
+		);
 
 		Highlight(MinimapFrame);
 		yield return StartCoroutine(

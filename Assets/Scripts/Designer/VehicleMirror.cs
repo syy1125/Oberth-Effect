@@ -83,7 +83,7 @@ public class VehicleMirror : MonoBehaviour
 
 	public void ReloadVehicle()
 	{
-		// TODO reposition mirror indicator
+		// Mirror indicator will automatically reposition in LateUpdate
 	}
 }
 }
