@@ -264,6 +264,12 @@ public class VehicleBuilder : MonoBehaviour
 		{
 			BlockSpec spec = BlockDatabase.Instance.GetBlockSpec(blockInstance.BlockId);
 
+			if (spec == null)
+			{
+				Debug.LogWarning($"Block with id {blockInstance.BlockId} not found!");
+				continue;
+			}
+
 			var positions = new List<Vector2Int>();
 
 			foreach (Vector3Int localPosition in new BlockBounds(

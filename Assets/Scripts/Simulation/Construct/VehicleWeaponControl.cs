@@ -244,7 +244,11 @@ public class VehicleWeaponControl : MonoBehaviourPun,
 	{
 		for (int i = 0; i < IncomingMissiles.Count;)
 		{
-			if (IncomingMissiles[i] == null || !IncomingMissiles[i].isActiveAndEnabled)
+			if (
+				IncomingMissiles[i] == null
+				|| IncomingMissiles[i].Equals(null)
+				|| !IncomingMissiles[i].isActiveAndEnabled
+			)
 			{
 				IncomingMissiles.RemoveAt(i);
 			}
