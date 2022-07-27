@@ -71,5 +71,5 @@ BlockComponents:
         DecayCurve: Linear
       FireSound:
         SoundId: OberthEffect/TorpedoLaunch
-      Renderers:
+      MissileRenderers:
         - TextureId: OberthEffect/Torpedo

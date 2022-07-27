@@ -34,7 +34,7 @@ Combat:
   ArmorValue: 8
 BlockComponents:
   FixedWeapon: !FixedWeapon
-    MissileLauncherEffect:
+    MissileLauncher:
       FiringPortOffset: { X: 0, Y: 0.5 }
       DamageType: Kinetic
       Damage: 500
@@ -71,5 +71,5 @@ BlockComponents:
         DecayCurve: Linear
       FireSound:
         SoundId: OberthEffect/TorpedoLaunch
-      Renderers:
+      MissileRenderers:
         - TextureId: OberthEffect/Torpedo
