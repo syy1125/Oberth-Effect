@@ -91,14 +91,14 @@ public abstract class AbstractWeapon :
 
 	protected void LoadMissileWeapon(MissileLauncherSpec spec, in BlockContext context)
 	{
-		// var weaponEffectObject = new GameObject("MissileLauncherWeaponEffect");
-		//
-		// SetWeaponEffectTransform(weaponEffectObject, spec);
-		//
-		// var weaponEmitter = weaponEffectObject.AddComponent<MissileLauncherEffectEmitter>();
-		// weaponEmitter.LoadSpec(spec, context);
-		//
-		// WeaponEmitter = weaponEmitter;
+		var launcherObject = new GameObject("MissileLauncher");
+		
+		SetWeaponLauncherTransform(launcherObject, spec);
+		
+		var launcher = launcherObject.AddComponent<MissileLauncher>();
+		launcher.LoadSpec(spec, context);
+		
+		WeaponLauncher = launcher;
 	}
 
 	protected abstract void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec);

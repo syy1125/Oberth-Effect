@@ -49,8 +49,6 @@ public class MissileLauncherSpec : AbstractWeaponLauncherSpec
 	public float ReloadTime;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public RendererSpec[] MissileRenderers;
-	[RequireChecksumLevel(ChecksumLevel.Strict)]
-	public ParticleSystemSpec[] PropulsionParticles;
 
 	public ScreenShakeSpec ScreenShake;
 }
@@ -104,6 +102,15 @@ public class MissileLauncher : AbstractWeaponLauncher
 		};
 
 		_guidanceSystem = spec.GuidanceSystem;
+		switch (_guidanceSystem)
+		{
+			case PredictiveGuidanceSystemSpec:
+				_missileConfig.ProjectileComponents.Add("PredictiveGuidance", _guidanceSystem);
+				break;
+			default:
+				Debug.LogError($"Unexpected guidance system type `{_guidanceSystem.GetType()}`");
+				break;
+		}
 
 		if (spec.PointDefenseTarget != null)
 		{
@@ -197,30 +204,13 @@ public class MissileLauncher : AbstractWeaponLauncher
 		var firingPort = _launchTubes[_activeLauncherIndex].FiringPort;
 		Vector3 localLaunchVelocity = _launchTubes[_activeLauncherIndex].LaunchVelocity;
 
-		if (TargetPhotonId == null)
-		{
-			_guidanceSystem.HasTarget = false;
-			_guidanceSystem.TargetPhotonId = 0;
-		}
-		else
-		{
-			_guidanceSystem.HasTarget = true;
-			_guidanceSystem.TargetPhotonId = TargetPhotonId.Value;
-		}
+		Vector2 initialVelocity = _body.GetPointVelocity(firingPort.position)
+		                          + (Vector2) transform.TransformVector(localLaunchVelocity);
 
-		GameObject missile = PhotonNetwork.Instantiate(
-			"Missile", firingPort.position, firingPort.rotation,
-			data: new object[]
-			{
-				CompressionUtils.Compress(JsonUtility.ToJson(_missileConfig)),
-				JsonUtility.ToJson(_colorContext.ColorScheme)
-			}
+		GameObject missile = NetworkedProjectileManager.Instance.CreateProjectile(
+			firingPort.position, firingPort.rotation, initialVelocity,
+			_missileConfig
 		);
-
-		var missileBody = missile.GetComponent<Rigidbody2D>();
-		missileBody.velocity =
-			_body.GetPointVelocity(firingPort.position)
-			+ (Vector2) transform.TransformVector(localLaunchVelocity);
 
 		foreach (var component in missile.GetComponents<IRemoteControlledProjectileComponent>())
 		{

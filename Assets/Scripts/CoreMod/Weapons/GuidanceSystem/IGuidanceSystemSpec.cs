@@ -4,9 +4,6 @@ namespace Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem
 {
 public interface IGuidanceSystemSpec
 {
-	bool HasTarget { set; }
-	int TargetPhotonId { set; }
-
 	string GetGuidanceSystemTooltip();
 	float GetMaxRange(float initialSpeed, float lifetime);
 

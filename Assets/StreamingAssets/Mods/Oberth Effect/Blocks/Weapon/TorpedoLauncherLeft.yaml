@@ -46,12 +46,20 @@ BlockComponents:
         - Position: { X: -0.25, Y: 0 }
           Rotation: 0
           LaunchVelocity: { X: -5, Y: 0 }
-      MaxAcceleration: 10
-      MaxAngularAcceleration: 45
       MaxLifetime: 20
-      ThrustActivationDelay: 0.5
-      GuidanceAlgorithm: Predictive
-      GuidanceActivationDelay: 0.1
+      GuidanceSystem: !PredictiveGuidance
+        MaxAcceleration: 10
+        MaxAngularAcceleration: 45
+        ThrustActivationDelay: 0.5
+        GuidanceActivationDelay: 0.1
+        PropulsionParticles:
+          - Offset: { X: 0, Y: -0.7 }
+            Direction: { X: 0, Y: -1 }
+            Size: 0.16
+            MaxSpeed: 10
+            EmissionRateOverTime: 200
+            Lifetime: 0.2
+            Color: orange
       PointDefenseTarget:
         MaxHealth: 10
         ArmorValue: 1
@@ -65,11 +73,3 @@ BlockComponents:
         SoundId: OberthEffect/TorpedoLaunch
       Renderers:
         - TextureId: OberthEffect/Torpedo
-      PropulsionParticles:
-        - Offset: { X: 0, Y: -0.7 }
-          Direction: { X: 0, Y: -1 }
-          Size: 0.16
-          MaxSpeed: 10
-          EmissionRateOverTime: 200
-          Lifetime: 0.2
-          Color: orange

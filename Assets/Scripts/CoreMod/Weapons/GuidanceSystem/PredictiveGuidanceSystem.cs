@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Pid;
+using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -20,9 +21,6 @@ public enum MissileRetargetingBehaviour
 
 public class PredictiveGuidanceSystemSpec : IGuidanceSystemSpec
 {
-	public bool HasTarget { get; set; }
-	public int TargetPhotonId { get; set; }
-
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxAcceleration;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
@@ -32,6 +30,7 @@ public class PredictiveGuidanceSystemSpec : IGuidanceSystemSpec
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float GuidanceActivationDelay;
 	public MissileRetargetingBehaviour RetargetingBehaviour;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] PropulsionParticles;
 
 	public float GetMaxRange(float initialSpeed, float lifetime)
@@ -112,12 +111,6 @@ public class PredictiveGuidanceSystem :
 		_guidanceActivationDelay = spec.GuidanceActivationDelay;
 		_retargetingBehaviour = spec.RetargetingBehaviour;
 
-		Debug.Log($"Missile launched with HasTarget={spec.HasTarget} and TargetPhotonId={spec.TargetPhotonId}");
-		if (spec.HasTarget)
-		{
-			SetTargetId(spec.TargetPhotonId);
-		}
-
 		_initTime = Time.time;
 		_desiredAcceleration = null;
 		_rotationPid = new RotationPid(
@@ -131,6 +124,21 @@ public class PredictiveGuidanceSystem :
 
 	private void Start()
 	{
+		if (photonView.IsMine)
+		{
+			if (Launcher == null)
+			{
+				Debug.LogWarning(
+					"PredictiveGuidanceSystem did not receive a weapon launcher reference and may not seek target correctly."
+				);
+			}
+			else
+			{
+				SetTargetId(Launcher.TargetPhotonId);
+				Debug.Log($"Missile launched with TargetPhotonId={Launcher.TargetPhotonId?.ToString() ?? "null"}");
+			}
+		}
+
 		StartCoroutine(LateFixedUpdate());
 
 		if (_propulsionParticles != null)

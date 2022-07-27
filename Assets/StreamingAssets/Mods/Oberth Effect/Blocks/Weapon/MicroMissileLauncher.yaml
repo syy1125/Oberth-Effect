@@ -32,12 +32,11 @@ Combat:
   ArmorValue: 8
 BlockComponents:
   FixedWeapon: !FixedWeapon
-    MissileLauncherEffect:
+    MissileLauncher:
       FiringPortOffset: { X: 0, Y: 0 }
       DamageType: Explosive
       Damage: 80
       ExplosionRadius: 2
-      ProximityFuseRadius: 1
       MaxResourceUse:
         OberthEffect/Energy: 100
       ColliderSize: { X: 0.1, Y: 0.2 }
@@ -67,13 +66,21 @@ BlockComponents:
           Rotation: 0
           LaunchVelocity: { X: 0, Y: 5 }
       LaunchInterval: 0.1
-      MaxAcceleration: 20
-      MaxAngularAcceleration: 360
       MaxLifetime: 4
-      ThrustActivationDelay: 0.2
-      GuidanceAlgorithm: Predictive
-      GuidanceActivationDelay: 0
-      RetargetingBehaviour: IfInvalid
+      GuidanceSystem: !PredictiveGuidance
+        MaxAcceleration: 20
+        MaxAngularAcceleration: 360
+        ThrustActivationDelay: 0.2
+        GuidanceActivationDelay: 0
+        RetargetingBehaviour: IfInvalid
+        PropulsionParticles:
+          - Offset: { X: 0, Y: -0.1 }
+            Direction: { X: 0, Y: -1 }
+            Size: 0.08
+            MaxSpeed: 15
+            EmissionRateOverTime: 500
+            Lifetime: 0.1
+            Color: orange
       ReloadTime: 5
       ScreenShake:
         Strength: 0.1
@@ -81,14 +88,6 @@ BlockComponents:
         DecayCurve: Linear
       FireSound: 
         SoundId: OberthEffect/MicroMissileLaunch
-      Renderers:
+      MissileRenderers:
         - TextureId: OberthEffect/Square
           Scale: { X: 0.1, Y: 0.2 }
-      PropulsionParticles:
-        - Offset: { X: 0, Y: -0.1 }
-          Direction: { X: 0, Y: -1 }
-          Size: 0.08
-          MaxSpeed: 15
-          EmissionRateOverTime: 500
-          Lifetime: 0.1
-          Color: orange
