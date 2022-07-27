@@ -99,6 +99,7 @@ public class MissileLauncher : AbstractWeaponLauncher
 			ExplosionRadius = spec.ExplosionRadius,
 			Lifetime = spec.MaxLifetime,
 			Renderers = spec.MissileRenderers,
+			ColorScheme = _colorContext.ColorScheme,
 		};
 
 		_guidanceSystem = spec.GuidanceSystem;
@@ -260,7 +261,7 @@ public class MissileLauncher : AbstractWeaponLauncher
 	public override void GetMaxFirepower(IList<FirepowerEntry> entries)
 	{
 		entries.Add(
-			new FirepowerEntry
+			new()
 			{
 				DamagePerSecond = _missileConfig.Damage * _launchTubes.Length / _reloadTime,
 				DamageType = _missileConfig.DamageType,
