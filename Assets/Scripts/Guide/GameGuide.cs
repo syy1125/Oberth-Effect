@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Photon.Pun;
@@ -10,10 +11,8 @@ using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Designer;
 using Syy1125.OberthEffect.Designer.Config;
 using Syy1125.OberthEffect.Foundation;
-using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
-using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Simulation;
 using Syy1125.OberthEffect.Simulation.Construct;
 using Syy1125.OberthEffect.Spec.Unity;
@@ -766,8 +765,17 @@ public class GameGuide : MonoBehaviour
 		var vehicle = VehicleSpawner.Vehicle.GetComponent<Rigidbody2D>();
 
 		// Reflection hell as this part cannot reference CoreMod in compile time.
+
+		// LoadFrom is idempotent
+		var coreMod = Assembly.LoadFrom(
+			Path.Join(
+				Path.Join(Application.streamingAssetsPath, "Mods"),
+				Path.Join("Oberth Effect", "CoreMod.dll")
+			)
+		);
+
 		var guidanceSpecType =
-			Type.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystemSpec")!;
+			coreMod.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystemSpec")!;
 		var predictiveGuidance = Activator.CreateInstance(guidanceSpecType);
 
 		guidanceSpecType.GetField("MaxAcceleration").SetValue(predictiveGuidance, 10f);
@@ -823,8 +831,8 @@ public class GameGuide : MonoBehaviour
 		);
 
 		var guidanceSystemType =
-			Type.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystem");
-		guidanceSystemType.GetMethod("SetTargetId", BindingFlags.NonPublic).Invoke(
+			coreMod.GetType("Syy1125.OberthEffect.CoreMod.Weapons.GuidanceSystem.PredictiveGuidanceSystem")!;
+		guidanceSystemType.GetMethod("SetTargetId", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(
 			missile.GetComponent(guidanceSystemType), new object[] { vehicle.GetComponent<PhotonView>().ViewID }
 		);
 		missile.GetComponent<PointDefenseTarget>().TutorialSetOwnerOverride(-1);
