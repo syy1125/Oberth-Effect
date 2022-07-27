@@ -26,6 +26,8 @@ public static class MissileAlertSystem
 		IMissileAlertSource source, IGuidedWeaponTarget prevTarget, IGuidedWeaponTarget nextTarget
 	)
 	{
+		if (prevTarget == nextTarget) return;
+		
 		if (IsValidTarget(prevTarget))
 		{
 			foreach (var receiver in prevTarget.GetComponents<IMissileAlertReceiver>())

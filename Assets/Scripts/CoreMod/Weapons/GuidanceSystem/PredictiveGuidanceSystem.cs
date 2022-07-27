@@ -29,7 +29,7 @@ public class PredictiveGuidanceSystemSpec : IGuidanceSystemSpec
 	public float ThrustActivationDelay;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float GuidanceActivationDelay;
-	public MissileRetargetingBehaviour RetargetingBehaviour;
+	public MissileRetargetingBehaviour RetargetingBehaviour = MissileRetargetingBehaviour.Never;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] PropulsionParticles;
 
@@ -71,6 +71,7 @@ public class PredictiveGuidanceSystem :
 	INetworkedProjectileComponent<PredictiveGuidanceSystemSpec>,
 	IRemoteControlledProjectileComponent,
 	IMissileAlertSource,
+	IProjectileLifecycleListener,
 	IPunObservable
 {
 	public AbstractWeaponLauncher Launcher { get; set; }
@@ -122,23 +123,11 @@ public class PredictiveGuidanceSystem :
 		);
 	}
 
+	public void AfterSpawn()
+	{}
+
 	private void Start()
 	{
-		if (photonView.IsMine)
-		{
-			if (Launcher == null)
-			{
-				Debug.LogWarning(
-					"PredictiveGuidanceSystem did not receive a weapon launcher reference and may not seek target correctly."
-				);
-			}
-			else
-			{
-				SetTargetId(Launcher.TargetPhotonId);
-				Debug.Log($"Missile launched with TargetPhotonId={Launcher.TargetPhotonId?.ToString() ?? "null"}");
-			}
-		}
-
 		StartCoroutine(LateFixedUpdate());
 
 		if (_propulsionParticles != null)
@@ -152,27 +141,29 @@ public class PredictiveGuidanceSystem :
 
 	private void FixedUpdate()
 	{
-		if (Time.time - _initTime < _thrustActivationDelay)
-		{
-			ApplyThrust(0f);
-			return;
-		}
-
 		if (_desiredAcceleration == null)
 		{
-			ApplyThrust(_maxAcceleration);
+			ApplyThrust(Time.time - _initTime < _thrustActivationDelay ? 0f : _maxAcceleration);
 		}
 		else
 		{
+			// If guidance is active (indicated by desired acceleration being non-null), the missile will try to rotate toward its target.
 			float angle = Vector2.SignedAngle(_desiredAcceleration.Value, transform.up);
 			_rotationPid.Update(angle, Time.fixedDeltaTime);
 
 			float rotationResponse = Mathf.Clamp(_rotationPid.Output, -1f, 1f);
 			_ownBody.angularVelocity -= rotationResponse * _maxAngularAcceleration * Time.fixedDeltaTime;
 
-			float cos = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
-			float thrustFraction = cos * cos;
-			ApplyThrust(thrustFraction * _desiredAcceleration.Value.magnitude);
+			if (Time.time - _initTime < _thrustActivationDelay)
+			{
+				ApplyThrust(0f);
+			}
+			else
+			{
+				float cos = Mathf.Clamp01(Mathf.Cos(angle * Mathf.Deg2Rad));
+				float thrustFraction = cos * cos;
+				ApplyThrust(thrustFraction * _desiredAcceleration.Value.magnitude);
+			}
 		}
 	}
 
@@ -190,11 +181,29 @@ public class PredictiveGuidanceSystem :
 
 	private IEnumerator LateFixedUpdate()
 	{
+		yield return new WaitWhile(() => Time.time - _initTime < _guidanceActivationDelay);
+
+		if (photonView.IsMine)
+		{
+			if (Launcher == null)
+			{
+				if (!HasValidTarget())
+				{
+					Debug.LogWarning(
+						"PredictiveGuidanceSystem did not receive a weapon launcher reference and may not seek target correctly."
+					);
+				}
+			}
+			else
+			{
+				SetTargetId(Launcher.TargetPhotonId);
+				Debug.Log($"Missile launched with TargetPhotonId={Launcher.TargetPhotonId?.ToString() ?? "null"}");
+			}
+		}
+
 		while (isActiveAndEnabled)
 		{
 			yield return new WaitForFixedUpdate();
-
-			if (Time.time - _initTime < _guidanceActivationDelay) continue;
 
 			if (photonView.IsMine)
 			{
@@ -311,6 +320,17 @@ public class PredictiveGuidanceSystem :
 	public float? GetHitTime()
 	{
 		return _hitTime;
+	}
+
+	public void BeforeDespawn()
+	{
+		if (HasValidTarget())
+		{
+			foreach (var receiver in _target.GetComponents<IMissileAlertReceiver>())
+			{
+				receiver.RemoveIncomingMissile(this);
+			}
+		}
 	}
 
 	private void OnDrawGizmos()
