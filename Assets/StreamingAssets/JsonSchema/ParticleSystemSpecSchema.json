@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "properties": {
+    "Offset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "Direction": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "SpreadAngle": {
+      "type": "number",
+      "description": "Half-angle of the particle spread."
+    },
+    "Size": {
+      "type": "number"
+    },
+    "MaxSpeed": {
+      "type": "number"
+    },
+    "Lifetime": {
+      "type": "number"
+    },
+    "Color": {
+      "type": "string",
+      "description": "The color of the particles. Can take either an accepted HTML color string (\"red\") or a hex code (\"#ff0000\"). Depending on the context, this could also reference a color in the paint scheme of the vehicle (\"primary\")."
+    },
+    "EmissionRateOverTime": {
+      "type": "number"
+    },
+    "EmissionRateOverDistance": {
+      "type": "number"
+    }
+  },
+  "$id": "ParticleSystemSpecSchema"
+}

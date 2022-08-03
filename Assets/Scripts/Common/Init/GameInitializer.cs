@@ -74,6 +74,10 @@ public class GameInitializer : MonoBehaviour
 						LoadText.text = "Validating game data";
 						LoadProgress.Progress = null;
 						break;
+					case ModLoader.State.EmitSchema:
+						LoadText.text = $"Emitting schema: {ModLoader.LoadDescription}";
+						LoadProgress.Progress = progress;
+						break;
 					default:
 						LoadText.text = "";
 						LoadProgress.Progress = null;

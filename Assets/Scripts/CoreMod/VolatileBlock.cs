@@ -6,11 +6,13 @@ using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CoreMod
 {
+[CreateSchemaFile("VolatileSpecSchema")]
 public class VolatileSpec
 {
 	// Information only - up to the exact components of the block to control explosion behaviour when the block is actually destroyed.

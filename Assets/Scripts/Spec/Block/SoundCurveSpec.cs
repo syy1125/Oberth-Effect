@@ -1,7 +1,9 @@
-﻿using Syy1125.OberthEffect.Spec.Validation.Attributes;
+﻿using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
+using Syy1125.OberthEffect.Spec.Validation.Attributes;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
+[CreateSchemaFile("SoundCurveSpecSchema")]
 public class SoundCurveSpec
 {
 	[ValidateNonNull]

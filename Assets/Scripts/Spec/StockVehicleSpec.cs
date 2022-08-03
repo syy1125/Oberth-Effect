@@ -4,12 +4,14 @@ using System.IO;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Spec
 {
+[CreateSchemaFile("StockVehicleSpecSchema")]
 public struct StockVehicleSpec : ICustomValidation, ICustomChecksum
 {
 	[IdField]

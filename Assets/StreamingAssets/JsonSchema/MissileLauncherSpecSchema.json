@@ -1,0 +1,165 @@
+{
+  "type": "object",
+  "properties": {
+    "ColliderSize": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "LaunchTubes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Position": {
+            "type": "object",
+            "properties": {
+              "X": {
+                "type": "number"
+              },
+              "Y": {
+                "type": "number"
+              }
+            }
+          },
+          "Rotation": {
+            "type": "number"
+          },
+          "LaunchVelocity": {
+            "type": "object",
+            "properties": {
+              "X": {
+                "type": "number"
+              },
+              "Y": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "LaunchInterval": {
+      "type": "number"
+    },
+    "MaxLifetime": {
+      "type": "number"
+    },
+    "PointDefenseTarget": {
+      "type": "object",
+      "properties": {
+        "MaxHealth": {
+          "type": "number"
+        },
+        "ArmorValue": {
+          "type": "number"
+        }
+      }
+    },
+    "HealthDamageScaling": {
+      "type": "number"
+    },
+    "GuidanceSystem": {
+      "type": "object",
+      "properties": {}
+    },
+    "ReloadTime": {
+      "type": "number"
+    },
+    "MissileRenderers": {
+      "type": "array",
+      "items": {
+        "$ref": "RendererSpecSchema.json"
+      }
+    },
+    "ScreenShake": {
+      "type": "object",
+      "properties": {
+        "Strength": {
+          "type": "number"
+        },
+        "Duration": {
+          "type": "number"
+        },
+        "DecayCurve": {
+          "enum": [
+            "Linear",
+            "Quadratic",
+            "Cubic"
+          ]
+        }
+      }
+    },
+    "Damage": {
+      "type": "number"
+    },
+    "DamageType": {
+      "enum": [
+        "Kinetic",
+        "Energy",
+        "Explosive"
+      ]
+    },
+    "ArmorPierce": {
+      "type": "number"
+    },
+    "ExplosionRadius": {
+      "type": "number"
+    },
+    "FiringPortOffset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "AimCorrection": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "FireSound": {
+      "$ref": "SoundReferenceSpecSchema.json"
+    }
+  },
+  "$id": "MissileLauncherSpecSchema"
+}

@@ -1,0 +1,115 @@
+{
+  "type": "object",
+  "properties": {
+    "ReloadTime": {
+      "type": "number"
+    },
+    "PreciseDuration": {
+      "type": "boolean"
+    },
+    "DurationTicks": {
+      "type": "integer"
+    },
+    "DurationSeconds": {
+      "type": "number"
+    },
+    "MaxRange": {
+      "type": "number"
+    },
+    "BeamWidth": {
+      "type": "number"
+    },
+    "BeamColor": {
+      "type": "string"
+    },
+    "HitParticles": {
+      "type": "array",
+      "items": {
+        "$ref": "ParticleSystemSpecSchema.json"
+      }
+    },
+    "ScreenShake": {
+      "type": "object",
+      "properties": {
+        "Strength": {
+          "type": "number"
+        },
+        "Duration": {
+          "type": "number"
+        },
+        "DecayCurve": {
+          "enum": [
+            "Linear",
+            "Quadratic",
+            "Cubic"
+          ]
+        }
+      }
+    },
+    "Damage": {
+      "type": "number"
+    },
+    "DamageType": {
+      "enum": [
+        "Kinetic",
+        "Energy",
+        "Explosive"
+      ]
+    },
+    "ArmorPierce": {
+      "type": "number"
+    },
+    "ExplosionRadius": {
+      "type": "number"
+    },
+    "FiringPortOffset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "AimCorrection": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "FireSound": {
+      "$ref": "SoundReferenceSpecSchema.json"
+    }
+  },
+  "$id": "BurstBeamLauncherSpecSchema"
+}

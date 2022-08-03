@@ -1,8 +1,10 @@
 ﻿using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
+[CreateSchemaFile("SoundReferenceSpecSchema")]
 public class SoundReferenceSpec
 {
 	[RequireChecksumLevel(ChecksumLevel.Strict)]

@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "MaxTorque": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    }
+  },
+  "$id": "ReactionWheelSpecSchema"
+}

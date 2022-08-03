@@ -4,9 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using Newtonsoft.Json;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
+using Syy1125.OberthEffect.Spec.SchemaGen;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using Syy1125.OberthEffect.Spec.Yaml;
 using UnityEngine;
@@ -29,7 +32,8 @@ public static class ModLoader
 		LoadModList,
 		LoadDocuments,
 		ParseDocuments,
-		ValidateDocuments
+		ValidateDocuments,
+		EmitSchema,
 	}
 
 	public static readonly object LoadStateLock = new();
@@ -42,6 +46,7 @@ public static class ModLoader
 
 	private static string _modsRoot = null;
 
+	internal static List<Assembly> ModAssemblies;
 	internal static ModLoadingPipeline<BlockSpec> BlockPipeline;
 	internal static ModLoadingPipeline<BlockCategorySpec> BlockCategoryPipeline;
 	internal static ModLoadingPipeline<TextureSpec> TexturePipeline;
@@ -65,6 +70,7 @@ public static class ModLoader
 	{
 		_modsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
 
+		ModAssemblies = new();
 		BlockPipeline = new(_modsRoot, "Blocks");
 		BlockCategoryPipeline = new(_modsRoot, "Block Categories");
 		TexturePipeline = new(
@@ -88,6 +94,8 @@ public static class ModLoader
 	public static void ResetMods()
 	{
 		OnResetMods.Invoke();
+
+		ModAssemblies.Clear();
 
 		foreach (var pipeline in Pipelines)
 		{
@@ -156,7 +164,7 @@ public static class ModLoader
 			else
 			{
 				Debug.LogError(
-					$"Mod {Path.GetFileName(modDirectory)} does not have mod.json and is being skipped. This is most likely a problem with the mod."
+					$"Mod {Path.GetFileName(modDirectory)} does not have mod.json file and will be skipped."
 				);
 			}
 		}
@@ -264,6 +272,8 @@ public static class ModLoader
 		LoadDocuments();
 		ParseDocuments();
 		ValidateData();
+		EmitSchema();
+
 		DataReady = true;
 	}
 
@@ -297,6 +307,8 @@ public static class ModLoader
 				);
 				continue;
 			}
+
+			ModAssemblies.Add(modAssembly);
 
 			var entryClass = modAssembly.GetType(mod.Spec.CodeModEntryPoint);
 
@@ -387,6 +399,48 @@ public static class ModLoader
 		foreach (IModLoadingPipeline pipeline in Pipelines)
 		{
 			pipeline.ValidateResults();
+		}
+	}
+
+	private static void EmitSchema()
+	{
+		lock (LoadStateLock)
+		{
+			LoadState = State.EmitSchema;
+			LoadProgress = null;
+			LoadDescription = "discovering specs";
+		}
+
+		List<Type> schemaTypes = new();
+
+		schemaTypes.AddRange(
+			Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(CreateSchemaFileAttribute)))
+		);
+		foreach (var modAssembly in ModAssemblies)
+		{
+			schemaTypes.AddRange(
+				modAssembly.GetTypes().Where(type => type.IsDefined(typeof(CreateSchemaFileAttribute)))
+			);
+		}
+		
+		Debug.Log($"Found {schemaTypes.Count} schema types");
+
+		for (int i = 0; i < schemaTypes.Count; i++)
+		{
+			var schemaType = schemaTypes[i];
+			var schemaFileAttribute = schemaType.GetCustomAttribute<CreateSchemaFileAttribute>();
+
+			lock (LoadStateLock)
+			{
+				LoadProgress = Tuple.Create(i + 1, schemaTypes.Count);
+				LoadDescription = $"{schemaFileAttribute.FileName}.json";
+			}
+
+			var schemaPath = Path.Join(
+				Application.streamingAssetsPath, "JsonSchema", $"{schemaFileAttribute.FileName}.json"
+			);
+			var schema = SchemaGenerator.GenerateTopLevelSchema(schemaType);
+			File.WriteAllText(schemaPath, JsonConvert.SerializeObject(schema, Formatting.Indented));
 		}
 	}
 

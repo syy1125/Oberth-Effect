@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "StorageCapacity": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "$id": "ResourceStorageSpecSchema"
+}

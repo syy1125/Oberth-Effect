@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "TextureId": {
+      "type": "string"
+    },
+    "Offset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "Rotation": {
+      "type": "number",
+      "description": "Rotation in degrees counterclockwise."
+    },
+    "Scale": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "$id": "RendererSpecSchema"
+}

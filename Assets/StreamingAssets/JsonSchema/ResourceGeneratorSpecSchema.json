@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "properties": {
+    "ConsumptionRate": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "GenerationRate": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    },
+    "StartSound": {
+      "$ref": "SoundReferenceSpecSchema.json"
+    },
+    "StopSound": {
+      "$ref": "SoundReferenceSpecSchema.json"
+    },
+    "ActivationRenderers": {
+      "type": "array",
+      "items": {
+        "$ref": "RendererSpecSchema.json"
+      }
+    }
+  },
+  "$id": "ResourceGeneratorSpecSchema"
+}

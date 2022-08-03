@@ -1,25 +1,52 @@
-﻿{
-    "$id": "ControlConditionSpecSchema",
-    "properties": {
-        "And": {
-            "type": "array",
-            "items": { "$ref": "#" }
-        },
-        "Or": {
-            "type": "array",
-            "items": { "$ref": "#" }
-        },
-        "Not": { "$ref": "#" },
-        "ControlGroupId": { "type": "string" },
-        "MatchValues": {
-            "type": "array",
-            "items": { "type": "string" }
-        }
+{
+  "properties": {
+    "And": {
+      "type": "array",
+      "items": {
+        "$ref": "#"
+      }
     },
-    "oneOf": [
-        { "required": ["And"] },
-        { "required": ["Or"] },
-        { "required": ["Not"] },
-        { "required": ["ControlGroupId", "MatchValues"] }
-    ]
+    "Or": {
+      "type": "array",
+      "items": {
+        "$ref": "#"
+      }
+    },
+    "Not": {
+      "$ref": "#"
+    },
+    "ControlGroupId": {
+      "type": "string"
+    },
+    "MatchValues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "And"
+      ]
+    },
+    {
+      "required": [
+        "Or"
+      ]
+    },
+    {
+      "required": [
+        "Not"
+      ]
+    },
+    {
+      "required": [
+        "ControlGroupId",
+        "MatchValues"
+      ]
+    }
+  ],
+  "$id": "ControlConditionSpecSchema"
 }

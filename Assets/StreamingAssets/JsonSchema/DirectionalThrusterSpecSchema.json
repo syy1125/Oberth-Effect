@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "Up": {
+      "$ref": "DirectionalThrusterModuleSpecSchema.json"
+    },
+    "Down": {
+      "$ref": "DirectionalThrusterModuleSpecSchema.json"
+    },
+    "Left": {
+      "$ref": "DirectionalThrusterModuleSpecSchema.json"
+    },
+    "Right": {
+      "$ref": "DirectionalThrusterModuleSpecSchema.json"
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    }
+  },
+  "$id": "DirectionalThrusterSpecSchema"
+}

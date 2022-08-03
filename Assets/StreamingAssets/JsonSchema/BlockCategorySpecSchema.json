@@ -1,12 +1,24 @@
-﻿{
-    "$id": "BlockCategorySpecSchema",
-    "type": "object",
-    "required": ["BlockCategoryId"],
-    "properties": {
-        "BlockCategoryId": { "type": "string" },
-        "Enabled": { "type": "boolean" },
-        "Order": { "type": "integer" },
-        "DisplayName": { "type": "string" },
-        "IconTextureId": { "type": "string" }
+{
+  "type": "object",
+  "properties": {
+    "BlockCategoryId": {
+      "type": "string"
+    },
+    "Enabled": {
+      "type": "boolean"
+    },
+    "Order": {
+      "type": "integer"
+    },
+    "DisplayName": {
+      "type": "string"
+    },
+    "IconTextureId": {
+      "type": "string"
     }
+  },
+  "required": [
+    "BlockCategoryId"
+  ],
+  "$id": "BlockCategorySpecSchema"
 }

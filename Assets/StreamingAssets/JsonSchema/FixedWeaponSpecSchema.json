@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "ProjectileLauncher": {
+      "$ref": "ProjectileLauncherSpecSchema.json"
+    },
+    "MissileLauncher": {
+      "$ref": "MissileLauncherSpecSchema.json"
+    },
+    "BurstBeamLauncher": {
+      "$ref": "BurstBeamLauncherSpecSchema.json"
+    },
+    "DefaultBinding": {
+      "enum": [
+        "Manual1",
+        "Manual2",
+        "Manual3",
+        "Manual4",
+        "PointDefense",
+        "AutoTrack"
+      ]
+    }
+  },
+  "$id": "FixedWeaponSpecSchema"
+}

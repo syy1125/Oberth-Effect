@@ -2,12 +2,14 @@
 using System.IO;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
 namespace Syy1125.OberthEffect.Spec
 {
+[CreateSchemaFile("TextureSpecSchema")]
 public struct TextureSpec : ICustomChecksum
 {
 	[IdField]

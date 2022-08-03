@@ -9,6 +9,7 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
@@ -16,6 +17,7 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.CoreMod.Propulsion
 {
+[CreateSchemaFile("DirectionalThrusterModuleSpecSchema")]
 public class DirectionalThrusterModuleSpec : ICustomValidation
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
@@ -35,6 +37,7 @@ public class DirectionalThrusterModuleSpec : ICustomValidation
 	}
 }
 
+[CreateSchemaFile("DirectionalThrusterSpecSchema")]
 public class DirectionalThrusterSpec
 {
 	public DirectionalThrusterModuleSpec Up;

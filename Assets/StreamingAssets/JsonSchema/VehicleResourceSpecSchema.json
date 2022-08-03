@@ -1,17 +1,23 @@
-﻿{
-    "$id": "VehicleResourceSpecSchema",
-    "type": "object",
-    "required": ["ResourceId"],
-    "properties": {
-        "ResourceId": { "type": "string" },
-        "DisplayName": {
-            "type": "string",
-            "description": "Full name of the resource."
-        },
-        "ShortName": {
-            "type": "string",
-            "description": "A single letter representation of the resource for use in UI."
-        },
-        "DisplayColor": { "type": "string" }
+{
+  "type": "object",
+  "properties": {
+    "ResourceId": {
+      "type": "string"
+    },
+    "DisplayName": {
+      "type": "string",
+      "description": "Full name of the resource."
+    },
+    "ShortName": {
+      "type": "string",
+      "description": "A single letter representation of the resource for use in UI."
+    },
+    "DisplayColor": {
+      "type": "string"
     }
+  },
+  "required": [
+    "ResourceId"
+  ],
+  "$id": "VehicleResourceSpecSchema"
 }

@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "MaxForce": {
+      "type": "number"
+    },
+    "ThrustOrigin": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "MaxThrottleRate": {
+      "type": "number"
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    },
+    "ThrustSound": {
+      "$ref": "SoundCurveSpecSchema.json"
+    },
+    "Particles": {
+      "type": "array",
+      "items": {
+        "$ref": "ParticleSystemSpecSchema.json"
+      }
+    }
+  },
+  "$id": "LinearEngineSpecSchema"
+}

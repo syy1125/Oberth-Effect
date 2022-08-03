@@ -11,6 +11,7 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
@@ -25,6 +26,7 @@ public enum AimPointScalingMode
 	Velocity
 }
 
+[CreateSchemaFile("ProjectileLauncherSpecSchema")]
 public class ProjectileLauncherSpec : AbstractWeaponLauncherSpec
 {
 	public Vector2 ColliderSize;

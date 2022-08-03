@@ -1,25 +1,49 @@
-﻿{
-    "$id": "DirectionalThrusterModuleSpecSchema",
-    "type": "object",
-    "properties": {
-        "MaxForce": {
-            "type": "number",
-            "description": "The maximum force of the thruster in this particular direction."
+{
+  "type": "object",
+  "properties": {
+    "MaxForce": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
         },
-        "MaxResourceUse": {
-            "type": "object",
-            "patternProperties": {
-                "^.*$": { "type": "number" }
-            },
-            "description": "Maximum resource usage when the thruster is operating at 100% in the given direction."
+        "Count": {
+          "type": "integer"
         },
-        "ThrustSound": {
-            "$ref": "SoundCurveSpecSchema.json",
-            "description": "Specifies the sound to be played when the thruster is running. The sound will be put on repeat."
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
         },
-        "Particles": {
-            "$ref": "ParticleSystemSpecArraySchema.json",
-            "description": "Specifies the particles to be played when the thruster is running. The particle emitters will not be rotated. The spec document is responsible for setting the appropriate direction."
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
         }
+      }
+    },
+    "ThrustSound": {
+      "$ref": "SoundCurveSpecSchema.json"
+    },
+    "Particles": {
+      "type": "array",
+      "items": {
+        "$ref": "ParticleSystemSpecSchema.json"
+      }
     }
+  },
+  "$id": "DirectionalThrusterModuleSpecSchema"
 }

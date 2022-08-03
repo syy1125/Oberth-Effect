@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "ControlGroupId": {
+      "type": "string"
+    },
+    "DisplayName": {
+      "type": "string"
+    },
+    "DefaultKeybind": {
+      "type": "string"
+    },
+    "KeybindDescription": {
+      "type": "string"
+    },
+    "States": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "StateId": {
+            "type": "string"
+          },
+          "DisplayName": {
+            "type": "string"
+          },
+          "DisplayColor": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "ControlGroupId"
+  ],
+  "$id": "ControlGroupSpecSchema"
+}

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -18,6 +19,7 @@ public struct TurretSpec
 	public RendererSpec[] Renderers;
 }
 
+[CreateSchemaFile("TurretedWeaponSpecSchema")]
 public class TurretedWeaponSpec : AbstractWeaponSpec
 {
 	public TurretSpec Turret;

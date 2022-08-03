@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Resource
 {
+[CreateSchemaFile("ResourceStorageSpecSchema")]
 public class ResourceStorageSpec : ICustomValidation
 {
 	public Dictionary<string, float> StorageCapacity;

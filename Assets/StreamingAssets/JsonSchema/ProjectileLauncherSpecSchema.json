@@ -1,0 +1,169 @@
+{
+  "type": "object",
+  "properties": {
+    "ColliderSize": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "MaxSpeed": {
+      "type": "number"
+    },
+    "MaxLifetime": {
+      "type": "number"
+    },
+    "AimPointScaling": {
+      "enum": [
+        "None",
+        "Lifetime",
+        "Velocity"
+      ]
+    },
+    "AimPointScaleFactor": {
+      "type": "number"
+    },
+    "ProjectileRenderers": {
+      "type": "array",
+      "items": {
+        "$ref": "RendererSpecSchema.json"
+      }
+    },
+    "TrailParticles": {
+      "type": "array",
+      "items": {
+        "$ref": "ParticleSystemSpecSchema.json"
+      }
+    },
+    "BurstCount": {
+      "type": "integer"
+    },
+    "BurstInterval": {
+      "type": "number"
+    },
+    "ClusterBaseAngles": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "SpreadAngle": {
+      "type": "number"
+    },
+    "SpreadProfile": {
+      "enum": [
+        "None",
+        "Gaussian",
+        "Uniform"
+      ]
+    },
+    "Recoil": {
+      "type": "number"
+    },
+    "PointDefenseTarget": {
+      "type": "object",
+      "properties": {
+        "MaxHealth": {
+          "type": "number"
+        },
+        "ArmorValue": {
+          "type": "number"
+        }
+      }
+    },
+    "HealthDamageScaling": {
+      "type": "number"
+    },
+    "ScreenShake": {
+      "type": "object",
+      "properties": {
+        "Strength": {
+          "type": "number"
+        },
+        "Duration": {
+          "type": "number"
+        },
+        "DecayCurve": {
+          "enum": [
+            "Linear",
+            "Quadratic",
+            "Cubic"
+          ]
+        }
+      }
+    },
+    "ReloadTime": {
+      "type": "number"
+    },
+    "Damage": {
+      "type": "number"
+    },
+    "DamageType": {
+      "enum": [
+        "Kinetic",
+        "Energy",
+        "Explosive"
+      ]
+    },
+    "ArmorPierce": {
+      "type": "number"
+    },
+    "ExplosionRadius": {
+      "type": "number"
+    },
+    "FiringPortOffset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "AimCorrection": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "FireSound": {
+      "$ref": "SoundReferenceSpecSchema.json"
+    }
+  },
+  "$id": "ProjectileLauncherSpecSchema"
+}

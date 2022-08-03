@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "Turret": {
+      "type": "object",
+      "properties": {
+        "RotationSpeed": {
+          "type": "number"
+        },
+        "TurretPivotOffset": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "number"
+            },
+            "Y": {
+              "type": "number"
+            }
+          }
+        },
+        "Renderers": {
+          "type": "array",
+          "items": {
+            "$ref": "RendererSpecSchema.json"
+          }
+        }
+      }
+    },
+    "ProjectileLauncher": {
+      "$ref": "ProjectileLauncherSpecSchema.json"
+    },
+    "MissileLauncher": {
+      "$ref": "MissileLauncherSpecSchema.json"
+    },
+    "BurstBeamLauncher": {
+      "$ref": "BurstBeamLauncherSpecSchema.json"
+    },
+    "DefaultBinding": {
+      "enum": [
+        "Manual1",
+        "Manual2",
+        "Manual3",
+        "Manual4",
+        "PointDefense",
+        "AutoTrack"
+      ]
+    }
+  },
+  "$id": "TurretedWeaponSpecSchema"
+}

@@ -1,12 +1,32 @@
-﻿{
-    "$id": "TextureSpecSchema",
-    "type": "object",
-    "required": ["TextureId"],
-    "properties": {
-        "TextureId": { "type": "string" },
-        "ImagePath": { "type": "string" },
-        "Pivot": { "$ref": "Vector2Schema.json" },
-        "PixelsPerUnit": { "type": "number" },
-        "ApplyVehicleColors": { "type": "boolean" }
+{
+  "type": "object",
+  "properties": {
+    "TextureId": {
+      "type": "string"
+    },
+    "ImagePath": {
+      "type": "string"
+    },
+    "Pivot": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "PixelsPerUnit": {
+      "type": "number"
+    },
+    "ApplyVehicleColors": {
+      "type": "boolean"
     }
+  },
+  "required": [
+    "TextureId"
+  ],
+  "$id": "TextureSpecSchema"
 }

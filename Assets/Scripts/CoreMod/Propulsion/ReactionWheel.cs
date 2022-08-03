@@ -10,11 +10,13 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks.Propulsion
 {
+[CreateSchemaFile("ReactionWheelSpecSchema")]
 public class ReactionWheelSpec
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]

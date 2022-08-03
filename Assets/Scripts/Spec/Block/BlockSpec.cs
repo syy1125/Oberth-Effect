@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ModLoading;
+using Syy1125.OberthEffect.Spec.SchemaGen;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -11,6 +12,8 @@ using YamlDotNet.Serialization;
 
 namespace Syy1125.OberthEffect.Spec.Block
 {
+[CreateSchemaFile("BlockSpecSchema")]
+[CustomSchemaGeneration]
 public class BlockSpec : ICustomChecksum
 {
 	[IdField]
@@ -85,7 +88,32 @@ public class BlockSpec : ICustomChecksum
 
 	#endregion
 
+	[HideInSchema]
 	public Dictionary<string, object> BlockComponents = new();
+
+	public static Dictionary<string, object> GenerateSchemaObject()
+	{
+		var schema = SchemaGenerator.GenerateSchemaObjectFromMembers(typeof(BlockSpec));
+
+		Dictionary<string, object> componentSpecs = new();
+
+		foreach ((string name, (Type specType, Type componentType)) in ComponentTypes)
+		{
+			componentSpecs.Add(name, SchemaGenerator.GenerateSchemaMember(specType));
+		}
+
+		var properties = (Dictionary<string, object>) schema["properties"];
+
+		properties.Add(
+			"BlockComponents", new Dictionary<string, object>
+			{
+				{ "type", "object" },
+				{ "properties", componentSpecs }
+			}
+		);
+
+		return schema;
+	}
 
 	public void GetBytes(Stream stream, ChecksumLevel level)
 	{

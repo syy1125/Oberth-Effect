@@ -1,8 +1,0 @@
-﻿{
-    "$id": "Vector2IntSchema",
-    "type": "object",
-    "properties": {
-        "X": { "type": "integer" },
-        "Y": { "type": "integer" }
-    }
-}

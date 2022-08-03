@@ -5,10 +5,12 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CoreMod.Weapons.Launcher;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CoreMod.Weapons
 {
+[CreateSchemaFile("FixedWeaponSpecSchema")]
 public class FixedWeaponSpec : AbstractWeaponSpec
 {}
 

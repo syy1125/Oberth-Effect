@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "CenterOfMass": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "Mass": {
+      "type": "number"
+    },
+    "MomentOfInertia": {
+      "type": "number"
+    },
+    "BoxCollider": {
+      "type": "object",
+      "properties": {
+        "Offset": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "number"
+            },
+            "Y": {
+              "type": "number"
+            }
+          }
+        },
+        "Size": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "number"
+            },
+            "Y": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "PolygonCollider": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Path": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "X": {
+                  "type": "number"
+                },
+                "Y": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$id": "PhysicsSpecSchema"
+}

@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "AlwaysExplode": {
+      "type": "boolean"
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    },
+    "ExplosionOffset": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      }
+    },
+    "MaxRadius": {
+      "type": "number"
+    },
+    "MaxDamage": {
+      "type": "number"
+    }
+  },
+  "$id": "VolatileSpecSchema"
+}

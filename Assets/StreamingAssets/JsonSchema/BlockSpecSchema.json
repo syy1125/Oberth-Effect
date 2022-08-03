@@ -1,311 +1,158 @@
-﻿{
-    "$id": "BlockSpecSchema",
-    "type": "object",
-    "required": ["BlockId"],
-    "properties": {
-        "BlockId": { "type": "string" },
-        "Enabled": { "type": "boolean" },
-        "CategoryId": { "type": "string" },
-        "Cost": { "type": "integer" },
-        "Info": {
+{
+  "type": "object",
+  "properties": {
+    "BlockId": {
+      "type": "string"
+    },
+    "Enabled": {
+      "type": "boolean"
+    },
+    "CategoryId": {
+      "type": "string"
+    },
+    "Cost": {
+      "type": "integer"
+    },
+    "Info": {
+      "type": "object",
+      "properties": {
+        "ShortName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        }
+      }
+    },
+    "Renderers": {
+      "type": "array",
+      "items": {
+        "$ref": "RendererSpecSchema.json"
+      }
+    },
+    "Construction": {
+      "type": "object",
+      "properties": {
+        "ShowInDesigner": {
+          "type": "boolean"
+        },
+        "AllowErase": {
+          "type": "boolean"
+        },
+        "BoundsMin": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "integer"
+            },
+            "Y": {
+              "type": "integer"
+            }
+          }
+        },
+        "BoundsMax": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "integer"
+            },
+            "Y": {
+              "type": "integer"
+            }
+          }
+        },
+        "AttachmentPoints": {
+          "type": "array",
+          "items": {
             "type": "object",
             "properties": {
-                "ShortName": {
-                    "type": "string",
-                    "description": "A shortened version of the block's name, used where space is limited."
-                },
-                "FullName": {
-                    "type": "string",
-                    "description": "The full name of the block as it appears on tooltips."
-                },
-                "Description": {
-                    "type": "string",
-                    "description": "Additional description of the block, can be either flavour text or explanation of the block's mechanics."
-                }
+              "X": {
+                "type": "integer"
+              },
+              "Y": {
+                "type": "integer"
+              }
             }
+          }
         },
-        "Renderers": { "$ref": "RendererSpecArraySchema.json" },
-        "Construction": {
-            "type": "object",
-            "properties": {
-                "ShowInDesigner": {
-                    "type": "boolean",
-                    "description": "If true, this block is shown in the block palette in the vehicle designer."
-                },
-                "AllowErase": {
-                    "type": "boolean",
-                    "description": "If true, the player can erase this block. Set to false for critical blocks like the vehicle core."
-                },
-                "BoundsMin": {
-                    "$ref": "Vector2IntSchema.json",
-                    "description": "Inclusive minimum bounds for the block, used in checking for block connections and overlaps."
-                },
-                "BoundsMax": {
-                    "$ref": "Vector2IntSchema.json",
-                    "description": "Exclusive maximum bounds for the block, used in checking for block connections and overlaps."
-                },
-                "AttachmentPoints": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "Vector2IntSchema.json"
-                    },
-                    "description": "List of points where this block can attach to other blocks. Two blocks are attached if and only if both of them have an attachment point in each other's bounds."
-                },
-                "MirrorBlockId": {
-                    "type": "string",
-                    "description": "ID of the block that's the mirror image of this block. If blank, the game assumes that the block is its own mirror."
-                },
-                "MirrorRootOffset": {
-                    "$ref": "Vector2IntSchema.json",
-                    "description": "Root offset for the mirror block."
-                },
-                "MirrorRotationOffset": {
-                    "type": "integer",
-                    "description": "Rotation offset to use when placing the mirror block."
-                }
+        "MirrorBlockId": {
+          "type": "string"
+        },
+        "MirrorRootOffset": {
+          "type": "object",
+          "properties": {
+            "X": {
+              "type": "integer"
+            },
+            "Y": {
+              "type": "integer"
             }
+          }
         },
-        "Physics": {
-            "type": "object",
-            "properties": {
-                "CenterOfMass": {
-                    "$ref": "Vector2Schema.json",
-                    "description": "The local position of the block's center of mass."
-                },
-                "Mass": {
-                    "type": "number",
-                    "description": "The mass of the block. For reference, a typical 1u x 1u block has 1 mass unit."
-                },
-                "MomentOfInertia": {
-                    "type": "number",
-                    "description": "The moment of inertia of this block about its center of mass."
-                },
-                "BoxCollider": {
-                    "type": "object",
-                    "properties": {
-                        "Offset": { "$ref": "Vector2Schema.json" },
-                        "Size": { "$ref": "Vector2Schema.json" }
-                    },
-                    "description": "Specifies the shape of the box collider for this block, if it should have one."
-                },
-                "PolygonCollider": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "Path": {
-                                "type": "array",
-                                "items": { "$ref": "Vector2Schema.json" }
-                            }
-                        }
-                    },
-                    "description": "Specifies the shape of the polygon collider for this block, if it should have one."
-                }
-            }
+        "MirrorRotationOffset": {
+          "type": "integer"
+        }
+      }
+    },
+    "Physics": {
+      "$ref": "PhysicsSpecSchema.json"
+    },
+    "Combat": {
+      "type": "object",
+      "properties": {
+        "MaxHealth": {
+          "type": "number"
         },
-        "Combat": {
-            "type": "object",
-            "properties": {
-                "MaxHealth": {
-                    "type": "number",
-                    "description": "The maximum health of the block, and the health that the block starts with."
-                },
-                "ArmorValue": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 10,
-                    "description": "The armor value of this block. Should be between 1 and 10, inclusive."
-                },
-                "IntegrityScore": {
-                    "type": "number",
-                    "description": "Currently unused. Eventually this is planned for use in tidal force stress computations."
-                }
-            }
+        "ArmorValue": {
+          "type": "number"
         },
-        "ControlCore": {
-            "type": "object"
+        "IntegrityScore": {
+          "type": "number"
+        }
+      }
+    },
+    "ControlCore": {
+      "type": "object",
+      "properties": {}
+    },
+    "BlockComponents": {
+      "type": "object",
+      "properties": {
+        "Volatile": {
+          "$ref": "VolatileSpecSchema.json"
         },
-        "Resource": {
-            "type": "object",
-            "properties": {
-                "StorageCapacity": {
-                    "type": "object",
-                    "patternProperties": {
-                        "^.*$": { "type": "number" }
-                    }
-                },
-                "ResourceGenerator": {
-                    "type": "object",
-                    "properties": {
-                        "ConsumptionRate": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^.*$": { "type": "number" }
-                            }
-                        },
-                        "GenerationRate": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^.*$": { "type": "number" }
-                            }
-                        },
-                        "ActivationCondition": {
-                            "$ref": "ControlConditionSpecSchema.json"
-                        },
-                        "StartSound": { "$ref": "SoundReferenceSpecSchema.json" },
-                        "StopSound": { "$ref": "SoundReferenceSpecSchema.json" },
-                        "ActivationRenderers": {
-                            "$ref": "RendererSpecArraySchema.json"
-                        }
-                    }
-                }
-            }
+        "OmniThruster": {
+          "$ref": "OmniThrusterSpecSchema.json"
         },
-        "Propulsion": {
-            "type": "object",
-            "properties": {
-                "Engine": {
-                    "type": "object",
-                    "properties": {
-                        "MaxForce": {
-                            "type": "number",
-                            "description": "Maximum force of the engine in the up direction."
-                        },
-                        "ThrustOrigin": {
-                            "$ref": "Vector2Schema.json",
-                            "description": "The local position where the thrust force should be applied."
-                        },
-                        "MaxResourceUse": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^.*$": { "type": "number" }
-                            },
-                            "description": "Maximum resource usage of the engine."
-                        },
-                        "ActivationCondition": {
-                            "$ref": "ControlConditionSpecSchema.json"
-                        },
-                        "MaxThrottleRate": {
-                            "type": "number",
-                            "description": "Specifies the maximum rate at which the engine can increase or decrease thrust. A value of 1 indicates that in one second, the engine can increase or decrease its output by, and a value of 0.5 indicates a 50%, and so on."
-                        },
-                        "ThrustSound": {
-                            "$ref": "SoundCurveSpecSchema.json",
-                            "description": "Specifies the sound to be played when the engine is running. The sound will be put on repeat."
-                        },
-                        "Particles": {
-                            "$ref": "ParticleSystemSpecArraySchema.json",
-                            "description": "Specifies the particles to be played when the engine is running."
-                        }
-                    },
-                    "description": "An engine is generally regarded as the main form of propulsion for a vehicle. They are typically powerful but requires time to increase or decrease their thrust."
-                },
-                "OmniThruster": {
-                    "type": "object",
-                    "properties": {
-                        "MaxForce": {
-                            "type": "number",
-                            "description": "The maximum force of the thruster in any particular cardinal direction."
-                        },
-                        "MaxResourceUse": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^.*$": { "type": "number" }
-                            },
-                            "description": "Maximum resource usage when the thruster is operating at 100% in two directions."
-                        },
-                        "ActivationCondition": {
-                            "$ref": "ControlConditionSpecSchema.json"
-                        },
-                        "ThrustSound": {
-                            "$ref": "SoundCurveSpecSchema.json",
-                            "description": "Specifies the sound to be played when the engine is running. The sound will be put on repeat."
-                        },
-                        "Particles": {
-                            "$ref": "ParticleSystemSpecArraySchema.json",
-                            "description": "Specifies the particles to be played when the thruster is running. The particle emitters will be rotated appropriately for thrusting in different directions."
-                        }
-                    },
-                    "description": "An omni thruster is capable of outputting the specified amount of force in any cardinal direction."
-                },
-                "DirectionalThruster": {
-                    "type": "object",
-                    "properties": {
-                        "Up": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
-                        "Down": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
-                        "Left": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
-                        "Right": { "$ref": "DirectionalThrusterModuleSpecSchema.json" },
-                        "ActivationCondition": { "$ref": "ControlConditionSpecSchema.json" }
-                    },
-                    "description": "A directional thruster allows specifying different outputs for the 4 different cardinal directions."
-                },
-                "ReactionWheel": {
-                    "type": "object",
-                    "properties": {
-                        "MaxTorque": {
-                            "type": "number",
-                            "description": "Maximum torque that the reaction wheel can output in either direction."
-                        },
-                        "MaxResourceUse": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^.*$": { "type": "number" }
-                            }
-                        },
-                        "ActivationCondition": {
-                            "$ref": "ControlConditionSpecSchema.json"
-                        }
-                    }
-                }
-            }
+        "DirectionalThruster": {
+          "$ref": "DirectionalThrusterSpecSchema.json"
+        },
+        "LinearEngine": {
+          "$ref": "LinearEngineSpecSchema.json"
+        },
+        "ReactionWheel": {
+          "$ref": "ReactionWheelSpecSchema.json"
+        },
+        "ResourceStorage": {
+          "$ref": "ResourceStorageSpecSchema.json"
+        },
+        "ResourceGenerator": {
+          "$ref": "ResourceGeneratorSpecSchema.json"
         },
         "TurretedWeapon": {
-            "$ref": "BaseWeaponSpecSchema.json",
-            "properties": {
-                "Turret": {
-                    "type": "object",
-                    "properties": {
-                        "RotationSpeed": {
-                            "type": "number",
-                            "description": "The maximum rotation speed of the turret in degrees per second."
-                        },
-                        "TurretPivotOffset": {
-                            "$ref": "Vector2Schema.json",
-                            "description": "The local position of the point that turret sub-object rotates around."
-                        },
-                        "Renderers": {
-                            "$ref": "RendererSpecArraySchema.json"
-                        }
-                    }
-                }
-            }
+          "$ref": "TurretedWeaponSpecSchema.json"
         },
         "FixedWeapon": {
-            "$ref": "BaseWeaponSpecSchema.json"
-        },
-        "Volatile": {
-            "type": "object",
-            "properties": {
-                "AlwaysExplode": {
-                    "type": "boolean",
-                    "description": "For UI information only. Describes if the block will always explode at the described strength."
-                },
-                "ActivationCondition": {
-                    "$ref": "ControlConditionSpecSchema.json"
-                },
-                "ExplosionOffset": {
-                    "$ref": "Vector2Schema.json",
-                    "description": "Center of the explosion in local space."
-                },
-                "MaxRadius": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
-                },
-                "MaxDamage": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
-                }
-            }
+          "$ref": "FixedWeaponSpecSchema.json"
         }
+      }
     }
+  },
+  "required": [
+    "BlockId"
+  ],
+  "$id": "BlockSpecSchema"
 }

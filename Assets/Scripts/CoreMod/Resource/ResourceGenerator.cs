@@ -9,12 +9,14 @@ using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Checksum;
 using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Spec.Database;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Unity;
 using Syy1125.OberthEffect.Spec.Validation;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CoreMod.Resource
 {
+[CreateSchemaFile("ResourceGeneratorSpecSchema")]
 public class ResourceGeneratorSpec : ICustomValidation
 {
 	public Dictionary<string, float> ConsumptionRate;

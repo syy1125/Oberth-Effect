@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "MaxForce": {
+      "type": "number"
+    },
+    "MaxResourceUse": {
+      "type": "object",
+      "properties": {
+        "Comparer": {
+          "type": "object",
+          "properties": {}
+        },
+        "Count": {
+          "type": "integer"
+        },
+        "Keys": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Values": {
+          "type": "object",
+          "properties": {
+            "Count": {
+              "type": "integer"
+            }
+          }
+        },
+        "Item": {
+          "type": "number"
+        }
+      }
+    },
+    "ActivationCondition": {
+      "$ref": "ControlConditionSpecSchema.json"
+    },
+    "ThrustSound": {
+      "$ref": "SoundCurveSpecSchema.json"
+    },
+    "Particles": {
+      "type": "array",
+      "items": {
+        "$ref": "ParticleSystemSpecSchema.json"
+      }
+    }
+  },
+  "$id": "OmniThrusterSpecSchema"
+}
