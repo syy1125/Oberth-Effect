@@ -128,7 +128,7 @@ public class TurretedWeapon : AbstractWeapon,
 		enabled = false;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Turreted Weapon")
@@ -138,6 +138,8 @@ public class TurretedWeapon : AbstractWeapon,
 		WeaponLauncher.GetTooltip(builder, indent + "  ");
 
 		AppendAggregateDamageInfo(builder, indent + "  ");
+
+		return true;
 	}
 }
 }

@@ -205,7 +205,7 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 		return localDirection == CardinalDirection.Up ? MaxForce : 0f;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Engine")
@@ -218,6 +218,8 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 		}
 
 		builder.AppendLine($"{indent}  Throttle response rate {_throttleRate * 100:F0}%/s");
+
+		return true;
 	}
 }
 }

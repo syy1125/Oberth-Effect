@@ -272,7 +272,7 @@ public class MissileLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override void GetTooltip(StringBuilder builder, string indent)
+	public override bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder.AppendLine($"{indent}Missile")
 			.AppendLine(
@@ -302,6 +302,8 @@ public class MissileLauncher : AbstractWeaponLauncher
 				? $"{indent}  Reload time {_reloadTime}s, reload cost {reloadCost}/s"
 				: $"{indent}  Reload time {_reloadTime}"
 		);
+
+		return true;
 	}
 }
 }

@@ -74,11 +74,12 @@ public class FixedWeapon : AbstractWeapon,
 		enabled = false;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder.AppendLine("Fixed Weapon");
 		WeaponLauncher.GetTooltip(builder, indent + "  ");
 		AppendAggregateDamageInfo(builder, indent + "  ");
+		return true;
 	}
 }
 }

@@ -50,12 +50,14 @@ public class ResourceStorage : MonoBehaviour,
 		return _capacity;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Resource storage capacity")
 			.Append($"{indent}  ")
 			.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_capacity)));
+
+		return true;
 	}
 }
 }

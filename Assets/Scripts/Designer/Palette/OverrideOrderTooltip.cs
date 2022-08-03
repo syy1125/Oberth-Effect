@@ -11,7 +11,7 @@ public class OverrideOrderTooltip : MonoBehaviour, ITooltipComponent
 	[NonSerialized]
 	public IReadOnlyList<string> OverrideOrder;
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.Append(indent)
@@ -20,6 +20,8 @@ public class OverrideOrderTooltip : MonoBehaviour, ITooltipComponent
 			.Append(string.Join(" > ", OverrideOrder))
 			.Append("</color>")
 			.AppendLine();
+
+		return true;
 	}
 }
 }

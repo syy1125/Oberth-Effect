@@ -182,7 +182,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override void GetTooltip(StringBuilder builder, string indent)
+	public override bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Projectile")
@@ -255,6 +255,8 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 				$"{indent}  Recoil {PhysicsUnitUtils.FormatImpulse(_recoil)} per {shotOrCluster}"
 			);
 		}
+
+		return true;
 	}
 
 	public override Vector2? GetInterceptPoint(

@@ -169,7 +169,7 @@ public class ReactionWheel : MonoBehaviour,
 		return _maxResourceUse;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Reaction wheel")
@@ -181,6 +181,8 @@ public class ReactionWheel : MonoBehaviour,
 				.Append($"{indent}  Max resource usage per second ")
 				.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_maxResourceUse)));
 		}
+
+		return true;
 	}
 }
 }

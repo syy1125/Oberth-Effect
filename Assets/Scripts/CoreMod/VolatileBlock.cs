@@ -69,7 +69,7 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 		);
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		if (_alwaysExplode)
 		{
@@ -83,6 +83,8 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 				$"{indent}<color=orange>Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed."
 			);
 		}
+
+		return true;
 	}
 }
 }

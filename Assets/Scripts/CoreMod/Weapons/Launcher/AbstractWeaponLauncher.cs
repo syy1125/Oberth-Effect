@@ -112,7 +112,7 @@ public abstract class AbstractWeaponLauncher : MonoBehaviour, ITooltipComponent
 		return ReloadResourceUse;
 	}
 
-	public abstract void GetTooltip(StringBuilder builder, string indent);
+	public abstract bool GetTooltip(StringBuilder builder, string indent);
 
 	protected void ExecuteWeaponSideEffects()
 	{

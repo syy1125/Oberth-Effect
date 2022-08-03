@@ -13,14 +13,16 @@ public class BlockDescription : MonoBehaviour, ITooltipComponent
 		_description = spec.Info.Description?.Trim();
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
-		if (_description == null) return;
-
-		foreach (string line in _description.Trim().Split("\n"))
+		if (string.IsNullOrWhiteSpace(_description)) return false;
+		
+		foreach (string line in _description.Split("\n"))
 		{
 			builder.AppendLine($"{indent}{line}");
 		}
+
+		return true;
 	}
 }
 }

@@ -242,7 +242,7 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 		return MaxForce;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder.AppendLine($"{indent}Maneuvering thruster")
 			.AppendLine($"{indent}  Omni-directional")
@@ -254,6 +254,8 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)))
 				.AppendLine();
 		}
+
+		return true;
 	}
 }
 }

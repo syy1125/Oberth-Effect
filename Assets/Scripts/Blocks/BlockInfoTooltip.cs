@@ -32,7 +32,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 		_mass = spec.Physics.Mass;
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		string width = PhysicsUnitUtils.FormatLength(_bounds.Size.x, "F0");
 		string height = PhysicsUnitUtils.FormatLength(_bounds.Size.y, "F0");
@@ -44,6 +44,8 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 			.AppendLine(
 				$"{indent}  <color=red>{_maxHealth} health</color>, <color=lightblue>{_armorValue} armor</color>"
 			);
+
+		return true;
 	}
 }
 }

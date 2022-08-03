@@ -205,7 +205,7 @@ public class ResourceGenerator : MonoBehaviour,
 		}
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		if (_consumptionRate == null || _consumptionRate.Count == 0)
 		{
@@ -223,14 +223,14 @@ public class ResourceGenerator : MonoBehaviour,
 		{
 			builder
 				.AppendLine($"{indent}Resource converter")
-				.Append($"{indent}  Max consumption")
+				.Append($"{indent}  Max consumption ")
 				.AppendLine(
 					string.Join(
 						", ", VehicleResourceDatabase.Instance.FormatResourceDict(_consumptionRate)
 							.Select(entry => $"{entry}/s")
 					)
 				)
-				.Append($"{indent}  Max production")
+				.Append($"{indent}  Max production ")
 				.AppendLine(
 					string.Join(
 						", ", VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
@@ -238,6 +238,8 @@ public class ResourceGenerator : MonoBehaviour,
 					)
 				);
 		}
+
+		return true;
 	}
 
 	public IReadOnlyDictionary<string, float> GetMaxGenerationRate()

@@ -9,7 +9,8 @@ public interface ITooltipComponent
 	/// Export tooltip to the given StringBuilder, with the specified indent.
 	/// The exported tooltip is expected to have an extra newline at the end.
 	/// </summary>
-	void GetTooltip(StringBuilder builder, string indent);
+	/// <returns>True if the tooltip has been modified.</returns>
+	bool GetTooltip(StringBuilder builder, string indent);
 }
 
 public static class TooltipProviderUtils
@@ -20,9 +21,8 @@ public static class TooltipProviderUtils
 
 		foreach (MonoBehaviour behaviour in block.GetComponents<MonoBehaviour>())
 		{
-			if (behaviour is ITooltipComponent provider)
+			if (behaviour is ITooltipComponent provider && provider.GetTooltip(tooltip, ""))
 			{
-				provider.GetTooltip(tooltip, "");
 				tooltip.AppendLine();
 			}
 		}

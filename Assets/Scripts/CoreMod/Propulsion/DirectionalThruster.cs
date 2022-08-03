@@ -372,7 +372,7 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 		}
 	}
 
-	public void GetTooltip(StringBuilder builder, string indent)
+	public bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder.AppendLine($"{indent}Maneuvering thruster");
 
@@ -380,6 +380,8 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 		AppendDirectionTooltip(builder, indent, "downward", _downModule);
 		AppendDirectionTooltip(builder, indent, "left", _leftModule);
 		AppendDirectionTooltip(builder, indent, "right", _rightModule);
+
+		return true;
 	}
 
 	private static void AppendDirectionTooltip(

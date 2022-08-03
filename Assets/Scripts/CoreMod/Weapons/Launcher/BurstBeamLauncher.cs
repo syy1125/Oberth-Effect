@@ -147,7 +147,7 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override void GetTooltip(StringBuilder builder, string indent)
+	public override bool GetTooltip(StringBuilder builder, string indent)
 	{
 		builder
 			.AppendLine($"{indent}Burst Beam")
@@ -167,6 +167,8 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 				? $"{indent}  Reload time {_reloadTime}s, reload cost {reloadCost}/s"
 				: $"{indent}  Reload time {_reloadTime}s"
 		);
+
+		return true;
 	}
 
 	public override Vector2? GetInterceptPoint(
