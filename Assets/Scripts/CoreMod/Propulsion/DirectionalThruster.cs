@@ -48,7 +48,7 @@ public class DirectionalThrusterSpec
 	public ControlConditionSpec ActivationCondition;
 }
 
-public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<DirectionalThrusterSpec>, ITooltipProvider
+public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<DirectionalThrusterSpec>, ITooltipComponent
 {
 	public const string CLASS_KEY = "DirectionalThruster";
 
@@ -372,26 +372,23 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 		}
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("Maneuvering thruster");
+		builder.AppendLine($"{indent}Maneuvering thruster");
 
-		AppendDirectionTooltip(builder, "upward", _upModule);
-		AppendDirectionTooltip(builder, "downward", _downModule);
-		AppendDirectionTooltip(builder, "left", _leftModule);
-		AppendDirectionTooltip(builder, "right", _rightModule);
-
-		return builder.ToString();
+		AppendDirectionTooltip(builder, indent, "upward", _upModule);
+		AppendDirectionTooltip(builder, indent, "downward", _downModule);
+		AppendDirectionTooltip(builder, indent, "left", _leftModule);
+		AppendDirectionTooltip(builder, indent, "right", _rightModule);
 	}
 
 	private static void AppendDirectionTooltip(
-		StringBuilder builder, string direction, Module thrustModule
+		StringBuilder builder, string indent, string direction, Module thrustModule
 	)
 	{
 		if (thrustModule != null)
 		{
-			builder.Append($"  Max thrust {direction} {PhysicsUnitUtils.FormatForce(thrustModule.MaxForce)}");
+			builder.Append($"{indent}  Max thrust {direction} {PhysicsUnitUtils.FormatForce(thrustModule.MaxForce)}");
 
 			if (thrustModule.MaxResourceUse != null && thrustModule.MaxResourceUse.Count > 0)
 			{

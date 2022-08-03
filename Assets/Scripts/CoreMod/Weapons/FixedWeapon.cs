@@ -17,7 +17,7 @@ public class FixedWeaponSpec : AbstractWeaponSpec
 public class FixedWeapon : AbstractWeapon,
 	IBlockComponent<FixedWeaponSpec>,
 	IHasDebrisState,
-	ITooltipProvider
+	ITooltipComponent
 {
 	public const string CLASS_KEY = "FixedWeapon";
 
@@ -74,17 +74,11 @@ public class FixedWeapon : AbstractWeapon,
 		enabled = false;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
 		builder.AppendLine("Fixed Weapon");
-
-		builder.Append(WeaponLauncher.GetLauncherTooltip());
-
-		AppendAggregateDamageInfo(builder);
-
-		return builder.ToString();
+		WeaponLauncher.GetTooltip(builder, indent + "  ");
+		AppendAggregateDamageInfo(builder, indent + "  ");
 	}
 }
 }

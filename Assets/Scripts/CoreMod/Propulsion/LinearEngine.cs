@@ -39,7 +39,7 @@ public class LinearEngineSpec : ICustomValidation
 	}
 }
 
-public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSpec>, ITooltipProvider
+public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSpec>, ITooltipComponent
 {
 	public const string CLASS_KEY = "LinearEngine";
 
@@ -205,22 +205,19 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 		return localDirection == CardinalDirection.Up ? MaxForce : 0f;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
-		builder.AppendLine("Engine")
-			.AppendLine($"  Max thrust {PhysicsUnitUtils.FormatForce(MaxForce)}");
+		builder
+			.AppendLine($"{indent}Engine")
+			.AppendLine($"{indent}  Max thrust {PhysicsUnitUtils.FormatForce(MaxForce)}");
 
 		if (MaxResourceUse != null && MaxResourceUse.Count > 0)
 		{
-			builder.Append("  Max resource usage per second ")
+			builder.Append($"{indent}  Max resource usage per second ")
 				.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)));
 		}
 
-		builder.Append($"  Throttle response rate {_throttleRate * 100:F0}%/s");
-
-		return builder.ToString();
+		builder.AppendLine($"{indent}  Throttle response rate {_throttleRate * 100:F0}%/s");
 	}
 }
 }

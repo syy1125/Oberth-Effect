@@ -182,36 +182,34 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override string GetLauncherTooltip()
+	public override void GetTooltip(StringBuilder builder, string indent)
 	{
-		var builder = new StringBuilder();
-
 		builder
-			.AppendLine("  Projectile")
+			.AppendLine($"{indent}Projectile")
 			.AppendLine(
 				_projectileConfig.DamageType == DamageType.Explosive
-					? $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_projectileConfig.ExplosionRadius)} radius"
-					: $"    {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
+					? $"{indent}  {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_projectileConfig.ExplosionRadius)} radius"
+					: $"{indent}  {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(
-				$"    Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(MaxRange)}"
+				$"{indent}  Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(MaxRange)}"
 			);
 
 		if (AimCorrection > Mathf.Epsilon)
 		{
-			builder.AppendLine($"    {AimCorrection}° aim correction");
+			builder.AppendLine($"{indent}  {AimCorrection}° aim correction");
 		}
 
 		if (_projectileConfig is NetworkedProjectileConfig { PointDefenseTarget: {} } networkedProjectileConfig)
 		{
 			builder.AppendLine(
-				$"    Projectile has <color=\"red\">{networkedProjectileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{networkedProjectileConfig.PointDefenseTarget.ArmorValue} armor</color>"
+				$"{indent}  Projectile has <color=\"red\">{networkedProjectileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{networkedProjectileConfig.PointDefenseTarget.ArmorValue} armor</color>"
 			);
 
 			if (!Mathf.Approximately(networkedProjectileConfig.HealthDamageScaling, 0f))
 			{
 				builder.AppendLine(
-					$"    Damage reduced by up to {networkedProjectileConfig.HealthDamageScaling:00.#%}, scaling with fraction of health lost"
+					$"{indent}  Damage reduced by up to {networkedProjectileConfig.HealthDamageScaling:00.#%}, scaling with fraction of health lost"
 				);
 			}
 		}
@@ -219,21 +217,21 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(ReloadResourceUse));
 		builder.AppendLine(
 			ReloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
-				: $"    Reload time {_reloadTime}"
+				? $"{indent}  Reload time {_reloadTime}s, reload cost {reloadCost}/s"
+				: $"{indent}  Reload time {_reloadTime}"
 		);
 
 		if (_clusterBaseAngles.Length > 1)
 		{
 			builder.AppendLine(
 				_burstCount > 1
-					? $"    {_clusterBaseAngles.Length} shots per cluster, {_burstCount} clusters per burst, {_burstInterval}s between clusters in burst"
-					: $"    {_clusterBaseAngles.Length} shots per cluster"
+					? $"{indent}  {_clusterBaseAngles.Length} shots per cluster, {_burstCount} clusters per burst, {_burstInterval}s between clusters in burst"
+					: $"{indent}  {_clusterBaseAngles.Length} shots per cluster"
 			);
 		}
 		else if (_burstCount > 1)
 		{
-			builder.AppendLine($"    {_burstCount} shots per burst, {_burstInterval}s between shots in burst");
+			builder.AppendLine($"{indent}  {_burstCount} shots per burst, {_burstInterval}s between shots in burst");
 		}
 
 		switch (_spreadProfile)
@@ -241,10 +239,10 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			case WeaponSpreadProfile.None:
 				break;
 			case WeaponSpreadProfile.Gaussian:
-				builder.AppendLine($"    Gaussian spread ±{_spreadAngle}°");
+				builder.AppendLine($"{indent}  Gaussian spread ±{_spreadAngle}°");
 				break;
 			case WeaponSpreadProfile.Uniform:
-				builder.AppendLine($"    Uniform spread ±{_spreadAngle}°");
+				builder.AppendLine($"{indent}  Uniform spread ±{_spreadAngle}°");
 				break;
 			default:
 				throw new ArgumentOutOfRangeException();
@@ -254,11 +252,9 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		{
 			string shotOrCluster = _clusterBaseAngles.Length > 1 ? "cluster" : "shot";
 			builder.AppendLine(
-				$"    Recoil {PhysicsUnitUtils.FormatImpulse(_recoil)} per {shotOrCluster}"
+				$"{indent}  Recoil {PhysicsUnitUtils.FormatImpulse(_recoil)} per {shotOrCluster}"
 			);
 		}
-
-		return builder.ToString();
 	}
 
 	public override Vector2? GetInterceptPoint(

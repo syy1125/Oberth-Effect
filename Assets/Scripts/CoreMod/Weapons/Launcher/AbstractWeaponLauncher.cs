@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Photon.Pun;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CombatSystem;
@@ -42,7 +43,7 @@ public class AbstractWeaponLauncherSpec : ICustomValidation
 /// <summary>
 /// A weapon launcher is the part of the weapon actually responsible for creating the effect of the weapon, like launching a projectile or firing a beam.
 /// </summary>
-public abstract class AbstractWeaponLauncher : MonoBehaviour
+public abstract class AbstractWeaponLauncher : MonoBehaviour, ITooltipComponent
 {
 	protected float MaxRange;
 	protected float AimCorrection;
@@ -111,7 +112,7 @@ public abstract class AbstractWeaponLauncher : MonoBehaviour
 		return ReloadResourceUse;
 	}
 
-	public abstract string GetLauncherTooltip();
+	public abstract void GetTooltip(StringBuilder builder, string indent);
 
 	protected void ExecuteWeaponSideEffects()
 	{

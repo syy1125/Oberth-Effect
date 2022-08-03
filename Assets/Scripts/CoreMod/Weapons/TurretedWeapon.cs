@@ -28,7 +28,7 @@ public class TurretedWeaponSpec : AbstractWeaponSpec
 public class TurretedWeapon : AbstractWeapon,
 	IBlockComponent<TurretedWeaponSpec>,
 	IHasDebrisState,
-	ITooltipProvider
+	ITooltipComponent
 {
 	public const string CLASS_KEY = "TurretedWeapon";
 
@@ -128,20 +128,16 @@ public class TurretedWeapon : AbstractWeapon,
 		enabled = false;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
 		builder
-			.AppendLine("Turreted Weapon")
-			.AppendLine("  Turret")
-			.AppendLine($"    Rotation speed {_rotationSpeed}°/s");
+			.AppendLine($"{indent}Turreted Weapon")
+			.AppendLine($"{indent}  Turret")
+			.AppendLine($"{indent}    Rotation speed {_rotationSpeed}°/s");
 
-		builder.Append(WeaponLauncher.GetLauncherTooltip());
+		WeaponLauncher.GetTooltip(builder, indent + "  ");
 
-		AppendAggregateDamageInfo(builder);
-
-		return builder.ToString();
+		AppendAggregateDamageInfo(builder, indent + "  ");
 	}
 }
 }

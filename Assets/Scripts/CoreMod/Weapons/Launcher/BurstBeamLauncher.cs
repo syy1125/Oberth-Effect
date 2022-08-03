@@ -147,13 +147,11 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override string GetLauncherTooltip()
+	public override void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
 		builder
-			.AppendLine("  Burst Beam")
-			.Append($"    {_totalDamage:F0} {DamageTypeUtils.GetColoredText(_damageType)} damage over ")
+			.AppendLine($"{indent}Burst Beam")
+			.Append($"{indent}  {_totalDamage:F0} {DamageTypeUtils.GetColoredText(_damageType)} damage over ")
 			.Append(_preciseDuration ? $"{_durationTicks} tick(s)" : $"{_durationSeconds} second(s)")
 			.Append(", ")
 			.AppendLine(
@@ -161,16 +159,14 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 					? $"{PhysicsUnitUtils.FormatLength(_explosionRadius)} radius"
 					: $"<color=\"lightblue\">{_armorPierce:0.#} AP</color>"
 			)
-			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
+			.AppendLine($"{indent}  Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
 
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(_reloadResourceUse));
 		builder.AppendLine(
 			_reloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
-				: $"    Reload time {_reloadTime}s"
+				? $"{indent}  Reload time {_reloadTime}s, reload cost {reloadCost}/s"
+				: $"{indent}  Reload time {_reloadTime}s"
 		);
-
-		return builder.ToString();
 	}
 
 	public override Vector2? GetInterceptPoint(

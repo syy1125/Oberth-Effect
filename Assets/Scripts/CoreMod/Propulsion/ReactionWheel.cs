@@ -30,7 +30,7 @@ public class ReactionWheel : MonoBehaviour,
 	IPropulsionBlock,
 	IResourceConsumer,
 	IControlConditionReceiver,
-	ITooltipProvider
+	ITooltipComponent
 {
 	private float _maxTorque;
 	private Dictionary<string, float> _maxResourceUse;
@@ -169,21 +169,18 @@ public class ReactionWheel : MonoBehaviour,
 		return _maxResourceUse;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
-		builder.AppendLine("Reaction wheel")
-			.Append($"  Max torque {PhysicsUnitUtils.FormatTorque(_maxTorque)}");
+		builder
+			.AppendLine($"{indent}Reaction wheel")
+			.AppendLine($"{indent}  Max torque {PhysicsUnitUtils.FormatTorque(_maxTorque)}");
 
 		if (_maxResourceUse != null && _maxResourceUse.Count > 0)
 		{
-			builder.AppendLine()
-				.Append("  Max resource usage per second ")
-				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_maxResourceUse)));
+			builder
+				.Append($"{indent}  Max resource usage per second ")
+				.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_maxResourceUse)));
 		}
-
-		return builder.ToString();
 	}
 }
 }

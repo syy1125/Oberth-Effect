@@ -282,22 +282,22 @@ public abstract class AbstractWeapon :
 		return WeaponLauncher.GetMaxResourceUseRate();
 	}
 
-	protected void AppendAggregateDamageInfo(StringBuilder builder)
+	protected void AppendAggregateDamageInfo(StringBuilder builder, string indent)
 	{
-		List<FirepowerEntry> firepower = new List<FirepowerEntry>();
+		var firepower = new List<FirepowerEntry>();
 		GetMaxFirepower(firepower);
 		float maxDps = FirepowerUtils.GetTotalDamage(firepower);
 		float armorPierce = FirepowerUtils.GetMeanArmorPierce(firepower);
 		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
 
-		builder.AppendLine($"  <b>Expected DPS {maxDps:0.#} (<color=\"lightblue\">{armorPierce:0.##} AP</color>)</b>");
+		builder.AppendLine($"{indent}<b>Expected DPS {maxDps:0.#} (<color=lightblue>{armorPierce:0.##} AP</color>)</b>");
 
 		Dictionary<string, float> resourcePerFirepower =
 			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);
 		string resourceCostPerFirepower = string.Join(
 			", ", VehicleResourceDatabase.Instance.FormatResourceDict(resourcePerFirepower)
 		);
-		builder.Append($"  Resource cost per unit DPS {resourceCostPerFirepower}");
+		builder.AppendLine($"{indent}Resource cost per unit DPS {resourceCostPerFirepower}");
 	}
 }
 }

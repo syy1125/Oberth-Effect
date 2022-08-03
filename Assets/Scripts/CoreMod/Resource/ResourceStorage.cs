@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
@@ -25,7 +26,7 @@ public class ResourceStorageSpec : ICustomValidation
 public class ResourceStorage : MonoBehaviour,
 	IBlockComponent<ResourceStorageSpec>,
 	IResourceStorage,
-	ITooltipProvider
+	ITooltipComponent
 {
 	private Dictionary<string, float> _capacity;
 
@@ -49,13 +50,12 @@ public class ResourceStorage : MonoBehaviour,
 		return _capacity;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		return "Resource storage capacity\n  "
-		       + string.Join(
-			       ", ",
-			       VehicleResourceDatabase.Instance.FormatResourceDict(_capacity)
-		       );
+		builder
+			.AppendLine($"{indent}Resource storage capacity")
+			.Append($"{indent}  ")
+			.AppendLine(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(_capacity)));
 	}
 }
 }

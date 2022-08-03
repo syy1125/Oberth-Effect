@@ -6,19 +6,20 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Designer.Palette
 {
-public class OverrideOrderTooltip : MonoBehaviour, ITooltipProvider
+public class OverrideOrderTooltip : MonoBehaviour, ITooltipComponent
 {
 	[NonSerialized]
 	public IReadOnlyList<string> OverrideOrder;
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		return new StringBuilder()
+		builder
+			.Append(indent)
 			.Append("<color=\"#2222ff\">")
 			.Append("Mod: ")
 			.Append(string.Join(" > ", OverrideOrder))
 			.Append("</color>")
-			.ToString();
+			.AppendLine();
 	}
 }
 }

@@ -272,15 +272,13 @@ public class MissileLauncher : AbstractWeaponLauncher
 		);
 	}
 
-	public override string GetLauncherTooltip()
+	public override void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-
-		builder.AppendLine("  Missile")
+		builder.AppendLine($"{indent}Missile")
 			.AppendLine(
 				_missileConfig.DamageType == DamageType.Explosive
-					? $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_missileConfig.ExplosionRadius)} radius"
-					: $"    {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
+					? $"{indent}  {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_missileConfig.ExplosionRadius)} radius"
+					: $"{indent}  {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(_guidanceSystem.GetGuidanceSystemTooltip())
 			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
@@ -288,12 +286,12 @@ public class MissileLauncher : AbstractWeaponLauncher
 		if (_missileConfig.PointDefenseTarget != null)
 		{
 			builder.AppendLine(
-				$"    Missile has <color=\"red\">{_missileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{_missileConfig.PointDefenseTarget.ArmorValue} armor</color>"
+				$"{indent}  Missile has <color=\"red\">{_missileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{_missileConfig.PointDefenseTarget.ArmorValue} armor</color>"
 			);
 			if (!Mathf.Approximately(_missileConfig.HealthDamageScaling, 0f))
 			{
 				builder.AppendLine(
-					$"    Damage reduced by up to {_missileConfig.HealthDamageScaling:00.#%}, scaling with fraction of health lost"
+					$"{indent}  Damage reduced by up to {_missileConfig.HealthDamageScaling:00.#%}, scaling with fraction of health lost"
 				);
 			}
 		}
@@ -301,11 +299,9 @@ public class MissileLauncher : AbstractWeaponLauncher
 		string reloadCost = string.Join(" ", VehicleResourceDatabase.Instance.FormatResourceDict(ReloadResourceUse));
 		builder.AppendLine(
 			ReloadResourceUse.Count > 0
-				? $"    Reload time {_reloadTime}s, reload cost {reloadCost}/s"
-				: $"    Reload time {_reloadTime}"
+				? $"{indent}  Reload time {_reloadTime}s, reload cost {reloadCost}/s"
+				: $"{indent}  Reload time {_reloadTime}"
 		);
-
-		return builder.ToString();
 	}
 }
 }

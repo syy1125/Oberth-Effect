@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json.Linq;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Blocks.Resource;
@@ -47,7 +48,7 @@ public class ResourceGenerator : MonoBehaviour,
 	IResourceGenerator,
 	IControlConditionReceiver,
 	IHasDebrisState,
-	ITooltipProvider
+	ITooltipComponent
 {
 	public const string CLASS_KEY = "ResourceGenerator";
 
@@ -204,31 +205,38 @@ public class ResourceGenerator : MonoBehaviour,
 		}
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
 		if (_consumptionRate == null || _consumptionRate.Count == 0)
 		{
-			return "Resource generation\n  "
-			       + string.Join(
-				       ", ",
-				       VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
-					       .Select(entry => $"{entry}/s")
-			       );
+			builder
+				.AppendLine($"{indent}Resource generation")
+				.Append($"{indent}  ")
+				.AppendLine(
+					string.Join(
+						", ", VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
+							.Select(entry => $"{entry}/s")
+					)
+				);
 		}
 		else
 		{
-			return "Resource converter\n  Max consumption "
-			       + string.Join(
-				       ", ",
-				       VehicleResourceDatabase.Instance.FormatResourceDict(_consumptionRate)
-					       .Select(entry => $"{entry}/s")
-			       )
-			       + "\n  Max production "
-			       + string.Join(
-				       ", ",
-				       VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
-					       .Select(entry => $"{entry}/s")
-			       );
+			builder
+				.AppendLine($"{indent}Resource converter")
+				.Append($"{indent}  Max consumption")
+				.AppendLine(
+					string.Join(
+						", ", VehicleResourceDatabase.Instance.FormatResourceDict(_consumptionRate)
+							.Select(entry => $"{entry}/s")
+					)
+				)
+				.Append($"{indent}  Max production")
+				.AppendLine(
+					string.Join(
+						", ", VehicleResourceDatabase.Instance.FormatResourceDict(_generationRate)
+							.Select(entry => $"{entry}/s")
+					)
+				);
 		}
 	}
 

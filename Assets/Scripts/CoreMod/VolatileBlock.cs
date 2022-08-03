@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using System.Text;
+using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.ControlCondition;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Block;
@@ -26,7 +27,7 @@ public class VolatileSpec
 	public float MaxDamage;
 }
 
-public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBlockDestructionEffect, ITooltipProvider
+public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBlockDestructionEffect, ITooltipComponent
 {
 	private bool _alwaysExplode;
 	private IControlCondition _activationCondition;
@@ -68,11 +69,20 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 		);
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		return _alwaysExplode
-			? $"<color=\"red\">Volatile</color>: Explodes for {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed."
-			: $"<color=\"orange\">Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed.";
+		if (_alwaysExplode)
+		{
+			builder.AppendLine(
+				$"{indent}<color=red>Volatile</color>: Explodes for {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed."
+			);
+		}
+		else
+		{
+			builder.AppendLine(
+				$"{indent}<color=orange>Sometimes volatile</color>: Can explode for up to {_maxDamage:F0} damage in a {PhysicsUnitUtils.FormatLength(_maxRadius)} radius when destroyed."
+			);
+		}
 	}
 }
 }

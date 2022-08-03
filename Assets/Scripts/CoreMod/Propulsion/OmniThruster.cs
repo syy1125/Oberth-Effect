@@ -36,7 +36,7 @@ public class OmniThrusterSpec : ICustomValidation
 	}
 }
 
-public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSpec>, ITooltipProvider
+public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSpec>, ITooltipComponent
 {
 	public const string CLASS_KEY = "OmniThruster";
 
@@ -242,21 +242,18 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 		return MaxForce;
 	}
 
-	public string GetTooltip()
+	public void GetTooltip(StringBuilder builder, string indent)
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("Maneuvering thruster")
-			.AppendLine("  Omni-directional")
-			.Append($"  Max thrust per direction {PhysicsUnitUtils.FormatForce(MaxForce)}");
+		builder.AppendLine($"{indent}Maneuvering thruster")
+			.AppendLine($"{indent}  Omni-directional")
+			.AppendLine($"{indent}  Max thrust per direction {PhysicsUnitUtils.FormatForce(MaxForce)}");
 
 		if (MaxResourceUse != null && MaxResourceUse.Count > 0)
 		{
-			builder.AppendLine()
-				.Append("  Max resource usage per second ")
-				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)));
+			builder.Append($"{indent}  Max resource usage per second ")
+				.Append(string.Join(", ", VehicleResourceDatabase.Instance.FormatResourceDict(MaxResourceUse)))
+				.AppendLine();
 		}
-
-		return builder.ToString();
 	}
 }
 }
