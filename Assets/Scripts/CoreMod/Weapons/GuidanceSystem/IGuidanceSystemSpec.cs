@@ -7,8 +7,6 @@ public interface IGuidanceSystemSpec
 	string GetGuidanceSystemTooltip();
 	float GetMaxRange(float initialSpeed, float lifetime);
 
-	Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	);
+	Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity);
 }
 }

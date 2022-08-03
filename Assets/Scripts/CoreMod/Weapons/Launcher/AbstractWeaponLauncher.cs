@@ -84,9 +84,10 @@ public abstract class AbstractWeaponLauncher : MonoBehaviour, ITooltipComponent
 		ResourceSatisfaction = level;
 	}
 
-	public abstract Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	);
+	/// <summary>
+	/// Given the relative position and velocity of the target, calculate the target intercept point relative to own position.
+	/// </summary>
+	public abstract Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity);
 
 	protected float GetCorrectionAngle()
 	{

@@ -44,20 +44,15 @@ public class PredictiveGuidanceSystemSpec : IGuidanceSystemSpec
 			$"    Max acceleration {PhysicsUnitUtils.FormatAcceleration(MaxAcceleration)}, max angular acceleration {MaxAngularAcceleration:0.#}°/s²";
 	}
 
-	public Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	)
+	public Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity)
 	{
-		Vector2 relativePosition = targetPosition - ownPosition;
-		Vector2 relativeVelocity = targetVelocity - ownVelocity;
-
 		if (
 			InterceptSolver.MissileIntercept(
 				relativePosition, relativeVelocity, MaxAcceleration, out Vector2 acceleration, out float hitTime
 			)
 		)
 		{
-			return ownPosition + 0.5f * acceleration * hitTime * hitTime;
+			return 0.5f * acceleration * hitTime * hitTime;
 		}
 		else
 		{

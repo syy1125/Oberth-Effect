@@ -259,13 +259,8 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		return true;
 	}
 
-	public override Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	)
+	public override Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity)
 	{
-		Vector2 relativePosition = targetPosition - ownPosition;
-		Vector2 relativeVelocity = targetVelocity - ownVelocity;
-
 		bool success = InterceptSolver.ProjectileIntercept(
 			relativePosition, relativeVelocity, _maxSpeed,
 			out Vector2 interceptVelocity, out float hitTime
@@ -274,7 +269,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		if (success)
 		{
 			// Because of how aim point calculation is done, we actually should omit our own velocity here.
-			return ownPosition + interceptVelocity * hitTime;
+			return interceptVelocity * hitTime;
 		}
 
 		// If weapon has AOE, see if closest approach is good enough
@@ -285,7 +280,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			);
 			if (missMargin < _projectileConfig.ExplosionRadius)
 			{
-				return ownPosition + interceptVelocity * hitTime;
+				return interceptVelocity * hitTime;
 			}
 		}
 

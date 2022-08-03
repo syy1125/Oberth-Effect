@@ -160,11 +160,9 @@ public class MissileLauncher : AbstractWeaponLauncher
 		return ReloadResourceUse.ToDictionary(entry => entry.Key, entry => entry.Value * multiplier);
 	}
 
-	public override Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	)
+	public override Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity)
 	{
-		return _guidanceSystem.GetInterceptPoint(ownPosition, ownVelocity, targetPosition, targetVelocity);
+		return _guidanceSystem.GetInterceptPoint(relativePosition, relativeVelocity);
 	}
 
 	public override void LauncherFixedUpdate(bool isMine, bool firing)

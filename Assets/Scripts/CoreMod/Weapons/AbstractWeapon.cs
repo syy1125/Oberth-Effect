@@ -68,36 +68,36 @@ public abstract class AbstractWeapon :
 	protected void LoadProjectileWeapon(ProjectileLauncherSpec spec, in BlockContext context)
 	{
 		var launcherObject = new GameObject("ProjectileLauncher");
-		
+
 		SetWeaponLauncherTransform(launcherObject, spec);
-		
+
 		var launcher = launcherObject.AddComponent<ProjectileLauncher>();
 		launcher.LoadSpec(spec, context);
-		
+
 		WeaponLauncher = launcher;
 	}
 
 	protected void LoadBurstBeamWeapon(BurstBeamLauncherSpec spec, in BlockContext context)
 	{
 		var launcherObject = new GameObject("BurstBeamLauncher");
-		
+
 		SetWeaponLauncherTransform(launcherObject, spec);
-		
+
 		var launcher = launcherObject.AddComponent<BurstBeamLauncher>();
 		launcher.LoadSpec(spec, context);
-		
+
 		WeaponLauncher = launcher;
 	}
 
 	protected void LoadMissileWeapon(MissileLauncherSpec spec, in BlockContext context)
 	{
 		var launcherObject = new GameObject("MissileLauncher");
-		
+
 		SetWeaponLauncherTransform(launcherObject, spec);
-		
+
 		var launcher = launcherObject.AddComponent<MissileLauncher>();
 		launcher.LoadSpec(spec, context);
-		
+
 		WeaponLauncher = launcher;
 	}
 
@@ -169,7 +169,7 @@ public abstract class AbstractWeapon :
 
 	public void SetPointDefenseTargetList(IReadOnlyList<PointDefenseTargetData> targetData)
 	{
-		Vector2 position = transform.position;
+		Vector3 position = transform.position;
 		float rangeSqrLimit = GetMaxRange();
 		rangeSqrLimit *= rangeSqrLimit;
 
@@ -181,21 +181,18 @@ public abstract class AbstractWeapon :
 		for (int i = 0; i < targetData.Count; i++)
 		{
 			var target = targetData[i];
-
-			Vector2? interceptPoint = WeaponLauncher.GetInterceptPoint(
-				position, localVelocity,
-				target.Target.transform.position, target.Target.GetComponent<Rigidbody2D>().velocity
-			);
-			if (interceptPoint == null || (interceptPoint.Value - position).sqrMagnitude > rangeSqrLimit) continue;
-
 			float score = target.PriorityScore;
+			if (score <= bestScore) continue;
 
-			if (score > bestScore)
-			{
-				bestIndex = i;
-				bestScore = targetData[i].PriorityScore;
-				bestAimPoint = interceptPoint.Value;
-			}
+			Vector2 relativePosition = target.Target.transform.position - position;
+			Vector2 relativeVelocity = target.Target.GetComponent<Rigidbody2D>().velocity - localVelocity;
+
+			Vector2? relativeIntercept = WeaponLauncher.GetInterceptPoint(relativePosition, relativeVelocity);
+			if (relativeIntercept == null || relativeIntercept.Value.sqrMagnitude > rangeSqrLimit) continue;
+
+			bestIndex = i;
+			bestScore = score;
+			bestAimPoint = (Vector2) position + relativeIntercept.Value;
 		}
 
 		if (bestIndex < 0) // No valid target
@@ -290,7 +287,9 @@ public abstract class AbstractWeapon :
 		float armorPierce = FirepowerUtils.GetMeanArmorPierce(firepower);
 		IReadOnlyDictionary<string, float> resourceUse = GetMaxResourceUseRate();
 
-		builder.AppendLine($"{indent}<b>Expected DPS {maxDps:0.#} (<color=lightblue>{armorPierce:0.##} AP</color>)</b>");
+		builder.AppendLine(
+			$"{indent}<b>Expected DPS {maxDps:0.#} (<color=lightblue>{armorPierce:0.##} AP</color>)</b>"
+		);
 
 		Dictionary<string, float> resourcePerFirepower =
 			resourceUse.ToDictionary(entry => entry.Key, entry => entry.Value / maxDps);

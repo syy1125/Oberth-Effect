@@ -171,11 +171,9 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		return true;
 	}
 
-	public override Vector2? GetInterceptPoint(
-		Vector2 ownPosition, Vector2 ownVelocity, Vector2 targetPosition, Vector2 targetVelocity
-	)
+	public override Vector2? GetInterceptPoint(Vector2 relativePosition, Vector2 relativeVelocity)
 	{
-		return targetPosition;
+		return relativePosition;
 	}
 
 	public override void LauncherFixedUpdate(bool isMine, bool firing)
