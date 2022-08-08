@@ -292,12 +292,8 @@ public static class ModLoader
 			Assembly modAssembly;
 			try
 			{
-				// Path.Join only takes up to 3 args?
 				modAssembly = Assembly.LoadFrom(
-					Path.Join(
-						Path.Join(Application.streamingAssetsPath, "Mods"),
-						Path.Join(mod.Directory, mod.Spec.CodeModPath)
-					)
+					Path.Combine(Application.streamingAssetsPath, "Mods", mod.Directory, mod.Spec.CodeModPath)
 				);
 			}
 			catch (FileNotFoundException)
@@ -422,7 +418,7 @@ public static class ModLoader
 				modAssembly.GetTypes().Where(type => type.IsDefined(typeof(CreateSchemaFileAttribute)))
 			);
 		}
-		
+
 		Debug.Log($"Found {schemaTypes.Count} schema types");
 
 		for (int i = 0; i < schemaTypes.Count; i++)
@@ -436,8 +432,9 @@ public static class ModLoader
 				LoadDescription = $"{schemaFileAttribute.FileName}.json";
 			}
 
-			var schemaPath = Path.Join(
-				Application.streamingAssetsPath, "JsonSchema", $"{schemaFileAttribute.FileName}.json"
+			var schemaPath = Path.Combine(
+				Application.streamingAssetsPath, "JsonSchema",
+				Path.ChangeExtension(schemaFileAttribute.FileName, ".json")!
 			);
 			var schema = SchemaGenerator.GenerateTopLevelSchema(schemaType);
 			File.WriteAllText(schemaPath, JsonConvert.SerializeObject(schema, Formatting.Indented));

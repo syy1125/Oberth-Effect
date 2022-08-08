@@ -768,10 +768,7 @@ public class GameGuide : MonoBehaviour
 
 		// LoadFrom is idempotent
 		var coreMod = Assembly.LoadFrom(
-			Path.Join(
-				Path.Join(Application.streamingAssetsPath, "Mods"),
-				Path.Join("Oberth Effect", "CoreMod.dll")
-			)
+			Path.Combine(Application.streamingAssetsPath, "Mods", "Oberth Effect", "CoreMod.dll")
 		);
 
 		var guidanceSpecType =
