@@ -17,7 +17,8 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 	private IProjectileController _controller;
 
 	private float _damage;
-	private DamageType _damageType;
+	private DamagePattern _damagePattern;
+	private string _damageTypeId;
 	private float _armorPierce;
 	private float _explosionRadius;
 	private Func<float> _getDamageModifier;
@@ -39,12 +40,13 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 	}
 
 	public void Init(
-		float maxDamage, DamageType damageType, float armorPierce, float explosionRadius,
+		float maxDamage, DamagePattern damagePattern, string damageType, float armorPierce, float explosionRadius,
 		Func<float> getDamageModifier, float lifetime
 	)
 	{
 		_damage = maxDamage;
-		_damageType = damageType;
+		_damagePattern = damagePattern;
+		_damageTypeId = damageType;
 		_armorPierce = Mathf.Clamp(armorPierce, 1f, 10f);
 		_explosionRadius = explosionRadius;
 		_getDamageModifier = getDamageModifier;
@@ -217,7 +219,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 		// At this point, we've established that damage should be applied and that this client should be responsible for calculating damage.
 
 		float damageModifier = _getDamageModifier?.Invoke() ?? 1f;
-		if (_damageType == DamageType.Explosive)
+		if (_damagePattern == DamagePattern.Explosive)
 		{
 			// Explosive damage special case
 			Vector3 explosionCenter = hit.point;
@@ -230,7 +232,8 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 			}
 
 			ExplosionManager.Instance.CreateExplosionAt(
-				referenceFrameId, explosionCenter, _explosionRadius, _damage * damageModifier, _controller.OwnerId
+				referenceFrameId, explosionCenter, _explosionRadius, _damage * damageModifier, _damageTypeId,
+				_controller.OwnerId
 			);
 			DamageExhaustedDespawn();
 
@@ -240,7 +243,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 		{
 			// Normal projectile damage behaviour
 			float effectiveDamage = _damage * damageModifier;
-			target.TakeDamage(_damageType, ref effectiveDamage, _armorPierce, out bool damageExhausted);
+			target.TakeDamage(_damageTypeId, ref effectiveDamage, _armorPierce, out bool damageExhausted);
 			_damage = effectiveDamage / damageModifier;
 
 			if (damageExhausted)
@@ -272,12 +275,12 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 	{
 		if (_controller.IsMine)
 		{
-			if (_damageType == DamageType.Explosive && !_expectExploded)
+			if (_damagePattern == DamagePattern.Explosive && !_expectExploded)
 			{
 				float damageModifier = _getDamageModifier?.Invoke() ?? 1f;
 				ExplosionManager.Instance.CreateExplosionAt(
 					null, transform.position,
-					_explosionRadius, _damage * damageModifier, _controller.OwnerId
+					_explosionRadius, _damage * damageModifier, _damageTypeId, _controller.OwnerId
 				);
 			}
 

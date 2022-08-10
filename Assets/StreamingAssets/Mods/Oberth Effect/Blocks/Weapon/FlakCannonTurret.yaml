@@ -28,7 +28,7 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 150
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   TurretedWeapon: !TurretedWeapon
     Turret:
@@ -39,7 +39,8 @@ BlockComponents:
     ProjectileLauncher:
       FiringPortOffset: { X: 0, Y: 0.4 }
       Damage: 25
-      DamageType: Explosive
+      DamagePattern: Explosive
+      DamageTypeId: OberthEffect/Explosive
       ExplosionRadius: 1.5
       SpreadAngle: 2.5
       SpreadProfile: Uniform

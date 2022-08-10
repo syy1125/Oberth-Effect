@@ -5,6 +5,7 @@ using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.Validation;
@@ -17,7 +18,9 @@ public class AbstractWeaponLauncherSpec : ICustomValidation
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float Damage;
-	public DamageType DamageType;
+	public DamagePattern DamagePattern;
+	[ValidateDamageTypeId]
+	public string DamageTypeId;
 	[ValidateRangeFloat(1f, 10f)]
 	public float ArmorPierce = 1f;
 	public float ExplosionRadius; // Only relevant for explosive damage
@@ -114,6 +117,12 @@ public abstract class AbstractWeaponLauncher : MonoBehaviour, ITooltipComponent
 	}
 
 	public abstract bool GetTooltip(StringBuilder builder, string indent);
+
+	protected string GetColoredDamageText(float damage, string damageTypeId)
+	{
+		DamageTypeSpec damageTypeSpec = DamageTypeDatabase.Instance.GetSpec(damageTypeId);
+		return damageTypeSpec.WrapColorTag($"{damage:0.#} {damageTypeSpec.DisplayName}");
+	}
 
 	protected void ExecuteWeaponSideEffects()
 	{

@@ -10,7 +10,7 @@ public static class BeamWeaponUtils
 	private static readonly List<RaycastHit2D> hits = new();
 
 	public static void HandleBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId,
+		string damageType, float damage, float armorPierce, int ownerId,
 		Vector2 beamStart, Vector2 beamEnd
 	)
 	{

@@ -26,7 +26,7 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 50
-  ArmorValue: 1
+  ArmorTypeId: OberthEffect/FragileComponent
 BlockComponents:
   ResourceStorage: !ResourceStorage
     StorageCapacity:

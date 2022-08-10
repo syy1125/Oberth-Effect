@@ -15,7 +15,8 @@ public class ProjectileConfig
 {
 	public Vector2 ColliderSize;
 	public float Damage;
-	public DamageType DamageType;
+	public DamagePattern DamagePattern;
+	public string DamageTypeId;
 	public float ArmorPierce; // Note that explosive damage will always have armor pierce of 1
 	public float ExplosionRadius; // Only relevant for explosive damage
 	public float Lifetime;

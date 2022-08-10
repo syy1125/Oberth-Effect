@@ -15,6 +15,7 @@ public class GameInitializer : MonoBehaviour
 {
 	public SceneReference MainMenuScene;
 	public TextAsset CoreBlock;
+	public TextAsset CoreArmor;
 	public Text LoadText;
 	public ProgressBar LoadProgress;
 
@@ -41,6 +42,7 @@ public class GameInitializer : MonoBehaviour
 		yield return new WaitUntil(() => resetTask.IsCompleted);
 
 		ModLoader.InjectBlockSpec(CoreBlock);
+		ModLoader.InjectArmorTypeSpec(CoreArmor);
 
 		Task loadTask = Task.Run(
 			() =>

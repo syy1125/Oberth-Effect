@@ -23,6 +23,10 @@
     },
     "MaxDamage": {
       "type": "number"
+    },
+    "DamageTypeId": {
+      "type": "string",
+      "description": "The damage type of the explosion when the block is destroyed"
     }
   },
   "$id": "VolatileSpecSchema"

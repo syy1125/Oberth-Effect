@@ -36,7 +36,7 @@ public class NetworkedProjectileController : MonoBehaviourPun, IProjectileContro
 		GetComponent<ColorContext>().SetColorScheme(config.ColorScheme);
 
 		GetComponent<DamagingProjectile>().Init(
-			config.Damage, config.DamageType, config.ArmorPierce, config.ExplosionRadius,
+			config.Damage, config.DamagePattern, config.DamageTypeId, config.ArmorPierce, config.ExplosionRadius,
 			null, config.Lifetime
 		);
 

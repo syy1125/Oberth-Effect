@@ -76,7 +76,8 @@
                 "type": "integer"
               }
             }
-          }
+          },
+          "description": "Defines a set of points that this block can attach to. Two blocks are connected if and only if they each have at least one attachment point in the other block's bounds."
         },
         "MirrorBlockId": {
           "type": "string"
@@ -106,8 +107,8 @@
         "MaxHealth": {
           "type": "number"
         },
-        "ArmorValue": {
-          "type": "number"
+        "ArmorTypeId": {
+          "type": "string"
         },
         "IntegrityScore": {
           "type": "number"

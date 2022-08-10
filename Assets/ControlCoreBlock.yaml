@@ -26,5 +26,5 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 200
-  ArmorValue: 5
+  ArmorTypeId: OberthEffect/ControlCore
 ControlCore: { }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -13,6 +14,7 @@ public struct ConstructionSpec : ICustomValidation
 
 	public Vector2Int BoundsMin;
 	public Vector2Int BoundsMax;
+	[SchemaDescription("Defines a set of points that this block can attach to. Two blocks are connected if and only if they each have at least one attachment point in the other block's bounds.")]
 	public Vector2Int[] AttachmentPoints;
 
 	[RequireChecksumLevel(ChecksumLevel.Everything)]

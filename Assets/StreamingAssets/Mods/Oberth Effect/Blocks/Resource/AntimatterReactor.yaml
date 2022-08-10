@@ -29,7 +29,7 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 120
-  ArmorValue: 5
+  ArmorTypeId: OberthEffect/AntimatterReactor
 BlockComponents:
   ResourceGenerator: !ResourceGenerator
     GenerationRate:

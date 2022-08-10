@@ -9,7 +9,7 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
-using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
@@ -96,7 +96,8 @@ public class MissileLauncher : AbstractWeaponLauncher
 		{
 			ColliderSize = spec.ColliderSize,
 			Damage = spec.Damage,
-			DamageType = spec.DamageType,
+			DamagePattern = spec.DamagePattern,
+			DamageTypeId = spec.DamageTypeId,
 			ArmorPierce = spec.ArmorPierce,
 			ExplosionRadius = spec.ExplosionRadius,
 			Lifetime = spec.MaxLifetime,
@@ -132,7 +133,7 @@ public class MissileLauncher : AbstractWeaponLauncher
 
 			RendererHelper.AttachRenderers(firingPort, _missileConfig.Renderers);
 
-			_launchTubes[i] = new LaunchTube
+			_launchTubes[i] = new()
 			{
 				FiringPort = firingPort,
 				LaunchVelocity = spec.LaunchTubes[i].LaunchVelocity,
@@ -264,28 +265,39 @@ public class MissileLauncher : AbstractWeaponLauncher
 			new()
 			{
 				DamagePerSecond = _missileConfig.Damage * _launchTubes.Length / _reloadTime,
-				DamageType = _missileConfig.DamageType,
-				ArmorPierce = _missileConfig.DamageType == DamageType.Explosive ? 1f : _missileConfig.ArmorPierce
+				DamageTypeId = _missileConfig.DamageTypeId,
+				ArmorPierce = _missileConfig.DamagePattern == DamagePattern.Explosive ? 1f : _missileConfig.ArmorPierce
 			}
 		);
 	}
 
 	public override bool GetTooltip(StringBuilder builder, string indent)
 	{
+		DamageTypeSpec damageTypeSpec = DamageTypeDatabase.Instance.GetSpec(_missileConfig.DamageTypeId);
+
 		builder.AppendLine($"{indent}Missile")
 			.AppendLine(
-				_missileConfig.DamageType == DamageType.Explosive
-					? $"{indent}  {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_missileConfig.ExplosionRadius)} radius"
-					: $"{indent}  {_missileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_missileConfig.DamageType)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
+				_missileConfig.DamagePattern == DamagePattern.Explosive
+					? $"{indent}  {GetColoredDamageText(_missileConfig.Damage, _missileConfig.DamageTypeId)} damage, {PhysicsUnitUtils.FormatLength(_missileConfig.ExplosionRadius)} radius"
+					: $"{indent}  {GetColoredDamageText(_missileConfig.Damage, _missileConfig.DamageTypeId)} damage, <color=\"lightblue\">{_missileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(_guidanceSystem.GetGuidanceSystemTooltip())
 			.AppendLine($"    Max range {PhysicsUnitUtils.FormatDistance(MaxRange)}");
 
 		if (_missileConfig.PointDefenseTarget != null)
 		{
+			var armorTypeSpec = ArmorTypeDatabase.Instance.GetSpec(_missileConfig.PointDefenseTarget.ArmorTypeId);
+
 			builder.AppendLine(
-				$"{indent}  Missile has <color=\"red\">{_missileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{_missileConfig.PointDefenseTarget.ArmorValue} armor</color>"
+				$"{indent}  Missile has <color=\"red\">{_missileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{armorTypeSpec.ArmorValue} armor</color>"
 			);
+			string damageModifierText =
+				ArmorTypeDatabase.Instance.GetDamageModifierTooltip(_missileConfig.PointDefenseTarget.ArmorTypeId);
+			if (!string.IsNullOrWhiteSpace(damageModifierText))
+			{
+				builder.AppendLine($"{indent}  Missile takes {damageModifierText}");
+			}
+
 			if (!Mathf.Approximately(_missileConfig.HealthDamageScaling, 0f))
 			{
 				builder.AppendLine(

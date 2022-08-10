@@ -7,7 +7,7 @@ namespace Syy1125.OberthEffect.CombatSystem
 {
 public struct FirepowerEntry
 {
-	public DamageType DamageType;
+	public string DamageTypeId;
 	public float DamagePerSecond;
 	public float ArmorPierce;
 }
@@ -16,30 +16,32 @@ public static class FirepowerUtils
 {
 	public static IList<FirepowerEntry> AggregateFirepower(IEnumerable<FirepowerEntry> entries)
 	{
-		var aggregator = new Dictionary<DamageType, Tuple<float, float>>();
+		var aggregator = new Dictionary<string, Tuple<float, float>>();
 
 		foreach (FirepowerEntry entry in entries)
 		{
-			if (!aggregator.TryGetValue(entry.DamageType, out var value))
+			if (!aggregator.TryGetValue(entry.DamageTypeId, out var value))
 			{
-				value = new Tuple<float, float>(0f, 0f);
+				value = new(0f, 0f);
 			}
 
 			float damage = value.Item1 + entry.DamagePerSecond;
 			float net = value.Item2 + entry.DamagePerSecond * entry.ArmorPierce;
 
-			aggregator[entry.DamageType] = Tuple.Create(damage, net);
+			aggregator[entry.DamageTypeId] = Tuple.Create(damage, net);
 		}
 
 		return aggregator
 			.Select(
 				pair => new FirepowerEntry
 				{
-					DamageType = pair.Key,
+					DamageTypeId = pair.Key,
 					DamagePerSecond = pair.Value.Item1,
 					ArmorPierce = pair.Value.Item2 / pair.Value.Item1
 				}
-			).ToList();
+			)
+			.OrderBy(entry => entry.DamageTypeId)
+			.ToList();
 	}
 
 	public static float GetTotalDamage(IEnumerable<FirepowerEntry> entries)

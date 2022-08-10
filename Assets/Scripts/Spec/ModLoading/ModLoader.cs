@@ -49,6 +49,8 @@ public static class ModLoader
 	internal static List<Assembly> ModAssemblies;
 	internal static ModLoadingPipeline<BlockSpec> BlockPipeline;
 	internal static ModLoadingPipeline<BlockCategorySpec> BlockCategoryPipeline;
+	internal static ModLoadingPipeline<DamageTypeSpec> DamageTypePipeline;
+	internal static ModLoadingPipeline<ArmorTypeSpec> ArmorTypePipeline;
 	internal static ModLoadingPipeline<TextureSpec> TexturePipeline;
 	internal static ModLoadingPipeline<SoundSpec> SoundPipeline;
 	internal static ModLoadingPipeline<VehicleResourceSpec> VehicleResourcePipeline;
@@ -60,7 +62,8 @@ public static class ModLoader
 
 	private static IEnumerable<IModLoadingPipeline> Pipelines => new IModLoadingPipeline[]
 	{
-		BlockPipeline, BlockCategoryPipeline, TexturePipeline, SoundPipeline, VehicleResourcePipeline,
+		BlockPipeline, BlockCategoryPipeline, DamageTypePipeline, ArmorTypePipeline,
+		TexturePipeline, SoundPipeline, VehicleResourcePipeline,
 		ControlGroupPipeline, StockVehiclePipeline
 	};
 
@@ -73,6 +76,8 @@ public static class ModLoader
 		ModAssemblies = new();
 		BlockPipeline = new(_modsRoot, "Blocks");
 		BlockCategoryPipeline = new(_modsRoot, "Block Categories");
+		DamageTypePipeline = new(_modsRoot, "Damage Types");
+		ArmorTypePipeline = new(_modsRoot, "Armor Types");
 		TexturePipeline = new(
 			_modsRoot, "Textures",
 			ResolveAbsolutePaths(nameof(TextureSpec.ImagePath))
@@ -125,6 +130,11 @@ public static class ModLoader
 	public static void InjectBlockSpec(TextAsset blockSpec)
 	{
 		BlockPipeline.InjectFileContent(blockSpec.text, "Core");
+	}
+
+	public static void InjectArmorTypeSpec(TextAsset armorTypeSpec)
+	{
+		ArmorTypePipeline.InjectFileContent(armorTypeSpec.text, "Core");
 	}
 
 	#region Mod List
@@ -387,6 +397,8 @@ public static class ModLoader
 		ValidateBlockIdAttribute.ValidIds = new(BlockPipeline.GetResultIds<string>(spec => spec.Enabled));
 		ValidateBlockCategoryIdAttribute.ValidIds =
 			new(BlockCategoryPipeline.GetResultIds<string>(spec => spec.Enabled));
+		ValidateArmorTypeIdAttribute.ValidIds = new(ArmorTypePipeline.GetResultIds<string>());
+		ValidateDamageTypeIdAttribute.ValidIds = new(DamageTypePipeline.GetResultIds<string>());
 		ValidateTextureIdAttribute.ValidIds = new(TexturePipeline.GetResultIds<string>());
 		ValidateSoundIdAttribute.ValidIds = new(SoundPipeline.GetResultIds<string>());
 		ValidateVehicleResourceIdAttribute.ValidIds = new(VehicleResourcePipeline.GetResultIds<string>());
@@ -456,6 +468,8 @@ public static class ModLoader
 	{
 		ushort blockSpecChecksum = GetChecksum(BlockPipeline.Results, level);
 		ushort blockCategorySpecChecksum = GetChecksum(BlockCategoryPipeline.Results, level);
+		ushort damageTypeSpecChecksum = GetChecksum(DamageTypePipeline.Results, level);
+		ushort armorTypeSpecChecksum = GetChecksum(ArmorTypePipeline.Results, level);
 		ushort textureSpecChecksum = GetChecksum(TexturePipeline.Results, level);
 		ushort soundChecksum = GetChecksum(SoundPipeline.Results, level);
 		ushort vehicleResourceChecksum = GetChecksum(VehicleResourcePipeline.Results, level);
@@ -466,6 +480,8 @@ public static class ModLoader
 		return (ushort) Convert.ToUInt32(
 			blockSpecChecksum
 			+ blockCategorySpecChecksum
+			+ damageTypeSpecChecksum
+			+ armorTypeSpecChecksum
 			+ textureSpecChecksum
 			+ soundChecksum
 			+ vehicleResourceChecksum

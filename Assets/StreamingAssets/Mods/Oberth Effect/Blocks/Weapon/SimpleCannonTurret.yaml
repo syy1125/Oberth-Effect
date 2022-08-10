@@ -29,7 +29,7 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 150
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   TurretedWeapon: !TurretedWeapon
     Turret:
@@ -39,7 +39,8 @@ BlockComponents:
           Scale: { X: 1.2, Y: 1.2 }
     ProjectileLauncher:
       FiringPortOffset: { X: 0, Y: 0.6 }
-      DamageType: Kinetic
+      DamagePattern: Piercing
+      DamageTypeId: OberthEffect/Kinetic
       Damage: 80
       ArmorPierce: 5
       SpreadProfile: None

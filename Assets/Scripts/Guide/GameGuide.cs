@@ -715,7 +715,7 @@ public class GameGuide : MonoBehaviour
 			Step(
 				"Weapon Testing",
 				"Try hitting it with your flak cannons. On this vehicle, they are assigned to the \"Manual 1\" group. Press and hold LMB to fire them.",
-				() => TargetDummy.GetDamageHistory().Any(item => item.Type == DamageType.Explosive)
+				() => TargetDummy.GetDamageHistory().Any(item => item.DamageType == "OberthEffect/Explosive")
 			)
 		);
 
@@ -743,7 +743,7 @@ public class GameGuide : MonoBehaviour
 					"Guided weapons, like the torpedo mounted on this vehicle, require a target (acquired, not necessarily locked) to fire.",
 					"Now that you have the target dummy in your sights, press RMB to fire your torpedo."
 				),
-				() => TargetDummy.GetDamageHistory().Any(item => item.Type == DamageType.Kinetic)
+				() => TargetDummy.GetDamageHistory().Any(item => item.DamageType == "OberthEffect/Kinetic")
 			)
 		);
 
@@ -803,14 +803,15 @@ public class GameGuide : MonoBehaviour
 			{
 				ColliderSize = new(0.16f, 1.4f),
 				Damage = 10f,
-				DamageType = DamageType.Kinetic,
+				DamagePattern = DamagePattern.Piercing,
+				DamageTypeId = "OberthEffect/Kinetic",
 				ArmorPierce = 1f,
 				Lifetime = 60f,
 
 				PointDefenseTarget = new()
 				{
 					MaxHealth = 10f,
-					ArmorValue = 1f,
+					ArmorTypeId = "OberthEffect/Torpedo"
 				},
 				HealthDamageScaling = 0.75f,
 

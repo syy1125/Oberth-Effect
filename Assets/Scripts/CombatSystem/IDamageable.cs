@@ -34,19 +34,19 @@ public interface IDamageable
 	/// <br/>
 	/// Should only be called if we are responsible for calculating damage.
 	/// </summary>
-	void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted);
+	void TakeDamage(string damageType, ref float damage, float armorPierce, out bool damageExhausted);
 
 	/// <summary>
 	/// Requests that the target do beam damage calculations on the proper server.
 	/// Typically this involves sending an RPC to the owner so that it can do the correct damage calculations.
 	/// </summary>
 	void RequestBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	);
 }
 
 public interface IDirectDamageable : IDamageable
 {
-	void RequestDirectDamage(DamageType damageType, float damage, float armorPierce);
+	void RequestDirectDamage(string damageType, float damage, float armorPierce);
 }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using Photon.Pun;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,7 +22,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 
 	private float _maxHealth;
 	private float _health;
-	private float _armor;
+	private string _armorTypeId;
 	private Vector2 _boundHalfSize;
 
 	private bool _destroyed;
@@ -38,7 +40,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	public void Init(PointDefenseTargetSpec spec, Vector2 colliderSize)
 	{
 		_health = _maxHealth = spec.MaxHealth;
-		_armor = spec.ArmorValue;
+		_armorTypeId = spec.ArmorTypeId;
 		_boundHalfSize = colliderSize / 2;
 	}
 
@@ -84,10 +86,17 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 		return _body.velocity;
 	}
 
-	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
+	public void TakeDamage(string damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
-		float damageModifier = Mathf.Min(armorPierce / _armor, 1f);
-		Debug.Assert(damageModifier > Mathf.Epsilon, "Damage modifier should not be zero");
+		float damageModifier = ArmorTypeDatabase.Instance.GetDamageModifier(damageType, armorPierce, _armorTypeId);
+
+		// Damage modifier could be 0 if the armor type is completely immune to incoming damage
+		if (Mathf.Approximately(damageModifier, 0f))
+		{
+			damage = 0f;
+			damageExhausted = true;
+			return;
+		}
 
 		float effectiveDamage = damage * damageModifier;
 		float effectiveHealth = _health / damageModifier;
@@ -118,7 +127,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	}
 
 	public void RequestBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		photonView.RPC(
@@ -129,7 +138,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 
 	[PunRPC]
 	private void TakeBeamDamageRpc(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		if (!IsMine) return;
@@ -137,20 +146,25 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	}
 
 	public void RequestDirectDamage(
-		DamageType damageType, float damage, float armorPierce
+		string damageType, float damage, float armorPierce
 	)
 	{
 		photonView.RPC(nameof(TakeDirectDamageRpc), photonView.Owner, damageType, damage, armorPierce);
 
-		// Predictive disabling if damage is expected to exceed health
-		float damageModifier = Mathf.Min(armorPierce / _armor, 1f);
+		float damageModifier = ArmorTypeDatabase.Instance.GetDamageModifier(damageType, armorPierce, _armorTypeId);
+
+		// Damage modifier could be 0 if the armor type is completely immune to incoming damage
+		if (Mathf.Approximately(damageModifier, 0f)) return;
+
 		float effectiveDamage = damage * damageModifier;
+
 		if (_health > effectiveDamage)
 		{
 			_health -= effectiveDamage;
 		}
 		else
 		{
+			// Predictive disabling if damage is expected to exceed health
 			if (!_destroyed)
 			{
 				_destroyed = true;
@@ -160,7 +174,7 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	}
 
 	[PunRPC]
-	private void TakeDirectDamageRpc(DamageType damageType, float damage, float armorPierce)
+	private void TakeDirectDamageRpc(string damageType, float damage, float armorPierce)
 	{
 		if (!IsMine) return;
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);

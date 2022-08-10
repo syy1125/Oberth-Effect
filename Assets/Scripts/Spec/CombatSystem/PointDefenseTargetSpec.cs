@@ -6,7 +6,7 @@ public class PointDefenseTargetSpec
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxHealth;
-	[ValidateRangeFloat(1f, 10f)]
-	public float ArmorValue = 1f;
+	[ValidateArmorTypeId]
+	public string ArmorTypeId;
 }
 }

@@ -46,7 +46,7 @@ public class SoundDatabase : MonoBehaviour, IGameContentDatabase
 			}
 		}
 
-		_sounds = new Dictionary<string, AudioClip>();
+		_sounds = new();
 		Debug.Log($"Loaded {_specs.Count} sound specs");
 	}
 

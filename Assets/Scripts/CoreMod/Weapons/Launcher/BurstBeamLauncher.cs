@@ -62,7 +62,8 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 	private float _reloadTime;
 
 	private float _totalDamage;
-	private DamageType _damageType;
+	private DamagePattern _damagePattern;
+	private string _damageTypeId;
 	private float _armorPierce;
 	private float _explosionRadius;
 
@@ -98,7 +99,8 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		_reloadTime = spec.ReloadTime;
 
 		_totalDamage = spec.Damage;
-		_damageType = spec.DamageType;
+		_damagePattern = spec.DamagePattern;
+		_damageTypeId = spec.DamageTypeId;
 		_armorPierce = spec.ArmorPierce;
 		_explosionRadius = spec.ExplosionRadius;
 		MaxRange = spec.MaxRange;
@@ -140,9 +142,9 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		entries.Add(
 			new()
 			{
-				DamageType = _damageType,
+				DamageTypeId = _damageTypeId,
 				DamagePerSecond = _totalDamage / _reloadTime,
-				ArmorPierce = _damageType == DamageType.Explosive ? 1f : _armorPierce
+				ArmorPierce = _damagePattern == DamagePattern.Explosive ? 1f : _armorPierce
 			}
 		);
 	}
@@ -151,11 +153,11 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 	{
 		builder
 			.AppendLine($"{indent}Burst Beam")
-			.Append($"{indent}  {_totalDamage:F0} {DamageTypeUtils.GetColoredText(_damageType)} damage over ")
+			.Append($"{indent}  {GetColoredDamageText(_totalDamage, _damageTypeId)} damage over ")
 			.Append(_preciseDuration ? $"{_durationTicks} tick(s)" : $"{_durationSeconds} second(s)")
 			.Append(", ")
 			.AppendLine(
-				_damageType == DamageType.Explosive
+				_damagePattern == DamagePattern.Explosive
 					? $"{PhysicsUnitUtils.FormatLength(_explosionRadius)} radius"
 					: $"<color=\"lightblue\">{_armorPierce:0.#} AP</color>"
 			)
@@ -277,19 +279,18 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		{
 			if (hitTarget != null)
 			{
-				switch (_damageType)
+				switch (_damagePattern)
 				{
-					case DamageType.Kinetic:
-					case DamageType.Energy:
+					case DamagePattern.Piercing:
 					{
 						if (hitTarget is IDirectDamageable directTarget)
 						{
-							directTarget.RequestDirectDamage(_damageType, damageThisTick, _armorPierce);
+							directTarget.RequestDirectDamage(_damageTypeId, damageThisTick, _armorPierce);
 						}
 						else
 						{
 							hitTarget.RequestBeamDamage(
-								_damageType, damageThisTick, _armorPierce,
+								_damageTypeId, damageThisTick, _armorPierce,
 								_ownerContext.OwnerId,
 								transform.position, transform.TransformPoint(new Vector3(0f, MaxRange))
 							);
@@ -297,7 +298,7 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 
 						break;
 					}
-					case DamageType.Explosive:
+					case DamagePattern.Explosive:
 					{
 						Vector3 explosionCenter = worldEnd;
 						var referenceFrame = hitTarget.transform.GetComponentInParent<ReferenceFrameProvider>();
@@ -311,7 +312,7 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 
 						ExplosionManager.Instance.CreateExplosionAt(
 							referenceFrameId, explosionCenter,
-							_explosionRadius, damageThisTick, _ownerContext.OwnerId
+							_explosionRadius, damageThisTick, _damageTypeId, _ownerContext.OwnerId
 						);
 						break;
 					}

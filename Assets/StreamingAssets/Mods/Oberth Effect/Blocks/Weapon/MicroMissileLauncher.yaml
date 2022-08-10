@@ -29,12 +29,13 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 200
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   FixedWeapon: !FixedWeapon
     MissileLauncher:
       FiringPortOffset: { X: 0, Y: 0 }
-      DamageType: Explosive
+      DamagePattern: Explosive
+      DamageTypeId: OberthEffect/Explosive
       Damage: 80
       ExplosionRadius: 2
       MaxResourceUse:

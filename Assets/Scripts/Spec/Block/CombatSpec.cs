@@ -6,8 +6,8 @@ public struct CombatSpec
 {
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxHealth;
-	[ValidateRangeFloat(1f, 10f)]
-	public float ArmorValue;
+	[ValidateArmorTypeId]
+	public string ArmorTypeId;
 	public float IntegrityScore;
 }
 }

@@ -30,7 +30,7 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 150
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   TurretedWeapon: !TurretedWeapon
     Turret:
@@ -41,7 +41,8 @@ BlockComponents:
     BurstBeamLauncher:
       FiringPortOffset: { X: 0, Y: 0.6 }
       Damage: 100
-      DamageType: Energy
+      DamagePattern: Piercing
+      DamageTypeId: OberthEffect/Energy
       ArmorPierce: 7.5
       MaxResourceUse:
         OberthEffect/Energy: 80

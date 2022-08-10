@@ -37,7 +37,7 @@ Physics:
     Size: { X: 3, Y: 3 }
 Combat:
   MaxHealth: 500
-  ArmorValue: 2
+  ArmorTypeId: OberthEffect/FragileComponent
 BlockComponents:
   ResourceGenerator: !ResourceGenerator
     GenerationRate:

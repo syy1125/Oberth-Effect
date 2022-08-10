@@ -25,6 +25,9 @@ public class VolatileSpec
 	public float MaxRadius;
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float MaxDamage;
+	[ValidateDamageTypeId]
+	[SchemaDescription("The damage type of the explosion when the block is destroyed")]
+	public string DamageTypeId;
 }
 
 public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBlockDestructionEffect, ITooltipComponent
@@ -34,6 +37,7 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 	private Vector2 _explosionOffset;
 	private float _maxRadius;
 	private float _maxDamage;
+	private string _damageTypeId;
 
 	public void LoadSpec(VolatileSpec spec, in BlockContext context)
 	{
@@ -65,7 +69,7 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 		Debug.Log($"Block \"{gameObject}\" is exploding for {damage} damage in {radius} game unit radius.");
 		ExplosionManager.Instance.CreateExplosionAt(
 			photonView.ViewID, photonView.transform.InverseTransformPoint(transform.TransformPoint(_explosionOffset)),
-			radius, damage, -1
+			radius, damage, _damageTypeId, -1
 		);
 	}
 

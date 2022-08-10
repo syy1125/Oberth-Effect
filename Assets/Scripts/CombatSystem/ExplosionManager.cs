@@ -6,6 +6,8 @@ using Photon.Pun;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Physics;
+using Syy1125.OberthEffect.Spec;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.CombatSystem
@@ -37,8 +39,8 @@ public class ExplosionManager : MonoBehaviourPun
 			return;
 		}
 
-		_visualEffectPool = new Stack<GameObject>();
-		_colliders = new List<Collider2D>();
+		_visualEffectPool = new();
+		_colliders = new();
 	}
 
 	private void OnDestroy()
@@ -56,21 +58,22 @@ public class ExplosionManager : MonoBehaviourPun
 	/// <param name="center">The center of the explosion. If `referenceFrameId` is specified, this is the local position relative to the reference frame's transform.</param>
 	/// <param name="radius">Radius of the explosion.</param>
 	/// <param name="damage">Base damage value of the explosion.</param>
+	/// <param name="damageType">Damage type id of the explosion.</param>
 	/// <param name="ownerId">Owner of the explosion. Used in friendly fire calculations.</param>
 	public void CreateExplosionAt(
-		int? referenceFrameId, Vector3 center, float radius, float damage, int ownerId
+		int? referenceFrameId, Vector3 center, float radius, float damage, string damageType, int ownerId
 	)
 	{
-		DoExplosionAt(referenceFrameId, center, radius, damage, true, ownerId);
+		DoExplosionAt(referenceFrameId, center, radius, damage, damageType, true, ownerId);
 		photonView.RPC(
 			nameof(DoExplosionAt), RpcTarget.Others,
-			referenceFrameId, center, radius, damage, false, ownerId
+			referenceFrameId, center, radius, damage, damageType, false, ownerId
 		);
 	}
 
 	[PunRPC]
 	private void DoExplosionAt(
-		int? referenceFrameId, Vector3 center, float radius, float damage, bool isMine, int ownerId
+		int? referenceFrameId, Vector3 center, float radius, float damage, string damageType, bool isMine, int ownerId
 	)
 	{
 		Vector2? visualVelocity = null;
@@ -91,8 +94,8 @@ public class ExplosionManager : MonoBehaviourPun
 			visualVelocity = ReferenceFrameProvider.MainReferenceFrame.GetVelocity();
 		}
 
-		DealExplosionDamageAt(center, radius, damage, isMine, ownerId);
-		PlayEffectAt(center, radius, visualVelocity ?? Vector2.zero);
+		DealExplosionDamageAt(center, radius, damage, damageType, isMine, ownerId);
+		PlayEffectAt(center, radius, damageType, visualVelocity ?? Vector2.zero);
 	}
 
 	#region Damage Calculation
@@ -139,7 +142,9 @@ public class ExplosionManager : MonoBehaviourPun
 		return baseFactor * unitArea;
 	}
 
-	private void DealExplosionDamageAt(Vector3 center, float radius, float damage, bool isMine, int explosionOwnerId)
+	private void DealExplosionDamageAt(
+		Vector3 center, float radius, float damage, string damageType, bool isMine, int explosionOwnerId
+	)
 	{
 		int colliderCount = Physics2D.OverlapCircle(center, radius, LayerConstants.WeaponHitFilter, _colliders);
 		var targets = _colliders
@@ -172,7 +177,7 @@ public class ExplosionManager : MonoBehaviourPun
 						target.GetExplosionGridResolution(),
 						target.GetPointInBoundPredicate()
 					);
-				directDamageable.RequestDirectDamage(DamageType.Explosive, effectiveDamage, 1f);
+				directDamageable.RequestDirectDamage(damageType, effectiveDamage, 1f);
 			}
 			else
 			{
@@ -188,7 +193,7 @@ public class ExplosionManager : MonoBehaviourPun
 						target.GetExplosionGridResolution(),
 						target.GetPointInBoundPredicate()
 					);
-				target.TakeDamage(DamageType.Explosive, ref effectiveDamage, 1f, out bool _);
+				target.TakeDamage(damageType, ref effectiveDamage, 1f, out bool _);
 			}
 		}
 	}
@@ -197,12 +202,14 @@ public class ExplosionManager : MonoBehaviourPun
 
 	#region Visual Effects
 
-	public void PlayEffectAt(Vector3 position, float size, Vector2 velocity)
+	public void PlayEffectAt(Vector3 position, float size, string damageType, Vector2 velocity)
 	{
-		StartCoroutine(DoPlayEffect(position, size, velocity));
+		DamageTypeSpec damageTypeSpec = DamageTypeDatabase.Instance.GetSpec(damageType);
+
+		StartCoroutine(DoPlayEffect(position, size, damageTypeSpec.GetDisplayColor(), velocity));
 	}
 
-	private IEnumerator DoPlayEffect(Vector2 position, float size, Vector2 velocity)
+	private IEnumerator DoPlayEffect(Vector2 position, float size, Color color, Vector2 velocity)
 	{
 		GameObject effect = _visualEffectPool.Count > 0
 			? _visualEffectPool.Pop()
@@ -212,22 +219,22 @@ public class ExplosionManager : MonoBehaviourPun
 		effect.transform.localScale = new Vector3(size * 2, size * 2, 1f);
 		effect.SetActive(true);
 
-		SpriteRenderer sprite = effect.GetComponent<SpriteRenderer>();
-		Color color = sprite.color;
-		float startTime = Time.time;
-		float endTime = startTime + EffectDuration;
-
-		while (Time.time < endTime)
+		var sprite = effect.GetComponent<SpriteRenderer>();
+		if (sprite != null)
 		{
-			if (sprite == null) yield break;
+			float startTime = Time.time;
+			float endTime = startTime + EffectDuration;
 
-			effect.transform.position = position + velocity * (Time.time - startTime);
+			while (Time.time < endTime)
+			{
+				effect.transform.position = position + velocity * (Time.time - startTime);
 
-			float progress = Mathf.InverseLerp(startTime, endTime, Time.time);
-			color.a = AlphaCurve.Evaluate(progress);
-			sprite.color = color;
+				float progress = Mathf.InverseLerp(startTime, endTime, Time.time);
+				color.a = AlphaCurve.Evaluate(progress);
+				sprite.color = color;
 
-			yield return new WaitForFixedUpdate();
+				yield return new WaitForFixedUpdate();
+			}
 		}
 
 		effect.SetActive(false);

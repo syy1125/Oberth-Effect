@@ -1,0 +1,4 @@
+﻿ArmorTypeId: OberthEffect/PointDefenseTarget
+ArmorValue: 1
+DamageModifiers: 
+  OberthEffect/Explosive: 5

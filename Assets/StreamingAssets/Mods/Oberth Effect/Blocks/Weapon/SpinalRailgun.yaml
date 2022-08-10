@@ -33,13 +33,14 @@ Physics:
     Size: { X: 1, Y: 3 }
 Combat:
   MaxHealth: 500
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   FixedWeapon: !FixedWeapon
     ProjectileLauncher:
       FiringPortOffset: { X: 0, Y: -1 }
       Damage: 200
-      DamageType: Kinetic
+      DamagePattern: Piercing
+      DamageTypeId: OberthEffect/Kinetic
       ArmorPierce: 10
       SpreadProfile: None
       AimCorrection: 2.5

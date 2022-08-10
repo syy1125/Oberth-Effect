@@ -13,7 +13,7 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetLockInfoProvider
 {
 	public struct DamageInstance
 	{
-		public DamageType Type;
+		public string DamageType;
 		public float Amount;
 		public float Time;
 	}
@@ -50,18 +50,18 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetLockInfoProvider
 		return null;
 	}
 
-	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
+	public void TakeDamage(string damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
 		float armorModifier = Mathf.Min(armorPierce / ArmorValue, 1f);
 
 		float effectiveDamage = damage * armorModifier;
-		_damage.AddLast(new DamageInstance { Type = damageType, Amount = effectiveDamage, Time = Time.time });
+		_damage.AddLast(new DamageInstance { DamageType = damageType, Amount = effectiveDamage, Time = Time.time });
 
 		damageExhausted = true;
 	}
 
 	public void RequestBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);

@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "DamageTypeId": {
+      "type": "string"
+    },
+    "DisplayName": {
+      "type": "string"
+    },
+    "DisplayColor": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "DamageTypeId"
+  ],
+  "$id": "DamageTypeSpecSchema"
+}

@@ -71,8 +71,8 @@
         "MaxHealth": {
           "type": "number"
         },
-        "ArmorValue": {
-          "type": "number"
+        "ArmorTypeId": {
+          "type": "string"
         }
       }
     },
@@ -103,12 +103,14 @@
     "Damage": {
       "type": "number"
     },
-    "DamageType": {
+    "DamagePattern": {
       "enum": [
-        "Kinetic",
-        "Energy",
+        "Piercing",
         "Explosive"
       ]
+    },
+    "DamageTypeId": {
+      "type": "string"
     },
     "ArmorPierce": {
       "type": "number"

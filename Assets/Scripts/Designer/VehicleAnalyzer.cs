@@ -13,6 +13,7 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Lib.Utils;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
@@ -175,11 +176,11 @@ public class VehicleAnalyzer : MonoBehaviour
 			CurrentTorqueCcw = 0f,
 			MaxTorqueCw = 0f,
 			CurrentTorqueCw = 0f,
-			MaxResourceStorage = new Dictionary<string, float>(),
-			MaxResourceGeneration = new Dictionary<string, float>(),
-			MaxResourceUse = new Dictionary<string, float>(),
-			MaxCategoryResourceUse = new Dictionary<string, Dictionary<string, float>>(),
-			MaxFirepower = new List<FirepowerEntry>()
+			MaxResourceStorage = new(),
+			MaxResourceGeneration = new(),
+			MaxResourceUse = new(),
+			MaxCategoryResourceUse = new(),
+			MaxFirepower = new()
 		};
 
 		int frames = 1;
@@ -627,52 +628,19 @@ public class VehicleAnalyzer : MonoBehaviour
 		float maxDps = FirepowerUtils.GetTotalDamage(aggregateFirepower);
 		float armorPierce = FirepowerUtils.GetMeanArmorPierce(aggregateFirepower);
 
-		float kineticDamage = 0f,
-			kineticArmorPierce = 0f,
-			energyDamage = 0f,
-			energyArmorPierce = 0f,
-			explosiveDamage = 0f,
-			explosiveArmorPierce = 0f;
+		StringBuilder output = new();
+		output
+			.AppendLine("<b>Firepower</b>")
+			.AppendLine($"  Maximum DPS {maxDps:#,0.#} (mean AP = {armorPierce:0.##})");
 
 		foreach (FirepowerEntry entry in aggregateFirepower)
 		{
-			switch (entry.DamageType)
-			{
-				case DamageType.Kinetic:
-					kineticDamage = entry.DamagePerSecond;
-					kineticArmorPierce = entry.ArmorPierce;
-					break;
-				case DamageType.Energy:
-					energyDamage = entry.DamagePerSecond;
-					energyArmorPierce = entry.ArmorPierce;
-					break;
-				case DamageType.Explosive:
-					explosiveDamage = entry.DamagePerSecond;
-					explosiveArmorPierce = entry.ArmorPierce;
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
+			if (Mathf.Approximately(entry.DamagePerSecond, 0f)) continue;
 
-		StringBuilder output = new StringBuilder();
-		output.AppendLine("<b>Firepower</b>")
-			.AppendLine("  Maximum DPS")
-			.AppendLine($"    Total {maxDps:#,0.#} (mean AP {armorPierce:0.##})");
-
-		if (kineticDamage > Mathf.Epsilon)
-		{
-			output.AppendLine($"    Kinetic {kineticDamage:#,0.#} (mean AP {kineticArmorPierce:0.##})");
-		}
-
-		if (energyDamage > Mathf.Epsilon)
-		{
-			output.AppendLine($"    Energy {energyDamage:#,0.#} (mean AP {energyArmorPierce:0.##})");
-		}
-
-		if (explosiveDamage > Mathf.Epsilon)
-		{
-			output.AppendLine($"    Explosive {explosiveDamage:#,0.#} (mean AP {explosiveArmorPierce:0.##})");
+			DamageTypeSpec damageTypeSpec = DamageTypeDatabase.Instance.GetSpec(entry.DamageTypeId);
+			output.AppendLine(
+				$"    {damageTypeSpec.WrapColorTag(damageTypeSpec.DisplayName)} DPS {entry.DamagePerSecond:#,0.#} (mean AP = {entry.ArmorPierce:0.##})"
+			);
 		}
 
 		FirepowerOutput.text = output.ToString();

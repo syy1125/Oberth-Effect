@@ -23,7 +23,7 @@ public class SimpleProjectileController : MonoBehaviour, IProjectileController
 		GetComponent<ColorContext>().SetColorScheme(config.ColorScheme);
 
 		GetComponent<DamagingProjectile>().Init(
-			config.Damage, config.DamageType, config.ArmorPierce, config.ExplosionRadius,
+			config.Damage, config.DamagePattern, config.DamageTypeId, config.ArmorPierce, config.ExplosionRadius,
 			null, config.Lifetime
 		);
 
@@ -35,7 +35,7 @@ public class SimpleProjectileController : MonoBehaviour, IProjectileController
 		{
 			gameObject.AddComponent<ProjectileParticleTrail>().LoadTrailParticles(config.TrailParticles);
 		}
-		
+
 		GetComponent<ColorSchemePainter>()?.ApplyColorScheme();
 	}
 

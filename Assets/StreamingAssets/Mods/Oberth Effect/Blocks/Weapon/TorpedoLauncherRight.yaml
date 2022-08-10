@@ -31,12 +31,13 @@ Physics:
     Size: { X: 1, Y: 2 }
 Combat:
   MaxHealth: 200
-  ArmorValue: 8
+  ArmorTypeId: OberthEffect/StandardWeapon
 BlockComponents:
   FixedWeapon: !FixedWeapon
     MissileLauncher:
       FiringPortOffset: { X: 0, Y: 0.5 }
-      DamageType: Kinetic
+      DamagePattern: Piercing
+      DamageTypeId: OberthEffect/Kinetic
       Damage: 500
       ArmorPierce: 10
       MaxResourceUse:
@@ -62,7 +63,7 @@ BlockComponents:
             Color: orange
       PointDefenseTarget:
         MaxHealth: 10
-        ArmorValue: 1
+        ArmorTypeId: OberthEffect/PointDefenseTarget
       HealthDamageScaling: 0.8
       ReloadTime: 15
       ScreenShake:

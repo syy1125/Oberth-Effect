@@ -26,4 +26,4 @@ Physics:
     Size: { X: 1, Y: 1 }
 Combat:
   MaxHealth: 100
-  ArmorValue: 4
+  ArmorTypeId: OberthEffect/StandardHull

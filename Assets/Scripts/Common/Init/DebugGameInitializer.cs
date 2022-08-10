@@ -8,6 +8,7 @@ namespace Syy1125.OberthEffect.Common.Init
 public class DebugGameInitializer : MonoBehaviour
 {
 	public TextAsset CoreBlock;
+	public TextAsset CoreArmor;
 
 	private bool _debugInit;
 
@@ -19,7 +20,10 @@ public class DebugGameInitializer : MonoBehaviour
 			_debugInit = true;
 
 			ModLoader.Init();
+
 			ModLoader.InjectBlockSpec(CoreBlock);
+			ModLoader.InjectArmorTypeSpec(CoreArmor);
+
 			ModLoader.LoadModList();
 			ModLoader.LoadAllEnabledContent();
 

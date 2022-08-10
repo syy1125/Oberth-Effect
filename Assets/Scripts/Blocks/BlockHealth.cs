@@ -2,7 +2,9 @@
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -33,7 +35,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	public int OwnerId => _ownerContext.OwnerId;
 
 	private float _maxHealth;
-	private float _armor;
+	private string _armorTypeId;
 
 	private float _health;
 	// Tracks destruction state to prevent destruction effects from being triggered multiple times.
@@ -59,7 +61,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	public void LoadSpec(BlockSpec spec)
 	{
 		_maxHealth = spec.Combat.MaxHealth;
-		_armor = spec.Combat.ArmorValue;
+		_armorTypeId = spec.Combat.ArmorTypeId;
 		_explosionBoundsMin = spec.Construction.BoundsMin - new Vector2(0.5f, 0.5f);
 		_explosionBoundsMax = spec.Construction.BoundsMax - new Vector2(0.5f, 0.5f);
 		_explosionResolution = Mathf.Max(
@@ -89,12 +91,17 @@ public class BlockHealth : MonoBehaviour, IDamageable
 		return null;
 	}
 
-	public void TakeDamage(
-		DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted
-	)
+	public void TakeDamage(string damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
-		float damageModifier = Mathf.Min(armorPierce / _armor, 1f);
-		Debug.Assert(damageModifier > Mathf.Epsilon, "Damage modifier should not be zero");
+		float damageModifier = ArmorTypeDatabase.Instance.GetDamageModifier(damageType, armorPierce, _armorTypeId);
+
+		// Damage modifier could be 0 if the armor type is completely immune to incoming damage
+		if (Mathf.Approximately(damageModifier, 0f))
+		{
+			damage = 0f;
+			damageExhausted = true;
+			return;
+		}
 
 		float effectiveDamage = damage * damageModifier;
 		float effectiveHealth = _health / damageModifier;
@@ -129,7 +136,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	}
 
 	public void RequestBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
@@ -142,7 +149,7 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	}
 
 	public void TakeBeamDamageRpc(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		if (!IsMine) return;

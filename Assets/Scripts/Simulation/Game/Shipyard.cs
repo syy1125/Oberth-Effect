@@ -206,7 +206,7 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 		return min.x <= point.x && min.y <= point.y && max.x >= point.x && max.y >= point.y;
 	}
 
-	public void TakeDamage(DamageType damageType, ref float damage, float armorPierce, out bool damageExhausted)
+	public void TakeDamage(string damageType, ref float damage, float armorPierce, out bool damageExhausted)
 	{
 		if (!_damageable)
 		{
@@ -236,7 +236,7 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	}
 
 	public void RequestBeamDamage(
-		DamageType damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		photonView.RPC(nameof(TakeBeamDamageRpc), photonView.Owner, damageType, damage, armorPierce);
@@ -244,23 +244,23 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 
 	// Shipyard is stationary, no need to re-do raycast on this end.
 	[PunRPC]
-	private void TakeBeamDamageRpc(DamageType damageType, float damage, float armorPierce)
+	private void TakeBeamDamageRpc(string damageType, float damage, float armorPierce)
 	{
 		// Shipyard's dead and that's the most important part. In a 2-team game that's game over.
 		// TODO in the future we could do overpenetration, especially if there are more than 2 teams.
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);
 	}
 
-	public void RequestDirectDamage(DamageType damageType, float damage, float armorPierce)
+	public void RequestDirectDamage(string damageType, float damage, float armorPierce)
 	{
 		photonView.RPC(nameof(TakeDirectDamageRpc), photonView.Owner, damageType, damage, armorPierce);
 	}
 
 	[PunRPC]
-	private void TakeDirectDamageRpc(DamageType damageType, float damage, float armorPierce)
+	private void TakeDirectDamageRpc(string damagePattern, float damage, float armorPierce)
 	{
 		if (!IsMine) return;
-		TakeDamage(damageType, ref damage, armorPierce, out bool _);
+		TakeDamage(damagePattern, ref damage, armorPierce, out bool _);
 	}
 
 	public string GetName()

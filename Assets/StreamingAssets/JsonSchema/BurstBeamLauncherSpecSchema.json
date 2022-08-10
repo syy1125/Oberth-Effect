@@ -49,12 +49,14 @@
     "Damage": {
       "type": "number"
     },
-    "DamageType": {
+    "DamagePattern": {
       "enum": [
-        "Kinetic",
-        "Energy",
+        "Piercing",
         "Explosive"
       ]
+    },
+    "DamageTypeId": {
+      "type": "string"
     },
     "ArmorPierce": {
       "type": "number"

@@ -3,6 +3,24 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
+        <entry key="Armor Type Spec">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="Armor Type Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/ArmorTypeSpecSchema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Armor Types/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="Block Category Spec">
           <value>
             <SchemaInfo>
@@ -54,6 +72,24 @@
                   <Item>
                     <option name="pattern" value="true" />
                     <option name="path" value="Assets/StreamingAssets/Mods/*/Control Groups/*.yaml" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="Damage Type Spec">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="Damage Type Spec" />
+              <option name="relativePathToSchema" value="Assets/StreamingAssets/JsonSchema/DamageTypeSpecSchema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="Assets/StreamingAssets/Mods/*/Damage Types/*.yaml" />
                     <option name="mappingKind" value="Pattern" />
                   </Item>
                 </list>

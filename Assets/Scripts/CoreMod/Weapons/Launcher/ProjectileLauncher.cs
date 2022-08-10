@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Block.Weapon;
 using Syy1125.OberthEffect.Spec.Checksum;
@@ -119,7 +120,8 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			{
 				ColliderSize = spec.ColliderSize,
 				Damage = spec.Damage,
-				DamageType = spec.DamageType,
+				DamagePattern = spec.DamagePattern,
+				DamageTypeId = spec.DamageTypeId,
 				ArmorPierce = spec.ArmorPierce,
 				ExplosionRadius = spec.ExplosionRadius,
 				ColorScheme = _colorContext.ColorScheme,
@@ -130,7 +132,8 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 			{
 				ColliderSize = spec.ColliderSize,
 				Damage = spec.Damage,
-				DamageType = spec.DamageType,
+				DamagePattern = spec.DamagePattern,
+				DamageTypeId = spec.DamageTypeId,
 				ArmorPierce = spec.ArmorPierce,
 				ExplosionRadius = spec.ExplosionRadius,
 				ColorScheme = _colorContext.ColorScheme,
@@ -175,9 +178,11 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		entries.Add(
 			new FirepowerEntry
 			{
-				DamageType = _projectileConfig.DamageType,
+				DamageTypeId = _projectileConfig.DamageTypeId,
 				DamagePerSecond = _projectileConfig.Damage * _clusterBaseAngles.Length * _burstCount / _reloadTime,
-				ArmorPierce = _projectileConfig.DamageType == DamageType.Explosive ? 1f : _projectileConfig.ArmorPierce
+				ArmorPierce = _projectileConfig.DamagePattern == DamagePattern.Explosive
+					? 1f
+					: _projectileConfig.ArmorPierce
 			}
 		);
 	}
@@ -187,9 +192,9 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		builder
 			.AppendLine($"{indent}Projectile")
 			.AppendLine(
-				_projectileConfig.DamageType == DamageType.Explosive
-					? $"{indent}  {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, {PhysicsUnitUtils.FormatLength(_projectileConfig.ExplosionRadius)} radius"
-					: $"{indent}  {_projectileConfig.Damage:F0} {DamageTypeUtils.GetColoredText(_projectileConfig.DamageType)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
+				_projectileConfig.DamagePattern == DamagePattern.Explosive
+					? $"{indent}  {GetColoredDamageText(_projectileConfig.Damage, _projectileConfig.DamageTypeId)} damage, {PhysicsUnitUtils.FormatLength(_projectileConfig.ExplosionRadius)} radius"
+					: $"{indent}  {GetColoredDamageText(_projectileConfig.Damage, _projectileConfig.DamageTypeId)} damage, <color=\"lightblue\">{_projectileConfig.ArmorPierce:0.#} AP</color>"
 			)
 			.AppendLine(
 				$"{indent}  Max range {PhysicsUnitUtils.FormatSpeed(_maxSpeed)} × {_maxLifetime}s = {PhysicsUnitUtils.FormatDistance(MaxRange)}"
@@ -202,9 +207,21 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 
 		if (_projectileConfig is NetworkedProjectileConfig { PointDefenseTarget: {} } networkedProjectileConfig)
 		{
+			ArmorTypeSpec armorTypeSpec =
+				ArmorTypeDatabase.Instance.GetSpec(networkedProjectileConfig.PointDefenseTarget.ArmorTypeId);
+
 			builder.AppendLine(
-				$"{indent}  Projectile has <color=\"red\">{networkedProjectileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{networkedProjectileConfig.PointDefenseTarget.ArmorValue} armor</color>"
+				$"{indent}  Projectile has <color=\"red\">{networkedProjectileConfig.PointDefenseTarget.MaxHealth} health</color>, <color=\"lightblue\">{armorTypeSpec.ArmorValue} armor</color>"
 			);
+
+			string damageModifierText =
+				ArmorTypeDatabase.Instance.GetDamageModifierTooltip(
+					networkedProjectileConfig.PointDefenseTarget.ArmorTypeId
+				);
+			if (!string.IsNullOrWhiteSpace(damageModifierText))
+			{
+				builder.AppendLine($"{indent}  Projectile takes {damageModifierText}");
+			}
 
 			if (!Mathf.Approximately(networkedProjectileConfig.HealthDamageScaling, 0f))
 			{
@@ -273,7 +290,7 @@ public class ProjectileLauncher : AbstractWeaponLauncher
 		}
 
 		// If weapon has AOE, see if closest approach is good enough
-		if (_projectileConfig.DamageType == DamageType.Explosive)
+		if (_projectileConfig.DamagePattern == DamagePattern.Explosive)
 		{
 			float missMargin = Vector2.Distance(
 				relativePosition + relativeVelocity * hitTime, interceptVelocity * hitTime

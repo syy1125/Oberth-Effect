@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "ArmorTypeId": {
+      "type": "string"
+    },
+    "DisplayName": {
+      "type": "string"
+    },
+    "ArmorValue": {
+      "type": "number"
+    },
+    "DamageModifiers": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "number"
+        }
+      },
+      "description": "Describes the multipliers that blocks of this armor type receives from specific damage types."
+    }
+  },
+  "required": [
+    "ArmorTypeId"
+  ],
+  "$id": "ArmorTypeSpecSchema"
+}

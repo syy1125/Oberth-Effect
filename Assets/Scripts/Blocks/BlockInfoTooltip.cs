@@ -1,7 +1,10 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Utils;
+using Syy1125.OberthEffect.Spec;
 using Syy1125.OberthEffect.Spec.Block;
+using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Blocks
@@ -15,7 +18,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 	private int _cost;
 
 	private float _maxHealth;
-	private float _armorValue;
+	private string _armorTypeId;
 
 	private BlockBounds _bounds;
 
@@ -27,7 +30,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 		_cost = spec.Cost;
 
 		_maxHealth = spec.Combat.MaxHealth;
-		_armorValue = spec.Combat.ArmorValue;
+		_armorTypeId = spec.Combat.ArmorTypeId;
 		_bounds = new(spec.Construction.BoundsMin, spec.Construction.BoundsMax);
 		_mass = spec.Physics.Mass;
 	}
@@ -37,13 +40,21 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 		string width = PhysicsUnitUtils.FormatLength(_bounds.Size.x, "F0");
 		string height = PhysicsUnitUtils.FormatLength(_bounds.Size.y, "F0");
 
+		var armorTypeSpec = ArmorTypeDatabase.Instance.GetSpec(_armorTypeId);
+
 		builder
 			.AppendLine($"{indent}{_fullName}")
 			.AppendLine($"{indent}  <color=lime>{_cost} cost</color>")
 			.AppendLine($"{indent}  {PhysicsUnitUtils.FormatMass(_mass)} mass, {width} x {height}")
 			.AppendLine(
-				$"{indent}  <color=red>{_maxHealth} health</color>, <color=lightblue>{_armorValue} armor</color>"
+				$"{indent}  <color=red>{_maxHealth} health</color>, <color=lightblue>{armorTypeSpec.ArmorValue} armor</color>"
 			);
+
+		string damageModifierTooltip = ArmorTypeDatabase.Instance.GetDamageModifierTooltip(_armorTypeId);
+		if (!string.IsNullOrWhiteSpace(damageModifierTooltip))
+		{
+			builder.AppendLine($"{indent}    Takes {damageModifierTooltip}");
+		}
 
 		return true;
 	}
