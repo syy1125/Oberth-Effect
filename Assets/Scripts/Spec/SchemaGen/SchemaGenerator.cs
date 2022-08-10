@@ -80,10 +80,23 @@ public class SchemaGenerator
 				return new();
 			}
 		}
-		// Array and enum special cases
+		// Array, dictionary, enum special cases
 		else if (type.IsArray)
 		{
 			return new() { { "type", "array" }, { "items", GenerateSchemaMember(type.GetElementType()) } };
+		}
+		else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+		{
+			return new()
+			{
+				{ "type", "object" },
+				{
+					"patternProperties", new Dictionary<string, object>
+					{
+						{ ".*", GenerateSchemaMember(type.GetGenericArguments()[1]) }
+					}
+				}
+			};
 		}
 		else if (type.IsEnum)
 		{

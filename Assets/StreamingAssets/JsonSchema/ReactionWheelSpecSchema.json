@@ -6,31 +6,8 @@
     },
     "MaxResourceUse": {
       "type": "object",
-      "properties": {
-        "Comparer": {
-          "type": "object",
-          "properties": {}
-        },
-        "Count": {
-          "type": "integer"
-        },
-        "Keys": {
-          "type": "object",
-          "properties": {
-            "Count": {
-              "type": "integer"
-            }
-          }
-        },
-        "Values": {
-          "type": "object",
-          "properties": {
-            "Count": {
-              "type": "integer"
-            }
-          }
-        },
-        "Item": {
+      "patternProperties": {
+        ".*": {
           "type": "number"
         }
       }
