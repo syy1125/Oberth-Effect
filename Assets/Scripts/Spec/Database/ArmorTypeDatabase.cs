@@ -48,7 +48,7 @@ public class ArmorTypeDatabase : MonoBehaviour, IGameContentDatabase
 
 	public ArmorTypeSpec GetSpec(string armorTypeId)
 	{
-		return _specs.TryGetValue(armorTypeId, out var instance)
+		return armorTypeId != null && _specs.TryGetValue(armorTypeId, out var instance)
 			? instance.Spec
 			: new()
 			{
