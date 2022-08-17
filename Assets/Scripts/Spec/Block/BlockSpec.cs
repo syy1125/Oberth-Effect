@@ -37,7 +37,10 @@ public class BlockSpec : ICustomChecksum
 
 	#region Block Component Types
 
-	private static readonly Dictionary<string, (Type SpecType, Type ComponentType)> ComponentTypes = new();
+	// Maps serialization key to spec type and block component type.
+	private static readonly Dictionary<string, (Type SpecType, Type ComponentType)> SpecComponentTypes = new();
+	// Maps block component type string to the type itself.
+	private static readonly Dictionary<string, Type> DynamicComponentTypes = new();
 
 	static BlockSpec()
 	{
@@ -47,7 +50,8 @@ public class BlockSpec : ICustomChecksum
 
 	private static void ResetComponentTypes()
 	{
-		ComponentTypes.Clear();
+		SpecComponentTypes.Clear();
+		DynamicComponentTypes.Clear();
 	}
 
 	public static void Register<TSpec, TComponent>(string name) where TComponent : IBlockComponent<TSpec>
@@ -64,12 +68,18 @@ public class BlockSpec : ICustomChecksum
 			);
 		}
 
-		ComponentTypes.Add(name, (specType, componentType));
+		SpecComponentTypes.Add(name, (specType, componentType));
+		DynamicComponentTypes.Add(componentType.ToString(), componentType);
+	}
+
+	public static bool DeserializeComponentType(string typeName, out Type type)
+	{
+		return DynamicComponentTypes.TryGetValue(typeName, out type);
 	}
 
 	private static void AugmentSerializer(SerializerBuilder serializerBuilder, DeserializerBuilder deserializerBuilder)
 	{
-		foreach (var entry in ComponentTypes)
+		foreach (var entry in SpecComponentTypes)
 		{
 			serializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
 			deserializerBuilder.WithTagMapping($"!{entry.Key}", entry.Value.SpecType);
@@ -78,12 +88,12 @@ public class BlockSpec : ICustomChecksum
 
 	public static Type GetSpecType(string name)
 	{
-		return ComponentTypes.TryGetValue(name, out var types) ? types.SpecType : null;
+		return SpecComponentTypes.TryGetValue(name, out var types) ? types.SpecType : null;
 	}
 
 	public static Type GetComponentType(string name)
 	{
-		return ComponentTypes.TryGetValue(name, out var types) ? types.ComponentType : null;
+		return SpecComponentTypes.TryGetValue(name, out var types) ? types.ComponentType : null;
 	}
 
 	#endregion
@@ -97,7 +107,7 @@ public class BlockSpec : ICustomChecksum
 
 		Dictionary<string, object> componentSpecs = new();
 
-		foreach ((string name, (Type specType, Type componentType)) in ComponentTypes)
+		foreach ((string name, (Type specType, Type componentType)) in SpecComponentTypes)
 		{
 			componentSpecs.Add(name, SchemaGenerator.GenerateSchemaMember(specType));
 		}

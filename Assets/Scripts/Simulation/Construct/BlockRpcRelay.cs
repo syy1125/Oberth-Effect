@@ -3,6 +3,7 @@ using System.Reflection;
 using Photon.Pun;
 using Photon.Realtime;
 using Syy1125.OberthEffect.Blocks;
+using Syy1125.OberthEffect.Spec.Block;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
@@ -33,9 +34,9 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 	}
 
 	[PunRPC]
-	public void ReceiveBlockRpc(int x, int y, string componentType, string methodName, object[] parameters)
+	public void ReceiveBlockRpc(int x, int y, string componentName, string methodName, object[] parameters)
 	{
-		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockOccupying(new Vector2Int(x, y));
+		GameObject blockObject = GetComponent<ConstructBlockManager>().GetBlockOccupying(new(x, y));
 
 		if (blockObject == null)
 		{
@@ -43,11 +44,13 @@ public class BlockRpcRelay : MonoBehaviourPun, IBlockRpcRelay
 			return;
 		}
 
-		var component = blockObject.GetComponent(componentType);
+		var component = BlockSpec.DeserializeComponentType(componentName, out Type componentType)
+			? blockObject.GetComponent(componentType)
+			: blockObject.GetComponent(componentName);
 		if (component == null)
 		{
 			Debug.LogError(
-				$"Component of type `{componentType}` does not exist at {blockObject.name} ({x}, {y}) in {gameObject.name}"
+				$"Component of type `{componentName}` does not exist at {blockObject.name} ({x}, {y}) in {gameObject.name}"
 			);
 			return;
 		}
