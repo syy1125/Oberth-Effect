@@ -8,14 +8,14 @@ public class SuppressActionMap : MonoBehaviour
 
 	private void OnEnable()
 	{
-		ActionMapControl.Instance.AddDisabledMaps(DisableMaps);
+		ActionMapControl.Instance.AddSuppressedMaps(DisableMaps);
 	}
 
 	private void OnDisable()
 	{
 		if (ActionMapControl.Instance != null)
 		{
-			ActionMapControl.Instance.RemoveDisabledMaps(DisableMaps);
+			ActionMapControl.Instance.RemoveSuppressedMaps(DisableMaps);
 		}
 	}
 }

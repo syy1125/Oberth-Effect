@@ -11,7 +11,7 @@ public class ActionMapControl : MonoBehaviour
 
 	public InputActionAsset ActionsAsset;
 	public string[] EnabledMaps;
-	private Dictionary<string, int> _disabledMaps;
+	private Dictionary<string, int> _suppressedMaps;
 
 	private void Awake()
 	{
@@ -25,10 +25,14 @@ public class ActionMapControl : MonoBehaviour
 			Destroy(this);
 			return;
 		}
+		
+		// UI input maps are consuming WASD key presses meant for player input map.
+		// TODO find a better way to avoid UI consuming key presses.
+		InputSystem.settings.SetInternalFeatureFlag("DISABLE_SHORTCUT_SUPPORT", true);
 
-		_disabledMaps = new Dictionary<string, int>();
+		_suppressedMaps = new();
 
-		HashSet<string> mapNames = new HashSet<string>(EnabledMaps);
+		HashSet<string> mapNames = new(EnabledMaps);
 
 		foreach (InputActionMap map in ActionsAsset.actionMaps)
 		{
@@ -51,34 +55,34 @@ public class ActionMapControl : MonoBehaviour
 		}
 	}
 
-	public void AddDisabledMaps(IEnumerable<string> maps)
+	public void AddSuppressedMaps(IEnumerable<string> maps)
 	{
 		foreach (string mapName in maps.Distinct().Intersect(EnabledMaps))
 		{
-			if (_disabledMaps.TryGetValue(mapName, out int count))
+			if (_suppressedMaps.TryGetValue(mapName, out int count))
 			{
-				_disabledMaps[mapName] = count + 1;
+				_suppressedMaps[mapName] = count + 1;
 			}
 			else
 			{
-				_disabledMaps.Add(mapName, 1);
+				_suppressedMaps.Add(mapName, 1);
 				ActionsAsset.FindActionMap(mapName, true).Disable();
 			}
 		}
 	}
 
-	public void RemoveDisabledMaps(IEnumerable<string> maps)
+	public void RemoveSuppressedMaps(IEnumerable<string> maps)
 	{
 		foreach (string mapName in maps.Distinct().Intersect(EnabledMaps))
 		{
-			int count = _disabledMaps[mapName];
+			int count = _suppressedMaps[mapName];
 			if (count > 1)
 			{
-				_disabledMaps[mapName] = count - 1;
+				_suppressedMaps[mapName] = count - 1;
 			}
 			else
 			{
-				_disabledMaps.Remove(mapName);
+				_suppressedMaps.Remove(mapName);
 				ActionsAsset.FindActionMap(mapName, true).Enable();
 			}
 		}

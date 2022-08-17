@@ -292,7 +292,9 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 
 		if (configComponents.Count == 0)
 		{
-			StatusText.text = "Selected blocks have no common components.";
+			StatusText.text = _selectedBlocks.Count == 1
+				? "Selected block has no configurable components."
+				: "Selected blocks have no common configurable components.";
 			_configComponents.Clear();
 			ClearBlockConfigItems();
 			return;

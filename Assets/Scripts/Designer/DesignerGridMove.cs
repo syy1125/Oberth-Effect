@@ -85,7 +85,7 @@ public class DesignerGridMove : MonoBehaviour
 		}
 		else
 		{
-			Vector2 pan = PanAction.action.ReadValue<Vector2>();
+			var pan = PanAction.action.ReadValue<Vector2>();
 			if (FastPanAction.action.ReadValue<float>() > 0.5f) pan *= 4f;
 			transform.Translate(Time.deltaTime * -5f * pan);
 		}
