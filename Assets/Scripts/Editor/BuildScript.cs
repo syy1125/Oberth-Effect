@@ -24,9 +24,14 @@ public static class BuildScript
 		BuildAll(false);
 	}
 
-	private static void BuildAll(bool debug)
+	[MenuItem("Build/Build Windows Debug")]
+	public static void BuildWindowsDebug()
 	{
-		// Build Windows
+		BuildWindows(true);
+	}
+
+	private static BuildReport BuildWindows(bool debug)
+	{
 		BuildReport report = BuildPipeline.BuildPlayer(
 			new()
 			{
@@ -56,14 +61,13 @@ public static class BuildScript
 				);
 			}
 		}
-		else
-		{
-			Debug.Log("Windows build did not succeed, aborting!");
-			return;
-		}
 
-		// Build MacOS
-		report = BuildPipeline.BuildPlayer(
+		return report;
+	}
+
+	private static BuildReport BuildMacOS(bool debug)
+	{
+		BuildReport report = BuildPipeline.BuildPlayer(
 			new()
 			{
 				scenes = GetBuildScenes(),
@@ -92,14 +96,13 @@ public static class BuildScript
 				);
 			}
 		}
-		else
-		{
-			Debug.Log("MacOS build did not succeed, aborting!");
-			return;
-		}
 
-		// Build Linux
-		report = BuildPipeline.BuildPlayer(
+		return report;
+	}
+
+	private static BuildReport BuildLinux(bool debug)
+	{
+		BuildReport report = BuildPipeline.BuildPlayer(
 			new()
 			{
 				scenes = GetBuildScenes(),
@@ -127,7 +130,31 @@ public static class BuildScript
 				);
 			}
 		}
-		else
+
+		return report;
+	}
+
+	private static void BuildAll(bool debug)
+	{
+		BuildReport report = BuildWindows(debug);
+
+		if (report.summary.result != BuildResult.Succeeded)
+		{
+			Debug.Log("Windows build did not succeed, aborting!");
+			return;
+		}
+
+		report = BuildMacOS(debug);
+
+		if (report.summary.result != BuildResult.Succeeded)
+		{
+			Debug.Log("MacOS build did not succeed, aborting!");
+			return;
+		}
+
+		report = BuildLinux(debug);
+
+		if (report.summary.result != BuildResult.Succeeded)
 		{
 			Debug.Log("Linux build did not succeed!");
 			return;
