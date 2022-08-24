@@ -186,7 +186,7 @@ public static class ModLoader
 	{
 		string modListPath = Path.Combine(_modsRoot, "modlist.json");
 
-		if (!File.Exists(modListPath)) return new List<ModListElement>();
+		if (!File.Exists(modListPath)) return new();
 
 		string content = File.ReadAllText(modListPath);
 		return JsonUtility.FromJson<ModListSpec>(content).ModList;
@@ -220,13 +220,13 @@ public static class ModLoader
 		foreach (string modDirectory in modDirectories)
 		{
 			var modSpec = LoadModSpec(modDirectory);
-			Debug.Log($"Discovered new mod {modSpec.DisplayName} in {modDirectory}");
+			Debug.Log($"Discovered new mod {modSpec.DisplayName} in {modDirectory} (IsCodeMod={IsCodeMod(modSpec)})");
 
 			modList.Add(
-				new ModListElement
+				new()
 				{
 					Directory = modDirectory,
-					Enabled = true,
+					Enabled = !IsCodeMod(modSpec),
 					Spec = LoadModSpec(modDirectory)
 				}
 			);
@@ -237,6 +237,11 @@ public static class ModLoader
 	{
 		string modDefPath = Path.Combine(_modsRoot, modDirectory, "mod.json");
 		return JsonUtility.FromJson<ModSpec>(File.ReadAllText(modDefPath));
+	}
+
+	private static bool IsCodeMod(ModSpec modSpec)
+	{
+		return !string.IsNullOrEmpty(modSpec.CodeModPath) && !string.IsNullOrEmpty(modSpec.CodeModEntryPoint);
 	}
 
 	public static void SaveModList(List<ModListElement> modList)
@@ -291,8 +296,7 @@ public static class ModLoader
 	{
 		foreach (var mod in EnabledMods)
 		{
-			if (string.IsNullOrWhiteSpace(mod.Spec.CodeModPath) ||
-			    string.IsNullOrWhiteSpace(mod.Spec.CodeModEntryPoint))
+			if (!IsCodeMod(mod.Spec))
 			{
 				continue;
 			}
