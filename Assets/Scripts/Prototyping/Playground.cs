@@ -17,7 +17,12 @@ public class Playground : MonoBehaviour
 
 	private void Update()
 	{
-		Debug.Log(Move.action.ReadValue<Vector2>());
+		transform.position = Move.action.ReadValue<Vector2>();
 	}
+
+	// private void OnMove(InputValue value)
+	// {
+	// 	transform.position = value.Get<Vector2>();
+	// }
 }
 }

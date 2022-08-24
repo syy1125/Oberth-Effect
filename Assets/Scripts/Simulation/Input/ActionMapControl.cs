@@ -25,10 +25,6 @@ public class ActionMapControl : MonoBehaviour
 			Destroy(this);
 			return;
 		}
-		
-		// UI input maps are consuming WASD key presses meant for player input map.
-		// TODO find a better way to avoid UI consuming key presses.
-		InputSystem.settings.SetInternalFeatureFlag("DISABLE_SHORTCUT_SUPPORT", true);
 
 		_suppressedMaps = new();
 
@@ -36,13 +32,13 @@ public class ActionMapControl : MonoBehaviour
 
 		foreach (InputActionMap map in ActionsAsset.actionMaps)
 		{
+			// With the input consumption system, the order in which action maps are enabled seem to make a difference.
+			// So we always disable the maps before re-enabling them to ensure a consistent order.
+			map.Disable();
+
 			if (mapNames.Contains(map.name))
 			{
 				map.Enable();
-			}
-			else
-			{
-				map.Disable();
 			}
 		}
 	}
