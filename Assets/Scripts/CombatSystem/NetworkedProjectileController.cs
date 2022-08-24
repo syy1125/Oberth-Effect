@@ -152,10 +152,9 @@ public class NetworkedProjectileController : MonoBehaviourPun, IProjectileContro
 		if (!_despawning)
 		{
 			photonView.RPC(nameof(InvokeBeforeDespawn), RpcTarget.All);
-			gameObject.SetActive(false);
 		}
 
-		PhotonNetwork.Destroy(gameObject);
+		photonView.RPC(nameof(DestroyProjectile), RpcTarget.All);
 	}
 
 	[PunRPC]
@@ -167,6 +166,17 @@ public class NetworkedProjectileController : MonoBehaviourPun, IProjectileContro
 		foreach (var listener in GetComponents<IProjectileLifecycleListener>())
 		{
 			listener.BeforeDespawn();
+		}
+	}
+
+	[PunRPC]
+	private void DestroyProjectile()
+	{
+		gameObject.SetActive(false);
+
+		if (photonView.AmOwner)
+		{
+			PhotonNetwork.Destroy(gameObject);
 		}
 	}
 }
