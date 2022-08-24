@@ -54,23 +54,23 @@ public class ArmorTypeDatabase : MonoBehaviour, IGameContentDatabase
 			{
 				ArmorTypeId = armorTypeId,
 				DisplayName = "ERROR UNKNOWN ARMOR TYPE",
-				ArmorValue = 1f,
-				DamageModifiers = new()
+				ArmorValue = 1f
 			};
 	}
 
 	public float GetDamageModifier(string damageType, float armorPierce, string armorType)
 	{
-		ArmorTypeSpec armorTypeSpec = GetSpec(armorType);
-		float damageModifier = Mathf.Min(armorPierce / armorTypeSpec.ArmorValue, 1f);
-		if (armorTypeSpec.DamageModifiers.TryGetValue(damageType, out float armorTypeModifier))
+		ArmorTypeSpec spec = GetSpec(armorType);
+		float damageModifier = Mathf.Min(armorPierce / spec.ArmorValue, 1f);
+
+		if (spec.DamageModifiers != null && spec.DamageModifiers.TryGetValue(damageType, out float armorTypeModifier))
 		{
 			damageModifier *= armorTypeModifier;
 		}
 
 		return damageModifier;
 	}
-	
+
 	public string GetDamageModifierTooltip(string armorTypeId)
 	{
 		if (!ContainsId(armorTypeId)) return null;
