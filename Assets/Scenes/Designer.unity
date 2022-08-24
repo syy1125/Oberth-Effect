@@ -679,7 +679,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -199.99994, y: 0}
+  m_AnchoredPosition: {x: -199.99991, y: 0}
   m_SizeDelta: {x: -400.00003, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &140859144
@@ -5576,6 +5576,7 @@ MonoBehaviour:
   m_TrackedDeviceOrientationAction: {fileID: -5937294676236874423, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!114 &874948196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7883,7 +7884,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 157960893}
   m_HandleRect: {fileID: 157960892}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

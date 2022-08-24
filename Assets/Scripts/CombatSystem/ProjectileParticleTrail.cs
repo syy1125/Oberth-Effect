@@ -21,6 +21,10 @@ public class ProjectileParticleTrail : MonoBehaviour, IProjectileLifecycleListen
 			ParticleSystem.MainModule main = particle.ParticleSystem.main;
 			main.simulationSpace = ParticleSystemSimulationSpace.Custom;
 			main.customSimulationSpace = mainCameraTransform;
+			
+			// `RendererHelper.CreateParticleSystem` creates particle systems in the stopped states. In order for `ParticleSystem.Simulate` to work correctly, the particle system needs to be in a paused state.
+			particle.Play();
+			particle.Pause();
 		}
 	}
 
@@ -28,7 +32,7 @@ public class ProjectileParticleTrail : MonoBehaviour, IProjectileLifecycleListen
 	{
 		foreach (ParticleSystemWrapper particle in _particles)
 		{
-			particle.ParticleSystem.Simulate(Time.fixedDeltaTime, true, false);
+			particle.ParticleSystem.Simulate(Time.fixedDeltaTime, false, false);
 		}
 	}
 
@@ -46,7 +50,7 @@ public class ProjectileParticleTrail : MonoBehaviour, IProjectileLifecycleListen
 
 		foreach (ParticleSystemWrapper particle in _particles)
 		{
-			particle.ParticleSystem.Simulate(Time.fixedDeltaTime, true, false);
+			particle.ParticleSystem.Simulate(Time.fixedDeltaTime, false, false);
 
 			particle.transform.SetParent(persistParticles.transform);
 			var emission = particle.ParticleSystem.emission;

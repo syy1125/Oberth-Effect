@@ -64,9 +64,9 @@ BlockComponents:
         - Direction: { X: 0, Y: -1 }
           SpreadAngle: 180
           EmissionRateOverTime: 0
-          EmissionRateOverDistance: 1.5
+          EmissionRateOverDistance: 25
           Size: 0.5
-          MaxSpeed: 2
+          MaxSpeed: 1.5
           Lifetime: 0.5
           Color: tertiary
         

@@ -34,6 +34,7 @@ public class ParticleSystemWrapper : MonoBehaviour
 		main.startSize = spec.Size;
 		main.startLifetime = spec.Lifetime;
 		main.playOnAwake = false;
+		main.maxParticles = 5000;
 
 		_startSpeed = spec.MaxSpeed;
 		main.startSpeed = _startSpeed;
@@ -65,7 +66,7 @@ public class ParticleSystemWrapper : MonoBehaviour
 			new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
 			new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) }
 		);
-		colorLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+		colorLifetime.color = new(gradient);
 
 		var particleRenderer = GetComponent<Renderer>();
 		particleRenderer.enabled = true;
@@ -75,6 +76,11 @@ public class ParticleSystemWrapper : MonoBehaviour
 	public void Play()
 	{
 		ParticleSystem.Play();
+	}
+
+	public void Pause()
+	{
+		ParticleSystem.Pause();
 	}
 
 	public void Stop()

@@ -235,7 +235,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 				referenceFrameId, explosionCenter, _explosionRadius, _damage * damageModifier, _damageTypeId,
 				_controller.OwnerId
 			);
-			DamageExhaustedDespawn();
+			DamageExhaustedDespawn(hit.point);
 
 			return HitResult.Stop;
 		}
@@ -248,7 +248,7 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 
 			if (damageExhausted)
 			{
-				DamageExhaustedDespawn();
+				DamageExhaustedDespawn(hit.point);
 				return HitResult.DamageExhausted;
 			}
 			else
@@ -266,8 +266,9 @@ public class DamagingProjectile : MonoBehaviour, IProjectileLifecycleListener
 		_damage = damage;
 	}
 
-	private void DamageExhaustedDespawn()
+	private void DamageExhaustedDespawn(Vector3 endPoint)
 	{
+		transform.position = endPoint;
 		_controller.RequestDestroyProjectile();
 	}
 
