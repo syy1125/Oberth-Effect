@@ -257,10 +257,10 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	}
 
 	[PunRPC]
-	private void TakeDirectDamageRpc(string damagePattern, float damage, float armorPierce)
+	private void TakeDirectDamageRpc(string damageType, float damage, float armorPierce)
 	{
 		if (!IsMine) return;
-		TakeDamage(damagePattern, ref damage, armorPierce, out bool _);
+		TakeDamage(damageType, ref damage, armorPierce, out bool _);
 	}
 
 	public string GetName()
