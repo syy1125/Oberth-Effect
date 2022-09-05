@@ -60,3 +60,4 @@ BlockComponents:
       MatchValues: [ On ]
     MaxDamage: 1000
     MaxRadius: 8
+    ExplosionOffset: { X: 0.5, Y: 0.5 }
