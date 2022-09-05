@@ -38,6 +38,8 @@ public abstract class AbstractWeapon :
 	protected BlockCore Core;
 	protected AbstractWeaponLauncher WeaponLauncher;
 
+	private GameObject _rangePreview;
+
 	protected bool Firing;
 	protected Vector2? AimPoint;
 	protected int? TargetPhotonId;
@@ -102,6 +104,28 @@ public abstract class AbstractWeapon :
 	}
 
 	protected abstract void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec);
+
+	protected void ShowRange(Vector2 center, float range)
+	{
+		if (_rangePreview == null)
+		{
+			_rangePreview = new("RangePreview");
+			_rangePreview.transform.SetParent(transform);
+			_rangePreview.transform.localPosition = center;
+			_rangePreview.transform.localRotation = Quaternion.identity;
+			_rangePreview.transform.localScale = Vector3.one;
+
+			_rangePreview.AddComponent<LineRenderer>();
+			_rangePreview.AddComponent<WeaponRangePreview>().SetRadius(range);
+		}
+
+		_rangePreview.SetActive(true);
+	}
+
+	protected void HideRange()
+	{
+		if (_rangePreview != null) _rangePreview.SetActive(false);
+	}
 
 	#endregion
 

@@ -37,6 +37,11 @@ public class FixedWeapon : AbstractWeapon,
 		}
 
 		DefaultBinding = spec.DefaultBinding;
+
+		if (context.Environment == BlockEnvironment.Preview)
+		{
+			ShowRange(Vector2.zero, GetMaxRange());
+		}
 	}
 
 	protected override void SetWeaponLauncherTransform(GameObject weaponEffectObject, AbstractWeaponLauncherSpec spec)

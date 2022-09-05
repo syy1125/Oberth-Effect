@@ -63,6 +63,11 @@ public class TurretedWeapon : AbstractWeapon,
 			LoadMissileWeapon(spec.MissileLauncher, context);
 		}
 
+		if (context.Environment == BlockEnvironment.Preview)
+		{
+			ShowRange(spec.Turret.TurretPivotOffset, GetMaxRange());
+		}
+
 		DefaultBinding = spec.DefaultBinding;
 	}
 
