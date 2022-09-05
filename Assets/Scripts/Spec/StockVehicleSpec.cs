@@ -12,12 +12,14 @@ using UnityEngine;
 namespace Syy1125.OberthEffect.Spec
 {
 [CreateSchemaFile("StockVehicleSpecSchema")]
+[ContainsPath]
 public struct StockVehicleSpec : ICustomValidation, ICustomChecksum
 {
 	[IdField]
 	public string VehicleId;
 	public bool Enabled;
 	[ValidateFilePath]
+	[ResolveAbsolutePath]
 	public string VehiclePath;
 
 	public void Validate(List<string> path, List<string> errors)
@@ -41,9 +43,19 @@ public struct StockVehicleSpec : ICustomValidation, ICustomChecksum
 
 	public void GetBytes(Stream stream, ChecksumLevel level)
 	{
-		if (!Enabled && level < ChecksumLevel.Everything)
+		if (Enabled)
 		{
-			return;
+			if (level < ChecksumLevel.Strict)
+			{
+				return;
+			}
+		}
+		else
+		{
+			if (level < ChecksumLevel.Everything)
+			{
+				return;
+			}
 		}
 
 		ChecksumHelper.GetBytesFromString(stream, VehicleId);

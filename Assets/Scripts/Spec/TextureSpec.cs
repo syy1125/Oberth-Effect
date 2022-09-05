@@ -10,11 +10,13 @@ using YamlDotNet.Serialization;
 namespace Syy1125.OberthEffect.Spec
 {
 [CreateSchemaFile("TextureSpecSchema")]
+[ContainsPath]
 public struct TextureSpec : ICustomChecksum
 {
 	[IdField]
 	public string TextureId;
 	[ValidateFilePath]
+	[ResolveAbsolutePath]
 	public string ImagePath;
 	public Vector2 Pivot;
 	public float PixelsPerUnit;

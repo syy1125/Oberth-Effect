@@ -21,10 +21,17 @@ namespace Syy1125.OberthEffect.Spec.ModLoading
 {
 public static class ModLoader
 {
-	[Serializable]
-	private struct ModListSpec
+	private class ModDirectoryComparer : IEqualityComparer<ModListElement>
 	{
-		public List<ModListElement> ModList;
+		public bool Equals(ModListElement left, ModListElement right)
+		{
+			return left.Directory == right.Directory;
+		}
+
+		public int GetHashCode(ModListElement element)
+		{
+			return element.Directory.GetHashCode();
+		}
 	}
 
 	public enum State
@@ -44,7 +51,8 @@ public static class ModLoader
 	public static Action OnResetMods;
 	public static Action<SerializerBuilder, DeserializerBuilder> OnAugmentSerializer;
 
-	private static string _modsRoot = null;
+	private static string _streamingAssetsModsRoot = null;
+	private static string _persistentDataModsRoot = null;
 
 	internal static List<Assembly> ModAssemblies;
 	internal static ModLoadingPipeline<BlockSpec> BlockPipeline;
@@ -71,27 +79,21 @@ public static class ModLoader
 
 	public static void Init()
 	{
-		_modsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
+		_streamingAssetsModsRoot = Path.Combine(Application.streamingAssetsPath, "Mods");
+		_persistentDataModsRoot = Path.Combine(Application.persistentDataPath, "Mods");
+
+		if (!Directory.Exists(_persistentDataModsRoot)) Directory.CreateDirectory(_persistentDataModsRoot);
 
 		ModAssemblies = new();
-		BlockPipeline = new(_modsRoot, "Blocks");
-		BlockCategoryPipeline = new(_modsRoot, "Block Categories");
-		DamageTypePipeline = new(_modsRoot, "Damage Types");
-		ArmorTypePipeline = new(_modsRoot, "Armor Types");
-		TexturePipeline = new(
-			_modsRoot, "Textures",
-			ResolveAbsolutePaths(nameof(TextureSpec.ImagePath))
-		);
-		SoundPipeline = new(
-			_modsRoot, "Sounds",
-			ResolveAbsolutePaths(nameof(SoundSpec.SoundPath))
-		);
-		VehicleResourcePipeline = new(_modsRoot, "Vehicle Resources");
-		ControlGroupPipeline = new(_modsRoot, "Control Groups");
-		StockVehiclePipeline = new(
-			_modsRoot, "Stock Vehicles",
-			ResolveAbsolutePaths(nameof(StockVehicleSpec.VehiclePath))
-		);
+		BlockPipeline = new("Blocks");
+		BlockCategoryPipeline = new("Block Categories");
+		DamageTypePipeline = new("Damage Types");
+		ArmorTypePipeline = new("Armor Types");
+		TexturePipeline = new("Textures");
+		SoundPipeline = new("Sounds");
+		VehicleResourcePipeline = new("Vehicle Resources");
+		ControlGroupPipeline = new("Control Groups");
+		StockVehiclePipeline = new("Stock Vehicles");
 
 		Initialized = true;
 	}
@@ -106,25 +108,6 @@ public static class ModLoader
 		{
 			pipeline.ResetData();
 		}
-	}
-
-	private static Action<string, YamlDocument> ResolveAbsolutePaths(params string[] fields)
-	{
-		return (filePath, document) =>
-		{
-			var mappingNode = (YamlMappingNode) document.RootNode;
-
-			foreach (string field in fields)
-			{
-				if (mappingNode.Children.TryGetValue(field, out YamlNode node))
-				{
-					mappingNode.Children[field] = Path.Combine(
-						Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
-						((YamlScalarNode) node).Value
-					);
-				}
-			}
-		};
 	}
 
 	public static void InjectBlockSpec(TextAsset blockSpec)
@@ -151,41 +134,58 @@ public static class ModLoader
 			LoadDescription = null;
 		}
 
-		List<string> modDirectories = GetValidModDirectories();
-		List<ModListElement> modList = ReadStoredModList();
+		List<ModListElement> availableMods = GetAvailableMods();
+		List<ModListElement> storedModList = ReadStoredModList();
 
-		MatchModList(modList, modDirectories);
+		MatchModList(storedModList, availableMods);
 
-		SaveModList(modList);
+		SaveModList(storedModList);
 
-		AllMods = modList.AsReadOnly();
+		AllMods = storedModList.AsReadOnly();
 	}
 
-	private static List<string> GetValidModDirectories()
+	private static List<ModListElement> GetAvailableMods()
 	{
-		List<string> modDirectories = new List<string>();
+		HashSet<ModListElement> mods = new(new ModDirectoryComparer());
 
-		foreach (string modDirectory in Directory.EnumerateDirectories(_modsRoot))
+		foreach (string modPath in Directory.EnumerateDirectories(_streamingAssetsModsRoot))
 		{
-			if (File.Exists(Path.Combine(modDirectory, "mod.json")))
+			if (File.Exists(Path.Combine(modPath, "mod.json")))
 			{
-				modDirectories.Add(Path.GetFileName(modDirectory));
+				mods.Add(new() { Directory = Path.GetFileName(modPath), FullPath = modPath });
 			}
 			else
 			{
 				Debug.LogError(
-					$"Mod {Path.GetFileName(modDirectory)} does not have mod.json file and will be skipped."
+					$"Mod {Path.GetFileName(modPath)} does not have mod.json file and will be skipped."
 				);
 			}
 		}
 
-		return modDirectories;
+		foreach (string modPath in Directory.EnumerateDirectories(_persistentDataModsRoot))
+		{
+			if (File.Exists(Path.Combine(modPath, "mod.json")))
+			{
+				if (!mods.Add(new() { Directory = Path.GetFileName(modPath), FullPath = modPath }))
+				{
+					Debug.LogWarning($"Mod \"{Path.GetFileName(modPath)}\" already exists in StreamingAssets.");
+				}
+			}
+			else
+			{
+				Debug.LogError(
+					$"Mod {Path.GetFileName(modPath)} does not have mod.json file and will be skipped."
+				);
+			}
+		}
+
+		return mods.ToList();
 	}
 
 	private static List<ModListElement> ReadStoredModList()
 	{
-		string modListPath = Path.Combine(_modsRoot, "modlist.json");
-
+		string modListPath = Path.Combine(_persistentDataModsRoot, "modlist.json");
+		if (!File.Exists(modListPath)) modListPath = Path.Combine(_streamingAssetsModsRoot, "modlist.json");
 		if (!File.Exists(modListPath)) return new();
 
 		string content = File.ReadAllText(modListPath);
@@ -193,49 +193,51 @@ public static class ModLoader
 	}
 
 
-	private static void MatchModList(IList<ModListElement> modList, IList<string> modDirectories)
+	private static void MatchModList(IList<ModListElement> storedModList, List<ModListElement> availableMods)
 	{
-		for (int i = 0; i < modList.Count;)
+		for (int i = 0; i < storedModList.Count;)
 		{
-			int index = modDirectories.IndexOf(modList[i].Directory);
+			int index = availableMods.FindIndex(element => element.Directory == storedModList[i].Directory);
 
 			if (index >= 0)
 			{
 				// Mod exists and validated
-				var modSpec = modList[i];
-				modSpec.Spec = LoadModSpec(modList[i].Directory);
-				modList[i] = modSpec;
+				var modSpec = storedModList[i];
+				modSpec.FullPath = availableMods[index].FullPath;
+				modSpec.Spec = LoadModSpec(modSpec.FullPath);
+				storedModList[i] = modSpec;
 
-				modDirectories.RemoveAt(index);
+				availableMods.RemoveAt(index);
 				i++;
 			}
 			else
 			{
 				// Mod no longer exists
-				Debug.Log($"Removing mod {modList[i].Directory} from mod list");
-				modList.RemoveAt(i);
+				Debug.Log($"Removing mod {storedModList[i].Directory} from mod list as it no longer exists.");
+				storedModList.RemoveAt(i);
 			}
 		}
 
-		foreach (string modDirectory in modDirectories)
+		foreach (ModListElement mod in availableMods)
 		{
-			var modSpec = LoadModSpec(modDirectory);
-			Debug.Log($"Discovered new mod {modSpec.DisplayName} in {modDirectory} (IsCodeMod={IsCodeMod(modSpec)})");
+			var modSpec = LoadModSpec(mod.FullPath);
+			Debug.Log($"Discovered new mod {modSpec.DisplayName} in {mod.Directory} (IsCodeMod={IsCodeMod(modSpec)})");
 
-			modList.Add(
+			storedModList.Add(
 				new()
 				{
-					Directory = modDirectory,
+					Directory = mod.Directory,
+					FullPath = mod.FullPath,
 					Enabled = !IsCodeMod(modSpec),
-					Spec = LoadModSpec(modDirectory)
+					Spec = modSpec
 				}
 			);
 		}
 	}
 
-	private static ModSpec LoadModSpec(string modDirectory)
+	private static ModSpec LoadModSpec(string modPath)
 	{
-		string modDefPath = Path.Combine(_modsRoot, modDirectory, "mod.json");
+		string modDefPath = Path.Combine(modPath, "mod.json");
 		return JsonUtility.FromJson<ModSpec>(File.ReadAllText(modDefPath));
 	}
 
@@ -247,29 +249,26 @@ public static class ModLoader
 	public static void SaveModList(List<ModListElement> modList)
 	{
 		string content = JsonUtility.ToJson(new ModListSpec { ModList = modList }, true);
-		File.WriteAllText(Path.Combine(_modsRoot, "modlist.json"), content);
+		File.WriteAllText(Path.Combine(_persistentDataModsRoot, "modlist.json"), content);
 	}
 
 	public static bool IsModded()
 	{
-		bool found = false;
+		bool coreModFound = false;
 
-		foreach (ModListElement element in AllMods)
+		foreach (ModListElement element in EnabledMods)
 		{
-			if (element.Enabled)
+			if (element.Directory == "Oberth Effect")
 			{
-				if (element.Directory == "Oberth Effect")
-				{
-					found = true;
-				}
-				else
-				{
-					return true;
-				}
+				coreModFound = true;
+			}
+			else
+			{
+				return true;
 			}
 		}
 
-		return !found;
+		return !coreModFound;
 	}
 
 	#endregion

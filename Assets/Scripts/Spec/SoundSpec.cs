@@ -7,11 +7,13 @@ using Syy1125.OberthEffect.Spec.Validation.Attributes;
 namespace Syy1125.OberthEffect.Spec
 {
 [CreateSchemaFile("SoundSpecSchema")]
+[ContainsPath]
 public struct SoundSpec : ICustomChecksum
 {
 	[IdField]
 	public string SoundId;
 	[ValidateFilePath]
+	[ResolveAbsolutePath]
 	public string SoundPath;
 
 	public void GetBytes(Stream stream, ChecksumLevel level)

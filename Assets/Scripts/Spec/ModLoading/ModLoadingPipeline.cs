@@ -34,31 +34,27 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 	// Configuration
 	private string _idField;
+	private Action<string, YamlDocument> _resolvePath;
+
 	private string _name;
-	private string _modsRoot;
 	private string _contentDirectory;
-	private Action<string, YamlDocument> _preprocess;
 
 	// State
 	private Dictionary<string, GameSpecDocument> _documents;
 	public IReadOnlyList<SpecInstance<TSpec>> Results;
 
-	public ModLoadingPipeline(
-		string name, string modsRoot, string contentDirectory, Action<string, YamlDocument> preprocess
-	)
+	public ModLoadingPipeline(string name, string contentDirectory)
 	{
 		ResolveIdField();
+		SetupResolvePath();
+
 		_name = name;
-		_modsRoot = modsRoot;
 		_contentDirectory = contentDirectory;
-		_preprocess = preprocess;
 		_documents = new();
 	}
 
-	public ModLoadingPipeline(
-		string modsRoot, string contentDirectory, Action<string, YamlDocument> preprocess = null
-	) :
-		this(contentDirectory, modsRoot, contentDirectory, preprocess)
+	public ModLoadingPipeline(string contentDirectory) :
+		this(contentDirectory, contentDirectory)
 	{}
 
 	private void ResolveIdField()
@@ -67,20 +63,10 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 		foreach (FieldInfo field in fields)
 		{
-			foreach (CustomAttributeData attributeData in field.GetCustomAttributesData())
+			if (field.GetCustomAttribute<IdFieldAttribute>() != null)
 			{
-				if (attributeData.AttributeType == typeof(IdFieldAttribute))
-				{
-					if (_idField == null)
-					{
-						_idField = field.Name;
-						break;
-					}
-					else
-					{
-						Debug.LogError($"{typeof(TSpec)} has multiple fields marked as ID field");
-					}
-				}
+				_idField = field.Name;
+				break;
 			}
 		}
 
@@ -88,6 +74,70 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 		{
 			Debug.LogError($"{typeof(TSpec)} has no ID field");
 		}
+	}
+
+	private void SetupResolvePath()
+	{
+		if (typeof(TSpec).GetCustomAttribute<ContainsPathAttribute>() == null) return;
+
+		List<List<string>> pathFields = new();
+		GetPathFields(typeof(TSpec), new(), pathFields);
+
+		_resolvePath = (filePath, document) =>
+		{
+			foreach (List<string> field in pathFields)
+			{
+				TryResolvePath(filePath, document, field);
+			}
+		};
+	}
+
+	private static void GetPathFields(Type type, LinkedList<string> currentField, List<List<string>> pathFields)
+	{
+		FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+		foreach (FieldInfo field in fields)
+		{
+			if (field.GetCustomAttribute<ResolveAbsolutePathAttribute>() != null)
+			{
+				pathFields.Add(new(currentField) { field.Name });
+			}
+			else if (field.FieldType.GetCustomAttribute<ContainsPathAttribute>() != null)
+			{
+				currentField.AddLast(field.Name);
+				GetPathFields(field.FieldType, currentField, pathFields);
+				currentField.RemoveLast();
+			}
+		}
+	}
+
+	private static bool TryResolvePath(string filePath, YamlDocument document, List<string> field)
+	{
+		YamlNode node = document.RootNode;
+
+		foreach (string step in field)
+		{
+			if (node is not YamlMappingNode mappingNode)
+			{
+				return false;
+			}
+
+			if (!mappingNode.Children.TryGetValue(step, out node))
+			{
+				return false;
+			}
+		}
+
+		if (node is not YamlScalarNode scalarNode)
+		{
+			return false;
+		}
+
+		scalarNode.Value = Path.Combine(
+			Path.GetDirectoryName(filePath) ?? throw new ArgumentException(),
+			scalarNode.Value
+		);
+		return true;
 	}
 
 	public void ResetData()
@@ -119,7 +169,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 	public void LoadModContent(ModListElement mod)
 	{
-		string contentRoot = Path.Combine(_modsRoot, mod.Directory, _contentDirectory);
+		string contentRoot = Path.Combine(mod.FullPath, _contentDirectory);
 		if (!Directory.Exists(contentRoot)) return;
 
 		string[] files = Directory.EnumerateFiles(contentRoot, "*.yaml", SearchOption.AllDirectories).ToArray();
@@ -165,7 +215,7 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 		foreach (YamlDocument document in yaml.Documents)
 		{
-			_preprocess?.Invoke(filePath, document);
+			_resolvePath?.Invoke(filePath, document);
 
 			try
 			{
@@ -243,7 +293,9 @@ public class ModLoadingPipeline<TSpec> : IModLoadingPipeline
 
 			try
 			{
-				var spec = ModLoader.Deserializer.Deserialize<TSpec>(new YamlStreamParserAdapter(document.SpecDocument.RootNode));
+				var spec = ModLoader.Deserializer.Deserialize<TSpec>(
+					new YamlStreamParserAdapter(document.SpecDocument.RootNode)
+				);
 				instances.Add(
 					new()
 					{
