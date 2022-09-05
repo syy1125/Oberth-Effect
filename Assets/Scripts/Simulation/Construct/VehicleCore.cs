@@ -62,7 +62,7 @@ public class VehicleCore :
 		{
 			GetComponent<ConstructBlockManager>().LoadBlocks(
 				_blueprint.Blocks,
-				new BlockContext { IsMainVehicle = IsMainVehicle }
+				new() { IsMainVehicle = IsMainVehicle, Environment = BlockEnvironment.Simulation }
 			);
 			transform.position -= transform.TransformVector(GetComponent<Rigidbody2D>().centerOfMass);
 

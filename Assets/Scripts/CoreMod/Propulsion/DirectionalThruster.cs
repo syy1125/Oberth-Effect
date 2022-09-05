@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
 using System.Text;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -92,18 +93,20 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 			}
 		}
 
-		public void StartEffects()
+		public void StartEffects(BlockEnvironment environment)
 		{
-			if (_thrustSoundSource != null)
+			if (_thrustSoundSource != null && environment == BlockEnvironment.Simulation)
 			{
 				_thrustSoundSource.Play();
 			}
 
 			if (_particles != null)
 			{
-				foreach (ParticleSystemWrapper particle in _particles)
+				ParticleSystemWrapper.BatchPlay(_particles);
+
+				if (environment == BlockEnvironment.Preview)
 				{
-					particle.Play();
+					ParticleSystemWrapper.BatchScaleThrustParticles(_particles, 1);
 				}
 			}
 		}
@@ -145,26 +148,28 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 
 	public void LoadSpec(DirectionalThrusterSpec spec, in BlockContext context)
 	{
+		Environment = context.Environment;
+
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
 
 		if (spec.Up != null)
 		{
-			_upModule = new Module(this, spec.Up, context);
+			_upModule = new(this, spec.Up, context);
 		}
 
 		if (spec.Down != null)
 		{
-			_downModule = new Module(this, spec.Down, context);
+			_downModule = new(this, spec.Down, context);
 		}
 
 		if (spec.Left != null)
 		{
-			_leftModule = new Module(this, spec.Left, context);
+			_leftModule = new(this, spec.Left, context);
 		}
 
 		if (spec.Right != null)
 		{
-			_rightModule = new Module(this, spec.Right, context);
+			_rightModule = new(this, spec.Right, context);
 		}
 
 		ComputeMaxResourceUse();
@@ -179,48 +184,59 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 
 		if (_leftModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_leftModule.MaxResourceUse, horizontalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_leftModule.MaxResourceUse, horizontalResourceUse, Mathf.Max);
 		}
 
 		if (_rightModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_rightModule.MaxResourceUse, horizontalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_rightModule.MaxResourceUse, horizontalResourceUse, Mathf.Max);
 		}
 
 		var verticalResourceUse = new Dictionary<string, float>();
 
 		if (_upModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_upModule.MaxResourceUse, verticalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_upModule.MaxResourceUse, verticalResourceUse, Mathf.Max);
 		}
 
 		if (_downModule != null)
 		{
-			DictionaryUtils.MergeDictionary(_downModule.MaxResourceUse, verticalResourceUse, FloatMax);
+			DictionaryUtils.MergeDictionary(_downModule.MaxResourceUse, verticalResourceUse, Mathf.Max);
 		}
 
-		MaxResourceUse = new Dictionary<string, float>();
+		MaxResourceUse = new();
 		DictionaryUtils.SumDictionaries(new[] { horizontalResourceUse, verticalResourceUse }, MaxResourceUse);
-	}
-
-	private static float FloatMax(float left, float right)
-	{
-		return Mathf.Max(left, right);
 	}
 
 	protected override void Start()
 	{
 		base.Start();
 
-		if (IsSimulation())
+		switch (Environment)
 		{
-			_localRight = Body.transform.InverseTransformDirection(transform.right);
-			_localUp = Body.transform.InverseTransformDirection(transform.up);
+			case BlockEnvironment.Palette:
+			case BlockEnvironment.Designer:
+				break;
+			case BlockEnvironment.Preview:
 
-			_upModule?.StartEffects();
-			_downModule?.StartEffects();
-			_leftModule?.StartEffects();
-			_rightModule?.StartEffects();
+				_upModule?.StartEffects(Environment);
+				_downModule?.StartEffects(Environment);
+				_leftModule?.StartEffects(Environment);
+				_rightModule?.StartEffects(Environment);
+				break;
+
+			case BlockEnvironment.Simulation:
+				_localRight = Body.transform.InverseTransformDirection(transform.right);
+				_localUp = Body.transform.InverseTransformDirection(transform.up);
+
+				_upModule?.StartEffects(Environment);
+				_downModule?.StartEffects(Environment);
+				_leftModule?.StartEffects(Environment);
+				_rightModule?.StartEffects(Environment);
+
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 	}
 
@@ -286,73 +302,62 @@ public class DirectionalThruster : AbstractThrusterBase, IBlockComponent<Directi
 
 	private void FixedUpdate()
 	{
+		if (Environment != BlockEnvironment.Simulation) return;
+
 		Vector2 overallResponse = _response * Satisfaction;
 
-		if (IsSimulation())
+		Vector2 right = transform.right;
+		Vector2 up = transform.up;
+		Vector2 position = transform.position;
+
+		if (overallResponse.x > Mathf.Epsilon && _rightModule != null)
 		{
-			Vector2 right = transform.right;
-			Vector2 up = transform.up;
-			Vector2 position = transform.position;
-
-			if (overallResponse.x > Mathf.Epsilon && _rightModule != null)
+			if (IsMine)
 			{
-				if (IsMine)
-				{
-					Body.AddForceAtPosition(right * (overallResponse.x * _rightModule.MaxForce), position);
-				}
-
-				_leftModule?.PlayEffectsAtStrength(0f);
-				_rightModule.PlayEffectsAtStrength(overallResponse.x);
-			}
-			else if (overallResponse.x < -Mathf.Epsilon && _leftModule != null)
-			{
-				if (IsMine)
-				{
-					Body.AddForceAtPosition(right * (overallResponse.x * _leftModule.MaxForce), position);
-				}
-
-				_leftModule.PlayEffectsAtStrength(-overallResponse.x);
-				_rightModule?.PlayEffectsAtStrength(0f);
-			}
-			else
-			{
-				_leftModule?.PlayEffectsAtStrength(0f);
-				_rightModule?.PlayEffectsAtStrength(0f);
+				Body.AddForceAtPosition(right * (overallResponse.x * _rightModule.MaxForce), position);
 			}
 
-			if (overallResponse.y > Mathf.Epsilon && _upModule != null)
-			{
-				if (IsMine)
-				{
-					Body.AddForceAtPosition(up * (overallResponse.y * _upModule.MaxForce), position);
-				}
-
-				_upModule.PlayEffectsAtStrength(overallResponse.y);
-				_downModule?.PlayEffectsAtStrength(0f);
-			}
-			else if (overallResponse.y < -Mathf.Epsilon && _downModule != null)
-			{
-				Body.AddForceAtPosition(up * (overallResponse.y * _downModule.MaxForce), position);
-
-				_upModule?.PlayEffectsAtStrength(0f);
-				_downModule.PlayEffectsAtStrength(-overallResponse.y);
-			}
-			else
-			{
-				_upModule?.PlayEffectsAtStrength(0f);
-				_downModule?.PlayEffectsAtStrength(0f);
-			}
+			_leftModule?.PlayEffectsAtStrength(0f);
+			_rightModule.PlayEffectsAtStrength(overallResponse.x);
 		}
-	}
+		else if (overallResponse.x < -Mathf.Epsilon && _leftModule != null)
+		{
+			if (IsMine)
+			{
+				Body.AddForceAtPosition(right * (overallResponse.x * _leftModule.MaxForce), position);
+			}
 
-	private static void SetParticlesStrength(ParticleSystemWrapper[] particles, float thrustScale)
-	{
-		if (particles != null) ParticleSystemWrapper.BatchScaleThrustParticles(particles, thrustScale);
-	}
+			_leftModule.PlayEffectsAtStrength(-overallResponse.x);
+			_rightModule?.PlayEffectsAtStrength(0f);
+		}
+		else
+		{
+			_leftModule?.PlayEffectsAtStrength(0f);
+			_rightModule?.PlayEffectsAtStrength(0f);
+		}
 
-	private static void SetSoundVolume(AudioSource audioSource, Tuple<float, float> volumeRange, float thrustScale)
-	{
-		if (audioSource != null) audioSource.volume = Mathf.Lerp(volumeRange.Item1, volumeRange.Item2, thrustScale);
+		if (overallResponse.y > Mathf.Epsilon && _upModule != null)
+		{
+			if (IsMine)
+			{
+				Body.AddForceAtPosition(up * (overallResponse.y * _upModule.MaxForce), position);
+			}
+
+			_upModule.PlayEffectsAtStrength(overallResponse.y);
+			_downModule?.PlayEffectsAtStrength(0f);
+		}
+		else if (overallResponse.y < -Mathf.Epsilon && _downModule != null)
+		{
+			Body.AddForceAtPosition(up * (overallResponse.y * _downModule.MaxForce), position);
+
+			_upModule?.PlayEffectsAtStrength(0f);
+			_downModule.PlayEffectsAtStrength(-overallResponse.y);
+		}
+		else
+		{
+			_upModule?.PlayEffectsAtStrength(0f);
+			_downModule?.PlayEffectsAtStrength(0f);
+		}
 	}
 
 	public override float GetMaxPropulsionForce(CardinalDirection localDirection)

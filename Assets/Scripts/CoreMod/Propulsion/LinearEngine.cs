@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Syy1125.OberthEffect.CoreMod.Propulsion;
@@ -62,6 +63,7 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 
 	public void LoadSpec(LinearEngineSpec spec, in BlockContext context)
 	{
+		Environment = context.Environment;
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
@@ -85,8 +87,7 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 			_particles = RendererHelper.CreateParticleSystems(transform, spec.Particles);
 		}
 
-		GetComponentInParent<IControlConditionProvider>()
-			?
+		GetComponentInParent<IControlConditionProvider>()?
 			.MarkControlGroupsActive(ActivationCondition.GetControlGroups());
 	}
 
@@ -94,22 +95,35 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 	{
 		base.Start();
 
-		if (IsSimulation())
+		switch (Environment)
 		{
-			_localUp = Body.transform.InverseTransformDirection(transform.up);
-
-			if (_thrustSoundSource != null)
-			{
-				_thrustSoundSource.Play();
-			}
-
-			if (_particles != null)
-			{
-				foreach (ParticleSystemWrapper particle in _particles)
+			case BlockEnvironment.Palette:
+			case BlockEnvironment.Designer:
+				break;
+			case BlockEnvironment.Preview:
+				if (_particles != null)
 				{
-					particle.Play();
+					ParticleSystemWrapper.BatchPlay(_particles);
+					ParticleSystemWrapper.BatchScaleThrustParticles(_particles, 1);
 				}
-			}
+
+				break;
+			case BlockEnvironment.Simulation:
+				_localUp = Body.transform.InverseTransformDirection(transform.up);
+
+				if (_particles != null)
+				{
+					ParticleSystemWrapper.BatchPlay(_particles);
+				}
+
+				if (_thrustSoundSource != null)
+				{
+					_thrustSoundSource.Play();
+				}
+
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 	}
 
@@ -172,26 +186,25 @@ public class LinearEngine : AbstractThrusterBase, IBlockComponent<LinearEngineSp
 
 	private void FixedUpdate()
 	{
-		if (IsSimulation())
+		if (Environment != BlockEnvironment.Simulation) return;
+
+		if (IsMine)
 		{
-			if (IsMine)
-			{
-				Body.AddForceAtPosition(
-					transform.up * (MaxForce * _trueThrustScale),
-					transform.TransformPoint(_thrustOrigin)
-				);
-			}
+			Body.AddForceAtPosition(
+				transform.up * (MaxForce * _trueThrustScale),
+				transform.TransformPoint(_thrustOrigin)
+			);
+		}
 
-			if (_thrustSoundSource != null)
-			{
-				float volume = Mathf.Lerp(_minVolume, _maxVolume, _trueThrustScale);
-				_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
-			}
+		if (_thrustSoundSource != null)
+		{
+			float volume = Mathf.Lerp(_minVolume, _maxVolume, _trueThrustScale);
+			_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
+		}
 
-			if (_particles != null)
-			{
-				ParticleSystemWrapper.BatchScaleThrustParticles(_particles, _trueThrustScale);
-			}
+		if (_particles != null)
+		{
+			ParticleSystemWrapper.BatchScaleThrustParticles(_particles, _trueThrustScale);
 		}
 	}
 

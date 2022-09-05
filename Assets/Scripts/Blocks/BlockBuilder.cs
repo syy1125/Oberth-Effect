@@ -76,7 +76,7 @@ public static class BlockBuilder
 	}
 
 	private static void LoadModComponent(
-		GameObject blockObject, KeyValuePair<string, object> entry, BlockContext context
+		GameObject blockObject, KeyValuePair<string, object> entry, in BlockContext context
 	)
 	{
 		var componentType = BlockSpec.GetComponentType(entry.Key);

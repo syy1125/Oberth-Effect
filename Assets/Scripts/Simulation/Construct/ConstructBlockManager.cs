@@ -51,13 +51,13 @@ public class ConstructBlockManager : MonoBehaviourPun,
 
 	#region Loading
 
-	public void LoadBlocks(IList<VehicleBlueprint.BlockInstance> blockInstances, BlockContext context)
+	public void LoadBlocks(IList<VehicleBlueprint.BlockInstance> blockInstances, in BlockContext context)
 	{
 		LoadBlocks(blockInstances, context, null);
 	}
 
 	private void LoadBlocks(
-		IList<VehicleBlueprint.BlockInstance> blockInstances, BlockContext context, Action<int, GameObject> postAction
+		IList<VehicleBlueprint.BlockInstance> blockInstances, in BlockContext context, Action<int, GameObject> postAction
 	)
 	{
 		_loaded = false;
@@ -66,7 +66,7 @@ public class ConstructBlockManager : MonoBehaviourPun,
 		var yMinList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
 		var xMaxList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
 		var yMaxList = new List<Tuple<VehicleBlueprint.BlockInstance, int>>(blockInstances.Count);
-		_bounds = new BoundsInt();
+		_bounds = new();
 
 		float totalMass = 0f;
 		Vector2 centerOfMass = Vector2.zero;
@@ -375,7 +375,7 @@ public class ConstructBlockManager : MonoBehaviourPun,
 
 		receiver.LoadBlocks(
 			blockInstances,
-			new BlockContext { IsMainVehicle = false },
+			new() { IsMainVehicle = false, Environment = BlockEnvironment.Simulation },
 			(index, blockObject) => LoadDebrisState(blockObject, debrisBlocks[index].DebrisState)
 		);
 	}

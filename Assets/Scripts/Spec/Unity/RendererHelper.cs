@@ -29,7 +29,7 @@ public static class RendererHelper
 
 		var holderTransform = particleHolder.transform;
 		holderTransform.SetParent(parent);
-		holderTransform.localPosition = new Vector3(spec.Offset.x, spec.Offset.y, 1f);
+		holderTransform.localPosition = new(spec.Offset.x, spec.Offset.y, 1f);
 		holderTransform.localRotation = Quaternion.LookRotation(spec.Direction);
 
 		var particles = particleHolder.AddComponent<ParticleSystem>();

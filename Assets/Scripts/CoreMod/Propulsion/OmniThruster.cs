@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Syy1125.OberthEffect.CoreMod.Propulsion;
 using Syy1125.OberthEffect.Foundation.Enums;
@@ -59,6 +60,7 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 
 	public void LoadSpec(OmniThrusterSpec spec, in BlockContext context)
 	{
+		Environment = context.Environment;
 		MaxForce = spec.MaxForce;
 		MaxResourceUse = spec.MaxResourceUse;
 		ActivationCondition = ControlConditionHelper.CreateControlCondition(spec.ActivationCondition);
@@ -77,8 +79,6 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 
 		if (spec.Particles != null)
 		{
-			int particleCount = spec.Particles.Length;
-
 			_upParticles = RendererHelper.CreateParticleSystems(
 				CreateParticleParent("UpParticles", 0f), spec.Particles
 			);
@@ -111,31 +111,45 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 	{
 		base.Start();
 
-		if (IsSimulation())
+		switch (Environment)
 		{
-			_localRight = Body.transform.InverseTransformDirection(transform.right);
-			_localUp = Body.transform.InverseTransformDirection(transform.up);
+			case BlockEnvironment.Palette:
+			case BlockEnvironment.Designer:
+				break;
+			case BlockEnvironment.Preview:
+				StartParticleSystems(_upParticles);
+				StartParticleSystems(_downParticles);
+				StartParticleSystems(_leftParticles);
+				StartParticleSystems(_rightParticles);
 
-			if (_thrustSoundSource != null)
-			{
-				_thrustSoundSource.Play();
-			}
+				SetParticlesStrength(_upParticles, 1);
+				SetParticlesStrength(_downParticles, 1);
+				SetParticlesStrength(_leftParticles, 1);
+				SetParticlesStrength(_rightParticles, 1);
+				break;
+			case BlockEnvironment.Simulation:
+				_localRight = Body.transform.InverseTransformDirection(transform.right);
+				_localUp = Body.transform.InverseTransformDirection(transform.up);
 
-			StartParticleSystems(_upParticles);
-			StartParticleSystems(_downParticles);
-			StartParticleSystems(_leftParticles);
-			StartParticleSystems(_rightParticles);
+				StartParticleSystems(_upParticles);
+				StartParticleSystems(_downParticles);
+				StartParticleSystems(_leftParticles);
+				StartParticleSystems(_rightParticles);
+
+				if (_thrustSoundSource != null)
+				{
+					_thrustSoundSource.Play();
+				}
+
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 	}
 
 	private static void StartParticleSystems(ParticleSystemWrapper[] particleSystems)
 	{
-		if (particleSystems == null) return;
-
-		foreach (ParticleSystemWrapper particle in particleSystems)
-		{
-			particle.Play();
-		}
+		if (particleSystems != null) ParticleSystemWrapper.BatchPlay(particleSystems);
 	}
 
 	public override void InitDefaultConfig()
@@ -189,46 +203,45 @@ public class OmniThruster : AbstractThrusterBase, IBlockComponent<OmniThrusterSp
 
 	private void FixedUpdate()
 	{
+		if (Environment != BlockEnvironment.Simulation) return;
+
 		Vector2 overallResponse = _response * Satisfaction;
 
-		if (IsSimulation())
+		if (IsMine)
 		{
-			if (IsMine)
-			{
-				Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
-			}
+			Body.AddForceAtPosition(transform.TransformVector(overallResponse) * MaxForce, transform.position);
+		}
 
-			if (_thrustSoundSource != null)
-			{
-				float volume = Mathf.Lerp(
-					_minVolume, _maxVolume,
-					(Mathf.Abs(overallResponse.x) + Mathf.Abs(overallResponse.y)) / 2
-				);
-				_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
-			}
+		if (_thrustSoundSource != null)
+		{
+			float volume = Mathf.Lerp(
+				_minVolume, _maxVolume,
+				(Mathf.Abs(overallResponse.x) + Mathf.Abs(overallResponse.y)) / 2
+			);
+			_thrustSoundSource.volume = SoundAttenuator.AttenuatePersistentSound(_thrustSoundId, volume);
+		}
 
 
-			if (overallResponse.x > 0)
-			{
-				SetParticlesStrength(_leftParticles, 0f);
-				SetParticlesStrength(_rightParticles, overallResponse.x);
-			}
-			else
-			{
-				SetParticlesStrength(_leftParticles, -overallResponse.x);
-				SetParticlesStrength(_rightParticles, 0f);
-			}
+		if (overallResponse.x > 0)
+		{
+			SetParticlesStrength(_leftParticles, 0f);
+			SetParticlesStrength(_rightParticles, overallResponse.x);
+		}
+		else
+		{
+			SetParticlesStrength(_leftParticles, -overallResponse.x);
+			SetParticlesStrength(_rightParticles, 0f);
+		}
 
-			if (overallResponse.y > 0)
-			{
-				SetParticlesStrength(_upParticles, overallResponse.y);
-				SetParticlesStrength(_downParticles, 0f);
-			}
-			else
-			{
-				SetParticlesStrength(_upParticles, 0f);
-				SetParticlesStrength(_downParticles, -overallResponse.y);
-			}
+		if (overallResponse.y > 0)
+		{
+			SetParticlesStrength(_upParticles, overallResponse.y);
+			SetParticlesStrength(_downParticles, 0f);
+		}
+		else
+		{
+			SetParticlesStrength(_upParticles, 0f);
+			SetParticlesStrength(_downParticles, -overallResponse.y);
 		}
 	}
 

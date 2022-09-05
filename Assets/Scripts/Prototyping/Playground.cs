@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Spec.Unity;
 using UnityEngine;
@@ -8,25 +9,19 @@ namespace Syy1125.OberthEffect.Prototyping
 {
 public class Playground : MonoBehaviour
 {
-	private void Start()
+	private IEnumerator Start()
 	{
-		GetComponent<Rigidbody2D>().velocity = Vector2.right;
-		GetComponent<ProjectileParticleTrail>().LoadTrailParticles(
-			new[]
-			{
-				new ParticleSystemSpec
-				{
-					Direction = Vector2.down,
-					SpreadAngle = 180,
-					EmissionRateOverTime = 0,
-					EmissionRateOverDistance = 25,
-					Size = 0.5f,
-					MaxSpeed = 1.5f,
-					Lifetime = 0.5f,
-					Color = "green"
-				}
-			}
-		);
+		GetComponent<ParticleSystem>().Play();
+		var main = GetComponent<ParticleSystem>().main;
+		main.playOnAwake = true;
+		Invoke(nameof(Reenable), 5);
+		yield return new WaitForSeconds(2);
+		gameObject.SetActive(false);
+	}
+
+	public void Reenable()
+	{
+		gameObject.SetActive(true);
 	}
 }
 }

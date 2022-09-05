@@ -18,6 +18,7 @@ public abstract class AbstractThrusterBase : MonoBehaviour,
 	IControlConditionReceiver,
 	IConfigComponent
 {
+	protected BlockEnvironment Environment;
 	protected float MaxForce;
 	protected Dictionary<string, float> MaxResourceUse;
 	protected IControlCondition ActivationCondition;
@@ -38,7 +39,7 @@ public abstract class AbstractThrusterBase : MonoBehaviour,
 		Body = GetComponentInParent<Rigidbody2D>();
 		SoundAttenuator = GetComponentInParent<IBlockSoundAttenuator>();
 
-		ResourceRequests = new Dictionary<string, float>();
+		ResourceRequests = new();
 	}
 
 	protected virtual void OnEnable()
@@ -65,11 +66,6 @@ public abstract class AbstractThrusterBase : MonoBehaviour,
 		GetComponentInParent<IPropulsionBlockRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IResourceConsumerRegistry>()?.UnregisterBlock(this);
 		GetComponentInParent<IControlConditionProvider>()?.UnregisterBlock(this);
-	}
-
-	protected bool IsSimulation()
-	{
-		return Body != null;
 	}
 
 	public void OnControlGroupsChanged(IControlConditionProvider provider)

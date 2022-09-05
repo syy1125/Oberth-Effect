@@ -88,6 +88,18 @@ public class ParticleSystemWrapper : MonoBehaviour
 		ParticleSystem.Stop();
 	}
 
+	public static void BatchPlay(IEnumerable<ParticleSystemWrapper> wrappers)
+	{
+		foreach (ParticleSystemWrapper wrapper in wrappers)
+		{
+			wrapper.Play();
+
+			// This keeps the particle system playing when the game object gets disabled then re-enabled.
+			var main = wrapper.ParticleSystem.main;
+			main.playOnAwake = true;
+		}
+	}
+
 	public static void BatchScaleThrustParticles(IEnumerable<ParticleSystemWrapper> wrappers, float thrustScale)
 	{
 		foreach (ParticleSystemWrapper wrapper in wrappers)
