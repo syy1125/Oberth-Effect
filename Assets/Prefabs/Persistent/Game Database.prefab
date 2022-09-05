@@ -107,6 +107,7 @@ MonoBehaviour:
   VehicleBlockMaterial: {fileID: 2100000, guid: d3dadea20e3f7a94d825499e0c8d81da, type: 2}
   DefaultParticleMaterial: {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   DefaultLineMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  ExplosionSprite: {fileID: 21300000, guid: b2cae011fc9f2f744a319cfc9e4bc150, type: 3}
 --- !u!114 &6502072993870983696
 MonoBehaviour:
   m_ObjectHideFlags: 0

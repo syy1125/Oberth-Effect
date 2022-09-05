@@ -7,6 +7,7 @@ using Syy1125.OberthEffect.Spec.ControlGroup;
 using Syy1125.OberthEffect.Blocks;
 using Syy1125.OberthEffect.CombatSystem;
 using Syy1125.OberthEffect.Spec.Checksum;
+using Syy1125.OberthEffect.Spec.Database;
 using Syy1125.OberthEffect.Spec.SchemaGen.Attributes;
 using Syy1125.OberthEffect.Spec.Validation.Attributes;
 using UnityEngine;
@@ -46,6 +47,21 @@ public class VolatileBlock : MonoBehaviour, IBlockComponent<VolatileSpec>, IBloc
 		_explosionOffset = spec.ExplosionOffset;
 		_maxRadius = spec.MaxRadius;
 		_maxDamage = spec.MaxDamage;
+
+		if (context.Environment == BlockEnvironment.Preview)
+		{
+			var explosionPreview = new GameObject("ExplosionPreview");
+			explosionPreview.transform.SetParent(transform);
+			explosionPreview.transform.localPosition = _explosionOffset;
+			explosionPreview.transform.localRotation = Quaternion.identity;
+			explosionPreview.transform.localScale = new(_maxRadius * 2, _maxRadius * 2, 1);
+
+			var explosionSprite = explosionPreview.AddComponent<SpriteRenderer>();
+			explosionSprite.sprite = TextureDatabase.Instance.ExplosionSprite;
+			Color explosionColor = Color.red;
+			explosionColor.a = 0.2f;
+			explosionSprite.color = explosionColor;
+		}
 
 		GetComponentInParent<IControlConditionProvider>()?
 			.MarkControlGroupsActive(_activationCondition.GetControlGroups());

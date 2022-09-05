@@ -17,6 +17,8 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 	public Material DefaultParticleMaterial;
 	public Material DefaultLineMaterial;
 
+	public Sprite ExplosionSprite;
+
 	private void Awake()
 	{
 		if (Instance == null)
@@ -44,7 +46,7 @@ public class TextureDatabase : MonoBehaviour, IGameContentDatabase
 			}
 		}
 
-		_sprites = new Dictionary<string, Sprite>();
+		_sprites = new();
 
 		Debug.Log($"Loaded {_specs.Count} texture specs");
 	}
