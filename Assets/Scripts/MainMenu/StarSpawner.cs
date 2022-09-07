@@ -1,4 +1,5 @@
 using System.Collections;
+using Syy1125.OberthEffect.Components;
 using Syy1125.OberthEffect.MainMenu;
 using UnityEngine;
 
@@ -84,20 +85,15 @@ public class StarSpawner : MonoBehaviour
 	private IEnumerator FadeAlpha(Star star, float alpha, float duration)
 	{
 		Color color = star.GetComponent<SpriteRenderer>().color;
-		float startAlpha = color.a;
-		float startTime = Time.time;
-		float endTime = startTime + duration;
 
-		while (Time.time < endTime)
-		{
-			float t = Mathf.InverseLerp(startTime, endTime, Time.time);
-			color.a = Mathf.Lerp(startAlpha, alpha, t);
-			star.SetColor(color);
-			yield return null;
-		}
-
-		color.a = alpha;
-		star.SetColor(color);
+		yield return CoroutineUtils.LerpOverTime(
+			color.a, alpha, duration,
+			a =>
+			{
+				color.a = a;
+				star.SetColor(color);
+			}
+		);
 	}
 }
 }

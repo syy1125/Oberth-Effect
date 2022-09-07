@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Syy1125.OberthEffect.Components.UserInterface;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -52,7 +53,13 @@ public class ScreenshotHandler : MonoBehaviour
 		string filename = $"screenshot_{timestamp}-{Screen.width}x{Screen.height}.png";
 		string path = Path.Combine(_screenshotPath, filename);
 		Debug.Log($"Taking screenshot {path}");
+
 		ScreenCapture.CaptureScreenshot(path);
+
+		if (ToastManager.Instance != null)
+		{
+			ToastManager.Instance.CreateToast($"Screenshot saved to {path}");
+		}
 	}
 }
 }

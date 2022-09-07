@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Syy1125.OberthEffect.Components.Singleton
 {
+/// <summary>
+/// Uses reflection to create a simple and reusable way to define a scene-level singleton.
+/// Requires a static property named <c>Instance</c>. Recommended implementation is <c>public static ClassName Instance { get; private set; }</c>.
+/// </summary>
 public abstract class SceneSingletonBehaviour : MonoBehaviour
 {
 	private PropertyInfo _instance;

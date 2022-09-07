@@ -30,7 +30,7 @@ public class FlytextManager : MonoBehaviour
 			flytext.GetComponent<Text>().text = text;
 			var coroutine = StartCoroutine(ManageNotificationFlytext(flytext));
 
-			_instances.Enqueue(new Tuple<GameObject, Coroutine>(flytext, coroutine));
+			_instances.Enqueue(new(flytext, coroutine));
 
 			while (_instances.Count > MaxInstances)
 			{
@@ -43,20 +43,13 @@ public class FlytextManager : MonoBehaviour
 
 	private IEnumerator ManageNotificationFlytext(GameObject flytext)
 	{
-		float startTime = Time.time;
-		float endTime = startTime + RiseTime;
 		Vector3 startPosition = flytext.transform.localPosition;
 		Vector3 endPosition = startPosition + new Vector3(0, RiseDistance, 0);
 
-		while (Time.time < endTime)
-		{
-			flytext.transform.localPosition = Vector3.Lerp(
-				startPosition, endPosition, Mathf.InverseLerp(startTime, endTime, Time.time)
-			);
-			yield return null;
-		}
-
-		flytext.transform.localPosition = endPosition;
+		yield return CoroutineUtils.LerpOverTime(
+			startPosition, endPosition, RiseTime,
+			position => flytext.transform.localPosition = position
+		);
 
 		yield return new WaitForSecondsRealtime(StayTime);
 		flytext.GetComponent<Text>().CrossFadeAlpha(0f, FadeTime, true);
