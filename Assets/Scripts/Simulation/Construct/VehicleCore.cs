@@ -33,10 +33,10 @@ public class VehicleCore :
 
 	private bool _loaded;
 	private UnityEvent _loadEvent;
-	private VehicleBlueprint _blueprint;
+	public VehicleBlueprint Blueprint { get; private set; }
 	public bool IsDead { get; private set; }
 
-	public string VehicleName => _blueprint.Name;
+	public string VehicleName => Blueprint.Name;
 
 	private void Awake()
 	{
@@ -47,8 +47,8 @@ public class VehicleCore :
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		object[] instantiationData = info.photonView.InstantiationData;
-		_blueprint = JsonUtility.FromJson<VehicleBlueprint>(CompressionUtils.Decompress((byte[]) instantiationData[0]));
-		name = $"{photonView.Owner.NickName} {_blueprint.Name}";
+		Blueprint = JsonUtility.FromJson<VehicleBlueprint>(CompressionUtils.Decompress((byte[]) instantiationData[0]));
+		name = $"{photonView.Owner.NickName} {Blueprint.Name}";
 	}
 
 	private void OnEnable()
@@ -58,10 +58,10 @@ public class VehicleCore :
 
 	private void Start()
 	{
-		if (_blueprint != null)
+		if (Blueprint != null)
 		{
 			GetComponent<ConstructBlockManager>().LoadBlocks(
-				_blueprint.Blocks,
+				Blueprint.Blocks,
 				new() { IsMainVehicle = IsMainVehicle, Environment = BlockEnvironment.Simulation }
 			);
 			transform.position -= transform.TransformVector(GetComponent<Rigidbody2D>().centerOfMass);
@@ -96,7 +96,7 @@ public class VehicleCore :
 		}
 		else
 		{
-			_loadEvent ??= new UnityEvent();
+			_loadEvent ??= new();
 			_loadEvent.AddListener(action);
 		}
 	}

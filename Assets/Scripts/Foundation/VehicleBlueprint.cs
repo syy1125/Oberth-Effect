@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Enums;
+using Syy1125.OberthEffect.Lib.Pid;
 using UnityEngine;
 
 namespace Syy1125.OberthEffect.Foundation
@@ -30,6 +31,13 @@ public class VehicleBlueprint
 	public int MirrorPosition;
 
 	public int CachedCost;
+
+	public PidConfig PidConfig = new()
+	{
+		Response = 5,
+		DerivativeTime = 1,
+		IntegralTime = 50
+	};
 
 	public bool UseCustomColors;
 	public ColorScheme ColorScheme;

@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Components.UserInterface
 {
-[Serializable]
-public class ValueChangeEvent : UnityEvent<int>
-{}
-
 public class IntSlider : MonoBehaviour
 {
+	[Serializable]
+	public class ValueChangeEvent : UnityEvent<int>
+	{}
+
 	public ValueChangeEvent OnChange;
 
 	private Slider _slider;
@@ -27,17 +27,17 @@ public class IntSlider : MonoBehaviour
 
 	private void OnEnable()
 	{
-		Slider.onValueChanged.AddListener(SetFloatValue);
-		Input.onEndEdit.AddListener(SetStringValue);
+		Slider.onValueChanged.AddListener(UpdateFromSlider);
+		Input.onEndEdit.AddListener(UpdateFromInputField);
 	}
 
 	private void OnDisable()
 	{
-		Slider.onValueChanged.RemoveListener(SetFloatValue);
-		Input.onEndEdit.RemoveListener(SetStringValue);
+		Slider.onValueChanged.RemoveListener(UpdateFromSlider);
+		Input.onEndEdit.RemoveListener(UpdateFromInputField);
 	}
 
-	public void UpdateFromNormalized(float value)
+	public void SetFromNormalized(float value)
 	{
 		int scaledValue = Mathf.RoundToInt(Mathf.Lerp(Slider.minValue, Slider.maxValue, value));
 		UpdateElementsWith(scaledValue);
@@ -56,7 +56,7 @@ public class IntSlider : MonoBehaviour
 
 	#region Event Listeners
 
-	private void SetFloatValue(float value)
+	private void UpdateFromSlider(float value)
 	{
 		if (_updatingElements) return;
 
@@ -65,12 +65,13 @@ public class IntSlider : MonoBehaviour
 		OnChange.Invoke(result);
 	}
 
-	private void SetStringValue(string value)
+	private void UpdateFromInputField(string value)
 	{
 		if (_updatingElements) return;
 
 		if (int.TryParse(value, out int result))
 		{
+			result = Mathf.RoundToInt(Mathf.Clamp(result, Slider.minValue, Slider.maxValue));
 			UpdateElementsWith(result);
 			OnChange.Invoke(result);
 		}

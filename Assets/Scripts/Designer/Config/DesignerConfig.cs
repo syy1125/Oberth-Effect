@@ -12,6 +12,7 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Config
@@ -34,10 +35,15 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 
 	[Header("Vehicle Config")]
 	public SwitchSelect ControlModeSelect;
+	public GameObject ColorSchemeTitle;
 	public Toggle CustomColorToggle;
 	public ColorPicker PrimaryColorPicker;
 	public ColorPicker SecondaryColorPicker;
 	public ColorPicker TertiaryColorPicker;
+	public GameObject RotationPidTitle;
+	public NumericSlider PidResponseSlider;
+	public NumericSlider PidDerivativeTimeSlider;
+	public NumericSlider PidIntegralTimeSlider;
 
 	[Header("Block Config")]
 	public GameObject TogglePrefab;
@@ -63,10 +69,10 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 	private void Awake()
 	{
 		_context = GetComponentInParent<ColorContext>();
-		_selectedBlocks = new List<VehicleBlueprint.BlockInstance>();
-		_selectionIndicators = new Dictionary<VehicleBlueprint.BlockInstance, GameObject>();
-		_configComponents = new HashSet<Type>();
-		_blockConfigItems = new List<GameObject>();
+		_selectedBlocks = new();
+		_selectionIndicators = new();
+		_configComponents = new();
+		_blockConfigItems = new();
 	}
 
 	private void OnEnable()
@@ -90,6 +96,9 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 		PrimaryColorPicker.OnChange.AddListener(SetPrimaryColor);
 		SecondaryColorPicker.OnChange.AddListener(SetSecondaryColor);
 		TertiaryColorPicker.OnChange.AddListener(SetTertiaryColor);
+		PidResponseSlider.OnChange.AddListener(SetPidResponse);
+		PidDerivativeTimeSlider.OnChange.AddListener(SetPidDerivativeTime);
+		PidIntegralTimeSlider.OnChange.AddListener(SetPidIntegralTime);
 	}
 
 	private void Start()
@@ -118,6 +127,9 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 		PrimaryColorPicker.OnChange.RemoveListener(SetPrimaryColor);
 		SecondaryColorPicker.OnChange.RemoveListener(SetSecondaryColor);
 		TertiaryColorPicker.OnChange.RemoveListener(SetTertiaryColor);
+		PidResponseSlider.OnChange.RemoveListener(SetPidResponse);
+		PidDerivativeTimeSlider.OnChange.RemoveListener(SetPidDerivativeTime);
+		PidIntegralTimeSlider.OnChange.RemoveListener(SetPidIntegralTime);
 	}
 
 	#endregion
@@ -213,13 +225,17 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 
 		ControlModeSelect.Value = (int) Blueprint.DefaultControlMode;
 
-		ColorScheme colorScheme = ColorScheme.FromBlueprint(Designer.Blueprint);
+		ColorScheme colorScheme = ColorScheme.FromBlueprint(Blueprint);
 
 		CustomColorToggle.isOn = Blueprint.UseCustomColors;
 
 		PrimaryColorPicker.InitColor(colorScheme.PrimaryColor);
 		SecondaryColorPicker.InitColor(colorScheme.SecondaryColor);
 		TertiaryColorPicker.InitColor(colorScheme.TertiaryColor);
+
+		PidResponseSlider.SetValue(Blueprint.PidConfig.Response);
+		PidDerivativeTimeSlider.SetValue(Blueprint.PidConfig.DerivativeTime);
+		PidIntegralTimeSlider.SetValue(Blueprint.PidConfig.IntegralTime);
 
 		_context.SetColorScheme(colorScheme);
 
@@ -327,10 +343,15 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 	private void SetVehicleConfigEnabled(bool configEnabled)
 	{
 		ControlModeSelect.gameObject.SetActive(configEnabled);
+		ColorSchemeTitle.SetActive(configEnabled);
 		CustomColorToggle.gameObject.SetActive(configEnabled);
 		PrimaryColorPicker.gameObject.SetActive(configEnabled);
 		SecondaryColorPicker.gameObject.SetActive(configEnabled);
 		TertiaryColorPicker.gameObject.SetActive(configEnabled);
+		RotationPidTitle.SetActive(configEnabled);
+		PidResponseSlider.gameObject.SetActive(configEnabled);
+		PidDerivativeTimeSlider.gameObject.SetActive(configEnabled);
+		PidIntegralTimeSlider.gameObject.SetActive(configEnabled);
 	}
 
 	private void ClearBlockConfigItems()
@@ -621,6 +642,21 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 		{
 			PlayerPrefs.SetString(PropertyKeys.TERTIARY_COLOR, JsonUtility.ToJson(color));
 		}
+	}
+
+	private void SetPidResponse(float response)
+	{
+		Blueprint.PidConfig.Response = response;
+	}
+
+	private void SetPidDerivativeTime(float derivativeTime)
+	{
+		Blueprint.PidConfig.DerivativeTime = derivativeTime;
+	}
+
+	private void SetPidIntegralTime(float integralTime)
+	{
+		Blueprint.PidConfig.IntegralTime = integralTime;
 	}
 
 	#endregion

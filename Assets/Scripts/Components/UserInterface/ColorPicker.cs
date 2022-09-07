@@ -284,18 +284,18 @@ public class ColorPicker : MonoBehaviour
 		VisualSquare.UpdateColor(_hsv);
 
 		var fakeHsvColor = new Color(_hsv.x, _hsv.y, _hsv.z);
-		HueSlider.UpdateFromNormalized(_hsv.x);
+		HueSlider.SetFromNormalized(_hsv.x);
 		HueBackground.color = fakeHsvColor;
-		SaturationSlider.UpdateFromNormalized(_hsv.y);
+		SaturationSlider.SetFromNormalized(_hsv.y);
 		SaturationBackground.color = fakeHsvColor;
-		ValueSlider.UpdateFromNormalized(_hsv.z);
+		ValueSlider.SetFromNormalized(_hsv.z);
 		ValueBackground.color = fakeHsvColor;
 
-		RedSlider.UpdateFromNormalized(_color.r);
+		RedSlider.SetFromNormalized(_color.r);
 		RedBackground.color = _color;
-		GreenSlider.UpdateFromNormalized(_color.g);
+		GreenSlider.SetFromNormalized(_color.g);
 		GreenBackground.color = _color;
-		BlueSlider.UpdateFromNormalized(_color.b);
+		BlueSlider.SetFromNormalized(_color.b);
 		BlueBackground.color = _color;
 
 		_updatingElements = false;

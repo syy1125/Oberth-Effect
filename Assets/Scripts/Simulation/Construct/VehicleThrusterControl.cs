@@ -42,6 +42,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private Camera _mainCamera;
 	private Rigidbody2D _body;
+	private VehicleCore _core;
 	private VehicleWeaponControl _weaponControl;
 
 	private class ThrusterRotationPid : IPid<float>
@@ -68,7 +69,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 			_timeLimit = timeLimit;
 
 			_timer = 0f;
-			_history = new LinkedList<PidHistory>();
+			_history = new();
 			_integral = 0f;
 		}
 
@@ -135,8 +136,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	{
 		_mainCamera = Camera.main;
 		_body = GetComponent<Rigidbody2D>();
+		_core = GetComponent<VehicleCore>();
 		_weaponControl = GetComponent<VehicleWeaponControl>();
-		_rotationPid = new ThrusterRotationPid(RotationPidConfig, 2f);
 	}
 
 	private void OnEnable()
@@ -146,6 +147,8 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void Start()
 	{
+		_rotationPid = new ThrusterRotationPid(_core.Blueprint.PidConfig, 2f);
+		
 		StartCoroutine(LateFixedUpdate());
 	}
 
