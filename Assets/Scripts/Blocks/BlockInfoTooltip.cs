@@ -40,7 +40,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 		string width = PhysicsUnitUtils.FormatLength(_bounds.Size.x, "F0");
 		string height = PhysicsUnitUtils.FormatLength(_bounds.Size.y, "F0");
 
-		var armorTypeSpec = ArmorTypeDatabase.Instance.GetSpec(_armorTypeId);
+		ArmorTypeSpec armorTypeSpec = ArmorTypeDatabase.Instance.GetSpec(_armorTypeId);
 
 		builder
 			.AppendLine($"{indent}{_fullName}")
@@ -53,7 +53,7 @@ public class BlockInfoTooltip : MonoBehaviour, ITooltipComponent
 		string damageModifierTooltip = ArmorTypeDatabase.Instance.GetDamageModifierTooltip(_armorTypeId);
 		if (!string.IsNullOrWhiteSpace(damageModifierTooltip))
 		{
-			builder.AppendLine($"{indent}    Takes {damageModifierTooltip}");
+			builder.AppendLine($"{indent}    Armor type \"{armorTypeSpec.DisplayName}\": takes {damageModifierTooltip}");
 		}
 
 		return true;
