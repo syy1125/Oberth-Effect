@@ -5,7 +5,8 @@
       "type": "number"
     },
     "PreciseDuration": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "If true, uses precise duration behaviour (BeamDurationTicks). If false, uses time-based behaviour (BeamDurationSeconds)."
     },
     "DurationTicks": {
       "type": "integer"
@@ -26,6 +27,20 @@
       "type": "array",
       "items": {
         "$ref": "ParticleSystemSpecSchema.json"
+      }
+    },
+    "Afterimage": {
+      "type": "object",
+      "properties": {
+        "Duration": {
+          "type": "number"
+        },
+        "StartAlpha": {
+          "type": "number"
+        },
+        "EndAlpha": {
+          "type": "number"
+        }
       }
     },
     "ScreenShake": {

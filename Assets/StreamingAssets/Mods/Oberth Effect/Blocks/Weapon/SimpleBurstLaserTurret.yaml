@@ -58,6 +58,10 @@ BlockComponents:
         DecayCurve: Linear
       FireSound:
         SoundId: OberthEffect/BurstLaser
+      Afterimage: 
+        Duration: 0.15
+        StartAlpha: 0.25
+        EndAlpha: 0
       HitParticles:
         - Direction: { X: 0, Y: -1 }
           Size: 0.1

@@ -25,10 +25,9 @@ public class BurstBeamLauncherSpec : AbstractWeaponLauncherSpec
 	[ValidateRangeFloat(0f, float.PositiveInfinity)]
 	public float ReloadTime;
 
-	/// <summary>
-	/// If true, uses precise duration behaviour. <code>BeamDurationTicks</code> is used and <code>BeamDurationSeconds</code> is ignored.
-	/// If false, uses time-based duration behaviour. <code>BeamDurationSeconds</code> is used and <code>BeamDurationTicks</code> is ignored.
-	/// </summary>
+	[SchemaDescription(
+		"If true, uses precise duration behaviour (BeamDurationTicks). If false, uses time-based behaviour (BeamDurationSeconds)."
+	)]
 	public bool PreciseDuration;
 	[ValidateRangeInt(0, int.MaxValue)]
 	public int DurationTicks;
@@ -45,6 +44,8 @@ public class BurstBeamLauncherSpec : AbstractWeaponLauncherSpec
 	public string BeamColor;
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ParticleSystemSpec[] HitParticles;
+	[RequireChecksumLevel(ChecksumLevel.Strict)]
+	public BeamAfterimageSpec Afterimage;
 
 	[RequireChecksumLevel(ChecksumLevel.Strict)]
 	public ScreenShakeSpec ScreenShake;
@@ -119,7 +120,7 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 		beamEffectTransform.localScale = Vector3.one;
 
 		_visual = beamEffectObject.AddComponent<BeamWeaponVisual>();
-		_visual.Init(beamWidth, beamColor, spec.HitParticles);
+		_visual.Init(beamWidth, beamColor, spec.Afterimage, spec.HitParticles);
 
 		_reloadResourceUse = spec.MaxResourceUse;
 		_screenShake = spec.ScreenShake;
