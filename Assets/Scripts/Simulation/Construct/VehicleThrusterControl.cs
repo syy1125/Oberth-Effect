@@ -29,9 +29,6 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 	public InputActionReference MoveAction;
 	public InputActionReference StrafeAction;
 
-	[Header("PID")]
-	public PidConfig RotationPidConfig;
-
 	[Header("Config")]
 	public float InertiaDampenerStrength;
 
@@ -121,6 +118,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		}
 	}
 
+	private PidConfig _pidConfig;
 	private IPid<float> _rotationPid;
 
 	[ReadOnlyField]
@@ -147,8 +145,9 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 
 	private void Start()
 	{
-		_rotationPid = new ThrusterRotationPid(_core.Blueprint.PidConfig, 2f);
-		
+		_pidConfig = _core.Blueprint.PidConfig;
+		_rotationPid = new ThrusterRotationPid(_pidConfig, 2f);
+
 		StartCoroutine(LateFixedUpdate());
 	}
 
@@ -313,7 +312,7 @@ public class VehicleThrusterControl : MonoBehaviourPun,
 		else if (Mathf.Abs(_body.angularVelocity) > Mathf.Epsilon)
 		{
 			RotateCommand.PlayerValue = 0f;
-			RotateCommand.AutoValue = _body.angularVelocity * RotationPidConfig.DerivativeTime;
+			RotateCommand.AutoValue = _body.angularVelocity * _pidConfig.DerivativeTime;
 		}
 		else
 		{
