@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Syy1125.OberthEffect.CombatSystem;
-using Syy1125.OberthEffect.Foundation.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -61,7 +60,8 @@ public class TargetDummy : MonoBehaviour, IDamageable, ITargetLockInfoProvider
 	}
 
 	public void RequestBeamDamage(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		TakeDamage(damageType, ref damage, armorPierce, out bool _);

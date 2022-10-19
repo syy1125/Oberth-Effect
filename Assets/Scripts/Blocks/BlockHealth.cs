@@ -145,24 +145,29 @@ public class BlockHealth : MonoBehaviour, IDamageable
 	}
 
 	public void RequestBeamDamage(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		ExecuteEvents.ExecuteHierarchy<IBlockRpcRelay>(
 			gameObject, null,
 			(relay, _) => relay.InvokeBlockRpc(
 				_core.RootPosition, typeof(BlockHealth), nameof(TakeBeamDamageRpc), relay.photonView.Owner,
-				damageType, damage, armorPierce, ownerId, beamStart, beamEnd
+				damageType, damage, armorPierce, ownerId, referenceFrameId, beamStart, beamEnd
 			)
 		);
 	}
 
 	public void TakeBeamDamageRpc(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		if (!IsMine) return;
-		BeamWeaponUtils.HandleBeamDamage(damageType, damage, armorPierce, ownerId, beamStart, beamEnd);
+		BeamWeaponUtils.HandleBeamDamage(
+			damageType, damage, armorPierce, ownerId,
+			referenceFrameId, beamStart, beamEnd
+		);
 	}
 }
 }

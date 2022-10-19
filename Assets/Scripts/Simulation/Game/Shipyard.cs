@@ -235,7 +235,8 @@ public class Shipyard : MonoBehaviourPun, IDirectDamageable, IPunObservable, ITa
 	}
 
 	public void RequestBeamDamage(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		photonView.RPC(nameof(TakeBeamDamageRpc), photonView.Owner, damageType, damage, armorPierce);

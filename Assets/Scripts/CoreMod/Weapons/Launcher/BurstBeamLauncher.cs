@@ -54,6 +54,7 @@ public class BurstBeamLauncherSpec : AbstractWeaponLauncherSpec
 public class BurstBeamLauncher : AbstractWeaponLauncher
 {
 	private Camera _camera;
+	private ReferenceFrameProvider _referenceFrame;
 	private OwnerContext _ownerContext;
 	private ColorContext _colorContext;
 
@@ -85,6 +86,7 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 	private void Awake()
 	{
 		_camera = Camera.main;
+		_referenceFrame = GetComponentInParent<ReferenceFrameProvider>();
 		_ownerContext = GetComponentInParent<OwnerContext>();
 		_colorContext = GetComponentInParent<ColorContext>();
 	}
@@ -291,9 +293,12 @@ public class BurstBeamLauncher : AbstractWeaponLauncher
 						else
 						{
 							hitTarget.RequestBeamDamage(
-								_damageTypeId, damageThisTick, _armorPierce,
-								_ownerContext.OwnerId,
-								transform.position, transform.TransformPoint(new Vector3(0f, MaxRange))
+								_damageTypeId, damageThisTick, _armorPierce, _ownerContext.OwnerId,
+								_referenceFrame.photonView.ViewID,
+								_referenceFrame.transform.InverseTransformPoint(transform.position),
+								_referenceFrame.transform.InverseTransformPoint(
+									transform.TransformPoint(0f, MaxRange, 0f)
+								)
 							);
 						}
 

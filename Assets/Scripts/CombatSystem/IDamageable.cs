@@ -41,7 +41,8 @@ public interface IDamageable
 	/// Typically this involves sending an RPC to the owner so that it can do the correct damage calculations.
 	/// </summary>
 	void RequestBeamDamage(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	);
 }
 

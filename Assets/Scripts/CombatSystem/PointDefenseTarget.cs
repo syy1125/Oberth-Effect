@@ -127,22 +127,26 @@ public class PointDefenseTarget : MonoBehaviourPun, IDirectDamageable, IPunObser
 	}
 
 	public void RequestBeamDamage(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		photonView.RPC(
 			nameof(TakeBeamDamageRpc), photonView.Owner,
-			damageType, damage, armorPierce, ownerId, beamStart, beamEnd
+			damageType, damage, armorPierce, ownerId, referenceFrameId, beamStart, beamEnd
 		);
 	}
 
 	[PunRPC]
 	private void TakeBeamDamageRpc(
-		string damageType, float damage, float armorPierce, int ownerId, Vector2 beamStart, Vector2 beamEnd
+		string damageType, float damage, float armorPierce, int ownerId,
+		int? referenceFrameId, Vector2 beamStart, Vector2 beamEnd
 	)
 	{
 		if (!IsMine) return;
-		BeamWeaponUtils.HandleBeamDamage(damageType, damage, armorPierce, ownerId, beamStart, beamEnd);
+		BeamWeaponUtils.HandleBeamDamage(
+			damageType, damage, armorPierce, ownerId, referenceFrameId, beamStart, beamEnd
+		);
 	}
 
 	public void RequestDirectDamage(
