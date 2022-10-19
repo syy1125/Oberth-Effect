@@ -23,6 +23,7 @@ public interface IBlockDestructionEffect : IEventSystemHandler
 /// </remarks>
 public interface IBlockLifecycleListener : IEventSystemHandler
 {
+	void OnBlockDamaged(BlockCore blockCore);
 	void OnBlockDestroyedByDamage(BlockCore blockCore);
 }
 
@@ -111,12 +112,20 @@ public class BlockHealth : MonoBehaviour, IDamageable
 			_health -= effectiveDamage;
 			damage = 0f;
 			damageExhausted = true;
+
+			ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
+				gameObject, null, (listener, _) => listener.OnBlockDamaged(_core)
+			);
 		}
 		else
 		{
 			_health = 0f;
 			damage -= effectiveHealth;
 			damageExhausted = false;
+
+			ExecuteEvents.ExecuteHierarchy<IBlockLifecycleListener>(
+				gameObject, null, (listener, _) => listener.OnBlockDamaged(_core)
+			);
 
 			if (!_destroyed)
 			{

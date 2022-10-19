@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Photon.Pun;
+using Syy1125.OberthEffect.Components.Singleton;
 using Syy1125.OberthEffect.Foundation;
 using Syy1125.OberthEffect.Foundation.Colors;
 using Syy1125.OberthEffect.Foundation.Match;
@@ -21,7 +22,7 @@ namespace Syy1125.OberthEffect.Simulation
 public class VehicleChangeEvent : UnityEvent<GameObject>
 {}
 
-public class PlayerVehicleSpawner : MonoBehaviour
+public class PlayerVehicleSpawner : SceneSingletonBehaviour
 {
 	public static PlayerVehicleSpawner Instance { get; private set; }
 
@@ -49,19 +50,6 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	private Coroutine _respawn;
 	private string _spawnTextTemplate;
 	private float? _selfDestructStart;
-
-	private void Awake()
-	{
-		if (Instance == null)
-		{
-			Instance = this;
-		}
-		else if (Instance != this)
-		{
-			Debug.LogError("Multiple PlayerVehicleSpawner were instantiated");
-			Destroy(this);
-		}
-	}
 
 	private void OnEnable()
 	{
@@ -116,14 +104,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 		if (Vehicle != null)
 		{
 			Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.RemoveListener(BeginRespawn);
-		}
-	}
-
-	private void OnDestroy()
-	{
-		if (Instance == this)
-		{
-			Instance = null;
+			Vehicle.GetComponent<ConstructBlockManager>().OnAnyBlockDamaged.RemoveListener(InterruptSelfDestruct);
 		}
 	}
 
@@ -151,6 +132,7 @@ public class PlayerVehicleSpawner : MonoBehaviour
 
 		Vehicle.GetComponent<Rigidbody2D>().velocity = velocity;
 		Vehicle.GetComponent<VehicleCore>().OnVehicleDeath.AddListener(BeginRespawn);
+		Vehicle.GetComponent<ConstructBlockManager>().OnAnyBlockDamaged.AddListener(InterruptSelfDestruct);
 		ReferenceFrameProvider.MainReferenceFrame = Vehicle.GetComponent<ReferenceFrameProvider>();
 
 		OnVehicleChanged.Invoke(Vehicle);
@@ -229,6 +211,14 @@ public class PlayerVehicleSpawner : MonoBehaviour
 	private void HandleSelfDestructCancel(InputAction.CallbackContext context)
 	{
 		_selfDestructStart = null;
+	}
+
+	private void InterruptSelfDestruct()
+	{
+		if (_selfDestructStart != null)
+		{
+			_selfDestructStart = Time.time;
+		}
 	}
 }
 }

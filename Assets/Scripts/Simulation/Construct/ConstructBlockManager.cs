@@ -14,6 +14,7 @@ using Syy1125.OberthEffect.Lib.Utils;
 using Syy1125.OberthEffect.Spec.Block;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Syy1125.OberthEffect.Simulation.Construct
 {
@@ -27,6 +28,8 @@ public class ConstructBlockManager : MonoBehaviourPun,
 	IPunObservable
 {
 	public string DebrisPrefabName = "Debris";
+
+	public UnityEvent OnAnyBlockDamaged;
 
 	private bool _loaded;
 
@@ -57,7 +60,8 @@ public class ConstructBlockManager : MonoBehaviourPun,
 	}
 
 	private void LoadBlocks(
-		IList<VehicleBlueprint.BlockInstance> blockInstances, in BlockContext context, Action<int, GameObject> postAction
+		IList<VehicleBlueprint.BlockInstance> blockInstances, in BlockContext context,
+		Action<int, GameObject> postAction
 	)
 	{
 		_loaded = false;
@@ -195,6 +199,11 @@ public class ConstructBlockManager : MonoBehaviourPun,
 		);
 
 		return blockObject;
+	}
+
+	public void OnBlockDamaged(BlockCore blockCore)
+	{
+		OnAnyBlockDamaged.Invoke();
 	}
 
 	public void OnBlockDestroyedByDamage(BlockCore blockCore)
@@ -470,7 +479,7 @@ public class ConstructBlockManager : MonoBehaviourPun,
 			int yMin = (int) stream.ReceiveNext();
 			int xMax = (int) stream.ReceiveNext();
 			int yMax = (int) stream.ReceiveNext();
-			_bounds.SetMinMax(new Vector3Int(xMin, yMin, 0), new Vector3Int(xMax, yMax, 1));
+			_bounds.SetMinMax(new(xMin, yMin, 0), new(xMax, yMax, 1));
 		}
 	}
 
