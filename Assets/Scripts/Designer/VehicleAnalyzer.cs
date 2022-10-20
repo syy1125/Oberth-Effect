@@ -682,12 +682,12 @@ public class VehicleAnalyzer : MonoBehaviour
 				blockInstance.Position, blockInstance.Rotation
 			);
 			SelectionIndicator.transform.localPosition = blockBounds.center - new Vector3(0.5f, 0.5f, 0f);
-			SelectionIndicator.transform.localScale = blockBounds.size;
+			SelectionIndicator.GetComponent<SpriteRenderer>().size = new(blockBounds.size.x, blockBounds.size.y);
 			SelectionIndicator.SetActive(true);
 
-			List<Vector2Int> attachedBlocks = new List<Vector2Int>();
-			List<Vector2Int> closedAttachPoints = new List<Vector2Int>();
-			List<Vector2Int> openAttachPoints = new List<Vector2Int>();
+			List<Vector2Int> attachedBlocks = new();
+			List<Vector2Int> closedAttachPoints = new();
+			List<Vector2Int> openAttachPoints = new();
 
 			foreach (Vector2Int attachmentPoint in VehicleBlockUtils.GetAttachmentPoints(blockInstance))
 			{
