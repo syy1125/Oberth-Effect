@@ -12,7 +12,6 @@ using Syy1125.OberthEffect.Foundation.Utils;
 using Syy1125.OberthEffect.Spec.Database;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace Syy1125.OberthEffect.Designer.Config
@@ -26,8 +25,6 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 
 	[Header("References")]
 	public VehicleDesigner Designer;
-	public VehicleBuilder Builder;
-	public DesignerAreaMask AreaMask;
 	public GameObject SelectionIndicatorPrefab;
 	public Transform IndicatorParent;
 	public Text StatusText;
@@ -50,6 +47,8 @@ public class DesignerConfig : MonoBehaviour, IElementControllerContext
 	public GameObject SwitchSelectPrefab;
 
 	private VehicleBlueprint Blueprint => Designer.Blueprint;
+	private VehicleBuilder Builder => Designer.Builder;
+	private DesignerAreaMask AreaMask => Designer.AreaMask;
 
 	private ColorContext _context;
 

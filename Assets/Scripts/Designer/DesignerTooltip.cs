@@ -9,10 +9,11 @@ public class DesignerTooltip : MonoBehaviour
 {
 	[Header("References")]
 	public VehicleDesigner Designer;
-	public VehicleBuilder Builder;
-	public DesignerPaletteUse PaletteUse;
-	public DesignerGridMove GridMove;
-	public DesignerAreaMask AreaMask;
+
+	private VehicleBuilder Builder => Designer.Builder;
+	private DesignerPaletteUse PaletteUse => Designer.PaletteUse;
+	private DesignerGridMove GridMove => Designer.GridMove;
+	private DesignerAreaMask AreaMask => Designer.AreaMask;
 
 	[Header("Config")]
 	public float BlockTooltipDelay = 0.5f;

@@ -20,19 +20,15 @@ public class DesignerPaletteUse : MonoBehaviour
 		Environment = BlockEnvironment.Preview
 	};
 
+	#region Unity Fields
+
 	[Header("References")]
 	public VehicleDesigner Designer;
-	public VehicleMirror Mirror;
-	public DesignerAreaMask AreaMask;
+	public BlockPalette Palette;
 	public FlytextManager FlytextManager;
+	public Transform PreviewParent;
 	public GameObject EraserIndicator;
 	public GameObject MirrorEraserIndicator;
-
-	public DesignerGridMove GridMove;
-	public BlockPalette Palette;
-	public VehicleBuilder Builder;
-	public BlockIndicators Indicators;
-	public Transform PreviewParent;
 
 	[Header("Assets")]
 	public AudioClip PlaceSound;
@@ -48,9 +44,18 @@ public class DesignerPaletteUse : MonoBehaviour
 	public InputActionReference UsePaletteAction;
 	public InputActionReference ReplacementModeAction;
 
+	#endregion
+
+	private VehicleMirror Mirror => Designer.Mirror;
+	private DesignerAreaMask AreaMask => Designer.AreaMask;
+	private DesignerGridMove GridMove => Designer.GridMove;
+	private VehicleBuilder Builder => Designer.Builder;
+	private BlockIndicators Indicators => Designer.Indicators;
+
 	public IPaletteSelection CurrentSelection => Palette.CurrentSelection;
 
-	// State
+	#region State
+
 	private int _rotation;
 	private int _prevRotation;
 
@@ -67,9 +72,12 @@ public class DesignerPaletteUse : MonoBehaviour
 
 	// Owned game objects
 	// Block previews stay the same when the player is moving the mouse around.
+	// They get enabled/disabled as the cursor enters and exits the designer area.
 	// The previews get destroyed and recreated when player selects a different block or enter cursor/eraser mode.
 	private GameObject _blockPreview;
 	private GameObject _mirrorBlockPreview;
+
+	#endregion
 
 	private void OnEnable()
 	{

@@ -13,10 +13,12 @@ public class VehicleDesigner : MonoBehaviour
 	#region Unity Fields
 
 	[Header("Components")]
+	public DesignerAreaMask AreaMask;
 	public DesignerGridMove GridMove;
 	public DesignerPaletteUse PaletteUse;
 	public VehicleBuilder Builder;
 	public VehicleMirror Mirror;
+	public BlockIndicators Indicators;
 	public DesignerConfig Config;
 	public DesignerCursorTexture CursorTexture;
 	public VehicleAnalyzer Analyzer;

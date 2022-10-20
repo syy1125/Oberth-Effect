@@ -37,13 +37,13 @@ public class BlockIndicators : MonoBehaviour
 
 	private void Awake()
 	{
-		_conflicts = new HashSet<Vector2Int>();
-		_disconnects = new HashSet<Vector2Int>();
-		_attachedBlocks = new HashSet<Vector2Int>();
-		_closedAttachPoints = new HashSet<Vector2Int>();
-		_openAttachPoints = new HashSet<Vector2Int>();
+		_conflicts = new();
+		_disconnects = new();
+		_attachedBlocks = new();
+		_closedAttachPoints = new();
+		_openAttachPoints = new();
 
-		_visualObjects = new Dictionary<Vector2Int, GameObject>();
+		_visualObjects = new();
 		_changed = false;
 	}
 
@@ -86,7 +86,7 @@ public class BlockIndicators : MonoBehaviour
 
 	private static bool UpdateSet<T>(ISet<T> current, IEnumerable<T> future)
 	{
-		HashSet<T> newSet = future == null ? new HashSet<T>() : new HashSet<T>(future);
+		HashSet<T> newSet = future == null ? new() : new HashSet<T>(future);
 
 		if (!current.SetEquals(newSet))
 		{
@@ -115,45 +115,45 @@ public class BlockIndicators : MonoBehaviour
 
 		var colorQueue = new Queue<IndicatorItem>();
 		colorQueue.Enqueue(
-			new IndicatorItem
+			new()
 			{
-				Positions = new HashSet<Vector2Int>(_attachedBlocks),
+				Positions = new(_attachedBlocks),
 				Sprite = AttachedBlockSprite,
 				Color = AttachedBlockColor,
 				Material = AttachedBlockMaterial
 			}
 		);
 		colorQueue.Enqueue(
-			new IndicatorItem
+			new()
 			{
-				Positions = new HashSet<Vector2Int>(_closedAttachPoints),
+				Positions = new(_closedAttachPoints),
 				Sprite = ClosedAttachPointSprite,
 				Color = ClosedAttachPointColor,
 				Material = ClosedAttachPointMaterial
 			}
 		);
 		colorQueue.Enqueue(
-			new IndicatorItem
+			new()
 			{
-				Positions = new HashSet<Vector2Int>(_openAttachPoints),
+				Positions = new(_openAttachPoints),
 				Sprite = OpenAttachPointSprite,
 				Color = OpenAttachPointColor,
 				Material = OpenAttachPointMaterial
 			}
 		);
 		colorQueue.Enqueue(
-			new IndicatorItem
+			new()
 			{
-				Positions = new HashSet<Vector2Int>(_conflicts),
+				Positions = new(_conflicts),
 				Sprite = ConflictSprite,
 				Color = ConflictColor,
 				Material = ConflictMaterial
 			}
 		);
 		colorQueue.Enqueue(
-			new IndicatorItem
+			new()
 			{
-				Positions = new HashSet<Vector2Int>(_disconnects),
+				Positions = new(_disconnects),
 				Sprite = DisconnectSprite,
 				Color = DisconnectColor,
 				Material = DisconnectMaterial
@@ -196,7 +196,7 @@ public class BlockIndicators : MonoBehaviour
 				Transform visualTransform = visualObject.transform;
 
 				visualTransform.SetParent(transform);
-				visualTransform.localPosition = new Vector3(position.x, position.y);
+				visualTransform.localPosition = new(position.x, position.y);
 				visualTransform.localScale = Vector3.one;
 
 				var spriteRenderer = visualObject.AddComponent<SpriteRenderer>();

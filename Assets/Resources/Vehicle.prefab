@@ -417,10 +417,6 @@ MonoBehaviour:
   LookAction: {fileID: -841684042950946977, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   MoveAction: {fileID: 4828780908250558111, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   StrafeAction: {fileID: -8893285493780437946, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
-  RotationPidConfig:
-    Response: 5
-    DerivativeTime: 1
-    IntegralTime: 50
   InertiaDampenerStrength: 1
   HorizontalCommand:
     PlayerValue: 0

@@ -867,9 +867,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Designer: {fileID: 1543857978}
-  Builder: {fileID: 1599521575}
-  Indicators: {fileID: 1286245955}
-  AreaMask: {fileID: 140859144}
   SelectBlockAction: {fileID: 6555300659516732026, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   OutputParent: {fileID: 344598103}
   StatusOutput: {fileID: 1160463455}
@@ -5869,8 +5866,6 @@ MonoBehaviour:
   DeselectAction: {fileID: -7748277482541003777, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   MultiSelectAction: {fileID: 6118303648839155305, guid: c5b92eb75b3d28540ad6a5f1b20a464d, type: 3}
   Designer: {fileID: 1543857978}
-  Builder: {fileID: 1599521575}
-  AreaMask: {fileID: 140859144}
   SelectionIndicatorPrefab: {fileID: 1903604668312841817, guid: 5f306416c96d6b2409ee9469f0898304, type: 3}
   IndicatorParent: {fileID: 988178064}
   StatusText: {fileID: 1298027625}
@@ -9201,16 +9196,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Designer: {fileID: 1543857978}
-  Mirror: {fileID: 1543857984}
-  AreaMask: {fileID: 140859144}
+  Palette: {fileID: 1325757352}
   FlytextManager: {fileID: 2039158504}
+  PreviewParent: {fileID: 1543857977}
   EraserIndicator: {fileID: 1960487092}
   MirrorEraserIndicator: {fileID: 2068163833}
-  GridMove: {fileID: 1543857982}
-  Palette: {fileID: 1325757352}
-  Builder: {fileID: 1599521575}
-  Indicators: {fileID: 1286245955}
-  PreviewParent: {fileID: 1543857977}
   PlaceSound: {fileID: 8300000, guid: bfeddc14df3e6d943a87e49aa10ac873, type: 3}
   EraseSound: {fileID: 8300000, guid: a0168094756165848b43a9482fbdc28e, type: 3}
   FailSound: {fileID: 8300000, guid: 762eb01ca98615a46ae92fd28de5f3cf, type: 3}
@@ -9894,10 +9884,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08580aa6b71fefb4283134205234fc6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AreaMask: {fileID: 140859144}
   GridMove: {fileID: 1543857982}
   PaletteUse: {fileID: 1325757353}
   Builder: {fileID: 1599521575}
   Mirror: {fileID: 1543857984}
+  Indicators: {fileID: 1286245955}
   Config: {fileID: 782769141}
   CursorTexture: {fileID: 1543857980}
   Analyzer: {fileID: 135774809}
@@ -9959,10 +9951,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Designer: {fileID: 1543857978}
-  Builder: {fileID: 1599521575}
-  PaletteUse: {fileID: 1325757353}
-  GridMove: {fileID: 1543857982}
-  AreaMask: {fileID: 140859144}
   BlockTooltipDelay: 0.5
 --- !u!114 &1543857984
 MonoBehaviour:
@@ -11719,7 +11707,7 @@ SpriteRenderer:
   m_Color: {r: 0, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0

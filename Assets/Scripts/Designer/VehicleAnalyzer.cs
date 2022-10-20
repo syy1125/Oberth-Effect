@@ -54,9 +54,6 @@ public class VehicleAnalyzer : MonoBehaviour
 
 	[Header("References")]
 	public VehicleDesigner Designer;
-	public VehicleBuilder Builder;
-	public BlockIndicators Indicators;
-	public DesignerAreaMask AreaMask;
 
 	[Header("Input")]
 	public InputActionReference SelectBlockAction;
@@ -88,6 +85,9 @@ public class VehicleAnalyzer : MonoBehaviour
 	public GameObject SelectionIndicator;
 
 	#endregion
+
+	private VehicleBuilder Builder => Designer.Builder;
+	private BlockIndicators Indicators => Designer.Indicators;
 
 	private VehicleAnalysisResult _result;
 	private Coroutine _analysisCoroutine;
